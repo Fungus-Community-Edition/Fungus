@@ -25,8 +25,8 @@ namespace AtMycelia.Amanita.VScripting
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(_visible);
-            variableDataCache.Add(_affectChildren);
+            _variableDataCache.Add(_visible);
+            _variableDataCache.Add(_affectChildren);
         }
 
         protected virtual void SetSpriteAlpha(SpriteRenderer renderer, bool visible)

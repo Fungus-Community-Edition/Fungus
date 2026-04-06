@@ -7,6 +7,7 @@ using UnityEngine.Events;
 using MarkerMetro.Unity.WinLegacy.Reflection;
 using System.Linq;
 using UnityObj = UnityEngine.Object;
+using UnityEngine.Serialization;
 
 namespace AtMycelia.Amanita.VScripting.Commands
 {
@@ -15,14 +16,16 @@ namespace AtMycelia.Amanita.VScripting.Commands
     /// </summary>
     [CommandInfo("Scripting", 
                  "Invoke Method", 
-                 "Invokes a method of a component via reflection. Supports passing multiple parameters and storing returned values in a Fungus variable.")]
+                 "Invokes a method of a component via reflection. Supports passing multiple " +
+                 "parameters and storing returned values in an Amanita variable.")]
     public class InvokeMethod : Command
     {
         [Tooltip("A description of what this command does. Appears in the command summary.")]
-        [SerializeField] protected string description = "";
+        [HyphlowTextArea(3, 10)]
+        [SerializeField] protected StringData _description = new StringData("");
 
         [Tooltip("GameObject containing the component method to be invoked")]
-        [SerializeField] protected GameObject targetObject;
+        [SerializeField] protected GameObjectData _targetObject = new GameObjectData();
 
         [HideInInspector]
         [Tooltip("Name of assembly containing the target component")]
@@ -73,6 +76,14 @@ namespace AtMycelia.Amanita.VScripting.Commands
         protected Type[] parameterTypes = null;
         protected MethodInfo objMethod;
 
+
+        protected override void RefreshVariableDataCache()
+        {
+            base.RefreshVariableDataCache();
+            _variableDataCache.Add(_description);
+            _variableDataCache.Add(_targetObject);
+        }
+
         protected virtual void Awake()
         {
             try
@@ -88,25 +99,28 @@ namespace AtMycelia.Amanita.VScripting.Commands
         
         protected virtual void PrepareTargets()
         { 
+            componentType ??= ReflectionHelper.GetType(targetComponentAssemblyName);
             if (componentType == null)
             {
-                componentType = ReflectionHelper.GetType(targetComponentAssemblyName);
+                Debug.LogError($"Could not find type with assembly name: {targetComponentAssemblyName} " +
+                    $"for method: {targetMethod}");
+                return;
+            }
+
+            if (TargetObject == null)
+            {
+                Debug.LogError($"TargetObject is not assigned for method: {targetMethod}");
+                return;
             }
 
             if (objComponent == null)
             {
-                objComponent = targetObject.GetComponent(componentType);
+                objComponent = TargetObject.GetComponent(componentType);
             }
 
-            if (parameterTypes == null)
-            {
-                parameterTypes = GetParameterTypes();
-            }
-
-            if (objMethod == null)
-            {
-                objMethod = UnityEvent.GetValidMethodInfo(objComponent, targetMethod, parameterTypes);
-            }
+            parameterTypes ??= GetParameterTypes();
+            objMethod ??= UnityEvent.GetValidMethodInfo(objComponent, targetMethod, parameterTypes);
+            
         }
 
         protected virtual IEnumerator ExecuteCoroutine()
@@ -119,7 +133,7 @@ namespace AtMycelia.Amanita.VScripting.Commands
             }
         }
 
-        protected virtual System.Type[] GetParameterTypes()
+        protected virtual Type[] GetParameterTypes()
         {
             System.Type[] types = new System.Type[methodParameters.Length];
 
@@ -150,7 +164,7 @@ namespace AtMycelia.Amanita.VScripting.Commands
                 else
                 {
                     object objValue = null;
-                    IVariable varFound = flowChart.GetVariableByName(item.variableKey);
+                    IVariable varFound = flowChart.GetVariable(item.variableKey);
                     if (varFound == null)
                     {
                         string errorMessage = $"No variable found with the name: {item.variableKey} to pass as parameter " +
@@ -283,7 +297,7 @@ namespace AtMycelia.Amanita.VScripting.Commands
         protected virtual void SetVariable(string key, object value, string returnType)
         {
             var flowChart = GetFlowchart();
-            IVariable varFound = flowChart.GetVariableByName(key);
+            IVariable varFound = flowChart.GetVariable(key);
             if (varFound == null)
             {
                 string errorMessage = $"No variable found with the name: {key} to store the return value " +
@@ -299,13 +313,30 @@ namespace AtMycelia.Amanita.VScripting.Commands
         /// <summary>
         /// GameObject containing the component method to be invoked.
         /// </summary>
-        public virtual GameObject TargetObject { get { return targetObject; } }
+        public virtual GameObject TargetObject
+        {
+            get
+            {
+                if (_targetObject.Value != null)
+                {
+                    return _targetObject.Value;
+                }
+
+                if (targetObject != null) // This may execute before the migration is done, so...
+                {
+                    return targetObject;
+                }
+
+                return null;
+            }
+        }
 
         public override void OnEnter()
         {
             PrepareTargets();
 
-            if (targetObject == null || string.IsNullOrEmpty(targetComponentAssemblyName) || string.IsNullOrEmpty(targetMethod))
+            if (TargetObject == null || string.IsNullOrEmpty(targetComponentAssemblyName) 
+                || string.IsNullOrEmpty(targetMethod))
             {
                 Continue();
                 return;
@@ -344,20 +375,41 @@ namespace AtMycelia.Amanita.VScripting.Commands
 
         public override string GetSummary()
         {
-            if (targetObject == null)
+            if (TargetObject == null)
             {
                 return "Error: targetObject is not assigned";
             }
 
-            if (!string.IsNullOrEmpty(description))
+            if (!string.IsNullOrEmpty(_description))
             {
-                return description;
+                return _description;
             }
 
-            return targetObject.name + "." + targetComponentText + "." + targetMethodText;
+            return $"{TargetObject.name}.{targetComponentText}.{targetMethodText}";
         }
 
         #endregion
+
+        public override void ApplyBackwardsCompatibility()
+        {
+            base.ApplyBackwardsCompatibility();
+
+            if (!string.IsNullOrEmpty(description))
+            {
+                _description.Value = description;
+                description = null;
+            }
+            if (targetObject != null)
+            {
+                _targetObject.Value = targetObject;
+                targetObject = null;
+            }
+        }
+
+        [FormerlySerializedAs("description")]
+        [SerializeField] [HideInInspector] protected string description = "";
+        [FormerlySerializedAs("targetObject")]
+        [SerializeField] [HideInInspector] protected GameObject targetObject;
     }
 
     [System.Serializable]
@@ -432,6 +484,8 @@ namespace AtMycelia.Amanita.VScripting.Commands
             return null;
         }
     }
+
+    
 
     public static class ReflectionHelper
     {

@@ -39,7 +39,7 @@ namespace AtMycelia.Amanita.VScripting.Commands
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(_message);
+            _variableDataCache.Add(_message);
         }
 
         #region Public members

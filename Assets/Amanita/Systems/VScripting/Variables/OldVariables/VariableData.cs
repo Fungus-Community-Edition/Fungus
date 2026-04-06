@@ -107,8 +107,8 @@ namespace AtMycelia.Amanita.VScripting
         {
             if (variable == null)
             {
-                backingVarRef.VarOwner = null;
                 backingVarRef.Variable = null;
+                backingVarRef.VarOwner = null;
                 return;
             }
 
@@ -350,12 +350,23 @@ namespace AtMycelia.Amanita.VScripting
         {
             base.DoBackwardsCompatibility();
 
-            // Backwards compatibility for the literal value
-            if (LegacyLiteralVal != null)
+            if (!ShouldMigrateLegacyLiteral())
             {
-                this.LiteralValue = LegacyLiteralVal;
-                LegacyLiteralVal = default;
+                return;
             }
+
+            LiteralValue = LegacyLiteralVal;
+            LegacyLiteralVal = default;
+        }
+
+        private bool ShouldMigrateLegacyLiteral()
+        {
+            if (LegacyLiteralVal == null)
+            {
+                return false;
+            }
+            bool sameAsDefault = LegacyLiteralVal.Equals(default(TValue));
+            return !sameAsDefault;
         }
 
         protected virtual TValue LegacyLiteralVal { get; set; }

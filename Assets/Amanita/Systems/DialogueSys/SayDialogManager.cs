@@ -19,7 +19,7 @@ namespace AtMycelia.Amanita.DialogueSys
         public void Init()
         {
             #region Validation
-            if (IsFullyInitted)
+            if (IsFullyInitted || !Application.isPlaying)
             {
                 return;
             }

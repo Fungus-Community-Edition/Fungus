@@ -2,6 +2,7 @@ using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
 using AtMycelia.Amanita.VScripting.Commands;
+using Type = System.Type;
 
 namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
@@ -17,10 +18,10 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
         {
             base.OnEnable();
 
-            anyVarDataPairProp = serializedObject.FindProperty("anyVar");
-            lhsVarProp = serializedObject.FindProperty("anyVar.varRef"); // VariableReference
-            anyVarDataProp = serializedObject.FindProperty("anyVar.data"); // AnyVariableData
-            setOperatorProp = serializedObject.FindProperty("setOperator");
+            anyVarDataPairProp = serializedObject.FindProperty("_anyVar");
+            lhsVarProp = anyVarDataPairProp.FindPropertyRelative("varRef"); // VariableReference
+            anyVarDataProp = anyVarDataPairProp.FindPropertyRelative("data"); // AnyVariableData
+            setOperatorProp = serializedObject.FindProperty("_setOperator");
         }
 
         public override void DrawCommandGUI()
@@ -71,14 +72,16 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             {
                 owningSourceProp.objectReferenceValue = flowchart;
             }
-
+            IVariableSource owner = owningSourceProp != null ? 
+                owningSourceProp.objectReferenceValue as IVariableSource : 
+                null;
             // Resolve selected variable purely from serialized fields (no boxedValue)
             var itemIdProp = lhsVarProp.FindPropertyRelative("itemId");
             selectedVariable = null;
-            if (flowchart != null && itemIdProp != null)
+            if (owner != null && itemIdProp != null)
             {
                 byte itemId = (byte)itemIdProp.intValue; // Unity stores byte as int internally
-                selectedVariable = flowchart.GetVariable(itemId);
+                selectedVariable = owner.GetVariable(itemId);
             }
         }
 
@@ -157,7 +160,8 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             if (innerDataRefProp != null)
             {
                 object current = innerDataRefProp.managedReferenceValue;
-                System.Type desiredDataType = VariableDataTypeRegistry.CreateForVar(selectedVariable.GetType())?.GetType();
+                var varType = selectedVariable.GetType();
+                Type desiredDataType = VariableDataTypeRegistry.CreateForVar(varType)?.GetType();
 
                 if (desiredDataType != null)
                 {
@@ -176,15 +180,18 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
 
             // Now draw the concrete inner data: anyVar.data.data
             // Re-fetch in case we just replaced the managed reference
-            var rhsVarDataPropLocal = serializedObject.FindProperty("anyVar.data.data");
+            var rhsVarDataPropLocal = anyVarDataPairProp.FindPropertyRelative("data.data");
             if (rhsVarDataPropLocal != null)
             {
-                EditorGUILayout.PropertyField(rhsVarDataPropLocal, new GUIContent("Value to Apply"), true);
+                EditorGUILayout.PropertyField(rhsVarDataPropLocal, _valueToApplyLabel, true);
             }
             else
             {
-                EditorGUILayout.HelpBox("Unable to locate RHS data. Select a variable first.", MessageType.Warning);
+                EditorGUILayout.HelpBox("Unable to locate RHS data. Select a variable first.", 
+                    MessageType.Warning);
             }
         }
+
+        protected static GUIContent _valueToApplyLabel = new GUIContent("Value to Apply");
     }
 }

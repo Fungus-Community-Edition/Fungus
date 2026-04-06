@@ -156,7 +156,15 @@ namespace AtMycelia.Amanita.VScripting
 
         private static readonly string _nonLocalFlowchartKeyFormat = "[{0}]/{1}";
         private static readonly string _globalSourceKeyFormat = "~{0}~/{1}";
-        public IReadOnlyDictionary<string, IVariable> GetVarsOfType(Type contentType = null)
+
+        /// <summary>
+        /// Returns available variables matching the given content type. If getAllAssignableTypes 
+        /// is true, it also returns variables whose content types are assignable to the given 
+        /// content type (e.g. if contentType is Component, it also returns variables of type 
+        /// SpriteRenderer since SpriteRenderer is a Component).
+        /// </summary>
+        public IReadOnlyDictionary<string, IVariable> GetVarsOfType(Type contentType = null, 
+            bool getAllAssignableTypes = false)
         {
             IReadOnlyDictionary<string, IVariable> result;
             bool giveThemEverything = contentType == null;
@@ -166,7 +174,24 @@ namespace AtMycelia.Amanita.VScripting
             }
             else
             {
-                if (_varsByType.TryGetValue(contentType, out var dict))
+                if (getAllAssignableTypes)
+                {
+                    var merged = new Dictionary<string, IVariable>();
+                    foreach (var kvp in _varsByType)
+                    {
+                        var type = kvp.Key;
+                        bool compatible = TypeUtils.TypesCompatible(contentType, type);
+                        if (compatible)
+                        {
+                            foreach (var kvp2 in kvp.Value)
+                            {
+                                merged[kvp2.Key] = kvp2.Value;
+                            }
+                        }
+                    }
+                    result = merged;
+                }
+                else if (_varsByType.TryGetValue(contentType, out var dict))
                 {
                     // This way, we don't make a whole new dictionary if we don't have to
                     result = dict;

@@ -66,6 +66,7 @@ namespace AtMycelia.Amanita.VScripting
         }
     }
 
+
     [System.Serializable]
     [VariableInfo("UnityGeneral", "Transform", typeof(Transform))]
     [MovedFrom(true, "Amanita.VScripting", "Amanita.Core", "TransformMuscariable")]

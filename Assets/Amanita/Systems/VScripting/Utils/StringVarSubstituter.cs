@@ -81,7 +81,7 @@ namespace AtMycelia.Amanita.VScripting
 
         private bool TryGetVariableFromSource(IVariableSource source, string key, out IVariable variable)
         {
-            variable = source.GetVariableByName(key, StringComparison.Ordinal);
+            variable = source.GetVariable(key, StringComparison.Ordinal);
             return variable != null;
         }
 

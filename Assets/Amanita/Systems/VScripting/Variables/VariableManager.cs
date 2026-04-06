@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
+using UnityEngine.Serialization;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -12,15 +13,20 @@ using UnityEditor;
 namespace AtMycelia.Amanita.VScripting
 {
     [Serializable]
-    public sealed class VariableManager : IVariableSource, IMuscariableSource
+    public sealed class VariableManager : IVariableSource, IMuscariableSource,
+        IReorderableVariableSource, IReorderableMuscariableSource
     {
         // Note: Unity does not serialize readonly fields, even if they're plain 
         // old Lists of types it otherwise serializes just fine. So, we have
         // to make these non-readonly and just be careful not to reassign them.
-        [SerializeReference] private List<Muscariable> muscariables = new();
-        [SerializeField] private List<Variable> legacyVariables = new();
-        [SerializeField] private byte nextValidVarID = 1;
-        [SerializeField] private bool isInitted = false;
+        [FormerlySerializedAs("muscariables")]
+        [SerializeReference] private List<Muscariable> _muscariables = new();
+        [FormerlySerializedAs("legacyVariables")]
+        [SerializeField] private List<Variable> _legacyVariables = new();
+        [FormerlySerializedAs("nextValidVarID")]
+        [SerializeField] private byte _nextValidVarID = 1;
+        [FormerlySerializedAs("isInitted")]
+        [SerializeField] private bool _isInitted = false;
 
         public void Initialize()
         {
@@ -30,25 +36,25 @@ namespace AtMycelia.Amanita.VScripting
                     "all variables and reset the manager. Proceeding with reinitialization.");
             }
             Clear();
-            nextValidVarID = 1;
+            _nextValidVarID = 1;
             IsInitted = true;
         }
 
         public bool IsInitted
         {
-            get => isInitted;
-            private set => isInitted = value;
+            get => _isInitted;
+            private set => _isInitted = value;
         }
 
         public void Clear()
         {
             // Remove them one by one so the right events fire
-            while (legacyVariables.Count > 0)
+            while (_legacyVariables.Count > 0)
             {
                 RemoveLegacyVarAtIndex(0);
             }
 
-            while (muscariables.Count > 0)
+            while (_muscariables.Count > 0)
             {
                 RemoveMuscariAtIndex(0);
             }
@@ -56,42 +62,44 @@ namespace AtMycelia.Amanita.VScripting
 
         public IVariable RemoveLegacyVarAtIndex(int index)
         {
-            if (index < 0 || index >= legacyVariables.Count)
+            if (index < 0 || index >= _legacyVariables.Count)
             {
                 string errorMessage = $"Index {index} is out of range for legacy variables. Valid range is " +
-                    $"0 to {legacyVariables.Count - 1}. No variable removed.";
+                    $"0 to {_legacyVariables.Count - 1}. No variable removed.";
 
                 throw new IndexOutOfRangeException(errorMessage);
             }
 
-            Variable toRemove = legacyVariables[index];
+            Variable toRemove = _legacyVariables[index];
             RemoveFromCachesThenSignal(toRemove);
             return toRemove;
         }
 
         private void RemoveFromCachesThenSignal(IVariable toRemove)
         {
-            legacyVariables.RemoveByReference(toRemove as Variable);
-            muscariables.RemoveByReference(toRemove as Muscariable);
+            PreVariableRemoved(toRemove);
+            _legacyVariables.RemoveByReference(toRemove as Variable);
+            _muscariables.RemoveByReference(toRemove as Muscariable);
 
-            lookup.Remove(toRemove.ItemId);
+            _lookup.Remove(toRemove.ItemId);
             VariableRemoved(toRemove);
         }
 
-        private Dictionary<byte, IVariable> lookup = new(); 
+        private Dictionary<byte, IVariable> _lookup = new();
         // ^For faster retrieval by ID. Must be kept in sync with the lists.
+        public event Action<IVariable> PreVariableRemoved = delegate { };
 
         public event Action<IVariable> VariableRemoved = delegate { };
 
         public IVariable RemoveMuscariAtIndex(int index)
         {
-            if (index < 0 || index >= muscariables.Count)
+            if (index < 0 || index >= _muscariables.Count)
             {
                 string errorMessage = $"Index {index} is out of range for muscariables. Valid range is " +
-                    $"0 to {muscariables.Count - 1}. No variable removed.";
+                    $"0 to {_muscariables.Count - 1}. No variable removed.";
                 throw new IndexOutOfRangeException(errorMessage);
             }
-            Muscariable toRemove = muscariables[index];
+            Muscariable toRemove = _muscariables[index];
             RemoveFromCachesThenSignal(toRemove);
             return toRemove;
         }
@@ -106,7 +114,7 @@ namespace AtMycelia.Amanita.VScripting
             for (int i = 0; i < initLegacies.Count; i++)
             {
                 Variable legacy = initLegacies[i];
-                legacyVariables.Add(legacy);
+                _legacyVariables.Add(legacy);
                 RegisterIntoVarLookup(new[] { legacy });
             }
 
@@ -116,14 +124,14 @@ namespace AtMycelia.Amanita.VScripting
                 // We want it set to one more than the max ID currently in use, so that the next
                 // variable added will get an ID that is not already taken.
                 byte maxIdInUse = 0;
-                foreach (var elem in lookup.Values)
+                foreach (var elem in _lookup.Values)
                 {
                     if (elem.ItemId > maxIdInUse)
                     {
                         maxIdInUse = elem.ItemId;
                     }
                 }
-                nextValidVarID = (byte)(maxIdInUse + 1);
+                _nextValidVarID = (byte)(maxIdInUse + 1);
             }
 
             EnsureValidIds();
@@ -154,7 +162,7 @@ namespace AtMycelia.Amanita.VScripting
                     {
                         continue;
                     }
-                    muscariables.Add(muscariable);
+                    _muscariables.Add(muscariable);
                     addedAny = true;
                 }
             }
@@ -169,13 +177,13 @@ namespace AtMycelia.Amanita.VScripting
                         continue;
                     }
 
-                    if (legacyVar.ItemId == Muscariable.InvalidID || lookup.ContainsKey(legacyVar.ItemId))
+                    if (legacyVar.ItemId == Muscariable.InvalidID || _lookup.ContainsKey(legacyVar.ItemId))
                     {
                         legacyVar.ItemId = NextValidVarID();
                     }
 
-                    legacyVariables.Add(legacyVar);
-                    lookup[legacyVar.ItemId] = legacyVar;
+                    _legacyVariables.Add(legacyVar);
+                    _lookup[legacyVar.ItemId] = legacyVar;
                     addedAny = true;
                 }
             }
@@ -193,7 +201,7 @@ namespace AtMycelia.Amanita.VScripting
                 return false;
             }
 
-            foreach (var existing in lookup.Values)
+            foreach (var existing in _lookup.Values)
             {
                 if (ReferenceEquals(existing, variable))
                 {
@@ -225,8 +233,8 @@ namespace AtMycelia.Amanita.VScripting
         public Muscariable AddAsMuscari(IVariable toAdd)
         {
             EnsureInitialized();
-            bool alreadyRegistered = legacyVariables.ContainsReference(toAdd) ||
-                muscariables.ContainsReference(toAdd);
+            bool alreadyRegistered = _legacyVariables.ContainsReference(toAdd) ||
+                _muscariables.ContainsReference(toAdd);
             if (alreadyRegistered)
             {
                 return null;
@@ -237,6 +245,7 @@ namespace AtMycelia.Amanita.VScripting
             return muscari;
         }
 
+
         /// <summary>
         /// Adds the given Muscariable to the caches, ensuring it has a valid ID and key, 
         /// and setting its owner and parent flowchart references. Also sends the signal
@@ -246,7 +255,7 @@ namespace AtMycelia.Amanita.VScripting
         {
             UpdateNextValidId();
             #region Ensure valid id and key
-            bool duplicateId = lookup.ContainsKey(toAdd.ItemId);
+            bool duplicateId = _lookup.ContainsKey(toAdd.ItemId);
             if (toAdd.ItemId == Muscariable.InvalidID)
             {
                 toAdd.ItemId = NextValidVarID();
@@ -262,7 +271,7 @@ namespace AtMycelia.Amanita.VScripting
 
             #region Establish ownership and parent flowchart references
             toAdd.ParentFlowchart = VarOwner as Flowchart;
-            toAdd.Owner = VarOwner;
+            toAdd.Owner = _varOwner;
             #endregion
 
             AddToCachesThenSignal(toAdd);
@@ -270,26 +279,38 @@ namespace AtMycelia.Amanita.VScripting
 
         private void AddToCachesThenSignal(IVariable toAdd)
         {
+            PreVariableAdded(toAdd);
             if (toAdd is Muscariable)
             {
-                muscariables.Add(toAdd as Muscariable);
+                _muscariables.Add(toAdd as Muscariable);
             }
             else if (toAdd is Variable)
             {
-                legacyVariables.Add(toAdd as Variable);
+                _legacyVariables.Add(toAdd as Variable);
             }
-            lookup[toAdd.ItemId] = toAdd;
+            _lookup[toAdd.ItemId] = toAdd;
             VariableAdded(toAdd);
         }
 
+        public event Action<IVariable> PreVariableAdded = delegate { };
         public event Action<IVariable> VariableAdded = delegate { };
 
+        /// <summary>
+        /// Meant to be called through Unity's OnEnable message. This function ensures that 
+        /// all variables have valid IDs, and initializes them with their start values if 
+        /// the application is playing. It also registers the manager with the 
+        /// SceneObjectReferenceRestorer so that it can restore references for this manager 
+        /// when scenes are loaded. This is important because if the manager is disabled, 
+        /// it may be in a state where it can't properly restore references 
+        /// (for example, if it's been destroyed but not yet removed from the scene), 
+        /// and trying to do so could cause errors.
+        /// </summary>
         public void OnEnable()
         {
-            if (VarOwner is UnityObj ownerUnityObj && Application.IsPlaying(ownerUnityObj))
+            if (VarOwner is UnityObj ownerUnityObj)
             {
                 EnsureValidIds();
-                foreach (var elem in lookup.Values)
+                foreach (var elem in _lookup.Values)
                 {
                     elem.Init(elem.BoxedValue);
                 }
@@ -297,13 +318,27 @@ namespace AtMycelia.Amanita.VScripting
             Refresh();
         }
 
+        /// <summary>
+        /// Meant to be called through Unity's OnDisable message. This function unregisters the 
+        /// manager from the SceneObjectReferenceRestorer so that it won't try to restore 
+        /// references for this manager while it's disabled. This is important because if 
+        /// the manager is disabled, it may be in a state where it can't properly restore 
+        /// references (for example, if it's been destroyed but not yet removed from the 
+        /// scene), and trying to do so could cause errors.
+        /// </summary>
+        public void OnDisable()
+        {
+            // No-op for now, but we might want to add some cleanup logic here in the
+            // future, and if we do, this is where it should go.
+        }
+
         public void Refresh()
         {
-            lookup ??= new Dictionary<byte, IVariable>();
-            lookup.Clear();
-            legacyVariables.RemoveAll(elem => elem == null);
-            RegisterIntoVarLookup(muscariables);
-            RegisterIntoVarLookup(legacyVariables);
+            RemoveAll(elem => elem == null);
+            _lookup ??= new Dictionary<byte, IVariable>();
+            _lookup.Clear();
+            RegisterIntoVarLookup(_muscariables);
+            RegisterIntoVarLookup(_legacyVariables);
             EnsureValidIds();
 
 #if UNITY_EDITOR
@@ -313,7 +348,10 @@ namespace AtMycelia.Amanita.VScripting
             }
             EditorUtility.SetDirty(this.VarOwner as UnityObj);
 #endif
+            Refreshed();
         }
+
+        public event Action Refreshed = delegate { };
 
         private void RegisterIntoVarLookup(IEnumerable<IVariable> varsToRegister)
         {
@@ -323,12 +361,12 @@ namespace AtMycelia.Amanita.VScripting
                 {
                     elem.ItemId = NextValidVarID();
                 }
-                else if (lookup.ContainsKey(elem.ItemId))
+                else if (_lookup.ContainsKey(elem.ItemId))
                 {
                     Debug.LogWarning($"Duplicate variable ID {elem.ItemId} found for {_varOwner?.Name}. Reassigning.");
                     elem.ItemId = NextValidVarID();
                 }
-                lookup[elem.ItemId] = elem;
+                _lookup[elem.ItemId] = elem;
             }
         }
 
@@ -337,7 +375,7 @@ namespace AtMycelia.Amanita.VScripting
         /// </summary>
         public void EnsureValidIds()
         {
-            var idGroups = lookup.Values.GroupBy(elem => elem.ItemId);
+            var idGroups = _lookup.Values.GroupBy(elem => elem.ItemId);
             foreach (var group in idGroups)
             {
                 if (group.Count() > 1)
@@ -353,12 +391,12 @@ namespace AtMycelia.Amanita.VScripting
 
         private byte NextValidVarID()
         {
-            byte toReturn = nextValidVarID;
-            nextValidVarID++;
+            byte toReturn = _nextValidVarID;
+            _nextValidVarID++;
             return toReturn;
         }
 
-        
+
 
         public IReadOnlyList<IVariable> Variables
         {
@@ -368,7 +406,7 @@ namespace AtMycelia.Amanita.VScripting
                 // we'll need to Refresh every time we want to get the variables to make sure the
                 // lookup is populated and thus that the list we return is complete.
                 Refresh();
-                return lookup.Values.ToList();
+                return _lookup.Values.ToList();
             }
         }
 
@@ -381,11 +419,12 @@ namespace AtMycelia.Amanita.VScripting
             }
             set
             {
-                if (_varOwner != value)
+                if (!ReferenceEquals(_varOwner, value))
                 {
                     _varOwner = value;
                     _varOwner ??= this;
-                    foreach (var elem in lookup.Values)
+
+                    foreach (var elem in _lookup.Values)
                     {
                         if (elem is not Variable)
                         {
@@ -400,7 +439,7 @@ namespace AtMycelia.Amanita.VScripting
 
         public void RemoveVariable(IVariable toRemove)
         {
-            bool alreadyRegistered = lookup.Values.Contains(toRemove);
+            bool alreadyRegistered = _lookup.Values.Contains(toRemove);
             if (!alreadyRegistered)
             {
                 return;
@@ -409,42 +448,47 @@ namespace AtMycelia.Amanita.VScripting
             RemoveFromCachesThenSignal(toRemove);
         }
 
+        public void RemoveVariable(string name, StringComparison strCompare = StringComparison.Ordinal)
+        {
+            var toRemove = GetVariable(name, strCompare);
+            if (toRemove != null)
+            {
+                RemoveVariable(toRemove);
+            }
+        }
+
         public IVariable GetVariable(byte id)
         {
-            if (lookup == null || lookup.Count == 0)
+            if (_lookup == null || _lookup.Count == 0)
             {
                 Refresh();
             }
 
-            lookup.TryGetValue(id, out IVariable result);
+            _lookup.TryGetValue(id, out IVariable result);
             return result;
         }
 
         public bool Contains(IVariable var)
         {
-            return lookup.TryGetValue(var.ItemId, out IVariable found) && found == var;
+            return _lookup.TryGetValue(var.ItemId, out IVariable found) && found == var;
         }
 
         public void ResetAll()
         {
-            foreach (var variable in lookup.Values)
+            foreach (var variable in _lookup.Values)
             {
                 variable.OnReset();
             }
         }
 
-        public IVariable GetVariableByName(string name, StringComparison strCompare = StringComparison.Ordinal)
-        {
-            var result = lookup.Values.FirstOrDefault(var => var.Key.Equals(name, strCompare));
-            return result;
-        }
+
 
         /// <summary>
         /// Gets a variable by name, returning it as the specified generic type if it is of that type. Null otherwise.
         /// </summary>
         public IVariable<TContent> GetVariable<TContent>(string name, StringComparison strCompare = StringComparison.Ordinal)
         {
-            var result = lookup.Values.FirstOrDefault(var => var.Key.Equals(name, strCompare));
+            var result = _lookup.Values.FirstOrDefault(var => var.Key.Equals(name, strCompare));
             return result as IVariable<TContent>;
         }
 
@@ -470,31 +514,72 @@ namespace AtMycelia.Amanita.VScripting
 
         public T GetVariable<T>(byte itemId) where T : class, IVariable
         {
-            lookup.TryGetValue(itemId, out IVariable found);
+            _lookup.TryGetValue(itemId, out IVariable found);
             T result = found as T;
             return result;
         }
 
-        public T GetVarByName<T>(string name, StringComparison strCompare = StringComparison.Ordinal) where T : class, IVariable
-        {
-            return lookup.Values
-                .OfType<T>()
-                .FirstOrDefault(var => var.Key.Equals(name, strCompare));
-        }
+        //public T GetVariable<T>(string name, StringComparison strCompare = StringComparison.Ordinal) where T : class, IVariable
+        //{
+        //    return _lookup.Values
+        //        .OfType<T>()
+        //        .FirstOrDefault(var => var.Key.Equals(name, strCompare));
+        //}
 
-        public IList<T> GetMultiVariables<T>(StringComparison strCompare = StringComparison.Ordinal) where T : IVariable
+
+        /// <summary>
+        /// Returns a list of the variables this manager has that are of the specified variable
+        /// type. If you just want to get variables of a certain content type, use 
+        /// GetMultiVariablesOfContentType instead.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public IList<T> GetMultiVariablesOfType<T>(bool strict = false) where T : IVariable
         {
-            return lookup.Values
+            var result = GetMultiVariablesOfType(typeof(T), strict)
                 .OfType<T>()
                 .ToList();
+            return result;
         }
 
-        public IList<T> GetVariablesOfScope<T>(VariableScope scope) where T : IVariable
+        public IList<IVariable> GetMultiVariablesOfType(Type varType, bool strict = false)
         {
-            return lookup.Values
-                .OfType<T>()
-                .Where(var => var.Scope == scope)
-                .ToList();
+            var result = _lookup.Values.Where(IsMatch).ToList();
+            bool IsMatch(IVariable var)
+            {
+                if (strict)
+                {
+                    return var.GetType() == varType;
+                }
+                else
+                {
+                    return varType.IsAssignableFrom(var.GetType());
+                }
+            }
+            return result;
+        }
+
+        public IList<T> GetMultiVariablesOfContentType<T>()
+        {
+            var result = GetMultiVariablesOfContentType(typeof(T)).OfType<T>().ToList();
+            return result;
+        }
+
+        public IList<IVariable> GetMultiVariablesOfContentType(Type contentType, bool strict = false)
+        {
+            return _lookup.Values.Where(IsMatch).ToList();
+
+            bool IsMatch(IVariable var)
+            {
+                if (strict)
+                {
+                    return var.ContentType == contentType;
+                }
+                else
+                {
+                    return contentType.IsAssignableFrom(var.ContentType);
+                }
+            }
         }
 
         public TVarType AddNewMuscari<TValueType, TVarType>(string key = "", TValueType initValue = default,
@@ -511,16 +596,29 @@ namespace AtMycelia.Amanita.VScripting
 
         public byte NextId { get; }
 
-        public string UniqueId => VarOwner.UniqueId;
+        public string UniqueId
+        {
+            get
+            {
+                if (VarOwner != this)
+                {
+                    return VarOwner.UniqueId;
+                }
+                else
+                {
+                    return string.Empty;
+                }
+            }
+        }
 
-        public int VariableCount => lookup.Count;
+        public int VariableCount => _lookup.Count;
 
         IReadOnlyList<Muscariable> IVariableSource<Muscariable>.Variables => Variables.Cast<Muscariable>().ToList();
 
         public string Name
-        { 
-            get => _varOwner.Name; 
-            set => _varOwner.Name = value; 
+        {
+            get => _varOwner.Name;
+            set => _varOwner.Name = value;
         }
 
         public IVariable<TValHeld> AddNewVariable<TValHeld>(string key,
@@ -529,7 +627,7 @@ namespace AtMycelia.Amanita.VScripting
         {
             EnsureInitialized();
             Type valueType = typeof(TValHeld);
-            
+
             IVariable<TValHeld> newVar = VariableFactory.CreateByContentType(valueType) as IVariable<TValHeld>;
 
             newVar.Key = UniqueKeyGenerator.GetUniqueKeyFor(key, (IList<IVariable>)Variables);
@@ -577,42 +675,85 @@ namespace AtMycelia.Amanita.VScripting
         private void UpdateNextValidId()
         {
             byte maxIdInUse = 0;
-            foreach (var elem in lookup.Values)
+            foreach (var elem in _lookup.Values)
             {
                 if (elem.ItemId > maxIdInUse)
                 {
                     maxIdInUse = elem.ItemId;
                 }
             }
-            nextValidVarID = (byte)(maxIdInUse + 1);
+            _nextValidVarID = (byte)(maxIdInUse + 1);
         }
 
 
         public T GetVariableOfType<T>() where T : class, IVariable
         {
-            var result = lookup.Values.OfType<T>().FirstOrDefault();
+            var result = _lookup.Values.OfType<T>().FirstOrDefault();
             return result;
         }
 
-        IVariable IVariableSource.GetVariableByName(string name, StringComparison strCompare)
+        IVariable IVariableSource.GetVariable(string name, StringComparison strCompare)
         {
-            return GetVariableByName(name, strCompare);
+            return GetVariable(name, strCompare);
         }
 
-        public T GetVariableOfTypeByName<T>(string name, StringComparison strCompare = StringComparison.Ordinal) where T : class, IVariable
+        public IVariable GetVariable(string name, StringComparison strCompare = StringComparison.Ordinal)
         {
-            return GetVariableOfTypeByName(typeof(T), name, strCompare) as T;
+            var result = _lookup.Values.FirstOrDefault(var => var.Key.Equals(name, strCompare));
+            return result;
         }
 
-        public IVariable GetVariableOfTypeByName(Type type, string name, StringComparison strCompare = StringComparison.Ordinal)
+        public T GetVariableOfType<T>(string name, StringComparison strCompare = StringComparison.Ordinal) where T : class, IVariable
+        {
+            return GetVariableOfType(typeof(T), name, strCompare) as T;
+        }
+
+        public IVariable GetVariableOfType(Type type, string name, StringComparison strCompare = StringComparison.Ordinal)
         {
             IVariable result = null;
-            var found = GetVariableByName(name, strCompare);
+            var found = GetVariable(name, strCompare);
             if (found != null && type.IsAssignableFrom(found.GetType()))
             {
                 result = found;
             }
             return result;
+        }
+
+        public void ReorderVariables(IList<IVariable> newlyOrderedVars)
+        {
+            var whatWeGot = _lookup.Values.ToList();
+            if (!newlyOrderedVars.SameContentsAs(whatWeGot))
+            {
+                Debug.LogWarning("Attempted to reorder variables with a list that doesn't have the same " +
+                    "contents as the current variables. Reorder aborted.");
+                return;
+            }
+            Clear();
+            AddMultiVars(newlyOrderedVars);
+            Reordered();
+        }
+
+        public event Action Reordered = delegate { };
+
+        public void OnPlayModeStateChanged(PlayModeStateChange change)
+        {
+            if (change == PlayModeStateChange.ExitingEditMode)
+            {
+                foreach (var variable in _lookup.Values)
+                {
+                    variable.Init(variable.BoxedValue);
+                    // ^To accomodate any changes that might have been made to the variables while in edit mode, since those changes won't be serialized and thus would be lost when entering play mode if we didn't do this.
+                }
+            }
+        }
+
+        public void RemoveAll(Predicate<IVariable> match)
+        {
+            var toRemove = _lookup.Values.Where(var => match(var)).ToList();
+            foreach (var elem in toRemove)
+            {
+                RemoveVariable(elem);
+            }
         }
     }
 }

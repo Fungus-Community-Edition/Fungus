@@ -43,7 +43,7 @@ namespace AtMycelia.SaveSys.VScripting
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(_slotIndex);
+            _variableDataCache.Add(_slotIndex);
         }
 
         public override string GetSummary()

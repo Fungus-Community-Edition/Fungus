@@ -334,6 +334,8 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
         public int RowCount => varsToDisplay.Count;
         public IReadOnlyList<VariableRow> Rows => _activeRows.Values.ToList();
 
+        IReadOnlyList<IVariable> IVariableListView.VarsToDisplay => VarsToDisplay;
+
         public VariableRow RowAtIndex(int index)
         {
             if ((uint)index >= (uint)varsToDisplay.Count) return null;
@@ -572,6 +574,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
         IReadOnlyList<VariableRow> Rows { get; }
         bool Contains(VariableRow row);
         event Action<IList<IVariable>> OrderChanged;
+        IReadOnlyList<IVariable> VarsToDisplay { get; }
     }
 
     public class VariableListViewInitArgs

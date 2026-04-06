@@ -30,6 +30,7 @@ GameObject:
   - component: {fileID: 2181259217738459905}
   - component: {fileID: 4609871670555540586}
   - component: {fileID: 177005780822076029}
+  - component: {fileID: 3443296570077136578}
   m_Layer: 0
   m_Name: FlowTest
   m_TagString: Untagged
@@ -64,13 +65,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a334fe2ffb574b3583ff3b18b4792d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  variableManager:
-    muscariables: []
-    legacyVariables: []
-    nextValidVarID: 1
-    isInitted: 0
+  _varManager: {fileID: 3443296570077136578}
+  legacyVariableManager:
+    _muscariables: []
+    _legacyVariables: []
+    _nextValidVarID: 1
+    _isInitted: 0
   version: 1
-  legacyVariables:
+  _legacyVariables:
   - {fileID: 1899702518119212923}
   _oldMuscariables: []
   description: 
@@ -375,6 +377,7 @@ MonoBehaviour:
   key: Var
   itemID: 1
   oldItemID: 0
+  _owner: {fileID: 3850397277397727160}
   value: 1
 --- !u!114 &3087442754994311981
 MonoBehaviour:
@@ -638,8 +641,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 7
   indentLevel: 1
-  setOperator: 0
-  anyVar:
+  _setOperator: 0
+  _anyVar:
     varRef:
       itemId: 0
       owningSource: {fileID: 0}
@@ -1535,3 +1538,25 @@ MonoBehaviour:
     value: 
     stringRef: {fileID: 0}
     stringVal: 
+--- !u!114 &3443296570077136578
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2758424169659455326}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3326e6921119d6f4fb53c4243fb91015, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _unityObjOwner: {fileID: 3850397277397727160}
+  _variableManager:
+    _muscariables: []
+    _legacyVariables: []
+    _nextValidVarID: 1
+    _isInitted: 0
+  _cachedFlowchart: {fileID: 0}
+  references:
+    version: 2
+    RefIds: []

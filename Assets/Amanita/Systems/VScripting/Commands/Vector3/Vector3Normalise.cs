@@ -17,8 +17,8 @@ namespace AtMycelia.Amanita.VScripting
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(vec3In);
-            variableDataCache.Add(vec3Out);
+            _variableDataCache.Add(vec3In);
+            _variableDataCache.Add(vec3Out);
         }
 
         public override void OnEnter()

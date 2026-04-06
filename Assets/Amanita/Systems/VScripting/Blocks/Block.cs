@@ -292,6 +292,7 @@ namespace AtMycelia.Amanita.VScripting
                 }
 
                 // Skip disabled commands, comments and labels
+                Debug.Log($"IS command list valid: " + (commandList != null) + $", count: " + (commandList != null ? commandList.Count.ToString() : "null"));
                 while (i < commandList.Count &&
                       (!commandList[i].enabled || 
                         commandList[i].GetType() == typeof(Comment) ||

@@ -48,6 +48,13 @@ namespace AtMycelia.Amanita.VScripting
         [SerializeField] [HideInInspector] private ushort targetBlockId;
         public ushort TargetBlockId => targetBlockId;
 
+        protected override void RefreshVariableDataCache()
+        {
+            base.RefreshVariableDataCache();
+            _variableDataCache.Add(startLabel);
+            _variableDataCache.Add(startIndex);
+        }
+
         public override void OnPreCut()
         {
             base.OnPreCut();

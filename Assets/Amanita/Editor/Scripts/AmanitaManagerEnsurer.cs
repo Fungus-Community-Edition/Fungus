@@ -3,9 +3,8 @@ using AtMycelia.Amanita.VScripting;
 using System;
 using UnityEditor;
 using UnityEditor.SceneManagement;
-using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityObj = UnityEngine.Object;
+using UnityEngine;
 
 namespace AtMycelia.Amanita
 {
@@ -16,6 +15,12 @@ namespace AtMycelia.Amanita
         {
             AssemblyReloadEvents.afterAssemblyReload += OnAfterAssemblyReload;
             EditorSceneManager.sceneOpened += OnSceneOpened;
+            SceneManager.sceneLoaded += OnSceneLoaded;
+        }
+
+        private static void OnSceneLoaded(Scene arg0, LoadSceneMode arg1)
+        {
+            EnsureAmanitaManagerInScene();
         }
 
         private static void OnSceneOpened(Scene scene, OpenSceneMode mode)
@@ -25,12 +30,12 @@ namespace AtMycelia.Amanita
 
         private static void EnsureAmanitaManagerInScene()
         {
-            // But only if there's at least one Flowchart in it already.
-            Flowchart fc = UnityObj.FindFirstObjectByType<Flowchart>();
-            if (fc != null && AmanitaManager.S == null)
+            if (!Application.isPlaying)
             {
-                AmanitaManager.EnsureExists();
+                return;
             }
+
+            AmanitaBootstrapper.EnsureAmanitaReady();
         }
 
         private static void OnAfterAssemblyReload()

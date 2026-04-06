@@ -67,9 +67,9 @@ namespace AtMycelia.Amanita.VScripting
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(_animator);
-            variableDataCache.Add(_parameterName);
-            variableDataCache.Add(value);
+            _variableDataCache.Add(_animator);
+            _variableDataCache.Add(_parameterName);
+            _variableDataCache.Add(value);
         }
 
         protected override void OnEnable()

@@ -136,6 +136,7 @@ GameObject:
   - component: {fileID: 349764839}
   - component: {fileID: 349764841}
   - component: {fileID: 349764840}
+  - component: {fileID: 349764842}
   m_Layer: 0
   m_Name: ScreenFades
   m_TagString: Untagged
@@ -155,23 +156,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a334fe2ffb574b3583ff3b18b4792d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  variableManager:
-    muscariables:
-    - rid: 6177420795523367173
-    - rid: 6177420795523367174
-    - rid: 6177420795523367175
-    - rid: 6177420795523367176
-    legacyVariables:
-    - {fileID: 349764836}
-    nextValidVarID: 6
-    isInitted: 1
+  _varManager: {fileID: 349764842}
+  legacyVariableManager:
+    _muscariables: []
+    _legacyVariables: []
+    _nextValidVarID: 6
+    _isInitted: 1
   version: 1
-  legacyVariables: []
+  _legacyVariables: []
   _oldMuscariables: []
   description: 
   uiModel:
-    _selectedBlocks: []
-    _selectedCommands: []
+    _selectedBlocks:
+    - {fileID: 349764837}
+    _selectedCommands:
+    - {fileID: 349764841}
     _owner: {fileID: 349764832}
     <ScrollPos>k__BackingField: {x: 0, y: 2.7272727}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
@@ -210,39 +209,7 @@ MonoBehaviour:
   uniqueId: 3aa29c02-1e8c-424a-b6ae-fde9c9bf8509
   references:
     version: 2
-    RefIds:
-    - rid: 6177420795523367173
-      type: {class: FloatMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
-      data:
-        scope: 0
-        key: out
-        itemID: 2
-        value: 1
-        startValue: 0
-    - rid: 6177420795523367174
-      type: {class: FloatMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
-      data:
-        scope: 0
-        key: in
-        itemID: 3
-        value: 0
-        startValue: 0
-    - rid: 6177420795523367175
-      type: {class: ColorMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
-      data:
-        scope: 0
-        key: black
-        itemID: 4
-        value: {r: 0, g: 0, b: 0, a: 1}
-        startValue: {r: 0, g: 0, b: 0, a: 0}
-    - rid: 6177420795523367176
-      type: {class: ColorMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
-      data:
-        scope: 0
-        key: purple
-        itemID: 5
-        value: {r: 0.79593945, g: 0, b: 1, a: 1}
-        startValue: {r: 0, g: 0, b: 0, a: 0}
+    RefIds: []
 --- !u!4 &349764834
 Transform:
   m_ObjectHideFlags: 0
@@ -280,6 +247,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: 3
     floatRef: {fileID: 0}
+    floatVal: 0
   targetAlpha:
     backingVarRef:
       itemId: 2
@@ -288,6 +256,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: 1
     floatRef: {fileID: 0}
+    floatVal: 0
   waitUntilFinished:
     backingVarRef:
       itemId: 0
@@ -305,6 +274,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {r: 0, g: 0, b: 0, a: 0}
     colorRef: {fileID: 0}
+    colorVal: {r: 0, g: 0, b: 0, a: 0}
   fadeTexture: {fileID: 0}
   fadeTweener: {fileID: 0}
   _oldDuration: -1
@@ -328,6 +298,7 @@ MonoBehaviour:
   key: dur
   itemID: 1
   oldItemID: 0
+  _owner: {fileID: 349764833}
   value: 3
 --- !u!114 &349764837
 MonoBehaviour:
@@ -398,6 +369,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: 3
     floatRef: {fileID: 0}
+    floatVal: 0
   targetAlpha:
     backingVarRef:
       itemId: 3
@@ -406,6 +378,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: 0
     floatRef: {fileID: 0}
+    floatVal: 0
   waitUntilFinished:
     backingVarRef:
       itemId: 0
@@ -423,6 +396,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {r: 0, g: 0, b: 0, a: 0}
     colorRef: {fileID: 0}
+    colorVal: {r: 0, g: 0, b: 0, a: 0}
   fadeTexture: {fileID: 0}
   fadeTweener: {fileID: 0}
   _oldDuration: -1
@@ -452,6 +426,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: 3
     floatRef: {fileID: 0}
+    floatVal: 0
   targetAlpha:
     backingVarRef:
       itemId: 2
@@ -460,6 +435,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: 0
     floatRef: {fileID: 0}
+    floatVal: 0
   waitUntilFinished:
     backingVarRef:
       itemId: 0
@@ -477,6 +453,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {r: 0, g: 0, b: 0, a: 0}
     colorRef: {fileID: 0}
+    colorVal: {r: 0, g: 0, b: 0, a: 0}
   fadeTexture: {fileID: 0}
   fadeTweener: {fileID: 0}
   _oldDuration: -1
@@ -506,6 +483,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: 3
     floatRef: {fileID: 0}
+    floatVal: 0
   targetAlpha:
     backingVarRef:
       itemId: 3
@@ -514,6 +492,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: 0
     floatRef: {fileID: 0}
+    floatVal: 0
   waitUntilFinished:
     backingVarRef:
       itemId: 0
@@ -531,6 +510,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {r: 0, g: 0, b: 0, a: 0}
     colorRef: {fileID: 0}
+    colorVal: {r: 0, g: 0, b: 0, a: 0}
   fadeTexture: {fileID: 0}
   fadeTweener: {fileID: 0}
   _oldDuration: -1
@@ -538,6 +518,65 @@ MonoBehaviour:
   _oldWaitUntilFinished: 1
   _oldFadeColor: {r: 0, g: 0, b: 0, a: 0}
   _migrated: 1
+--- !u!114 &349764842
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 349764832}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3326e6921119d6f4fb53c4243fb91015, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _unityObjOwner: {fileID: 349764833}
+  _variableManager:
+    _muscariables:
+    - rid: 3688519675510521925
+    - rid: 3688519675510521926
+    - rid: 3688519675510521927
+    - rid: 3688519675510521928
+    _legacyVariables:
+    - {fileID: 349764836}
+    _nextValidVarID: 1
+    _isInitted: 1
+  _cachedFlowchart: {fileID: 349764833}
+  references:
+    version: 2
+    RefIds:
+    - rid: 3688519675510521925
+      type: {class: FloatMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      data:
+        scope: 0
+        key: out
+        itemID: 2
+        value: 1
+        startValue: 0
+    - rid: 3688519675510521926
+      type: {class: FloatMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      data:
+        scope: 0
+        key: in
+        itemID: 3
+        value: 0
+        startValue: 0
+    - rid: 3688519675510521927
+      type: {class: ColorMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      data:
+        scope: 0
+        key: black
+        itemID: 4
+        value: {r: 0, g: 0, b: 0, a: 1}
+        startValue: {r: 0, g: 0, b: 0, a: 0}
+    - rid: 3688519675510521928
+      type: {class: ColorMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      data:
+        scope: 0
+        key: purple
+        itemID: 5
+        value: {r: 0.79593945, g: 0, b: 1, a: 1}
+        startValue: {r: 0, g: 0, b: 0, a: 0}
 --- !u!1 &709131380
 GameObject:
   m_ObjectHideFlags: 0

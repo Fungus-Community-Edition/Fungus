@@ -17,5 +17,6 @@ namespace AtMycelia.Amanita.EditorUtils
         public static Action<VariableRow, string> KeyFieldChanged = delegate { };
         public static Action<VariableRow, VariableScope> ScopeFieldChanged = delegate { };
         public static Action<VariableRow, object> ValueFieldChanged = delegate { };
+
     }
 }

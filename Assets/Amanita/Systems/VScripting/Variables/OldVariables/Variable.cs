@@ -18,6 +18,7 @@ namespace AtMycelia.Amanita.VScripting
         Private,
         /// <summary> Can be accessed from any command in any Flowchart. </summary>
         Public,
+        Global
     }
 
     /// <summary>
@@ -161,8 +162,7 @@ namespace AtMycelia.Amanita.VScripting
         {
             get
             {
-                owner ??= GetComponent<Flowchart>();
-                return owner;
+                return _owner;
             }
             set
             {
@@ -175,10 +175,10 @@ namespace AtMycelia.Amanita.VScripting
 
         protected virtual void OnValidate()
         {
-            owner ??= GetComponent<Flowchart>();
+            _owner ??= GetComponent<Flowchart>();
         }
 
-        protected IVariableSource owner;
+        [SerializeField] [HideInInspector] protected Flowchart _owner;
 
         protected virtual void OnEnable()
         {
@@ -188,11 +188,12 @@ namespace AtMycelia.Amanita.VScripting
                 itemID = (byte)oldItemID;
                 oldItemID = 0;
             }
+
         }
 
         protected virtual void Awake()
         {
-            owner ??= GetComponent<Flowchart>();
+            _owner ??= GetComponent<Flowchart>();
         }
 
     }

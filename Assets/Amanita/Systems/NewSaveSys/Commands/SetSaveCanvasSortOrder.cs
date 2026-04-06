@@ -35,7 +35,7 @@ namespace AtMycelia.SaveSys.VScripting
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(_sortOrder);
+            _variableDataCache.Add(_sortOrder);
         }
 
         public override string GetSummary()

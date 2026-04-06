@@ -30,7 +30,7 @@ namespace AtMycelia.Amanita.EditorUtils
             DefaultTweenAdapter adaptor = DefaultAmanitaAssets.TweenAdapter;
             if (adaptor == null)
             {
-                string pathToContainingFolder = "AtMycelia/Amanita"; // Relative to Resources
+                string pathToContainingFolder = "AtMycelia/Tweening"; // Relative to Resources
                 adaptor = SOUtils.EnsureSOExists<DefaultTweenAdapter>(pathToContainingFolder,
                     "DefaultTweenAdapter");
             }

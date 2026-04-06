@@ -28,8 +28,8 @@ namespace AtMycelia.Amanita.VScripting.Commands
         protected override void RefreshVariableCache()
         {
             base.RefreshVariableCache();
-            variableDataCache.Add(waitUntilFinished);
-            variableDataCache.Add(duration);
+            _variableDataCache.Add(waitUntilFinished);
+            _variableDataCache.Add(duration);
         }
 
         protected abstract void ValidateTweeners();

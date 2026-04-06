@@ -3,6 +3,7 @@ using AtMycelia.Amanita.VScripting;
 using System.Threading.Tasks;
 using System.Collections;
 using UnityEditor;
+using UnityEngine.Serialization;
 
 namespace AtMycelia.SaveSys.VScripting
 {
@@ -11,23 +12,27 @@ namespace AtMycelia.SaveSys.VScripting
         "As it says on the tin. Note that the lowest valid slot index is 1.")]
     public class SaveToSlot : Command
     {
-        [SerializeField] protected IntegerData slotIndex = new IntegerData(1);
+        [FormerlySerializedAs("slotIndex")]
+        [SerializeField] protected IntegerData _slotIndex = new IntegerData(1);
         [Tooltip("If true, this will save to the selected slot instead of the specified slot index.")]
-        [SerializeField] protected BooleanData saveToSelected = new BooleanData(false);
-        [SerializeField] protected BooleanData waitUntilFinished = new BooleanData(true);
+        [FormerlySerializedAs("saveToSelected")]
+        [SerializeField] protected BooleanData _saveToSelected = new BooleanData(false);
+        [FormerlySerializedAs("waitUntilFinished")]
+        [SerializeField] protected BooleanData _waitUntilFinished = new BooleanData(true);
         [Tooltip("Before the save process starts, wait this many seconds. This can be useful if you " +
             "want to ensure that some other Command is executing at the time of saving.")]
-        [SerializeField] private FloatData delayBeforeSave = new FloatData(0);
+        [FormerlySerializedAs("delayBeforeSave")]
+        [SerializeField] private FloatData _delayBeforeSave = new FloatData(0);
 
         public override bool ReexecutableOnLoad => false;
 
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(slotIndex);
-            variableDataCache.Add(saveToSelected);
-            variableDataCache.Add(waitUntilFinished);
-            variableDataCache.Add(delayBeforeSave);
+            _variableDataCache.Add(_slotIndex);
+            _variableDataCache.Add(_saveToSelected);
+            _variableDataCache.Add(_waitUntilFinished);
+            _variableDataCache.Add(_delayBeforeSave);
         }
 
         protected override void OnEnable()
@@ -73,7 +78,7 @@ namespace AtMycelia.SaveSys.VScripting
             int DecideSlotIndex()
             {
                 int result = -1;
-                if (saveToSelected)
+                if (_saveToSelected)
                 {
                     // Find the selected slot
                     bool nothingSelected = selectedSlotIndex < 0;
@@ -92,7 +97,7 @@ namespace AtMycelia.SaveSys.VScripting
                 }
                 else
                 {
-                    result = slotIndex.Value;
+                    result = _slotIndex.Value;
                 }
 
                 return result;
@@ -124,35 +129,35 @@ namespace AtMycelia.SaveSys.VScripting
                 yield break;
             }
 
-            if (!waitUntilFinished)
+            if (!_waitUntilFinished)
             {
                 Continue(); // For when we want some other Command to be executing at the time of saving.
             }
 
-            if (delayBeforeSave > 0)
+            if (_delayBeforeSave > 0)
             {
-                yield return new WaitForSeconds(delayBeforeSave);
+                yield return new WaitForSeconds(_delayBeforeSave);
             }
 
             Task saveTask = SaveSystem.SaveToSlotAsync(slotIndexToGoWith);
-            yield return WaitForTask(saveTask, waitUntilFinished);
+            yield return WaitForTask(saveTask, _waitUntilFinished);
         }
 
         public override string GetSummary()
         {
             string result;
-            if (saveToSelected)
+            if (_saveToSelected)
             {
                 result = "Save to Selected Slot";
             }
             else
             {
-                result = $"Save to Slot {slotIndex}";
+                result = $"Save to Slot {_slotIndex}";
             }
             
-            if (delayBeforeSave > 0)
+            if (_delayBeforeSave > 0)
             {
-                result += $" after {delayBeforeSave} seconds";
+                result += $" after {_delayBeforeSave} seconds";
             }
             return result;
         }
@@ -171,22 +176,22 @@ namespace AtMycelia.SaveSys.VScripting
 
         private void ValidateSlotIndex()
         {
-            if (this == null || slotIndex == null || ParentBlock == null)
+            if (this == null || _slotIndex == null || ParentBlock == null)
             {
                 return;
             }
 
-            if (slotIndex.RepresentingVar)
+            if (_slotIndex.RepresentingVar)
             {
                 return;
             }
 
-            if (slotIndex.Value < SaveSystem.minSlotNumber)
+            if (_slotIndex.Value < SaveSystem.minSlotNumber)
             {
                 Debug.LogWarning($"SaveToSlot Command on {gameObject.name}'s " +
                     $"{ParentBlock.BlockName} Block, index {CommandIndex}: slot index cannot be less " +
                     $"than {SaveSystem.minSlotNumber}. Resetting to {SaveSystem.minSlotNumber}.");
-                slotIndex.Value = SaveSystem.minSlotNumber;
+                _slotIndex.Value = SaveSystem.minSlotNumber;
             }
         }
     }

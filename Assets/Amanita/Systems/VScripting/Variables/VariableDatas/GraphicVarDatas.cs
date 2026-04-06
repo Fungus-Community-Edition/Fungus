@@ -111,6 +111,23 @@ namespace AtMycelia.Amanita.VScripting
             }
         }
 
+        protected override void DoBackwardsCompatibility()
+        {
+            if (LegacyVarRef != null)
+            {
+                var oldVarRef = LegacyVarRef;
+                VarRef = oldVarRef;
+                LegacyVarRef = null;
+            }
+
+            if (!string.IsNullOrEmpty(LegacyLiteralVal))
+            {
+                var oldLiteralVal = LegacyLiteralVal;
+                LiteralValue = oldLiteralVal;
+                LegacyLiteralVal = "";
+            }
+        }
+
 
     }
 

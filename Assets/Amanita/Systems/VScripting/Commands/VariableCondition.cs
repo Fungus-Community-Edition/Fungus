@@ -8,8 +8,8 @@ namespace AtMycelia.Amanita.VScripting
     {
         public enum AnyOrAll
         {
-            AnyOf_OR, //Use as a chain of ORs
-            AllOf_AND, //Use as a chain of ANDs
+            AnyOf_OR, // Use as a chain of ORs
+            AllOf_AND, // Use as a chain of ANDs
         }
 
         [Tooltip("Selecting AnyOf will result in true if at least one of the conditions is true. Selecting AllOF will result in true only when all the conditions are true.")]
@@ -96,9 +96,18 @@ namespace AtMycelia.Amanita.VScripting
             StringBuilder summary = new StringBuilder("");
             for (int i = 0; i < conditions.Count; i++)
             {
-                summary.Append(conditions[i].AnyVar.LhsVariable.Key + " " +
-                               VariableUtil.GetCompareOperatorDescription(conditions[i].CompareOperator) + " " +
-                               conditions[i].AnyVar.GetDataDescription());
+                var currentCond = conditions[i];
+                var anyVar = currentCond.AnyVar;
+                var lhsVar = anyVar.LhsVariable;
+                string lhsVarStr = lhsVar != null ? lhsVar.Key : "null";
+                if (lhsVar != null && lhsVar.Owner != null && !ReferenceEquals(lhsVar.Owner, GetFlowchart()))
+                {
+                    lhsVarStr = lhsVar.Owner.Name + "." + lhsVarStr;
+                }
+
+                string opDesc = VariableUtil.GetCompareOperatorDescription(currentCond.CompareOperator);
+                string whatToAppend = $"{lhsVarStr} {opDesc} {anyVar.GetDataDescription()}";
+                summary.Append(whatToAppend);
 
                 if (i < conditions.Count - 1)
                 {
@@ -193,7 +202,13 @@ namespace AtMycelia.Amanita.VScripting
 
         void ISerializationCallbackReceiver.OnAfterDeserialize()
         {
-            
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.delayCall += () =>
+            {
+                if (this == null) return; // In case the object was deleted before the delayed call
+                anyVar?.Refresh();
+            };
+#endif
         }
 
         protected override void OnEnable()

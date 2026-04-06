@@ -1,7 +1,6 @@
 using UnityEngine;
 using AtMycelia.Amanita.VScripting;
 using UnityEngine.Serialization;
-using UnityEditor;
 
 namespace AtMycelia.Amanita.DialogueSys.VScripting
 {
@@ -60,7 +59,6 @@ namespace AtMycelia.Amanita.DialogueSys.VScripting
 
         protected int executionCount;
 
-        #region Public members
 
         /// <summary>
         /// Character that is speaking.
@@ -229,17 +227,7 @@ namespace AtMycelia.Amanita.DialogueSys.VScripting
             sayDialog.Stop();
         }
 
-        #endregion
-
-        protected override void OnEnable()
-        {
-            base.OnEnable();
-            if (oldSetSayDialog != null)
-            {
-                _setSayDialog = new GameObjectData(oldSetSayDialog.gameObject);
-                oldSetSayDialog = null;
-            }
-        }
+        public virtual bool ShowAlways { get { return _showAlways.Value; } }
 
         [SerializeField]
         [HideInInspector]
@@ -298,6 +286,12 @@ namespace AtMycelia.Amanita.DialogueSys.VScripting
         
         void MigrateStuff()
         {
+            if (oldSetSayDialog != null)
+            {
+                _setSayDialog = new GameObjectData(oldSetSayDialog.gameObject);
+                oldSetSayDialog = null;
+            }
+
             if (!string.IsNullOrEmpty(_oldStoryText))
             {
                 _storyText.Value = _oldStoryText;

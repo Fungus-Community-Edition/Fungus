@@ -72,10 +72,10 @@ namespace AtMycelia.Amanita.VScripting
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(booleanParameter);
-            variableDataCache.Add(integerParameter);
-            variableDataCache.Add(floatParameter);
-            variableDataCache.Add(stringParameter);
+            _variableDataCache.Add(booleanParameter);
+            _variableDataCache.Add(integerParameter);
+            _variableDataCache.Add(floatParameter);
+            _variableDataCache.Add(stringParameter);
         }
 
         protected virtual void DoInvoke()

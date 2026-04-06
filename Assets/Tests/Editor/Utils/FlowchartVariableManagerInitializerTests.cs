@@ -17,7 +17,7 @@ namespace VScriptingTests.Utils
         {
             public void SetLegacyVariables(List<Variable> variables)
             {
-                legacyVariables = variables;
+                _legacyVariables = variables;
             }
 
             public void SetOldMuscariables(List<Muscariable> muscariables)
@@ -25,7 +25,7 @@ namespace VScriptingTests.Utils
                 _oldMuscariables = muscariables;
             }
 
-            public IReadOnlyList<Variable> LegacyVariables => legacyVariables;
+            public IReadOnlyList<Variable> LegacyVariables => _legacyVariables;
 
             public IReadOnlyList<Muscariable> OldMuscariables => _oldMuscariables;
         }
