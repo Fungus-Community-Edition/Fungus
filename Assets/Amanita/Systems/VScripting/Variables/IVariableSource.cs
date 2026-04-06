@@ -57,6 +57,15 @@ namespace AtMycelia.Amanita.VScripting
 
     public interface IMuscariableSource : IVariableSource<Muscariable>
     {
+        Muscariable AddNewVariableOfContentType<TContentType>(string k, TContentType defaultVal,
+            VariableScope scope = VariableScope.Private);
+
+        /// <summary>
+        /// Adds a new Muscariable with the given content type and key. 
+        /// The value assigned will be the default while the scope will
+        /// be private. If you want to specify those, use the generic
+        /// version of this method.
+        /// </summary>
         Muscariable AddNewVariableOfContentType(Type contentType, string key);
     }
 

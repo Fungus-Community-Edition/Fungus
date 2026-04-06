@@ -396,8 +396,6 @@ namespace AtMycelia.Amanita.VScripting
             return toReturn;
         }
 
-
-
         public IReadOnlyList<IVariable> Variables
         {
             get
@@ -482,7 +480,6 @@ namespace AtMycelia.Amanita.VScripting
         }
 
 
-
         /// <summary>
         /// Gets a variable by name, returning it as the specified generic type if it is of that type. Null otherwise.
         /// </summary>
@@ -492,10 +489,19 @@ namespace AtMycelia.Amanita.VScripting
             return result as IVariable<TContent>;
         }
 
-        public Muscariable AddNewVariableOfContentType(Type contentType, string key)
+        public Muscariable AddNewVariableOfContentType<T>(string key, T defaultValue, 
+            VariableScope scope = VariableScope.Private)
+        {
+            return AddNewVariableOfContentType(typeof(T), key, defaultValue, scope);
+        }
+
+        public Muscariable AddNewVariableOfContentType(Type contentType, string key, 
+            object defaultValue, VariableScope scope = VariableScope.Private)
         {
             EnsureInitialized();
             Muscariable muscaVar = VariableFactory.CreateByContentType(contentType, null);
+            muscaVar.BoxedValue = defaultValue;
+            muscaVar.Scope = scope;
             Integrate(muscaVar);
             return muscaVar;
         }
@@ -519,21 +525,11 @@ namespace AtMycelia.Amanita.VScripting
             return result;
         }
 
-        //public T GetVariable<T>(string name, StringComparison strCompare = StringComparison.Ordinal) where T : class, IVariable
-        //{
-        //    return _lookup.Values
-        //        .OfType<T>()
-        //        .FirstOrDefault(var => var.Key.Equals(name, strCompare));
-        //}
-
-
         /// <summary>
         /// Returns a list of the variables this manager has that are of the specified variable
         /// type. If you just want to get variables of a certain content type, use 
         /// GetMultiVariablesOfContentType instead.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
         public IList<T> GetMultiVariablesOfType<T>(bool strict = false) where T : IVariable
         {
             var result = GetMultiVariablesOfType(typeof(T), strict)
@@ -754,6 +750,13 @@ namespace AtMycelia.Amanita.VScripting
             {
                 RemoveVariable(elem);
             }
+        }
+
+        public Muscariable AddNewVariableOfContentType(Type contentType, string key)
+        {
+            var result = VariableFactory.CreateByContentType(contentType, null);
+            Integrate(result);
+            return result;
         }
     }
 }

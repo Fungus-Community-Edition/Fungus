@@ -1662,19 +1662,14 @@ namespace AtMycelia.Amanita.VScripting
             _varManager.Clear();
         }
 
-        public Muscariable AddNewVariableOfContentType(Type contentType, string key)
-        {
-            return ((IMuscariableSource)_varManager).AddNewVariableOfContentType(contentType, key);
-        }
-
         public Muscariable AddVariable(Muscariable toAdd)
         {
-            return ((IVariableSource<Muscariable>)_varManager).AddVariable(toAdd);
+            return _varManager.AddVariable(toAdd);
         }
 
         public virtual void RemoveVariable(Muscariable toRemove)
         {
-            ((IVariableSource<Muscariable>)_varManager).RemoveVariable(toRemove);
+            _varManager.RemoveVariable(toRemove);
         }
 
         T IVariableSource.GetVariableOfType<T>()
@@ -1703,7 +1698,11 @@ namespace AtMycelia.Amanita.VScripting
             where TVarType : Muscariable<TContentType>, new()
         {
             var result = _varManager.AddNewVariableOfContentType(typeof(TContentType), key) as TVarType;
-            result.Scope = scope;
+            if (result != null)
+            {
+                result.Scope = scope;
+                result.Init(defaultValue);
+            }
             return result;
         }
 
@@ -1711,8 +1710,24 @@ namespace AtMycelia.Amanita.VScripting
             TContentType defaultValue = default,
             VariableScope scope = VariableScope.Private)
         {
-            var result = _varManager.AddNewVariableOfContentType(typeof(TContentType), key);
-            return result as IVariable<TContentType>;
+            var result = _varManager.AddNewVariableOfContentType(typeof(TContentType), key) as IVariable<TContentType>;
+            if (result != null)
+            {
+                result.Value = defaultValue;
+                result.Scope = scope;
+            }
+            return result;
+        }
+
+        public Muscariable AddNewVariableOfContentType<TContentType>(string k, TContentType defaultVal,
+            VariableScope scope = VariableScope.Private)
+        {
+            return _varManager.AddNewVariableOfContentType(k, defaultVal, scope);
+        }
+
+        public Muscariable AddNewVariableOfContentType(Type contentType, string key)
+        {
+            return _varManager.AddNewVariableOfContentType(contentType, key);
         }
     }
     

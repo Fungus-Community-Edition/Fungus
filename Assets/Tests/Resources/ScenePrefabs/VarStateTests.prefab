@@ -109,10 +109,10 @@ MonoBehaviour:
     _selectedCommands:
     - {fileID: 3920365560750978494}
     _owner: {fileID: 0}
-    <ScrollPos>k__BackingField: {x: 98.333435, y: -118.19241}
+    <ScrollPos>k__BackingField: {x: 98.333435, y: -115.69241}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesExpanded>k__BackingField: 0
-    <Zoom>k__BackingField: 1.1
+    <Zoom>k__BackingField: 1.2
     <BlockViewHeight>k__BackingField: 400
     <ScrollViewRect>k__BackingField:
       serializedVersion: 2
@@ -367,7 +367,7 @@ MonoBehaviour:
       owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
   _showCount:
