@@ -356,6 +356,11 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
                 owner = variableSource;
             }
 
+            if (variableSource is Flowchart fc && _varManagerComponent == null)
+            {
+                _varManagerComponent = fc.GetComponent<VariableManagerComponent>();
+            }
+
             bool result = owner != null && variableSource != null && 
                 (ReferenceEquals(owner, variableSource) || _varManagerComponent != null);
             return result;
