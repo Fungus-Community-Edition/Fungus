@@ -1,4 +1,3 @@
-using AtMycelia.Amanita.Lua;
 using AtMycelia.Amanita.VScripting.EventHandlers;
 using AtMycelia.Amanita.VScripting.UI;
 using AtMycelia.Collections;
@@ -99,10 +98,6 @@ namespace AtMycelia.Amanita.VScripting
         [Tooltip("Unique identifier for this flowchart in localized string keys. If no id is specified then the name of the Flowchart object will be used.")]
         [FormerlySerializedAs("localizationId")]
         [SerializeField] protected string localizationId = "";
-
-        [Tooltip("Lua Environment to be used by default for all Execute Lua commands in this Flowchart")]
-        [FormerlySerializedAs("luaEnvironment")]
-        [SerializeField] protected LuaEnvironment _luaEnvironment;
 
         [Tooltip("The ExecuteLua command adds a global Lua variable with this name bound to the flowchart prior to executing.")]
         [FormerlySerializedAs("_luaBindingName")]
@@ -837,11 +832,6 @@ namespace AtMycelia.Amanita.VScripting
         /// Unique identifier for identifying this flowchart in localized string keys.
         /// </summary>
         public virtual string LocalizationId { get { return localizationId; } }
-
-        /// <summary>
-        /// Lua Environment to be used by default for all Execute Lua commands in this Flowchart.
-        /// </summary>
-        public virtual LuaEnvironment LuaEnv { get { return _luaEnvironment; } }
 
         /// <summary>
         /// The ExecuteLua command adds a global Lua variable with this name bound to the flowchart prior to executing.

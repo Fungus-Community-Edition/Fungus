@@ -292,6 +292,7 @@ namespace AtMycelia.Amanita.VScripting
                 }
 
                 // Skip disabled commands, comments and labels
+                commandList.RemoveAll(cmd => cmd == null); // Clean up any null entries that may be in the list
                 Debug.Log($"IS command list valid: " + (commandList != null) + $", count: " + (commandList != null ? commandList.Count.ToString() : "null"));
                 while (i < commandList.Count &&
                       (!commandList[i].enabled || 

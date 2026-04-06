@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Text;
 using Ideafixxxer.CsvParser;
-using AtMycelia.Amanita.Lua;
+using AtMycelia;
 using AtMycelia.Amanita.VScripting;
 
 namespace AtMycelia.Amanita.LocalizationSys
