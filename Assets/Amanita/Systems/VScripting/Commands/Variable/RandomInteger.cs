@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Sets an integer variable to a random value in the defined range.
@@ -24,8 +24,8 @@ namespace Amanita.VScripting
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(minValue);
-            variableDataCache.Add(maxValue);
+            _variableDataCache.Add(minValue);
+            _variableDataCache.Add(maxValue);
         }
 
         #region Public members

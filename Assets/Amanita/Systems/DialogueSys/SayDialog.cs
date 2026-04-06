@@ -2,10 +2,10 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 using System.Collections;
-using Amanita.Lua;
-using Amanita.Tweening;
+using AtMycelia.Amanita.Lua;
+using AtMycelia.Amanita.Tweening;
 
-namespace Amanita.DialogueSys
+namespace AtMycelia.Amanita.DialogueSys
 {
 	/// <summary>
 	/// Display story text in a visual novel style dialog box.

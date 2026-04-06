@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1983cb934fee6c4bae9941b65c8c798, type: 3}
+  m_Name: SoundFX
+  m_EditorClassIdentifier: 
+  _includeInSaves: 1
+  _uniqueId: 0d4feeae-7e82-42a5-b48d-108dfbab7778
+  _alwaysKeepGuid: 1
+  variables: []
+  _varManager:
+    _muscariables:
+    - rid: 6177420756002537546
+    - rid: 6177420756002537547
+    - rid: 6177420756002537548
+    - rid: 6177420756002537549
+    _legacyVariables: []
+    _nextValidVarID: 11
+    _isInitted: 1
+  _nextVarID: 11
+  references:
+    version: 2
+    RefIds:
+    - rid: 6177420756002537546
+      type: {class: AudioClipMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      data:
+        scope: 0
+        key: guitar
+        itemID: 7
+        value: {fileID: 8300000, guid: 5467a02549657ce418b3aeab5b1dfc18, type: 3}
+        startValue: {fileID: 0}
+    - rid: 6177420756002537547
+      type: {class: AudioClipMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      data:
+        scope: 0
+        key: uiConfirm
+        itemID: 8
+        value: {fileID: 8300000, guid: fe7bcb8696a130d46a6977c0737c8d13, type: 3}
+        startValue: {fileID: 0}
+    - rid: 6177420756002537548
+      type: {class: AudioClipMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      data:
+        scope: 0
+        key: uiError
+        itemID: 9
+        value: {fileID: 8300000, guid: 5a02bfd612d1d2e489218a3a4eed7a2a, type: 3}
+        startValue: {fileID: 0}
+    - rid: 6177420756002537549
+      type: {class: AudioClipMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      data:
+        scope: 0
+        key: uiHover
+        itemID: 10
+        value: {fileID: 8300000, guid: 647069b6aaf1d0e48b15259536799b3c, type: 3}
+        startValue: {fileID: 0}

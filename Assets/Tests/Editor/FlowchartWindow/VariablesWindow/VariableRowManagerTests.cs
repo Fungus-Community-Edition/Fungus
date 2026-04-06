@@ -1,5 +1,5 @@
-﻿using Amanita.VScripting;
-using Amanita.VScripting.EditorUtils;
+﻿using AtMycelia.Amanita.VScripting;
+using AtMycelia.Amanita.VScripting.EditorUtils;
 using NUnit.Framework;
 using System;
 using System.Collections;
@@ -11,8 +11,8 @@ using UnityEngine.TestTools;
 using UnityEngine.UIElements;
 using UITKLabel = UnityEngine.UIElements.Label;
 using UnityObject = UnityEngine.Object;
-using Amanita.EditorUtils;
-using Amanita;
+using AtMycelia.Amanita.EditorUtils;
+using AtMycelia.Amanita;
 
 namespace VScriptingTests.VariableOperations
 {
@@ -230,10 +230,13 @@ namespace VScriptingTests.VariableOperations
 
         // 1. ClearVariables_ThenReAdd_ReusesPools (ADAPTED)
         // Virtualized list never materializes rows/handlers without binding -> pools stay 0.
-        [Test]
-        public void ClearVariables_ThenReAdd_ReusesPools()
+        [UnityTest]
+        public IEnumerator ClearVariables_ThenReAdd_ReusesPools()
         {
-            var originalVars = _firstFc.Variables.ToList();
+            // Let UITK finish the initial bind once
+            yield return null;
+
+            List<IVariable> originalVars = _firstFc.Variables.ToList();
             int originalCount = originalVars.Count;
             Assert.Greater(originalCount, 0);
 
@@ -241,22 +244,25 @@ namespace VScriptingTests.VariableOperations
             Assert.AreEqual(0, PooledHandlerCount);
 
             _firstFc.ClearVariables();
+            yield return null;
+
             // With no visual binding, nothing was ever created; pools remain 0.
             Assert.AreEqual(0, PooledRowCount, "Rows should not be pooled (none created).");
             Assert.AreEqual(0, PooledHandlerCount, "Handlers should not be pooled (none created).");
-            Assert.AreEqual(0, _firstFc.VariableCount, 
+            Assert.AreEqual(0, _firstFc.VariableCount,
                 "Flowchart still has at least one var after they were supposed to have all been cleared.");
 
             // Re-add distinct-type variables (reuse original instances)
-            foreach (var toAdd in originalVars)
+            foreach (IVariable toAdd in originalVars)
             {
                 _firstFc.AddVariable(toAdd);
+                yield return null;
             }
 
             // Still no UI binding => pools remain 0
             Assert.AreEqual(0, PooledRowCount);
             Assert.AreEqual(0, PooledHandlerCount);
-            Assert.AreEqual(originalCount, _firstFc.VariableCount, 
+            Assert.AreEqual(originalCount, _firstFc.VariableCount,
                 $"Flowchart does not get back its original var count after things were added back in.");
         }
 
@@ -264,14 +270,14 @@ namespace VScriptingTests.VariableOperations
         public void Dispose_ClearsAllAndUnsubscribes()
         {
             _firstFc.ClearVariables();
-            _firstFc.AddNewVariable<float, FloatVariable>("x");
+            _firstFc.AddNewVariable<float>("x");
             int varsBeforeDispose = _firstFc.VariableCount;
             string labelBefore = _countLabel.text;
 
             _rowManager.Dispose();
 
             // Manager disposed: list view should no longer update when Flowchart changes
-            _firstFc.AddNewVariable<int, IntegerVariable>("y");
+            _firstFc.AddNewVariable<int>("y");
 
             // Flowchart variable count changed, but label should show a count of 0 
             // (since disposing the manager implies releasing its rows)
@@ -343,7 +349,7 @@ namespace VScriptingTests.VariableOperations
             _rowManager.Init(initArgs);
 
             // Add variable to second flowchart; should not affect first flowchart's variable collection
-            secondFc.AddNewVariable<bool, BooleanVariable>("second_bool");
+            secondFc.AddNewVariable<bool>("second_bool");
             Assert.AreEqual(1, secondFc.VariableCount);
             Assert.AreEqual(initialVariableCount, _firstFc.VariableCount,
                 "Original flowchart variable count changed unexpectedly.");
@@ -374,7 +380,7 @@ namespace VScriptingTests.VariableOperations
                 VariableListView = thirdView,
             });
 
-            thirdFc.AddNewVariable<bool, BooleanVariable>("third_bool");
+            thirdFc.AddNewVariable<bool>("third_bool");
             Assert.AreEqual(1, thirdFc.VariableCount);
             Assert.AreEqual(1, secondFc.VariableCount, "Second flowchart variable count changed unexpectedly.");
             Assert.AreEqual(initialVariableCount, _firstFc.VariableCount, "First flowchart variable count changed unexpectedly.");

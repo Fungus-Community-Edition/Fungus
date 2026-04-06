@@ -1,8 +1,9 @@
+using System;
 using UnityEditor;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     /// <summary>
     /// Handles custom drawing for ConditionExperssions within the VariableCondition and inherited commands.
@@ -64,35 +65,25 @@ namespace Amanita.VScripting.EditorUtils
             EditorGUI.indentLevel++;
             for (int i = 0; i < conditions.arraySize; i++)
             {
-                var conditionAnyVar = conditions.GetArrayElementAtIndex(i).FindPropertyRelative("anyVar");
-                var conditionCompare = conditions.GetArrayElementAtIndex(i).FindPropertyRelative("compareOperator");
+                var conditionAnyVar = conditions.GetArrayElementAtIndex(i)
+                    .FindPropertyRelative("anyVar");
+                var varRefProp = conditionAnyVar.FindPropertyRelative("varRef");
+                var varDataProp = conditionAnyVar.FindPropertyRelative("data.data");
+                var conditionCompare = conditions.GetArrayElementAtIndex(i)
+                    .FindPropertyRelative("compareOperator");
 
-                EditorGUILayout.PropertyField(conditionAnyVar, new GUIContent("Variable"), true);
+                EditorGUILayout.PropertyField(varRefProp, new GUIContent("Lhs"), true);
 
-                // Get selected variable - support both UnityEngine.Object and POCOs via [SerializeReference]
-                var varProp = conditionAnyVar.FindPropertyRelative("variable");
-                IVariable selectedVariable = null;
-
-                // UnityEngine.Object path
-                bool varIsUnityObj = varProp != null && varProp.propertyType == SerializedPropertyType.ObjectReference &&
-                    varProp.objectReferenceValue is UnityObj;
-                if (varIsUnityObj)
-                {
-                    selectedVariable = varProp.objectReferenceValue as IVariable;
-                }
-
-                // [SerializeReference] path for POCOs (e.g., Muscariable)
-                var varIsPoco = varProp != null && varProp.propertyType == SerializedPropertyType.ManagedReference;
-                if (varIsPoco)
-                {
-                    selectedVariable = varProp.managedReferenceValue as IVariable;
-                }
+                var varRef = varRefProp.boxedValue as VariableReference;
+                IVariable selectedVariable = varRef?.Variable;
 
                 if (selectedVariable == null)
                 {
                     EditorGUILayout.Separator();
                     continue;
                 }
+
+                EnsureRhsDataInitialized(conditionAnyVar, selectedVariable);
 
                 GUIContent[] operatorsList;
                 if (selectedVariable.IsComparisonSupported())
@@ -114,16 +105,60 @@ namespace Amanita.VScripting.EditorUtils
                 }
 
                 selectedIndex = EditorGUILayout.Popup(
-                    new GUIContent("Compare", "The comparison operator to use when comparing values"),
+                    new GUIContent("Operator", "The comparison operator to use when comparing values"),
                     selectedIndex,
                     operatorsList);
 
                 conditionCompare.enumValueIndex = selectedIndex;
 
+                EditorGUILayout.PropertyField(varDataProp, new GUIContent("Rhs"), true);
                 EditorGUILayout.Separator();
+                
             }
             EditorGUI.indentLevel--;
             serializedObject.ApplyModifiedProperties();
+        }
+
+        private static void EnsureRhsDataInitialized(SerializedProperty conditionAnyVar, 
+            IVariable selectedVariable)
+        {
+            if (selectedVariable == null || conditionAnyVar == null)
+            {
+                return;
+            }
+
+            AnyVariableAndDataPair pairInstance = conditionAnyVar.boxedValue as AnyVariableAndDataPair;
+            if (pairInstance == null)
+            {
+                return;
+            }
+
+            AnyVariableData anyVarData = pairInstance.Data;
+            if (anyVarData == null)
+            {
+                return;
+            }
+
+            Type effectiveVarType = GetEffectiveVarType(selectedVariable);
+            if (effectiveVarType == null)
+            {
+                return;
+            }
+
+            anyVarData.SetFor(effectiveVarType, selectedVariable.ContentType);
+            pairInstance.Data = anyVarData;
+            conditionAnyVar.boxedValue = pairInstance;
+            conditionAnyVar.serializedObject.ApplyModifiedProperties();
+        }
+
+        private static Type GetEffectiveVarType(IVariable variable)
+        {
+            if (variable is IVariablePointer ptr && ptr.Component is IVariable inner)
+            {
+                return inner.GetType();
+            }
+
+            return variable?.GetType();
         }
     }
 }

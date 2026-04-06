@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     [CommandInfo("Variable", 
         "StringToFloat",
@@ -14,7 +14,7 @@ namespace Amanita.VScripting
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(input);
+            _variableDataCache.Add(input);
         }
 
 

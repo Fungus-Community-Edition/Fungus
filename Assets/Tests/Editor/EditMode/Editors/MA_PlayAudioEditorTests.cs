@@ -5,10 +5,10 @@ using System.Reflection;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
-using Amanita.VScripting;
-using Amanita;
-using Amanita.Myceliaudio.VScripting;
+using AtMycelia.Amanita.VScripting;
+using AtMycelia.Amanita.Myceliaudio.VScripting;
 using UnityObj = UnityEngine.Object;
+using AtMycelia.Amanita.EditorUtils;
 
 namespace VScriptingTests.CommandEditorOperations
 {
@@ -34,14 +34,16 @@ namespace VScriptingTests.CommandEditorOperations
             toDestroyOnTearDown.Add(vsa);
             ForceVariablesListNull(vsa);
 
-            EnsureAmanitaManager();
-            if (AmanitaManager.S == null)
+            VariableRegistryConfig config = DefaultAssetMaintenance.EnsureVariableRegistryConfig();
+            if (config == null)
             {
-                Assert.Ignore("AmanitaManager could not be ensured. Skipping editor draw test.");
+                Assert.Ignore("VariableRegistryConfig could not be ensured. Skipping editor draw test.");
                 return;
             }
 
-            TryAddGlobalVariableSource(vsa);
+            IReadOnlyList<VariableSourceAsset> previousSources = VariableRegistryService.GlobalSources.ToList();
+            config.SetGlobalSources(previousSources.Concat(new[] { vsa }).ToList());
+            VariableRegistryService.RebuildAll();
 
             Type playAudioType = typeof(MA_PlayAudio);
             if (playAudioType == null)
@@ -93,10 +95,10 @@ namespace VScriptingTests.CommandEditorOperations
                 {
                     UnityObj.DestroyImmediate(editor);
                 }
-                if (AmanitaManager.S != null)
-                {
-                    UnityObj.DestroyImmediate(AmanitaManager.S.gameObject);
-                }
+
+                config.SetGlobalSources(previousSources.ToList());
+                VariableRegistryService.RebuildAll();
+
                 UnityObj.DestroyImmediate(vsa);
                 UnityObj.DestroyImmediate(host);
                 Selection.activeObject = null;
@@ -139,31 +141,6 @@ namespace VScriptingTests.CommandEditorOperations
             {
                 onGui.Invoke(window, null);
             }
-        }
-
-        private static void EnsureAmanitaManager()
-        {
-            Type managerType = typeof(AmanitaManager);
-
-            MethodInfo ensureExists = managerType.GetMethod("EnsureExists", BindingFlags.Public | BindingFlags.Static);
-            if (ensureExists == null)
-            {
-                Assert.Fail("AmanitaManager has no EnsureExists method.");
-            }
-            ensureExists?.Invoke(null, null);
-        }
-
-        private static void TryAddGlobalVariableSource(VariableSourceAsset vsa)
-        {
-            AmanitaManager manager = AmanitaManager.S;
-            if (manager == null || vsa == null) return;
-
-            IList<VariableSourceAsset> current = manager.GlobalVariableSources;
-            if (current.Any(src => ReferenceEquals(src, vsa))) return;
-
-            List<VariableSourceAsset> updated = current.Where(src => src != null).ToList();
-            updated.Add(vsa);
-            manager.GlobalVariableSources = updated;
         }
 
         private static void ForceVariablesListNull(VariableSourceAsset vsa)

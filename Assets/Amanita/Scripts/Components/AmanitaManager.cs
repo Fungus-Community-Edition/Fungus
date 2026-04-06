@@ -1,63 +1,31 @@
-﻿using Amanita.DialogueSys;
-using Amanita.Myceliaudio;
-using Amanita.SaveSys;
-using Amanita.Tweening;
-using Amanita.VScripting;
+﻿using AtMycelia.SaveSys;
+using AtMycelia.Amanita.Tweening;
 using FullSerializer;
 using Lorekeeper;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
-using Amanita.SaveSys.UI;
-using UnityEngine.EventSystems;
-
 #if ENABLE_INPUT_SYSTEM
-using UnityEngine.InputSystem.UI;
+using AtMycelia.Amanita.SaveSys;
+using AtMycelia.Amanita.DialogueSys;
 #endif
 
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
-namespace Amanita
+namespace AtMycelia.Amanita
 {
     /// <summary>
     /// Amanita manager singleton. Manages access to all Amanita singletons in a consistent manner.
     /// </summary>
     public sealed class AmanitaManager : MonoBehaviour, ITearDownResponder
     {
-        [SerializeField] private List<VariableSourceAsset> globalVariables = new List<VariableSourceAsset>();
         [SerializeField, HideInInspector] private GameObject tweenAnchorHolder;
-        [SerializeField] private SaveMenuManager saveMenuPrefab;
+        private SaveLoadedBlockExecutor saveLoadedBlockExecutor = new SaveLoadedBlockExecutor();
 
         public static fsSerializer DefaultSerializer { get; } = new fsSerializer();
-        public IList<IVariable> GlobalVariables
-        {
-            get
-            {
-                List<IVariable> result = new List<IVariable>();
-                foreach (var src in globalVariables)
-                {
-                    if (src == null)
-                    {
-                        continue;
-                    }
-                    result.AddRange(src.Variables.Where(elem => elem != null));
-                }
-                return result;
-            }
-        }
-
-        public IList<VariableSourceAsset> GlobalVariableSources
-        {
-            get => globalVariables.ToArray();
-            set
-            {
-                globalVariables.Clear();
-                globalVariables.AddRange(value);
-            }
-        }
 
         public static DefaultTweenAdapter DefaultTweener
         {
@@ -70,7 +38,7 @@ namespace Amanita
 
         private static void EnsureDefaultTweenerAvailable()
         {
-            _defaultTweener = SOUtils.EnsureSOExists<DefaultTweenAdapter>(resourcesRootFolder, "DefaultTweenAdapter");
+            _defaultTweener = DefaultAmanitaAssets.TweenAdapter;
         }
 
         static DefaultTweenAdapter _defaultTweener;
@@ -103,17 +71,13 @@ namespace Amanita
                 Debug.LogError("ShadowDatabase asset not found in Resources/ShadowDatabase.");
             }
         }
-        private static readonly string resourcesRootFolder = ""; 
-        // ^Relative to Resources folder, hence this being an empty string
-        private static ShadowDatabase shadowDb;
 
-        public IReadOnlyList<Flowchart> FlowchartsInScene => FlowchartRegistry.GetFlowcharts();
+        private static ShadowDatabase shadowDb;
 
         /// <summary>
         /// Ensure a single AmanitaManager instance exists in the scene (robust to edit-mode and concurrent calls).
         /// When there are any Flowcharts in the scene editor, there should also be an AmanitaManager in that same scene.
         /// </summary>
-        [MenuItem("Tools/Atelier Mycelia/Amanita/Ensure Amanita Manager", priority = 0)]
         public static AmanitaManager EnsureExists()
         {
             // Fast path
@@ -147,8 +111,7 @@ namespace Amanita
 #if UNITY_EDITOR
                     // Note: FindObjectsOfTypeAll includes stuff in the scene AND project files, even in edit mode.
                     var postAll = Resources.FindObjectsOfTypeAll<AmanitaManager>()
-                        .Where((elem) => !EditorUtility.IsPersistent(elem.gameObject) && 
-                        elem != newlyInstantiated && elem != null);
+                        .Where((elem) => !EditorUtility.IsPersistent(elem.gameObject) && elem != newlyInstantiated && elem != null);
                     // ^This Where clause is so we skip project files. Apparently, FindFirstObjectByType can miss
                     // stuff in the scene.
 
@@ -174,22 +137,22 @@ namespace Amanita
 
         private static AmanitaManager CreateNewManager()
         {
-            AmanitaManager prefab = Resources.Load<AmanitaManager>(AmanitaConstants.PathToAmanitaManagerPrefab);
-            if (prefab == null)
-            {
-                Debug.LogError($"AmanitaManager prefab not found at Resources/{AmanitaConstants.PathToAmanitaManagerPrefab}.");
-                return null;
-            }
+            GameObject managerGo = new GameObject(nameof(AmanitaManager));
+            AmanitaManager manager = managerGo.AddComponent<AmanitaManager>();
 
-            AmanitaManager instantiated;
-#if UNITY_EDITOR
-            instantiated = PrefabUtility.InstantiatePrefab(prefab) as AmanitaManager;
-#else
-            instantiated = Instantiate(prefab);
-#endif
+            CreateSubmodule<CameraManager>(nameof(CameraManager), managerGo.transform);
+            CreateSubmodule<EventDispatcher>(nameof(EventDispatcher), managerGo.transform);
+            CreateSubmodule<NarrativeLog>(nameof(NarrativeLog), managerGo.transform);
+            CreateSubmodule<TweenManager>(nameof(TweenManager), managerGo.transform);
 
-            instantiated.gameObject.name = prefab.name; // We don't want "Clone" in the name
-            return instantiated;
+            return manager;
+        }
+
+        private static T CreateSubmodule<T>(string name, Transform parent) where T : Component
+        {
+            GameObject go = new GameObject(name);
+            go.transform.SetParent(parent, false);
+            return go.AddComponent<T>();
         }
 
         public void Init()
@@ -213,19 +176,6 @@ namespace Amanita
             _s = this;
 
             EnsureShadowDbAvailable();
-            EnsureEventSystemInScene();
-            void EnsureEventSystemInScene()
-            {
-                var existing = FindFirstObjectByType<EventSystem>(FindObjectsInactive.Include);
-                if (existing == null)
-                {
-                    var esGo = new GameObject("EventSystem");
-                    esGo.AddComponent<EventSystem>();
-                    esGo.AddComponent<InputSystemUIInputModule>();
-                }
-            }
-
-            VariableRegistry = new VariableRegistry(this);
 
             ResetAnchors();
             void ResetAnchors()
@@ -256,14 +206,10 @@ namespace Amanita
             PrepSubmodules();
         }
 
-        public static SaveMenuManager SaveMenuManager { get; private set; }
-
         public bool IsFullyInitted
         {
             get => (TweenManager != null && TweenManager.IsFullyInitted) &&
-                (NarrativeLog != null && NarrativeLog.IsFullyInitted) &&
-                (AudioSystem != null && AudioSystem.IsFullyInitted) &&
-                (SaveSysInstaller != null && SaveSysInstaller.IsFullyInitted);
+                (NarrativeLog != null && NarrativeLog.IsFullyInitted);
         }
 
         private void PrepSubmodules()
@@ -272,16 +218,13 @@ namespace Amanita
             FetchSubmodules();
             void FetchSubmodules()
             {
-                FlowchartRegistry.EnsureInitialized(true);
                 CameraManager = GetComponentInChildren<CameraManager>();
                 EventDispatcher = GetComponentInChildren<EventDispatcher>();
                 NarrativeLog = GetComponentInChildren<NarrativeLog>();
-                AudioSystem = GetComponentInChildren<AudioSystem>();
-                SaveSysInstaller = GetComponentInChildren<SaveSystemInstaller>();
                 TweenManager = GetComponentInChildren<TweenManager>();
-                SaveMenuManager = GetComponentInChildren<SaveMenuManager>();
-                
             }
+
+            ApplySceneOverrides();
 
             List<IAmanitaManagerSubmodule> submodules = GetComponentsInChildren<IAmanitaManagerSubmodule>().ToList();
             // Lower order index, earlier execution
@@ -290,6 +233,14 @@ namespace Amanita
             {
                 var module = submodules[i];
                 module.Init();
+            }
+        }
+
+        public void ApplySceneOverrides()
+        {
+            if (CameraManager != null)
+            {
+                CameraManager.ApplyConfig(AmanitaConfigResolver.ResolveCameraManagerConfig());
             }
         }
 
@@ -320,10 +271,6 @@ namespace Amanita
                     {
                         // Since DestroyImmediate doesn't call OnDestroy...
                         OnDestroy();
-                        if (AudioSystem != null)
-                        {
-                            AudioSystem.OnDestroy();
-                        }
                         DestroyImmediate(this.gameObject); // Prevents duplicates in edit mode
                     }
                     else
@@ -342,8 +289,6 @@ namespace Amanita
                 DontDestroyOnLoad(gameObject);
             }
         }
-
-        private SaveSystemInstaller SaveSysInstaller { get; set; }
 
         private TweenManager TweenManager { get; set; }
         #region Public methods
@@ -384,15 +329,11 @@ namespace Amanita
             S = null;
         }
 
-        public AudioSystem AudioSystem { get; private set; }
-
         private void OnDestroy()
         {
             if (_s == this)
             {
                 _s = null;
-                SaveSystem.S = null;
-                AudioSystem.S = null;
                 TweenManager.S = null;
 
                 // Clean up anchors we created
@@ -413,8 +354,6 @@ namespace Amanita
                     }
                     _adapterAnchors.Clear();
                 }
-
-                
             }
         }
 
@@ -480,7 +419,6 @@ namespace Amanita
 
         // replaced the old list with a dictionary keyed by adapter instance id
         private readonly Dictionary<int, GameObject> _adapterAnchors = new Dictionary<int, GameObject>();
-        public VariableRegistry VariableRegistry { get; private set; }
         private void OnValidate()
         {
             // OnValidate gets called on the prefab in response to Resources.Load(), so...
@@ -489,38 +427,35 @@ namespace Amanita
                 return;
             }
             S = this;
-            // Best make sure to log errors and such when this has any screwy fields
-            if (globalVariables == null)
-            {
-                Debug.LogError("AmanitaManager has no globalVariables list assigned.");
-            }
-            else if (globalVariables.Any(elem => elem == null))
-            {
-                Debug.LogError("AmanitaManager has null global variable sources.");
-            }
 
-            EnsureVariableRegistryIsReady();
-
-        }
-
-        private void EnsureVariableRegistryIsReady()
-        {
-            if (VariableRegistry == null)
-            {
-                VariableRegistry = new VariableRegistry(this);
-                var selected = Selection.activeGameObject;
-                Flowchart currentFc = null;
-                if (selected != null)
-                {
-                    selected.TryGetComponent(out currentFc);
-                }
-                VariableRegistry.Rebuild(currentFc);
-            }
         }
 
         private void OnEnable()
         {
-            EnsureVariableRegistryIsReady();
+            saveLoadedBlockExecutor.OnEnable();
+            ToggleSubs(true);
+        }
+
+        private void ToggleSubs(bool on)
+        {
+            if (on)
+            {
+                SaveSysSignals.SaveLoaded += OnSaveSlotLoaded;
+            }
+            else
+            {
+                SaveSysSignals.SaveLoaded -= OnSaveSlotLoaded;
+            }
+        }
+
+        private void OnSaveSlotLoaded(CompositeSaveData saveData)
+        {
+            if (saveLoadedBlockExecutor == null)
+            {
+                Debug.LogWarning("SaveLoadedBlockExecutor is not assigned. SaveLoaded blocks will not execute.");
+                return;
+            }
+
         }
 
 #if UNITY_EDITOR
@@ -540,5 +475,11 @@ namespace Amanita
             }
         }
 #endif
+
+        private void OnDisable()
+        {
+            saveLoadedBlockExecutor.OnDisable();
+            ToggleSubs(false);
+        }
     }
 }

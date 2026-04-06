@@ -1,10 +1,10 @@
 using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
-using Amanita.VScripting;
-using Amanita.VScripting.EditorUtils;
+using AtMycelia.Amanita.VScripting;
+using AtMycelia.Amanita.VScripting.EditorUtils;
 
-namespace Amanita.EditorUtils
+namespace AtMycelia.Amanita.EditorUtils
 {
     [CustomEditor (typeof(Label))]
     public class LabelEditor : CommandEditor

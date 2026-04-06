@@ -1,6 +1,6 @@
 using System;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Attribute class for variables. This helps decide how they're presented as an option
@@ -10,8 +10,8 @@ namespace Amanita.VScripting
     public sealed class VariableInfoAttribute : System.Attribute
     {
         // Note do not use "isPreviewedOnly:true", it causes the script to fail to load without errors shown
-        public VariableInfoAttribute(string category, string optionDisplayName, Type contentType, bool showInMenu = true,
-            int order = 0)
+        public VariableInfoAttribute(string category, string optionDisplayName, Type contentType,
+            bool showInMenu = true, int order = 0)
         {
             this.Category = category;
             this.OptionDisplayName = optionDisplayName;

@@ -1,15 +1,17 @@
-using Amanita.Myceliaudio;
+using AtMycelia.Amanita.Myceliaudio;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityObj = UnityEngine.Object;
+using UnityRandom = UnityEngine.Random;
 
-namespace Amanita.Tweening
+namespace AtMycelia.Amanita.Tweening
 {
     public class DefaultTweenAdapter : ScriptableObject, ITransformTweenAdapter, IGeneralTweenAdapter<Vector2>,
         IGeneralTweenAdapter<Vector3>, IGeneralTweenAdapter<float>, IGeneralTweenAdapter<int>,
         IGraphicTweenAdapter, ICameraTweenAdapter, IAudioSourceTweenAdapter, IMyceliaudioTweenAdapter,
-        IMaterialTweenAdapter, IRectTransformTweenAdapter, IAudioFilterTweenAdapter, ILightTweenAdapter
+        IMaterialTweenAdapter, IRectTransformTweenAdapter, IAudioFilterTweenAdapter, ILightTweenAdapter,
+        IPositionShaker
     {
 
         #region Transform and RectTransform
@@ -207,7 +209,7 @@ namespace Amanita.Tweening
             return result;
         }
         #endregion
-
+        //
         public Tween<float> TweenFloat(Func<float> getFloatToTween, Action<float> setFloatToTween,
             float endValue, float duration, Action onComplete = null)
         {
@@ -287,7 +289,6 @@ namespace Amanita.Tweening
 
             return result;
         }
-
 
         
         public ITweenHandle FadeBackgroundColor(Camera target, Color targetVal, float duration)
@@ -482,8 +483,6 @@ namespace Amanita.Tweening
             return DefaultTweenHandle.From(tween);
         }
 
-        
-
         public ITweenHandle FadeVolume01(AudioSource target, float targVal, float duration)
         {
             targVal = Mathf.Clamp01(targVal);
@@ -581,7 +580,80 @@ namespace Amanita.Tweening
         }
         #endregion
 
+        public ITweenHandle ShakePosition(Transform target, Vector3 axis, Vector3 force, float duration, bool isLocalSpace)
+        {
+            if (target == null)
+            {
+                return null;
+            }
 
+            Vector3 startPos = isLocalSpace ? 
+                target.localPosition : 
+                target.position;
+            Vector3 axisMask = GetAxisMask(axis);
+            string id = GenIDFor(target, "ShakePosition");
+
+            Tween<float> tween = new Tween<float>(target, id, _noProgress, _fullProgress, duration, OnTweenUpdate);
+            
+            void OnTweenUpdate(float progress)
+            {
+                if (target == null)
+                {
+                    return;
+                }
+
+                Vector3 randomOffset = UnityRandom.insideUnitSphere;
+                randomOffset = Vector3.Scale(randomOffset, force);
+                randomOffset = Vector3.Scale(randomOffset, axisMask);
+
+                float damper = 1f - Mathf.Clamp01(progress);
+                Vector3 finalOffset = randomOffset * damper;
+                Vector3 posToApply = startPos + finalOffset;
+
+                if (isLocalSpace)
+                {
+                    target.localPosition = posToApply;
+                }
+                else
+                {
+                    target.position = posToApply;
+                }
+            }
+            
+            tween = tween.SetOnComplete(OnTweenComplete);
+            void OnTweenComplete()
+            {
+                if (target == null)
+                {
+                    return;
+                }
+
+                if (isLocalSpace)
+                {
+                    target.localPosition = startPos;
+                }
+                else
+                {
+                    target.position = startPos;
+                }
+            }
+
+            return DefaultTweenHandle.From(tween);
+        }
+
+        private static readonly int _noProgress = 0, _fullProgress = 1;
+
+        private static Vector3 GetAxisMask(Vector3 axis)
+        {
+            return new Vector3(ToAxisMask(axis.x), ToAxisMask(axis.y), ToAxisMask(axis.z));
+        }
+
+        private static float ToAxisMask(float axisValue)
+        {
+            return Mathf.Abs(axisValue) > 0f ? 
+                1f : 
+                0f;
+        }
     }
 
 }

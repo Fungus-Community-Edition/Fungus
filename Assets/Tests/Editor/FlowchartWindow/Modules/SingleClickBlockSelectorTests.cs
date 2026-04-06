@@ -1,11 +1,12 @@
 using System.Collections.Generic;
-using Amanita.VScripting;
-using Amanita.VScripting.EditorUtils;
+using AtMycelia.Amanita.VScripting;
+using AtMycelia.Amanita.VScripting.EditorUtils;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
-using Amanita.VScripting.EditorUtils.FcWindow;
+using AtMycelia.Amanita.VScripting.EditorUtils.FcWindow;
+using FcWindow = AtMycelia.Amanita.VScripting.EditorUtils.FcWindow.FlowchartWindow;
 
 namespace VScriptingTests.FlowchartWindow.Modules
 {
@@ -16,13 +17,14 @@ namespace VScriptingTests.FlowchartWindow.Modules
         private GameObject selectionObject;
         private Flowchart flowchart;
         private FlowchartContext context;
-        private Amanita.VScripting.EditorUtils.FcWindow.FlowchartWindow window;
+        private FcWindow window;
         private SingleSelectionHandler syncer;
         private GameObject previousSelection;
 
         [SetUp]
         public void SetUp()
         {
+            AtMycelia.Amanita.EditorUtils.TestUtils.ResetFlowchartWindowSingleton();
             previousSelection = Selection.activeGameObject;
 
             flowchartObject = new GameObject("Flowchart_Test");
@@ -34,7 +36,7 @@ namespace VScriptingTests.FlowchartWindow.Modules
             context = new FlowchartContext();
             context.Flowchart = flowchart;
 
-            window = ScriptableObject.CreateInstance<Amanita.VScripting.EditorUtils.FcWindow.FlowchartWindow>();
+            window = ScriptableObject.CreateInstance<FcWindow>();
             syncer = new SingleSelectionHandler(context);
             syncer.Initialize(window);
 
@@ -67,7 +69,9 @@ namespace VScriptingTests.FlowchartWindow.Modules
             Command command = flowchart.AddCommand<DummyCommand>(block);
 
             flowchart.SelectedCommands = new List<Command> { command };
-            syncer.OnBlockClicked(block, null);
+
+            Event dummyEvent = new Event();
+            syncer.OnBlockClicked(block, dummyEvent);
 
             Assert.That(flowchart.SelectedBlock, Is.EqualTo(block));
             Assert.That(flowchart.SelectedCommandCount, Is.EqualTo(0));
@@ -82,7 +86,8 @@ namespace VScriptingTests.FlowchartWindow.Modules
             flowchart.SelectedBlock = block;
             flowchart.SelectedCommands = new List<Command> { command };
 
-            syncer.OnBlockClicked(block, null);
+            Event dummyEvent = new Event();
+            syncer.OnBlockClicked(block, dummyEvent);
 
             Assert.That(flowchart.SelectedBlock, Is.EqualTo(block));
             Assert.That(flowchart.SelectedCommandCount, Is.EqualTo(1));

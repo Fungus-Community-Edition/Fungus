@@ -1,5 +1,4 @@
-﻿using Amanita.EditorUtils;
-using Collections;
+﻿using AtMycelia.Amanita.EditorUtils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +8,9 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using UITKLabel = UnityEngine.UIElements.Label;
 using UnityObj = UnityEngine.Object;
+using AtMycelia.Collections;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     /// <summary>
     /// Virtualized, reorderable variable list view (Unity 2022.3 LTS + Unity 6).
@@ -33,6 +33,7 @@ namespace Amanita.VScripting.EditorUtils
             else
             {
                 SetVariables(initArgs.VariableSource.Variables);
+                _lastSourceUid = initArgs.VariableSource.UniqueId;
             }
             if (_listDisplay != null)
             {
@@ -43,31 +44,23 @@ namespace Amanita.VScripting.EditorUtils
                 string errorMessage = $"VariableListView was not given a valid ListView in its init args.";
                 Debug.LogError(errorMessage);
             }
+
         }
 
         protected ListView _listDisplay;
         protected UITKLabel _countDisplay;
         protected IVariableRowFactory _rowFactory;
 
-        protected Flowchart _flowchart;
-        protected int _flowchartInstanceID;
         protected UnityObj _variableSourceContext;
 
-        public virtual void SetFlowchart(Flowchart flowchart)
+        public virtual void SetSource(IVariableSource source)
         {
-            _flowchart = flowchart;
-            if (_flowchart != null)
-            {
-                _flowchartInstanceID = _flowchart.GetInstanceID();
-                _flowchartGlobalId = GlobalObjectId.GetGlobalObjectIdSlow(_flowchart);
-            }
-            else
-            {
-                _flowchartInstanceID = 0;
-                _flowchartGlobalId = default;
-            }
-            SyncFromFlowchart();
+            _source = source;
+            _lastSourceUid = _source != null ? _source.UniqueId : string.Empty;
+            SyncFromSource();
         }
+
+        private IVariableSource _source;
 
         protected virtual void InitListViewStructure()
         {
@@ -231,8 +224,6 @@ namespace Amanita.VScripting.EditorUtils
             OrderChanged?.Invoke(varsToDisplay);
         }
 
-        protected GlobalObjectId _flowchartGlobalId;
-
         protected virtual VariableRow GetOrCreateRow(IVariable variable)
         {
             if (variable == null || _rowFactory == null) return null;
@@ -343,6 +334,8 @@ namespace Amanita.VScripting.EditorUtils
         public int RowCount => varsToDisplay.Count;
         public IReadOnlyList<VariableRow> Rows => _activeRows.Values.ToList();
 
+        IReadOnlyList<IVariable> IVariableListView.VarsToDisplay => VarsToDisplay;
+
         public VariableRow RowAtIndex(int index)
         {
             if ((uint)index >= (uint)varsToDisplay.Count) return null;
@@ -389,8 +382,7 @@ namespace Amanita.VScripting.EditorUtils
             ResetCountDisplay();
             _rowFactory = null;
 
-            _flowchart = null;
-            _flowchartInstanceID = 0;
+            _source = null;
             _isDisposed = true;
 
             void ResetCountDisplay()
@@ -412,108 +404,57 @@ namespace Amanita.VScripting.EditorUtils
 
         protected void HandleUndoRedoPerformed()
         {
-            if (!AcquireFlowchartIfLost())
+            if (!AcquireSourceIfLost())
             {
                 return;
             }
 
-            SyncFromFlowchart();
+            SyncFromSource();
             UpdateCount();
         }
 
         // Returns true if the flowchart was found (or not even lost in the first place),
         // false otherwise.
-        protected bool AcquireFlowchartIfLost()
+        protected bool AcquireSourceIfLost()
         {
-            if (_flowchart != null) return true;
+            if (_source != null) return true;
 
-            SearchByGlobalObjectId(out bool found);
-            void SearchByGlobalObjectId(out bool found)
+            FindFlowchart(out bool found);
+            void FindFlowchart(out bool found)
             {
                 found = false;
-                if (_flowchartGlobalId.identifierType != 0)
+                var fcFound = UnityObj.FindObjectsByType<Flowchart>(FindObjectsSortMode.None)
+                    .Where((fc) => fc.UniqueId == _lastSourceUid).FirstOrDefault();
+                if (fcFound != null)
                 {
-                    var obj = GlobalObjectId.GlobalObjectIdentifierToObjectSlow(_flowchartGlobalId) as Flowchart;
-
-                    if (obj != null)
-                    {
-                        SetFlowchart(obj);
-                        found = true;
-                        //Debug.Log($"[AcquireFlowchartIfLost] Found Flowchart via GlobalObjectId: name='{obj.name}' instanceId={obj.GetInstanceID()}");
-                    }
-                }
-            }
-            if (found)
-            {
-                return true;
-            }
-
-            SearchByOldInstanceID(out found);
-            void SearchByOldInstanceID(out bool found)
-            {
-                // This search may fail after undo/redo
-                found = false;
-                if (_flowchartInstanceID != 0)
-                {
-                    var obj = EditorUtility.InstanceIDToObject(_flowchartInstanceID) as Flowchart;
-                    if (obj != null)
-                    {
-                        SetFlowchart(obj);
-                        found = true;
-                        //Debug.Log($"[AcquireFlowchartIfLost] Found Flowchart via old InstanceID: name='{obj.name}' instanceId={obj.GetInstanceID()}");
-                    }
-                }
-            }
-            if (found)
-            {
-                return true;
-            }
-
-            SearchThroughTheFCWindow(out found);
-            void SearchThroughTheFCWindow(out bool found)
-            {
-                found = false;
-                try
-                {
-                    var viaWindow = EditorSelectionTracker.ActiveFlowchart;
-                    if (viaWindow != null)
-                    {
-                        SetFlowchart(viaWindow);
-                        found = true;
-                        //Debug.Log($"[AcquireFlowchartIfLost] Found Flowchart via FlowchartWindow: name='{viaWindow.name}' instanceId={viaWindow.GetInstanceID()}");
-                    }
-                }
-                catch { }
-            }
-            if (found)
-            {
-                return true;
-            }
-
-            SearchForSingleInScene(out found);
-            void SearchForSingleInScene(out bool found)
-            {
-                IList<Flowchart> all;
-                found = false;
-#if UNITY_6000_0_OR_NEWER
-                all = UnityObj.FindObjectsByType<Flowchart>(FindObjectsSortMode.None);
-#else
-                all = UnityObj.FindObjectsOfType<Flowchart>();
-#endif
-                if (all.Count == 1)
-                {
-                    SetFlowchart(all[0]);
+                    SetSource(fcFound);
                     found = true;
-                    //Debug.Log($"[AcquireFlowchartIfLost] Found single Flowchart in scene: name='{_flowchart.name}' instanceId={_flowchart.GetInstanceID()}");
                 }
             }
 
+            if (found)
+            {
+                return true;
+            }
+
+            FindVsa(out found);
+            void FindVsa(out bool found)
+            {
+                found = false;
+                var vsasInProject = Resources.LoadAll<VariableSourceAsset>("");
+                var vsaFound = vsasInProject.Where((vsa) => vsa.UniqueId == _lastSourceUid).FirstOrDefault();
+                if (vsaFound != null)
+                {
+                    SetVariables(vsaFound.Variables);
+                    found = true;
+                }
+            }
             return found;
         }
 
-        protected virtual void SyncFromFlowchart()
+        protected virtual void SyncFromSource()
         {
-            var source = _flowchart.Variables;
+            var source = _source?.Variables;
             if (source == null)
                 return;
 
@@ -530,6 +471,8 @@ namespace Amanita.VScripting.EditorUtils
             varsToDisplay.AddRange(sourceToAdd);
             Refresh();
         }
+
+        private string _lastSourceUid = string.Empty;
 
         #endregion
 
@@ -631,6 +574,7 @@ namespace Amanita.VScripting.EditorUtils
         IReadOnlyList<VariableRow> Rows { get; }
         bool Contains(VariableRow row);
         event Action<IList<IVariable>> OrderChanged;
+        IReadOnlyList<IVariable> VarsToDisplay { get; }
     }
 
     public class VariableListViewInitArgs
@@ -640,5 +584,6 @@ namespace Amanita.VScripting.EditorUtils
         public UITKLabel CountLabel { get; set; }
         public IVariableSource VariableSource { get; set; }
         public IEditorAssetResolver AssetResolver { get; set; } // optional; testing override
+        public bool DisplayInInspector { get; set; } = false;
     }
 }

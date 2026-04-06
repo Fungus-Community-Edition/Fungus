@@ -1,10 +1,10 @@
-using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     /// <summary>
     /// Centralizes editor-side knowledge of which Flowchart/Blocks/Commands are currently selected.
@@ -13,11 +13,37 @@ namespace Amanita.VScripting.EditorUtils
     [InitializeOnLoad]
     public static class EditorSelectionTracker
     {
-        public static Flowchart ActiveFlowchart => activeFlowchart != null ?
-            activeFlowchart :
-            ResolveActiveFlowchart();
+        private const string LastSelectedFlowchartUidKey = "AtMycelia.Amanita.Editor.LastSelectedFlowchartUid";
+
+        public static Flowchart ActiveFlowchart => activeFlowchart;
         private static Flowchart activeFlowchart;
-        public static Flowchart LastActiveFlowchart { get; private set; }
+        public static Flowchart LastActiveFlowchart
+        {
+            get
+            {
+                if (activeFlowchart != null)
+                {
+                    return activeFlowchart;
+                }
+
+                Flowchart fromSelection = FindFlowchartFromSelection();
+
+                Flowchart basedOnCache = FindFlowchartWithCachedId();
+                if (basedOnCache != null)
+                {
+                    return basedOnCache;
+                }
+
+                Flowchart inScene = FindFlowchartInScene();
+                return inScene;
+            }
+        }
+
+        private static bool HasSameUidAsCache(Flowchart fc)
+        {
+            return fc != null && fc.UniqueId == GetCachedFlowchartUid();
+        }
+
         public static IReadOnlyList<Block> CurrentBlocks => blockSelection;
         private static readonly List<Block> blockSelection = new List<Block>();
         public static IReadOnlyList<Command> CurrentCommands => commandSelection;
@@ -35,10 +61,10 @@ namespace Amanita.VScripting.EditorUtils
         /// </summary>
         public static Command PrimaryCommand { get; private set; }
 
-        public static event Action<IReadOnlyList<Block>> BlockSelectionChanged = delegate { };
-        public static event Action<Block, Block> PrimaryBlockChanged = delegate { };
-        public static event Action<IReadOnlyList<Command>> CommandSelectionChanged = delegate { };
-        public static event Action<Command, Command> PrimaryCommandChanged = delegate { };
+        public static event System.Action<IReadOnlyList<Block>> BlockSelectionChanged = delegate { };
+        public static event System.Action<Block, Block> PrimaryBlockChanged = delegate { };
+        public static event System.Action<IReadOnlyList<Command>> CommandSelectionChanged = delegate { };
+        public static event System.Action<Command, Command> PrimaryCommandChanged = delegate { };
 
         static EditorSelectionTracker()
         {
@@ -47,10 +73,36 @@ namespace Amanita.VScripting.EditorUtils
             ToggleSubs(true);
         }
 
+        private static void SelectFlowchartBasedOnCache()
+        {
+            if (string.IsNullOrEmpty(GetCachedFlowchartUid()))
+            {
+                return;
+            }
+            Flowchart toSelect = FindFlowchartWithCachedId();
+            if (toSelect != null)
+            {
+                //Debug.Log($"Selecting flowchart based on cache: {toSelect.name} (uid: {toSelect.UniqueId})");
+                SetActiveFlowchart(toSelect);
+            }
+        }
+
+        private static Flowchart FindFlowchartWithCachedId()
+        {
+            if (string.IsNullOrEmpty(GetCachedFlowchartUid()))
+            {
+                return null;
+            }
+
+            Flowchart[] allInScene = UnityObj.FindObjectsByType<Flowchart>(FindObjectsInactive.Include,
+                FindObjectsSortMode.None);
+            Flowchart result = allInScene.Where(HasSameUidAsCache).FirstOrDefault();
+            return result;
+        }
+
         private static void DestroyLegacyStateInstances()
         {
-            AmanitaState[] legacyStates = UnityObj.FindObjectsByType<AmanitaState>(
-                FindObjectsInactive.Include,
+            AmanitaState[] legacyStates = UnityObj.FindObjectsByType<AmanitaState>(FindObjectsInactive.Include,
                 FindObjectsSortMode.None);
 
             foreach (AmanitaState state in legacyStates)
@@ -73,15 +125,11 @@ namespace Amanita.VScripting.EditorUtils
 
         private static void AttemptInitialHydration()
         {
-            Flowchart flowchart = FindFlowchartFromSelection();
-            if (flowchart == null)
+            Flowchart fc = FindFlowchartFromSelection();
+            if (fc != null)
             {
-                flowchart = FindFlowchartInScene();
-            }
-
-            if (flowchart != null)
-            {
-                SetActiveFlowchart(flowchart);
+                SetActiveFlowchart(fc);
+                return;
             }
         }
 
@@ -104,21 +152,33 @@ namespace Amanita.VScripting.EditorUtils
 
         private static void SetActiveFlowchart(Flowchart flowchart)
         {
-            if (ReferenceEquals(activeFlowchart, flowchart))
+            bool alreadySelected = ReferenceEquals(activeFlowchart, flowchart) ||
+                (flowchart != null && flowchart.UniqueId == GetCachedFlowchartUid());
+            if (alreadySelected)
             {
                 return;
             }
 
             Flowchart previous = activeFlowchart;
             activeFlowchart = flowchart;
-
-            if (flowchart != null)
-            {
-                LastActiveFlowchart = flowchart;
-            }
-
+            UpdateSelectionCache(flowchart);
             SyncSelectionsFromFlowchart(flowchart);
             SelectedFlowchartChanged(previous, flowchart);
+        }
+
+        private static void UpdateSelectionCache(Flowchart flowchart)
+        {
+            SetCachedFlowchartUid(flowchart != null ? flowchart.UniqueId : string.Empty);
+        }
+
+        private static string GetCachedFlowchartUid()
+        {
+            return EditorPrefs.GetString(LastSelectedFlowchartUidKey, string.Empty);
+        }
+
+        private static void SetCachedFlowchartUid(string uid)
+        {
+            EditorPrefs.SetString(LastSelectedFlowchartUidKey, uid ?? string.Empty);
         }
 
         private static void SyncSelectionsFromFlowchart(Flowchart flowchart)
@@ -201,14 +261,7 @@ namespace Amanita.VScripting.EditorUtils
             {
                 Selection.selectionChanged += OnUnitySelectionChanged;
 
-                BlockSignals.BlockSelected += OnBlockSelected;
-                BlockSignals.BlockDeselected += OnBlockRemovedFromSelection;
-                BlockSignals.MultiBlocksSelected += OnMultiBlocksSelected;
-
-                FlowchartWindowSignals.ChangedFlowchart += OnFlowchartWindowChanged;
                 FlowchartWindowSignals.EmptySpaceLeftClicked += OnEmptySpaceClicked;
-
-                CommandSignals.CommandSelected += OnCommandSelected;
 
                 EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
                 AssemblyReloadEvents.beforeAssemblyReload += OnBeforeAssemblyReload;
@@ -218,14 +271,7 @@ namespace Amanita.VScripting.EditorUtils
             {
                 Selection.selectionChanged -= OnUnitySelectionChanged;
 
-                BlockSignals.BlockSelected -= OnBlockSelected;
-                BlockSignals.BlockDeselected -= OnBlockRemovedFromSelection;
-                BlockSignals.MultiBlocksSelected -= OnMultiBlocksSelected;
-
-                FlowchartWindowSignals.ChangedFlowchart -= OnFlowchartWindowChanged;
                 FlowchartWindowSignals.EmptySpaceLeftClicked -= OnEmptySpaceClicked;
-
-                CommandSignals.CommandSelected -= OnCommandSelected;
 
                 EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
                 AssemblyReloadEvents.beforeAssemblyReload -= OnBeforeAssemblyReload;
@@ -235,71 +281,12 @@ namespace Amanita.VScripting.EditorUtils
 
         private static void OnUnitySelectionChanged()
         {
-            GameObject activeObject = Selection.activeGameObject;
-            if (activeObject == null)
+            Flowchart fc = FindFlowchartFromSelection();
+
+            if (fc != null)
             {
-                return;
+                SetActiveFlowchart(fc);
             }
-
-            if (activeObject.TryGetComponent(out Flowchart selected))
-            {
-                SetActiveFlowchart(selected);
-            }
-        }
-
-        private static void OnBlockSelected(Block block)
-        {
-            Flowchart flowchart = block != null ?
-                block.GetFlowchart() :
-                null;
-            if (flowchart != null)
-            {
-                SetActiveFlowchart(flowchart);
-            }
-
-            Flowchart toSyncFrom = flowchart != null ?
-                flowchart :
-                activeFlowchart;
-            SyncBlockSelectionFromFlowchart(toSyncFrom);
-        }
-
-        private static void OnBlockRemovedFromSelection(Block block)
-        {
-            Flowchart flowchart = block != null ?
-                block.GetFlowchart() :
-                activeFlowchart;
-
-            SyncBlockSelectionFromFlowchart(flowchart);
-        }
-
-        private static void OnMultiBlocksSelected(IList<Block> blocks)
-        {
-            Flowchart flowchart = null;
-            if (blocks != null && blocks.Count > 0)
-            {
-                Block first = blocks[0];
-                if (first != null)
-                {
-                    flowchart = first.GetFlowchart();
-                }
-            }
-
-            if (flowchart != null)
-            {
-                SetActiveFlowchart(flowchart);
-            }
-
-            ReplaceBlockSelection(blocks);
-        }
-
-        private static void OnFlowchartWindowChanged(Flowchart previous, Flowchart current)
-        {
-            if (current == null && previous == null)
-            {
-                return;
-            }
-
-            SetActiveFlowchart(current);
         }
 
         private static void OnEmptySpaceClicked(PointerEventInfo _)
@@ -344,7 +331,11 @@ namespace Amanita.VScripting.EditorUtils
             }
         }
 
-        public static event Action<Flowchart, Flowchart> SelectedFlowchartChanged = delegate { };
+        /// <summary>
+        /// Raised when the user selects a different Flowchart-having GameObject than before.
+        /// Params: previous Flowchart, new Flowchart
+        /// </summary>
+        public static event System.Action<Flowchart, Flowchart> SelectedFlowchartChanged = delegate { };
 
         public static Flowchart ResolveActiveFlowchart(bool attemptSceneFallback = true)
         {
@@ -356,41 +347,33 @@ namespace Amanita.VScripting.EditorUtils
             Flowchart fromSelection = FindFlowchartFromSelection();
             if (fromSelection != null)
             {
-                SetActiveFlowchart(fromSelection);
+                activeFlowchart = fromSelection; 
+                // Not going with the method here, for the sake of avoiding more signaling than needed
                 return fromSelection;
+            }
+
+            Flowchart basedOnCache = FindFlowchartWithCachedId();
+
+            if (basedOnCache != null)
+            {
+                activeFlowchart = basedOnCache;
+                return basedOnCache;
             }
 
             if (attemptSceneFallback)
             {
-                Flowchart fallback = FindFlowchartInScene();
-                if (fallback != null)
-                {
-                    SetActiveFlowchart(fallback);
-                    return fallback;
-                }
+                Flowchart fallback = UnityObj.FindFirstObjectByType<Flowchart>(FindObjectsInactive.Include);
+                return fallback;
             }
 
             return null;
         }
 
-        private static void OnCommandSelected(Command command)
-        {
-            Flowchart flowchart = command != null ? 
-                command.GetFlowchart() : 
-                null;
-            if (flowchart != null)
-            {
-                SetActiveFlowchart(flowchart);
-            }
-
-            SyncCommandSelectionFromFlowchart(flowchart ?? activeFlowchart);
-        }
-
         private static void OnPlayModeStateChanged(PlayModeStateChange state)
         {
-            if (state == PlayModeStateChange.EnteredEditMode)
+            if (state == PlayModeStateChange.EnteredPlayMode)
             {
-                ResolveActiveFlowchart();
+                SelectFlowchartBasedOnCache();
             }
         }
 
@@ -401,6 +384,9 @@ namespace Amanita.VScripting.EditorUtils
 
         private static void Cleanup()
         {
+            // Why do this check? Because in some cases (entering play mode, for example), the
+            // cleanup method can be called multiple times, and we only want to run this
+            // logic once per "cleanup event".
             if (isCleaningUp)
             {
                 return;

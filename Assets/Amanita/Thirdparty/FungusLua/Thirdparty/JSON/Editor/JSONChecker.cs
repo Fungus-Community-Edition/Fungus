@@ -28,7 +28,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-namespace Amanita.Lua.JSON
+namespace AtMycelia.Amanita.Lua.JSON
 {
 	public class JSONChecker : EditorWindow
 	{

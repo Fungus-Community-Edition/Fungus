@@ -1,4 +1,3 @@
-using Amanita.SaveSys;
 using NUnit.Framework;
 using System.Collections;
 using System.Linq;
@@ -8,8 +7,9 @@ using UnityEngine.TestTools;
 using System.Collections.Generic;
 using UnityObject = UnityEngine.Object;
 using System;
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting;
 using BindingFlags = System.Reflection.BindingFlags;
+using AtMycelia.Amanita.SaveSys;
 
 namespace SaveSystemTests
 {
@@ -256,7 +256,9 @@ namespace SaveSystemTests
             var originalVars = flowchartSaveData.SavedVars.ToList();
             var originalBlocks = flowchartSaveData.SavedBlocks.ToList();
 
-            var keptVar = flowchartSaveData.SavedVars.First();
+            var keptVar = flowchartSaveData.SavedVars.FirstOrDefault(v => v.VarName == nameVar.Key);
+            Assert.IsNotNull(keptVar, "Expected save data to contain the name variable.");
+
             var keptBlock = flowchartSaveData.SavedBlocks.First();
 
             flowchartSaveData.SavedVars = new List<VariableSaveData> { keptVar };
@@ -266,8 +268,13 @@ namespace SaveSystemTests
             keptVar.Value = "RestoredName";
 
             // Apply the partial save data
-            flowchartApplier.Apply(flowchartSaveData, null);
-            await Task.Yield(); 
+            bool complete = false;
+            Action onComplete = () => complete = true;
+            flowchartApplier.Apply(flowchartSaveData, onComplete);
+            while (!complete)
+            {
+                await Task.Yield();
+            }
 
             // Only the kept variable should be restored
             Assert.AreEqual("RestoredName", nameVar.Value, "Kept variable was not restored.");

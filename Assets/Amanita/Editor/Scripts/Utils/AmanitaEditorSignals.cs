@@ -1,10 +1,10 @@
-using Amanita.VScripting;
-using Amanita.VScripting.EditorUtils;
+using AtMycelia.Amanita.VScripting;
+using AtMycelia.Amanita.VScripting.EditorUtils;
 using System;
 using UnityEngine.UIElements;
 using BaseObj = System.Object;
 
-namespace Amanita.EditorUtils
+namespace AtMycelia.Amanita.EditorUtils
 {
     public static class AmanitaEditorSignals
     {
@@ -17,5 +17,6 @@ namespace Amanita.EditorUtils
         public static Action<VariableRow, string> KeyFieldChanged = delegate { };
         public static Action<VariableRow, VariableScope> ScopeFieldChanged = delegate { };
         public static Action<VariableRow, object> ValueFieldChanged = delegate { };
+
     }
 }

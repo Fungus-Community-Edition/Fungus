@@ -1,17 +1,12 @@
 using System;
 using UnityEngine;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     // To reduce the boilerplate in IVariableData implementors such as AnimatorData and FloatData
-    public abstract class VariableData : IVariableData
+    public abstract class VariableData : IVariableData, IRefreshable, ISerializationCallbackReceiver
     {
         [SerializeField] protected VariableReference backingVarRef = new VariableReference();
-        protected virtual Variable LegacyVarRef
-        {
-            get => backingVarRef.Variable as Variable;
-            set => backingVarRef.Variable = value;
-        }
 
         public IVariableSource VarOwner
         {
@@ -66,7 +61,33 @@ namespace Amanita.VScripting
         /// <summary>
         /// If this is false, this is representing a literal value.
         /// </summary>
-        public virtual bool RepresentingVar => VarRef != null;
+        public virtual bool RepresentingVar
+        {
+            get
+            {
+                IVariable varRef = VarRef;
+                if (varRef == null)
+                {
+                    return false;
+                }
+
+                if (varRef.ItemId == Muscariable.InvalidID)
+                {
+                    if (!string.IsNullOrEmpty(varRef.Key) || varRef.Owner != null)
+                    {
+                        Debug.LogWarning($"VariableData: Variable reference {varRef.Key} owned by {varRef.Owner} has invalid ID. Treating as literal value.");
+                    }
+                    return false;
+                }
+
+                if (string.IsNullOrEmpty(varRef.Key))
+                {
+                    return false;
+                }
+
+                return true;
+            }
+        }
 
         private bool CanHoldAsVar(IVariable variable)
         {
@@ -86,9 +107,8 @@ namespace Amanita.VScripting
         {
             if (variable == null)
             {
-                backingVarRef.VarOwner = null;
                 backingVarRef.Variable = null;
-                LegacyVarRef = null;
+                backingVarRef.VarOwner = null;
                 return;
             }
 
@@ -120,11 +140,6 @@ namespace Amanita.VScripting
 
         public virtual void SetContentsTo(IVariableData otherVarData)
         {
-            if (otherVarData is VariableData otherVarDataCasted)
-            {
-                this.VarOwner = otherVarDataCasted.VarOwner;
-            }
-
             this.VarRef = otherVarData.VarRef;
         }
 
@@ -143,6 +158,28 @@ namespace Amanita.VScripting
 
             return result;
         }
+
+        public virtual void OnBeforeSerialize()
+        {
+        }
+
+        public virtual void OnAfterDeserialize()
+        {
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.delayCall += DoBackwardsCompatibility;
+#endif
+        }
+
+        protected virtual void DoBackwardsCompatibility()
+        {
+            if (LegacyVarRef != null)
+            {
+                backingVarRef.Variable = LegacyVarRef;
+                LegacyVarRef = null;
+            }
+        }
+
+        protected virtual Variable LegacyVarRef { get; set; }
     }
 
     public interface IVariableData
@@ -217,6 +254,7 @@ namespace Amanita.VScripting
         {
             get
             {
+                backingVarRef.Refresh();
                 if (RepresentingVar)
                 {
                     return VarRef.BoxedValue;
@@ -251,6 +289,17 @@ namespace Amanita.VScripting
             }
         }
 
+        public virtual TValue LiteralValue
+        {
+            get
+            {
+                return value;
+            }
+            set
+            {
+                this.value = value;
+            }
+        }
         [SerializeField] protected TValue value = default;
 
         public override string GetDescription()
@@ -284,6 +333,43 @@ namespace Amanita.VScripting
             this.VarRef = otherVarData.VarRef;
             this.value = otherVarData.value;
         }
+
+        public override string ToString()
+        {
+            if (BoxedValue == null)
+            {
+                return $"valueless {this.GetType().Name}";
+            }
+            else
+            {
+                return BoxedValue.ToString();
+            }
+        }
+
+        protected override void DoBackwardsCompatibility()
+        {
+            base.DoBackwardsCompatibility();
+
+            if (!ShouldMigrateLegacyLiteral())
+            {
+                return;
+            }
+
+            LiteralValue = LegacyLiteralVal;
+            LegacyLiteralVal = default;
+        }
+
+        private bool ShouldMigrateLegacyLiteral()
+        {
+            if (LegacyLiteralVal == null)
+            {
+                return false;
+            }
+            bool sameAsDefault = LegacyLiteralVal.Equals(default(TValue));
+            return !sameAsDefault;
+        }
+
+        protected virtual TValue LegacyLiteralVal { get; set; }
     }
 
 }

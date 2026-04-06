@@ -1,4 +1,4 @@
-﻿namespace Amanita.VScripting
+﻿namespace AtMycelia.Amanita.VScripting
 {
     public static class VariableUtil
     {

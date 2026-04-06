@@ -1,4 +1,4 @@
-namespace Amanita.Myceliaudio
+namespace AtMycelia.Amanita.Myceliaudio
 {
     /// <summary>
     /// To help audio-playing not sound funky. These values are in the ranges

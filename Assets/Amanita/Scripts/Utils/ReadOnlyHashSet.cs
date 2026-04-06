@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Amanita.Collections.Generic
+namespace AtMycelia.Amanita.Collections.Generic
 {
     public sealed class ReadOnlyHashSet<T> : IReadOnlyHashSet<T>
     {

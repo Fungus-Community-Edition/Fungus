@@ -1,9 +1,9 @@
-﻿using Amanita.EditorUtils;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
-using Amanita.VScripting;
-using Amanita.VScripting.EditorUtils;
+using AtMycelia.Amanita.VScripting;
+using AtMycelia.Amanita.VScripting.EditorUtils;
+using AtMycelia.Amanita.EditorUtils;
 
 namespace VScriptingTests.FCWindowOperations
 {
@@ -12,6 +12,8 @@ namespace VScriptingTests.FCWindowOperations
         [SetUp]
         public virtual void SetUp()
         {
+            TestUtils.ResetFlowchartWindowSingleton();
+
             // Create a Flowchart with three blocks at known positions
             PrepSceneObjects();
             void PrepSceneObjects()

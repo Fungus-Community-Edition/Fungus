@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Calls DontDestroyOnLoad on the target gameobject.
@@ -16,7 +16,7 @@ namespace Amanita.VScripting
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(target);
+            _variableDataCache.Add(target);
         }
 
         public override void OnEnter()

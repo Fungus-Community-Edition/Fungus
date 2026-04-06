@@ -5,14 +5,16 @@ using System.Threading.Tasks;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Unity.IO.LowLevel.Unsafe;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Base class for Commands. Commands can be added to Blocks to create an execution sequence.
     /// </summary>
     [ExecuteInEditMode]
-    public abstract class Command : MonoBehaviour, IVariableReference, IRefreshable, IOnPreCutHandler
+    public abstract class Command : MonoBehaviour, IVariableReference, IRefreshable, IOnPreCutHandler,
+        ISerializationCallbackReceiver, IBackwardsCompatibilityApplier
     {
         [FormerlySerializedAs("commandId")]
         [HideInInspector]
@@ -33,9 +35,16 @@ namespace Amanita.VScripting
         /// </summary>
         public virtual bool NonStandardPaste => false;
 
+        /// <summary>
+        /// Whether or not instances of this Command should have their execution states saved and loaded
+        /// by a save system.
+        /// </summary>
+        public virtual bool ReexecutableOnLoad => true;
+
         protected virtual void OnEnable()
         {
             RefreshForVarDataStability();
+            ApplyBackwardsCompatibility();
         }
 
         /// <summary>
@@ -62,10 +71,15 @@ namespace Amanita.VScripting
             EnsureVariableDataInstances();
             RefreshVariableDataCache();
             AssertOwnership();
+            RefreshVariableDatas();
         }
 
         private void EnsureVariableDataInstances()
         {
+            if (Application.isPlaying)
+            {
+                return;
+            }
 #if UNITY_EDITOR
             // We only want to do this in the editor, since at runtime, we expect the
             // VariableDatas to already be populated and don't want to risk overwriting any data.
@@ -105,18 +119,32 @@ namespace Amanita.VScripting
         protected virtual void RefreshVariableDataCache()
         {
             // We expect child classes to add their VariableDatas to this list
-            variableDataCache ??= new List<IVariableData>(); // In case it was null during a unit test or something
-            variableDataCache.Clear();
+            _variableDataCache ??= new List<IVariableData>(); // In case it was null during a unit test or something
+            _variableDataCache.Clear();
         }
 
-        protected IList<IVariableData> variableDataCache = new List<IVariableData>();
+        protected IList<IVariableData> _variableDataCache = new List<IVariableData>();
 
+        protected virtual void RefreshVariableDatas()
+        {
+            for (int i = 0; i < _variableDataCache.Count; i++)
+            {
+                var refreshable = _variableDataCache[i] as IRefreshable;
+                refreshable?.Refresh();
+            }
+#if UNITY_EDITOR
+            if (_variableDataCache.Count > 0)
+            {
+                UnityEditor.EditorUtility.SetDirty(this);
+            }
+#endif
+        }
         protected virtual void AssertOwnership()
         {
             Flowchart fChart = GetFlowchart();
-            for (int i = 0; i < variableDataCache.Count; i++)
+            for (int i = 0; i < _variableDataCache.Count; i++)
             {
-                var currentVarData = variableDataCache[i];
+                var currentVarData = _variableDataCache[i];
 
                 // We only want to assert ownership if there is no owner already set.
                 // We want to allow the variable datas to have other owners so
@@ -156,7 +184,6 @@ namespace Amanita.VScripting
 #endif
         #endregion Editor caches
 
-        #region Public members
 
         /// <summary>
         /// Unique identifier for this command.
@@ -342,8 +369,12 @@ namespace Amanita.VScripting
         protected virtual void OnValidate()
         {
             RefreshForVarDataStability();
-#if UNITY_EDITOR
             RefreshVariableCache();
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.delayCall += () =>
+            {
+                DelayedOnValidate();
+            };
 #endif
         }
 
@@ -440,7 +471,7 @@ namespace Amanita.VScripting
             return false;
         }
 
-        protected virtual IEnumerator WaitForTask(Task task)
+        protected virtual IEnumerator WaitForTask(Task task, bool callContinueAfterwards = true)
         {
             while (!task.IsCompleted)
             {
@@ -448,9 +479,45 @@ namespace Amanita.VScripting
             }
 
             yield return null; // Just one more frame to ensure any follow-up actions are ready.
-            Continue();
+            if (callContinueAfterwards)
+            {
+                Continue();
+            }
         }
 
-        #endregion
+        public virtual void OnBeforeSerialize()
+        {
+        }
+
+        public virtual void OnAfterDeserialize()
+        {
+        }
+
+        /// <summary>
+        /// Legacy var ids were allowed to be 0 (which is now considered an invalid value),
+        /// so we'll need to check for that and fix it if we see it. This is only needed for 
+        /// Commands that reference variables using legacy var ids, and should be called in 
+        /// OnAfterDeserializeBackwardsCompatibility. Command subclasses should
+        /// override this as needed.
+        /// </summary>
+        protected virtual void EnsureLegacyVarIdsAreValid()
+        {
+
+        }
+
+        public virtual void ApplyBackwardsCompatibility()
+        {
+            EnsureLegacyVarIdsAreValid();
+        }
+
+        /// <summary>
+        /// Override this for OnValidate code that might need to do stuff like access GameObjects
+        /// </summary>
+        protected virtual void DelayedOnValidate()
+        {
+            
+        }
+    
+    
     }
 }

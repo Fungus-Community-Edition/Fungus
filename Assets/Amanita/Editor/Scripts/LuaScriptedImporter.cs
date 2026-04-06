@@ -3,7 +3,7 @@ using System.IO;
 
 using UnityEditor.AssetImporters;
 
-namespace Amanita.EditorUtils
+namespace AtMycelia.Amanita.EditorUtils
 {
 	[ScriptedImporter(1, "lua")]
 	public class LuaScriptedImporter : ScriptedImporter

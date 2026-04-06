@@ -1,46 +1,65 @@
-using Amanita.VScripting;
-using System;
+using AtMycelia.Amanita.VScripting;
 using UnityEngine;
 
-namespace Amanita.Tweening
+namespace AtMycelia.Amanita.Tweening.VScripting
 { 
-    public abstract class BaseTweenCommand : Command
+    public abstract class BaseTweenCommand : Command, ITweenCommand
     {
         [Tooltip("The time in seconds the animation will take to complete")]
         [SerializeField] protected FloatData _duration = new FloatData(1f);
 
         [Tooltip("Tween adapter that will handle the process")]
-        [SerializeField] protected ScriptableObject tweenerSO = null;
+        [SerializeField] protected ScriptableObject _tweenerSO = null;
 
-        [Tooltip("Does the tween act from current TO destination or is it reversed and act FROM destination to its current")]
-        [SerializeField] protected ToFrom _toFrom = ToFrom.To;
+        [Tooltip("Decides whether or not the tween starts from a value the target already has, " +
+            "or a specific other value.")]
+        [SerializeField] protected StartFromMode _startMode = StartFromMode.Current;
 
-        [Tooltip("Does the tween use the value as a target or as a delta to be added to where it already is at the time?")]
+        [Tooltip("Does the tween use the value as a target or as a delta to be added to " +
+            "where it already is at the time?")]
         [SerializeField] protected TweenRelativity _relativity = TweenRelativity.Absolute;
 
-        [Tooltip("Number of times to repeat the tween, -1 is infinite.")]
-        [SerializeField] protected IntegerData repeats = new IntegerData(0);
+        [Tooltip("Number of times to repeat the tween. -1 is infinite.")]
+        [SerializeField] protected IntegerData _repeats = new IntegerData(0);
 
-        [Tooltip("Stop any previously LeanTweens on this object before adding this one. Warning; expensive.")]
-        [SerializeField] protected BooleanData stopPreviousTweens = new BooleanData(false);
+        [Tooltip("Stop any previous tweens on this object before adding this one. " +
+            "Warning: expensive.")]
+        [SerializeField] protected BooleanData _stopPreviousTweens = new BooleanData(false);
 
-        [Tooltip("Wait until the tween has finished before executing the next command")]
-        [SerializeField] protected BooleanData waitUntilFinished = new BooleanData(true);
+        [Tooltip("Whether or not to wait until the tween has finished before executing the next Command.")]
+        [SerializeField] protected BooleanData _waitUntilFinished = new BooleanData(true);
+
+        public FloatData Duration => _duration;
+        public ScriptableObject TweenerSO => _tweenerSO;
+        public BooleanData StopPreviousTweens => _stopPreviousTweens;
+        public BooleanData WaitUntilFinished => _waitUntilFinished;
+        public ITweenHandle CurrentTween => _ourTween;
 
         protected virtual void Awake()
         {
             ValidateTweener();
         }
 
-        protected abstract void ValidateTweener();
+        protected virtual void ValidateTweener()
+        {
+            if (_tweenerSO == null)
+            {
+                GoWithDefaultTweener();
+            }
+        }
+
+        protected virtual void GoWithDefaultTweener()
+        {
+            _tweenerSO = DefaultAmanitaAssets.TweenAdapter;
+        }
 
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(_duration);
-            variableDataCache.Add(repeats);
-            variableDataCache.Add(stopPreviousTweens);
-            variableDataCache.Add(waitUntilFinished);
+            _variableDataCache.Add(_duration);
+            _variableDataCache.Add(_repeats);
+            _variableDataCache.Add(_stopPreviousTweens);
+            _variableDataCache.Add(_waitUntilFinished);
         }
 
         public override void OnEnter()
@@ -48,51 +67,68 @@ namespace Amanita.Tweening
             base.OnEnter();
             if (!AreTargetsValid())
             {
-                Debug.LogWarning("Tween command targets are not valid, skipping tween.");
+                string warningMessage = $"{GetType().Name} on {gameObject.name}'s {ParentBlock.BlockName} Block " +
+                    $"at index {CommandIndex} has invalid targets.";
+                Debug.LogWarning(warningMessage);
                 Continue();
                 return;
             }
 
-            if (stopPreviousTweens)
+            if (_stopPreviousTweens)
             {
                 StopAllTweens();
             }
 
-            ourTween = PrepAndExecuteTween();
+            _ourTween = PrepAndExecuteTween();
 
             WaitOrContinueAsAppropriate();
         }
 
         protected abstract bool AreTargetsValid();
 
-        private void StopAllTweens()
-        {
-            throw new NotImplementedException();
-        }
+        // Different tween types may have various types of targets, and thus we want
+        // to let subclasses implement their own logic for stopping tweens that are relevant to them.
+        protected abstract void StopAllTweens();
 
-        protected ITweenHandle ourTween;
+        protected ITweenHandle _ourTween;
 
         // TODO: Have this set the repeat and loop type
         protected abstract ITweenHandle PrepAndExecuteTween();
         protected virtual void OnTweenComplete()
         {
-            Continue();
+            if (_waitUntilFinished)
+            {
+                Continue();
+            }
         }
 
         protected virtual void WaitOrContinueAsAppropriate()
         {
-            if (waitUntilFinished)
+            if (_waitUntilFinished)
             {
-                ourTween?.SetOnComplete(OnTweenComplete);
+                _ourTween?.SetOnComplete(OnTweenComplete);
             }
             else
             {
                 Continue();
             }
         }
+
+        protected override void DelayedOnValidate()
+        {
+            base.DelayedOnValidate();
+            ValidateTweener();
+        }
     }
 
-    public enum ToFrom { Null, To, From }
+    /// <summary>
+    /// For helping decide where a tween will start.
+    /// </summary>
+    public enum StartFromMode { Null, Current, FromValue }
+
+    /// <summary>
+    /// For helping decide whether the tween's target value is absolute or relative to the current value.
+    /// </summary>
     public enum TweenRelativity
     {
         Null, Absolute, Relative

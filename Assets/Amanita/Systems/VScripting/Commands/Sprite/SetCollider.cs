@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Sets all collider (2d or 3d) components on the target objects to be active / inactive.
@@ -24,7 +24,7 @@ namespace Amanita.VScripting
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(activeState);
+            _variableDataCache.Add(activeState);
         }
 
         protected virtual void SetColliderActive(GameObject go)

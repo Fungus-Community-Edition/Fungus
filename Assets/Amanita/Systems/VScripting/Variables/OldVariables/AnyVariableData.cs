@@ -2,18 +2,12 @@ using System;
 using UnityEngine;
 using baseObj = System.Object;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
-    /// Collection of every Fungus VariableData type, used in commands that are designed to
-    /// support any and all types. Those command just have a AnyVariableData anyVar or
-    /// an AnyVariableAndDataPair anyVarDataPair to encapsulate the more unpleasant parts.
-    ///
-    /// New types created need to be added to the list below and also to AllVariableTypes and
-    /// AnyVariableAndDataPair
-    /// 
-    /// Note; when using this in a command ensure that RefreshVariableCache is also handled for
-    /// string var substitution.
+    /// A VariableData class that can hold any type of variable data. It does this by holding a 
+    /// reference to an IVariableData, which can be swapped out at runtime to change the type 
+    /// of variable data being held.
     /// </summary>
     [Serializable]
     public partial class AnyVariableData : VariableData
@@ -95,7 +89,8 @@ namespace Amanita.VScripting
             
             if (toSet == null)
             {
-                logMessage = $"Could not find appropriate IVariableData for the {varType.Name} content type";
+                logMessage = $"Could not find appropriate IVariableData for the " +
+                    $"{varType.Name} content type";
                 Debug.LogError(logMessage);
                 return;
             }

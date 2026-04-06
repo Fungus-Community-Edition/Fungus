@@ -1,12 +1,14 @@
 ﻿using UnityEngine;
 
-namespace Amanita.Lua
+namespace AtMycelia.Amanita.Lua
 {
     /// <summary>
     /// Factory class to create new instances of common POD value types used by Unity.
-    /// Supports the same types as the SerializedProperty class: Color, Vector2, Vector3, Vector4, Quaternion & Rect.
+    /// Supports the same types as the SerializedProperty class: Color, Vector2, Vector3, 
+    /// Vector4, Quaternion & Rect.
     /// MoonSharp doesn't work well with these types due to internal interop issues with c#. 
-    /// Use these factory methods to construct these types instead of using the __new function call in Lua.
+    /// Use these factory methods to construct these types instead of using the 
+    /// __new function call in Lua.
     /// </summary>
     public static class PODTypeFactory  
     {
@@ -63,7 +65,7 @@ namespace Amanita.Lua
         /// <param name="z">The z rotation in degrees.</param>
         public static Quaternion quaternion(float x, float y, float z)
         {
-            return UnityEngine.Quaternion.Euler(x,y,z);
+            return Quaternion.Euler(x,y,z);
         }
             
         /// <summary>

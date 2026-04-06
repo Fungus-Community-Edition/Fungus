@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     [CommandInfo("Variable",
         "Text To Float",
@@ -15,7 +15,7 @@ namespace Amanita.VScripting
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(hasTextField);
+            _variableDataCache.Add(hasTextField);
         }
 
         public override void OnEnter()

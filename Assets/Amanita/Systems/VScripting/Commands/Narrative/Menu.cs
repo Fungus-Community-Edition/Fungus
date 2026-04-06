@@ -1,9 +1,9 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 using System.Collections.Generic;
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting;
 
-namespace Amanita.DialogueSys.Commands
+namespace AtMycelia.Amanita.DialogueSys.Commands
 {
     /// <summary>
     /// Displays a button in a multiple choice menu.

@@ -4,9 +4,9 @@ using System.Linq;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
-using Amanita.EditorUtils;
+using AtMycelia.Amanita.EditorUtils;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     public class CommandListAdaptor
     {
@@ -160,18 +160,41 @@ namespace Amanita.VScripting.EditorUtils
 
         protected virtual Rect CalculateIconRect(Rect labelRect, Command command)
         {
-            Rect result = Rect.zero;
+            Rect result = labelRect;
+            result.x += result.width - iconWidth - 5;
+            result.width = result.height = iconWidth;
+            result.y += (labelRect.height - result.height) * 0.25f;
+            return result;
+        }
 
-            if (command.IsExecuting)
+        protected virtual void DrawExecutingIcon(Rect iconRect, Command cmd)
+        {
+            if (iconRect == Rect.zero || !ShouldDrawExecutingIcon(cmd))
             {
-                result = labelRect;
-                result.x += result.width - iconWidth;
-                // We want to render it as a square, so...
-                result.width = result.height = iconWidth; 
-                return result;
+                return;
             }
 
-            return result;
+            float alpha = 1f;
+            if (!cmd.IsExecuting)
+            {
+                float timeRemaining = cmd.ExecutingIconTimer - Time.realtimeSinceStartup;
+                alpha = Mathf.Clamp01(timeRemaining / AmanitaConstants.ExecutingIconFadeTime);
+            }
+
+            var prevColor = GUI.color;
+            GUI.color = new Color(1f, 1f, 1f, alpha);
+            GUI.DrawTexture(iconRect, AmanitaEditorResources.PlaySmall, ScaleMode.ScaleToFit, true);
+            GUI.color = prevColor;
+        }
+
+        protected virtual bool ShouldDrawExecutingIcon(Command cmd)
+        {
+            if (cmd == null)
+            {
+                return false;
+            }
+
+            return cmd.IsExecuting || cmd.ExecutingIconTimer > Time.realtimeSinceStartup;
         }
 
         protected static readonly int iconWidth = 20;
@@ -289,18 +312,5 @@ namespace Amanita.VScripting.EditorUtils
                 flowchart.AddSelectedCommand(command);
             });
         }
-
-        protected virtual void DrawExecutingIcon(Rect iconRect, Command cmd)
-        {
-            if (iconRect == Rect.zero) return;
-            float alpha = (cmd.ExecutingIconTimer - Time.realtimeSinceStartup)
-                            / AmanitaConstants.ExecutingIconFadeTime;
-            alpha = Mathf.Clamp01(alpha);
-            var prevColor = GUI.color;
-            GUI.color = new Color(1, 1, 1, alpha);
-            GUI.Label(iconRect, AmanitaEditorResources.PlaySmall);
-            GUI.color = prevColor;
-        }
-
     }
 }

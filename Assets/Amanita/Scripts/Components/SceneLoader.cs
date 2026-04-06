@@ -2,7 +2,7 @@
 using UnityEngine.SceneManagement;
 using System.Collections;
 
-namespace Amanita
+namespace AtMycelia.Amanita
 {
     /// <summary>
     /// Helper component for loading a new scene.

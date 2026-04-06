@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 using System.Collections.Generic;
-using Amanita.EditorUtils;
+using AtMycelia.Amanita.EditorUtils;
 
 namespace VScriptingTests.FCWindowOperations
 {

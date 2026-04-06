@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Sets a game object in the scene to be active / inactive.
@@ -14,25 +14,24 @@ namespace Amanita.VScripting
     public class SetActive : Command
     {
         [Tooltip("Reference to game object to enable / disable")]
-        [SerializeField] protected GameObjectData _targetGameObject;
+        [SerializeField] protected GameObjectData _targetGameObject = new GameObjectData();
 
         [Tooltip("Set to true to enable the game object")]
-        [SerializeField] protected BooleanData activeState;
+        [FormerlySerializedAs("activeState")]
+        [SerializeField] protected BooleanData _activeState = new BooleanData();
 
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(_targetGameObject);
-            variableDataCache.Add(activeState);
+            _variableDataCache.Add(_targetGameObject);
+            _variableDataCache.Add(_activeState);
         }
-
-        #region Public members
 
         public override void OnEnter()
         {
             if (_targetGameObject.Value != null)
             {
-                _targetGameObject.Value.SetActive(activeState.Value);
+                _targetGameObject.Value.SetActive(_activeState.Value);
             }
 
             Continue();
@@ -45,7 +44,20 @@ namespace Amanita.VScripting
                 return "Error: No game object selected";
             }
 
-            return _targetGameObject.Value.name + " = " + activeState.GetDescription();
+            string result = "";
+
+            if (_targetGameObject.RepresentingVar)
+            {
+                result += $"{_targetGameObject.VarRef.Key} ";
+            }
+            else
+            {
+                GameObject targGo = _targetGameObject.Value;
+                result += $"{targGo.name} ";
+            }
+
+            result += $"= {_activeState.GetDescription()}";
+            return result;
         }
 
         public override Color GetButtonColor()
@@ -56,11 +68,10 @@ namespace Amanita.VScripting
         public override bool HasReference(Variable variable)
         {
             return ReferenceEquals(_targetGameObject.VarRef, variable) || 
-                ReferenceEquals(activeState.VarRef, variable) || 
+                ReferenceEquals(_activeState.VarRef, variable) || 
                 base.HasReference(variable);
         }
 
-        #endregion
 
         #region Backwards compatibility
 
@@ -69,6 +80,11 @@ namespace Amanita.VScripting
         protected override void OnEnable()
         {
             base.OnEnable();
+        }
+
+        public override void ApplyBackwardsCompatibility()
+        {
+            base.ApplyBackwardsCompatibility();
             if (targetGameObjectOLD != null)
             {
                 _targetGameObject.Value = targetGameObjectOLD;

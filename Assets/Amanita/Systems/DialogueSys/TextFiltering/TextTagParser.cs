@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-namespace Amanita.DialogueSys
+namespace AtMycelia.Amanita.DialogueSys
 {
     /// <summary>
     /// Parses a string for special Fungus text tags.
@@ -34,137 +34,141 @@ namespace Amanita.DialogueSys
             var type = TokenType.Invalid;
             List<string> parameters = ExtractParameters(tag);
             
-            if (tag == "b")
+            SetTokenTypeBasedOnTag();
+            void SetTokenTypeBasedOnTag()
             {
-                type = TokenType.BoldStart;
-            }
-            else if (tag == "/b")
-            {
-                type = TokenType.BoldEnd;
-            }
-            else if (tag == "i")
-            {
-                type = TokenType.ItalicStart;
-            }
-            else if (tag == "/i")
-            {
-                type = TokenType.ItalicEnd;
-            }
-            else if (tag.StartsWith("color="))
-            {
-                type = TokenType.ColorStart;
-            }
-            else if (tag == "/color")
-            {
-                type = TokenType.ColorEnd;
-            }
-            else if (tag.StartsWith("size="))
-            {
-                type = TokenType.SizeStart;
-            }
-            else if (tag == "/size")
-            {
-                type = TokenType.SizeEnd;
-            }
-            else if (tag == "wi")
-            {
-                type = TokenType.WaitForInputNoClear;
-            }
-            else if (tag == "wc")
-            {
-                type = TokenType.WaitForInputAndClear;
-            }
-            else if (tag == "wvo")
-            {
-                type = TokenType.WaitForVoiceOver;
-            }
-            else if (tag.StartsWith("wp="))
-            {
-                type = TokenType.WaitOnPunctuationStart;
-            }
-            else if (tag == "wp")
-            {
-                type = TokenType.WaitOnPunctuationStart;
-            }
-            else if (tag == "/wp")
-            {
-                type = TokenType.WaitOnPunctuationEnd;
-            }
-            else if (tag.StartsWith("w="))
-            {
-                type = TokenType.Wait;
-            }
-            else if (tag == "w")
-            {
-                type = TokenType.Wait;
-            }
-            else if (tag == "c")
-            {
-                type = TokenType.Clear;
-            }
-            else if (tag.StartsWith("s="))
-            {
-                type = TokenType.SpeedStart;
-            }
-            else if (tag == "s")
-            {
-                type = TokenType.SpeedStart;
-            }
-            else if (tag == "/s")
-            {
-                type = TokenType.SpeedEnd;
-            }
-            else if (tag == "x")
-            {
-                type = TokenType.Exit;
-            }
-            else if (tag.StartsWith("m="))
-            {
-                type = TokenType.Message;
-            }
-            else if (tag.StartsWith("vpunch") ||
-                     tag.StartsWith("vpunch="))
-            {
-                type = TokenType.VerticalPunch;
-            }
-            else if (tag.StartsWith("hpunch") ||
-                     tag.StartsWith("hpunch="))
-            {
-                type = TokenType.HorizontalPunch;
-            }
-            else if (tag.StartsWith("punch") ||
-                     tag.StartsWith("punch="))
-            {
-                type = TokenType.Punch;
-            }
-            else if (tag.StartsWith("flash") ||
-                     tag.StartsWith("flash="))
-            {
-                type = TokenType.Flash;
-            }
-            else if (tag.StartsWith("audio="))
-            {
-                type = TokenType.Audio;
-            }
-            else if (tag.StartsWith("audioloop="))
-            {
-                type = TokenType.AudioLoop;
-            }
-            else if (tag.StartsWith("audiopause="))
-            {
-                type = TokenType.AudioPause;
-            }
-            else if (tag.StartsWith("audiostop="))
-            {
-                type = TokenType.AudioStop;
-            }
-            else if (tag.StartsWith("link="))
-            {
-                type = TokenType.LinkStart;
-            }
-            else if (tag.StartsWith("/link"))
-            {
-                type = TokenType.LinkEnd;
+                if (tag == "b")
+                {
+                    type = TokenType.BoldStart;
+                }
+                else if (tag == "/b")
+                {
+                    type = TokenType.BoldEnd;
+                }
+                else if (tag == "i")
+                {
+                    type = TokenType.ItalicStart;
+                }
+                else if (tag == "/i")
+                {
+                    type = TokenType.ItalicEnd;
+                }
+                else if (tag.StartsWith("color="))
+                {
+                    type = TokenType.ColorStart;
+                }
+                else if (tag == "/color")
+                {
+                    type = TokenType.ColorEnd;
+                }
+                else if (tag.StartsWith("size="))
+                {
+                    type = TokenType.SizeStart;
+                }
+                else if (tag == "/size")
+                {
+                    type = TokenType.SizeEnd;
+                }
+                else if (tag == "wi")
+                {
+                    type = TokenType.WaitForInputNoClear;
+                }
+                else if (tag == "wc")
+                {
+                    type = TokenType.WaitForInputAndClear;
+                }
+                else if (tag == "wvo")
+                {
+                    type = TokenType.WaitForVoiceOver;
+                }
+                else if (tag.StartsWith("wp="))
+                {
+                    type = TokenType.WaitOnPunctuationStart;
+                }
+                else if (tag == "wp")
+                {
+                    type = TokenType.WaitOnPunctuationStart;
+                }
+                else if (tag == "/wp")
+                {
+                    type = TokenType.WaitOnPunctuationEnd;
+                }
+                else if (tag.StartsWith("w="))
+                {
+                    type = TokenType.Wait;
+                }
+                else if (tag == "w")
+                {
+                    type = TokenType.Wait;
+                }
+                else if (tag == "c")
+                {
+                    type = TokenType.Clear;
+                }
+                else if (tag.StartsWith("s="))
+                {
+                    type = TokenType.SpeedStart;
+                }
+                else if (tag == "s")
+                {
+                    type = TokenType.SpeedStart;
+                }
+                else if (tag == "/s")
+                {
+                    type = TokenType.SpeedEnd;
+                }
+                else if (tag == "x")
+                {
+                    type = TokenType.Exit;
+                }
+                else if (tag.StartsWith("m="))
+                {
+                    type = TokenType.Message;
+                }
+                else if (tag.StartsWith("vpunch") ||
+                         tag.StartsWith("vpunch="))
+                {
+                    type = TokenType.VerticalPunch;
+                }
+                else if (tag.StartsWith("hpunch") ||
+                         tag.StartsWith("hpunch="))
+                {
+                    type = TokenType.HorizontalPunch;
+                }
+                else if (tag.StartsWith("punch") ||
+                         tag.StartsWith("punch="))
+                {
+                    type = TokenType.Punch;
+                }
+                else if (tag.StartsWith("flash") ||
+                         tag.StartsWith("flash="))
+                {
+                    type = TokenType.Flash;
+                }
+                else if (tag.StartsWith("audio="))
+                {
+                    type = TokenType.Audio;
+                }
+                else if (tag.StartsWith("audioloop="))
+                {
+                    type = TokenType.AudioLoop;
+                }
+                else if (tag.StartsWith("audiopause="))
+                {
+                    type = TokenType.AudioPause;
+                }
+                else if (tag.StartsWith("audiostop="))
+                {
+                    type = TokenType.AudioStop;
+                }
+                else if (tag.StartsWith("link="))
+                {
+                    type = TokenType.LinkStart;
+                }
+                else if (tag.StartsWith("/link"))
+                {
+                    type = TokenType.LinkEnd;
+                }
             }
 
             if (type != TokenType.Invalid)
@@ -176,7 +180,7 @@ namespace Amanita.DialogueSys
             }
             else
             {
-                Debug.LogWarning("Invalid text tag " + tag);
+                Debug.LogWarning($"Invalid text tag \"{tag}\"");
             }
         }
 

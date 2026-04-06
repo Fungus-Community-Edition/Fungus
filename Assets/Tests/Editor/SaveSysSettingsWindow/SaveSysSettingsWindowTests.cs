@@ -1,6 +1,5 @@
-using Amanita;
-using Amanita.SaveSys;
-using Amanita.SaveSys.EditorUtils;
+using AtMycelia.Amanita;
+using AtMycelia.SaveSys.EditorUtils;
 using NUnit.Framework;
 using System.IO;
 using System.Linq;
@@ -10,6 +9,8 @@ using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Type = System.Type;
+using AtMycelia;
+using AtMycelia.SaveSys;
 
 public class SaveSysSettingsWindowTests
 {
@@ -277,8 +278,8 @@ public class SaveSysSettingsWindowTests
         CreateWindowWithUxmlAssigned();
 
         // Ensure defaults exist
-        var defaultReader = Resources.Load<ScriptableObject>(AmanitaConstants.PathToDefaultSaveReader);
-        var defaultWriter = Resources.Load<ScriptableObject>(AmanitaConstants.PathToDefaultSaveWriter);
+        var defaultReader = DefaultSaveSysAssets.SaveReader;
+        var defaultWriter = DefaultSaveSysAssets.SaveWriter;
         Assert.IsNotNull(defaultReader, "DefaultSaveReader resource must exist.");
         Assert.IsNotNull(defaultWriter, "DefaultSaveWriter resource must exist.");
 

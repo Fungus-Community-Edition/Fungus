@@ -1,15 +1,12 @@
-﻿using Amanita;
-using Amanita.VScripting.Commands;
-using Amanita.VScripting.EventHandlers;
+﻿using AtMycelia.Amanita.VScripting.EventHandlers;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
-using ClipboardObject = Amanita.EditorUtils.ClipboardObject;
+using ClipboardObject = AtMycelia.Amanita.EditorUtils.ClipboardObject;
 using Object = UnityEngine.Object;
-using Type = System.Type;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     public class BlockClipboardEntry
     {

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     [RowVisualHandler(menuName: "Physics",
         contentType: typeof(Collider2D),
@@ -18,19 +18,19 @@ namespace Amanita.VScripting.EditorUtils
     {
     }
 
-    [RowVisualHandler(menuName: "Physics",
-        contentType: typeof(Rigidbody2D),
-        typeDisplayName: "RigidbodyTwoD",
-        pathToTemplate: "UIToolkitTemplates/VarRows/Physics/RigidbodyTwoDVariableRow")]
-    public class RigidbodyTwoDRowVisualHandler : RowVisualHandler<Rigidbody2D>
-    {
-    }
+    //[RowVisualHandler(menuName: "Physics",
+    //    contentType: typeof(Rigidbody2D),
+    //    typeDisplayName: "RigidbodyTwoD",
+    //    pathToTemplate: "UIToolkitTemplates/VarRows/Physics/RigidbodyTwoDVariableRow")]
+    //public class RigidbodyTwoDRowVisualHandler : RowVisualHandler<Rigidbody2D>
+    //{
+    //}
 
-    [RowVisualHandler(menuName: "Physics",
-        contentType: typeof(Rigidbody),
-        typeDisplayName: "RigidbodyThreeD",
-        pathToTemplate: "UIToolkitTemplates/VarRows/Physics/RigidbodyThreeDVariableRow")]
-    public class RigidbodyThreeDRowVisualHandler : RowVisualHandler<Rigidbody>
-    {
-    }
+    //[RowVisualHandler(menuName: "Physics",
+    //    contentType: typeof(Rigidbody),
+    //    typeDisplayName: "RigidbodyThreeD",
+    //    pathToTemplate: "UIToolkitTemplates/VarRows/Physics/RigidbodyThreeDVariableRow")]
+    //public class RigidbodyThreeDRowVisualHandler : RowVisualHandler<Rigidbody>
+    //{
+    //}
 }

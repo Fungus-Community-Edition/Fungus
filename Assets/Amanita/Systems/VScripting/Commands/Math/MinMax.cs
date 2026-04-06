@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Command to store the min or max of 2 values
@@ -32,9 +32,9 @@ namespace Amanita.VScripting
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(inLHSValue);
-            variableDataCache.Add(inRHSValue);
-            variableDataCache.Add(outValue);
+            _variableDataCache.Add(inLHSValue);
+            _variableDataCache.Add(inRHSValue);
+            _variableDataCache.Add(outValue);
         }
 
         public override void OnEnter()

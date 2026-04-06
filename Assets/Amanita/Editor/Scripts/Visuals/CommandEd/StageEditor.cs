@@ -1,9 +1,9 @@
 using UnityEditor;
 using UnityEngine;
-using Amanita.DialogueSys.Commands;
-using Amanita.DialogueSys;
+using AtMycelia.Amanita.DialogueSys.Commands;
+using AtMycelia.Amanita.DialogueSys;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     [CustomEditor (typeof(ControlStage))]
     public class StageEditor : CommandEditor

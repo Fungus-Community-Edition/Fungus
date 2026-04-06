@@ -1,8 +1,8 @@
 using UnityEngine;
 using UnityEditor;
-using Amanita.VScripting.EditorUtils;
+using AtMycelia.Amanita.VScripting.EditorUtils;
 
-namespace Amanita.EditorUtils
+namespace AtMycelia.Amanita.EditorUtils
 {
     // The prefab names are prefixed with Fungus to avoid clashes with any other prefabs in the project
     public class NarrativeMenuItems 

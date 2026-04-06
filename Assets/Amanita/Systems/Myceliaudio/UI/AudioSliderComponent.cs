@@ -1,8 +1,8 @@
 using UnityEngine;
 using UnityEngine.UI;
-using Amanita.UI;
+using AtMycelia.Amanita.UI;
 
-namespace Amanita.Myceliaudio
+namespace AtMycelia.Amanita.Myceliaudio
 {
     public abstract class AudioSliderComponent : MonoBehaviour
     {

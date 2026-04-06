@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-namespace Amanita
+namespace AtMycelia.Amanita
 {
     /// <summary>
     /// Static lookup for Text Mesh Pro Link animations. TMPro tracks and holds information about

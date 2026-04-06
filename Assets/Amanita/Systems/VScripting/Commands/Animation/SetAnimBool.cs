@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Sets a boolean parameter on an Animator component to control a Unity animation"
@@ -67,9 +67,9 @@ namespace Amanita.VScripting
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(_animator);
-            variableDataCache.Add(_parameterName);
-            variableDataCache.Add(value);
+            _variableDataCache.Add(_animator);
+            _variableDataCache.Add(_parameterName);
+            _variableDataCache.Add(value);
         }
 
         protected override void OnEnable()

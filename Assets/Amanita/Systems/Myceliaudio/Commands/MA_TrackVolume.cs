@@ -1,7 +1,7 @@
 using UnityEngine;
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting;
 
-namespace Amanita.Myceliaudio.VScripting
+namespace AtMycelia.Amanita.Myceliaudio.VScripting
 {
     [CommandInfo("Myceliaudio",
         "MA GetSet Vol",
@@ -16,12 +16,10 @@ namespace Amanita.Myceliaudio.VScripting
         [VariableProperty(typeof(FloatVariable))]
         [SerializeField] protected FloatVariable outputVar;
 
-        public void OnBeforeSerialize() { }
-
-        public void OnAfterDeserialize()
+        public override void ApplyBackwardsCompatibility()
         {
+            base.ApplyBackwardsCompatibility();
             targetVol ??= new FloatData();
-            //
         }
 
         public override void OnEnter()

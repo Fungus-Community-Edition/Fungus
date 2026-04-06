@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Container for an integer variable reference or constant value.
@@ -12,6 +12,10 @@ namespace Amanita.VScripting
         [SerializeField]
         [VariableProperty("<Value>", typeof(IntegerVariable))]
         public IntegerVariable integerRef;
+
+        [SerializeField]
+        public int integerVal;
+
         protected override Variable LegacyVarRef
         {
             get => integerRef;
@@ -20,6 +24,12 @@ namespace Amanita.VScripting
                 integerRef = value as IntegerVariable;
                 base.LegacyVarRef = value;
             }
+        }
+
+        protected override int LegacyLiteralVal
+        {
+            get => integerVal;
+            set => integerVal = value;
         }
 
         public IntegerData() : base(default) { }
@@ -39,6 +49,10 @@ namespace Amanita.VScripting
         [SerializeField]
         [VariableProperty("<Value>", typeof(FloatVariable))]
         public FloatVariable floatRef;
+
+        [SerializeField]
+        public float floatVal;
+
         protected override Variable LegacyVarRef
         {
             get => floatRef;
@@ -48,6 +62,13 @@ namespace Amanita.VScripting
                 base.LegacyVarRef = value;
             }
         }
+
+        protected override float LegacyLiteralVal
+        {
+            get => floatVal;
+            set => floatVal = value;
+        }
+
         public FloatData() : base(default) { }
 
         public FloatData(float startVal) : base(startVal)
@@ -70,6 +91,12 @@ namespace Amanita.VScripting
         {
             get => booleanRef;
             set => booleanRef = value as BooleanVariable;
+        }
+
+        protected override bool LegacyLiteralVal
+        {
+            get => booleanVal;
+            set => booleanVal = value;
         }
 
         [SerializeField]
@@ -95,6 +122,9 @@ namespace Amanita.VScripting
         [VariableProperty("<Value>", typeof(Vector2Variable))]
         public Vector2Variable vector2Ref;
 
+        [SerializeField]
+        public Vector2 vector2Val;
+
         public Vector2Data() : base(default) { }
         public Vector2Data(Vector2 startVal = default) : base(startVal) { }
 
@@ -102,6 +132,12 @@ namespace Amanita.VScripting
         {
             get => vector2Ref;
             set => vector2Ref = value as Vector2Variable;
+        }
+
+        protected override Vector2 LegacyLiteralVal
+        {
+            get => vector2Val;
+            set => vector2Val = value;
         }
     }
 
@@ -116,6 +152,9 @@ namespace Amanita.VScripting
         [VariableProperty("<Value>", typeof(Vector3Variable))]
         public Vector3Variable vector3Ref;
 
+        [SerializeField]
+        public Vector3 vector3Val;
+
         public Vector3Data() : base(default) { }
         public Vector3Data(Vector3 startVal = default) : base(startVal) { }
 
@@ -123,6 +162,12 @@ namespace Amanita.VScripting
         {
             get => vector3Ref;
             set => vector3Ref = value as Vector3Variable;
+        }
+
+        protected override Vector3 LegacyLiteralVal
+        {
+            get => vector3Val;
+            set => vector3Val = value;
         }
     }
 }

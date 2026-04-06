@@ -295,7 +295,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 73907072}
-  - component: {fileID: 73907071}
   m_Layer: 0
   m_Name: _FungusState
   m_TagString: Untagged
@@ -303,20 +302,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &73907071
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 73907070}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 61dddfdc5e0e44ca298d8f46f7f5a915, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  selectedFlowchart: {fileID: 1620115404}
-  lastSelectedFc: {fileID: 1789447538}
 --- !u!4 &73907072
 Transform:
   m_ObjectHideFlags: 1
@@ -1350,7 +1335,7 @@ GameObject:
   m_IsActive: 1
 --- !u!114 &1620115401
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -1366,20 +1351,22 @@ MonoBehaviour:
   markerID:
     backingVarRef:
       itemId: 3
-      owningFc: {fileID: 1620115404}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 1620115404}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: DefaultMarker
     stringRef: {fileID: 0}
   markerOrder:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 1620115404}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 1620115404}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: 0
     integerRef: {fileID: 0}
 --- !u!114 &1620115402
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -1394,7 +1381,7 @@ MonoBehaviour:
   waitForFrames: 1
 --- !u!114 &1620115403
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -1408,8 +1395,8 @@ MonoBehaviour:
     serializedVersion: 2
     x: 203
     y: 348
-    width: 300
-    height: 100
+    width: 60
+    height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
   itemId: 21
@@ -1451,38 +1438,43 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a334fe2ffb574b3583ff3b18b4792d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  variableManager:
+    muscariables:
+    - rid: 846271704159223897
+    - rid: 846271704159223899
+    - rid: 7903257792018382921
+    - rid: 7903257792018382959
+    - rid: 4605209356947947849
+    legacyVariables: []
+    nextValidVarID: 8
+    isInitted: 1
+  version: 1
+  legacyVariables: []
+  _oldMuscariables: []
+  description: Desc here loaaa
   uiModel:
-    _selectedBlocks:
-    - {fileID: 1620115427}
+    _selectedBlocks: []
     _selectedCommands: []
-    <ScrollPos>k__BackingField: {x: 35.531216, y: -25.567638}
+    _owner: {fileID: 1620115399}
+    <ScrollPos>k__BackingField: {x: 205.53116, y: -79.80783}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesExpanded>k__BackingField: 0
-    <Zoom>k__BackingField: 1
-    <BlockViewHeight>k__BackingField: 400
+    <Zoom>k__BackingField: 1.1
+    <BlockViewHeight>k__BackingField: 223
     <ScrollViewRect>k__BackingField:
       serializedVersion: 2
       x: 0
       y: 0
       width: 0
       height: 0
-    <SelectedCommandsStale>k__BackingField: 0
-  version: 1
-  legacyVariables: []
-  muscariables:
-  - rid: 846271704159223897
-  - rid: 846271704159223899
-  - rid: 7903257792018382921
-  - rid: 7903257792018382959
-  - rid: 4605209356947947849
-  description: Desc here loaaa
+    <SelectedCommandsStale>k__BackingField: 1
   stepPause: 0
   colorCommands: 1
   hideComponents: 1
   saveSelection: 1
-  localizationId: 
   showLineNumbers: 0
   hideCommands: []
+  localizationId: 
   _luaEnvironment: {fileID: 0}
   luaBindingName: flowchart
   includeInSaves: 1
@@ -1490,51 +1482,77 @@ MonoBehaviour:
   saveVariables: 1
   loadPriority: 0
   alwaysKeepGuid: 1
+  _blockListCache:
+  - {fileID: 1620115403}
+  - {fileID: 1620115427}
+  _commands:
+  - {fileID: 1620115401}
+  - {fileID: 1620115409}
+  - {fileID: 1620115408}
+  - {fileID: 1620115406}
+  - {fileID: 1620115413}
+  - {fileID: 1620115412}
+  - {fileID: 1620115414}
+  - {fileID: 1620115417}
+  - {fileID: 1620115416}
+  - {fileID: 1620115415}
+  - {fileID: 1620115419}
+  - {fileID: 1620115425}
+  - {fileID: 1620115424}
+  - {fileID: 1620115423}
+  - {fileID: 1620115422}
+  - {fileID: 1620115421}
+  - {fileID: 1620115420}
+  - {fileID: 1620115428}
+  - {fileID: 1620115429}
+  - {fileID: 1620115430}
+  - {fileID: 1620115431}
+  - {fileID: 1620115432}
   nextValidVarID: 9
   uniqueId: 2ca35de7-a3f9-4de6-ab3d-f84cdac7cdea
   references:
     version: 2
     RefIds:
     - rid: 846271704159223897
-      type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
+      type: {class: StringMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
-        scope: 0
+        scope: 1
         key: firstMarkerID
         itemID: 3
-        _ownerIdIndex: 0
         value: first
+        startValue: 
     - rid: 846271704159223899
-      type: {class: ColorMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
+      type: {class: ColorMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: someColor
         itemID: 4
-        _ownerIdIndex: 0
-        value: {r: 0.19999999, g: 0.7647059, b: 0.26189932, a: 0}
+        value: {r: 0.7647059, g: 0.19999999, b: 0.29125303, a: 0}
+        startValue: {r: 0, g: 0, b: 0, a: 0}
     - rid: 4605209356947947849
-      type: {class: FloatMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
+      type: {class: FloatMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
-        scope: 0
-        key: Var
+        scope: 1
+        key: someFloatVar
         itemID: 7
-        _ownerIdIndex: 0
         value: 1.234
+        startValue: 0
     - rid: 7903257792018382921
-      type: {class: VectorTwoMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
+      type: {class: VectorTwoMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: vecTwoVar
         itemID: 5
-        _ownerIdIndex: 0
         value: {x: 5, y: 0}
+        startValue: {x: 0, y: 0}
     - rid: 7903257792018382959
-      type: {class: VectorThreeMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
+      type: {class: VectorThreeMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: vecThreeVar
         itemID: 6
-        _ownerIdIndex: 0
         value: {x: 0, y: 123, z: 0}
+        startValue: {x: 0, y: 0, z: 0}
 --- !u!4 &1620115405
 Transform:
   m_ObjectHideFlags: 0
@@ -1544,7 +1562,7 @@ Transform:
   m_GameObject: {fileID: 1620115399}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.09, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1552,7 +1570,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1620115406
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -1564,21 +1582,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 4
   indentLevel: 0
-  varToSet:
-    itemId: 5
-    owningFc: {fileID: 1620115404}
-    owningVsa: {fileID: 0}
   setOperator: 0
   anyVar:
     varRef:
       itemId: 5
-      owningFc: {fileID: 1620115404}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 1620115404}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     data:
       backingVarRef:
         itemId: 0
-        owningFc: {fileID: 1620115404}
-        owningVsa: {fileID: 0}
+        owningSource: {fileID: 1620115404}
+        legacyOwningFc: {fileID: 0}
+        legacyOwningVsa: {fileID: 0}
       data:
         rid: 7903257792018382955
   variable: {fileID: 0}
@@ -1586,17 +1602,18 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 7903257792018382955
-      type: {class: Vector2Data, ns: Amanita.VScripting, asm: Amanita.Core}
+      type: {class: Vector2Data, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         backingVarRef:
           itemId: 0
-          owningFc: {fileID: 1620115404}
-          owningVsa: {fileID: 0}
+          owningSource: {fileID: 1620115404}
+          legacyOwningFc: {fileID: 0}
+          legacyOwningVsa: {fileID: 0}
         value: {x: 19, y: 97}
         vector2Ref: {fileID: 0}
 --- !u!114 &1620115408
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -1624,14 +1641,15 @@ MonoBehaviour:
   setSayDialog:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 1620115404}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 1620115404}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     gameObjectRef: {fileID: 0}
   oldSetSayDialog: {fileID: 0}
 --- !u!114 &1620115409
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -1659,14 +1677,15 @@ MonoBehaviour:
   setSayDialog:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 1620115404}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 1620115404}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     gameObjectRef: {fileID: 0}
   oldSetSayDialog: {fileID: 0}
 --- !u!114 &1620115412
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -1694,14 +1713,15 @@ MonoBehaviour:
   setSayDialog:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 1620115404}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 1620115404}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     gameObjectRef: {fileID: 0}
   oldSetSayDialog: {fileID: 0}
 --- !u!114 &1620115413
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -1729,14 +1749,15 @@ MonoBehaviour:
   setSayDialog:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 1620115404}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 1620115404}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     gameObjectRef: {fileID: 0}
   oldSetSayDialog: {fileID: 0}
 --- !u!114 &1620115414
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -1748,21 +1769,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 7
   indentLevel: 0
-  varToSet:
-    itemId: 4
-    owningFc: {fileID: 1620115404}
-    owningVsa: {fileID: 0}
   setOperator: 0
   anyVar:
     varRef:
       itemId: 4
-      owningFc: {fileID: 1620115404}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 1620115404}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     data:
       backingVarRef:
         itemId: 0
-        owningFc: {fileID: 1620115404}
-        owningVsa: {fileID: 0}
+        owningSource: {fileID: 1620115404}
+        legacyOwningFc: {fileID: 0}
+        legacyOwningVsa: {fileID: 0}
       data:
         rid: 7903257792018382953
   variable: {fileID: 0}
@@ -1770,17 +1789,18 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 7903257792018382953
-      type: {class: ColorData, ns: Amanita.VScripting, asm: Amanita.Core}
+      type: {class: ColorData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         backingVarRef:
           itemId: 0
-          owningFc: {fileID: 1620115404}
-          owningVsa: {fileID: 0}
+          owningSource: {fileID: 1620115404}
+          legacyOwningFc: {fileID: 0}
+          legacyOwningVsa: {fileID: 0}
         value: {r: 0.38327694, g: 0.78023535, b: 0.8207547, a: 0}
         colorRef: {fileID: 0}
 --- !u!114 &1620115415
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -1807,14 +1827,15 @@ MonoBehaviour:
   setSayDialog:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 1620115404}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 1620115404}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     gameObjectRef: {fileID: 0}
   oldSetSayDialog: {fileID: 0}
 --- !u!114 &1620115416
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -1842,14 +1863,15 @@ MonoBehaviour:
   setSayDialog:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 1620115404}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 1620115404}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     gameObjectRef: {fileID: 0}
   oldSetSayDialog: {fileID: 0}
 --- !u!114 &1620115417
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -1877,14 +1899,15 @@ MonoBehaviour:
   setSayDialog:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 1620115404}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 1620115404}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     gameObjectRef: {fileID: 0}
   oldSetSayDialog: {fileID: 0}
 --- !u!114 &1620115419
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -1896,21 +1919,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 11
   indentLevel: 0
-  varToSet:
-    itemId: 6
-    owningFc: {fileID: 1620115404}
-    owningVsa: {fileID: 0}
   setOperator: 0
   anyVar:
     varRef:
       itemId: 6
-      owningFc: {fileID: 1620115404}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 1620115404}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     data:
       backingVarRef:
         itemId: 0
-        owningFc: {fileID: 1620115404}
-        owningVsa: {fileID: 0}
+        owningSource: {fileID: 1620115404}
+        legacyOwningFc: {fileID: 0}
+        legacyOwningVsa: {fileID: 0}
       data:
         rid: 7903257792018382965
   variable: {fileID: 0}
@@ -1918,17 +1939,18 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 7903257792018382965
-      type: {class: Vector3Data, ns: Amanita.VScripting, asm: Amanita.Core}
+      type: {class: Vector3Data, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         backingVarRef:
           itemId: 0
-          owningFc: {fileID: 1620115404}
-          owningVsa: {fileID: 0}
+          owningSource: {fileID: 1620115404}
+          legacyOwningFc: {fileID: 0}
+          legacyOwningVsa: {fileID: 0}
         value: {x: 76.54, y: 32.1, z: -19.87}
         vector3Ref: {fileID: 0}
 --- !u!114 &1620115420
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -1956,14 +1978,15 @@ MonoBehaviour:
   setSayDialog:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 1620115404}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 1620115404}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     gameObjectRef: {fileID: 0}
   oldSetSayDialog: {fileID: 0}
 --- !u!114 &1620115421
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -1990,14 +2013,15 @@ MonoBehaviour:
   setSayDialog:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 1620115404}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 1620115404}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     gameObjectRef: {fileID: 0}
   oldSetSayDialog: {fileID: 0}
 --- !u!114 &1620115422
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -2025,14 +2049,15 @@ MonoBehaviour:
   setSayDialog:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 1620115404}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 1620115404}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     gameObjectRef: {fileID: 0}
   oldSetSayDialog: {fileID: 0}
 --- !u!114 &1620115423
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -2060,14 +2085,15 @@ MonoBehaviour:
   setSayDialog:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 1620115404}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 1620115404}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     gameObjectRef: {fileID: 0}
   oldSetSayDialog: {fileID: 0}
 --- !u!114 &1620115424
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -2095,14 +2121,15 @@ MonoBehaviour:
   setSayDialog:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 1620115404}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 1620115404}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     gameObjectRef: {fileID: 0}
   oldSetSayDialog: {fileID: 0}
 --- !u!114 &1620115425
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -2130,14 +2157,15 @@ MonoBehaviour:
   setSayDialog:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 1620115404}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 1620115404}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     gameObjectRef: {fileID: 0}
   oldSetSayDialog: {fileID: 0}
 --- !u!114 &1620115426
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -2150,13 +2178,14 @@ MonoBehaviour:
   parentBlock: {fileID: 1620115427}
   suppressBlockAutoSelect: 0
   markerIDs:
-  - itemId: 3
-    owningFc: {fileID: 1620115404}
-    owningVsa: {fileID: 0}
+  - itemId: 0
+    owningSource: {fileID: 1620115404}
+    legacyOwningFc: {fileID: 0}
+    legacyOwningVsa: {fileID: 0}
   respondToAny: 0
 --- !u!114 &1620115427
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -2170,8 +2199,8 @@ MonoBehaviour:
     serializedVersion: 2
     x: 414
     y: 334
-    width: 300
-    height: 100
+    width: 137
+    height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
   itemId: 18
@@ -2187,7 +2216,7 @@ MonoBehaviour:
   suppressAllAutoSelections: 0
 --- !u!114 &1620115428
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -2202,14 +2231,15 @@ MonoBehaviour:
   sayDialog:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 1620115404}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 1620115404}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: {fileID: 1090503853}
     gameObjectRef: {fileID: 0}
   oldSayDialog: {fileID: 0}
 --- !u!114 &1620115429
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -2224,14 +2254,15 @@ MonoBehaviour:
   sayDialog:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 1620115404}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 1620115404}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: {fileID: 1090503853}
     gameObjectRef: {fileID: 0}
   oldSayDialog: {fileID: 0}
 --- !u!114 &1620115430
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -2251,7 +2282,7 @@ MonoBehaviour:
   fadeTweener: {fileID: 0}
 --- !u!114 &1620115431
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -2267,13 +2298,14 @@ MonoBehaviour:
   logMessage:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 1620115404}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 1620115404}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: Responding to Save Loaded in new save sys demo scene!
     stringRef: {fileID: 0}
 --- !u!114 &1620115432
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -2510,7 +2542,7 @@ CanvasRenderer:
   m_CullTransparentMesh: 1
 --- !u!114 &1689154102
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -2525,7 +2557,7 @@ MonoBehaviour:
   state: 3
 --- !u!114 &1689154103
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -2540,7 +2572,7 @@ MonoBehaviour:
   targetButton: {fileID: 1689154099}
 --- !u!114 &1689154104
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -2554,8 +2586,8 @@ MonoBehaviour:
     serializedVersion: 2
     x: 366
     y: 155
-    width: 300
-    height: 100
+    width: 151
+    height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
   itemId: 1
@@ -2579,10 +2611,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a334fe2ffb574b3583ff3b18b4792d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  variableManager:
+    muscariables: []
+    legacyVariables: []
+    nextValidVarID: 1
+    isInitted: 1
+  version: 1
+  legacyVariables: []
+  _oldMuscariables: []
+  description: 
   uiModel:
-    _selectedBlocks: []
+    _selectedBlocks:
+    - {fileID: 1689154104}
     _selectedCommands:
     - {fileID: 1689154102}
+    _owner: {fileID: 1689154097}
     <ScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesExpanded>k__BackingField: 0
@@ -2594,18 +2637,14 @@ MonoBehaviour:
       y: 0
       width: 0
       height: 0
-    <SelectedCommandsStale>k__BackingField: 0
-  version: 1
-  legacyVariables: []
-  muscariables: []
-  description: 
+    <SelectedCommandsStale>k__BackingField: 1
   stepPause: 0
   colorCommands: 1
   hideComponents: 1
   saveSelection: 1
-  localizationId: 
   showLineNumbers: 0
   hideCommands: []
+  localizationId: 
   _luaEnvironment: {fileID: 0}
   luaBindingName: flowchart
   includeInSaves: 0
@@ -2613,6 +2652,10 @@ MonoBehaviour:
   saveVariables: 1
   loadPriority: 0
   alwaysKeepGuid: 1
+  _blockListCache:
+  - {fileID: 1689154104}
+  _commands:
+  - {fileID: 1689154102}
   nextValidVarID: 1
   uniqueId: 44d8d2ef-887b-4eb9-9fc4-ffd8a251c290
   references:
@@ -2774,9 +2817,44 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 714980095587541236, guid: a717114cba7201448ae3154bfb3fb737,
         type: 3}
-      propertyPath: slotIndex.backingVarRef.owningFc
+      propertyPath: slotIndex.backingVarRef.owningSource
       value: 
       objectReference: {fileID: 1789447538}
+    - target: {fileID: 714980095587541236, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: slotIndex.backingVarRef.legacyOwningFc
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 714980095587541236, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: saveToSelected.backingVarRef.owningSource
+      value: 
+      objectReference: {fileID: 1789447538}
+    - target: {fileID: 714980095587541236, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: delayBeforeSave.backingVarRef.owningSource
+      value: 
+      objectReference: {fileID: 1789447538}
+    - target: {fileID: 714980095587541236, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: saveToSelected.backingVarRef.legacyOwningFc
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 714980095587541236, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: delayBeforeSave.backingVarRef.legacyOwningFc
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 714980095587541236, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: waitUntilFinished.backingVarRef.owningSource
+      value: 
+      objectReference: {fileID: 1789447538}
+    - target: {fileID: 714980095587541236, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: waitUntilFinished.backingVarRef.legacyOwningFc
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 819678433502044778, guid: a717114cba7201448ae3154bfb3fb737,
         type: 3}
       propertyPath: m_Name
@@ -2882,6 +2960,46 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2069268766476045059, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: floatParameter.backingVarRef.owningSource
+      value: 
+      objectReference: {fileID: 1789447538}
+    - target: {fileID: 2069268766476045059, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: stringParameter.backingVarRef.owningSource
+      value: 
+      objectReference: {fileID: 1789447538}
+    - target: {fileID: 2069268766476045059, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: booleanParameter.backingVarRef.owningSource
+      value: 
+      objectReference: {fileID: 1789447538}
+    - target: {fileID: 2069268766476045059, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: floatParameter.backingVarRef.legacyOwningFc
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 2069268766476045059, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: integerParameter.backingVarRef.owningSource
+      value: 
+      objectReference: {fileID: 1789447538}
+    - target: {fileID: 2069268766476045059, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: stringParameter.backingVarRef.legacyOwningFc
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 2069268766476045059, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: booleanParameter.backingVarRef.legacyOwningFc
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 2069268766476045059, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: integerParameter.backingVarRef.legacyOwningFc
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 2590432933633867412, guid: a717114cba7201448ae3154bfb3fb737,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -2907,16 +3025,56 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2788740156257821556, guid: a717114cba7201448ae3154bfb3fb737,
+    - target: {fileID: 2848506283971512254, guid: a717114cba7201448ae3154bfb3fb737,
         type: 3}
-      propertyPath: selectedFlowchart
+      propertyPath: loadScene.backingVarRef.owningSource
+      value: 
+      objectReference: {fileID: 1789447538}
+    - target: {fileID: 2848506283971512254, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: slotIndex.backingVarRef.owningSource
+      value: 
+      objectReference: {fileID: 1789447538}
+    - target: {fileID: 2848506283971512254, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: loadScene.backingVarRef.legacyOwningFc
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 2848506283971512254, guid: a717114cba7201448ae3154bfb3fb737,
         type: 3}
-      propertyPath: slotIndex.backingVarRef.owningFc
+      propertyPath: slotIndex.backingVarRef.legacyOwningFc
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 2848506283971512254, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: delayBeforeLoad.backingVarRef.owningSource
       value: 
       objectReference: {fileID: 1789447538}
+    - target: {fileID: 2848506283971512254, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: loadFromSelected.backingVarRef.owningSource
+      value: 
+      objectReference: {fileID: 1789447538}
+    - target: {fileID: 2848506283971512254, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: delayBeforeLoad.backingVarRef.legacyOwningFc
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 2848506283971512254, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: waitUntilFinished.backingVarRef.owningSource
+      value: 
+      objectReference: {fileID: 1789447538}
+    - target: {fileID: 2848506283971512254, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: loadFromSelected.backingVarRef.legacyOwningFc
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 2848506283971512254, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: waitUntilFinished.backingVarRef.legacyOwningFc
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 2915399098723150847, guid: a717114cba7201448ae3154bfb3fb737,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -2944,39 +3102,9 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
         type: 3}
-      propertyPath: saveSlotIndex
-      value: 3050194087370293303
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: 'managedReferences[3050194087370293303]'
-      value: Amanita.Core Amanita.VScripting.IntMuscariable
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: managedReferences[3050194087370293303].key
-      value: lastSlotIndex
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: managedReferences[3050194087370293303].scope
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: managedReferences[3050194087370293303].value
-      value: -5
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: managedReferences[3050194087370293303].itemID
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: managedReferences[3050194087370293303]._ownerIdIndex
-      value: 2
-      objectReference: {fileID: 0}
+      propertyPath: saveSlotIndex.owningSource
+      value: 
+      objectReference: {fileID: 1789447538}
     - target: {fileID: 3506124658064910297, guid: a717114cba7201448ae3154bfb3fb737,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -3116,11 +3244,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4738044054644098906, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: uiModel._selectedBlocks.Array.size
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5112014327275012662, guid: a717114cba7201448ae3154bfb3fb737,
         type: 3}
@@ -3380,7 +3503,7 @@ PrefabInstance:
     - target: {fileID: 7036876570447449985, guid: a717114cba7201448ae3154bfb3fb737,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.00009655301
+      value: -0.000100795274
       objectReference: {fileID: 0}
     - target: {fileID: 7045509288082565552, guid: a717114cba7201448ae3154bfb3fb737,
         type: 3}

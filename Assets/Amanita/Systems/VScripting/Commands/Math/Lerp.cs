@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Linearly Interpolate from A to B
@@ -32,10 +32,10 @@ namespace Amanita.VScripting
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(a);
-            variableDataCache.Add(b);
-            variableDataCache.Add(percentage);
-            variableDataCache.Add(outValue);
+            _variableDataCache.Add(a);
+            _variableDataCache.Add(b);
+            _variableDataCache.Add(percentage);
+            _variableDataCache.Add(outValue);
         }
 
         public override void OnEnter()

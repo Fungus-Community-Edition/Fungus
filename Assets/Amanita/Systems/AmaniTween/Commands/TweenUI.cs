@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Amanita.VScripting.Commands
+namespace AtMycelia.Amanita.VScripting.Commands
 {
     /// <summary>
     /// Abstract base class for TweenUI commands.
@@ -28,8 +28,8 @@ namespace Amanita.VScripting.Commands
         protected override void RefreshVariableCache()
         {
             base.RefreshVariableCache();
-            variableDataCache.Add(waitUntilFinished);
-            variableDataCache.Add(duration);
+            _variableDataCache.Add(waitUntilFinished);
+            _variableDataCache.Add(duration);
         }
 
         protected abstract void ValidateTweeners();

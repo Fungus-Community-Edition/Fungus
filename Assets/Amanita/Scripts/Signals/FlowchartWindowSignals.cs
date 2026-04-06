@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Struct that encapsulates information about pointer events in the flowchart window, such as mouse clicks 
@@ -63,12 +63,12 @@ namespace Amanita.VScripting
         public static Action<PointerEventInfo> EmptySpaceRightClicked = delegate { };
 
         /// <summary>
-        /// Invoked when the active flowchart in the window changes. The first argument is the 
-        /// old flowchart, and the second argument is the new flowchart. If there was no
-        /// previous flowchart, the first argument will be null. If there is no new
-        /// flowchart, the second argument will be null. This is the signal that
-        /// submodules of the flowchart window should listen to in order to know when to 
-        /// respond to Flowchart-selection changes.
+        /// Invoked when it's time for the Flowchart Window to focus on a different Flowchart.
+        /// The first argument is the  old flowchart, and the second argument is the new flowchart. 
+        /// If there was no previous flowchart, the first argument will be null. If there is no new
+        /// flowchart, the second argument will be null. This is the signal that submodules of the 
+        /// flowchart window should listen to in order to know when to respond
+        /// to Flowchart-selection changes.
         /// </summary>
         public static Action<Flowchart, Flowchart> ChangedFlowchart = delegate { };
         public static Action WindowPanned = delegate { };

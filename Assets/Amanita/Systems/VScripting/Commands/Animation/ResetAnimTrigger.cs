@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Resets a trigger parameter on an Animator component.
@@ -63,8 +63,8 @@ namespace Amanita.VScripting
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(_animator);
-            variableDataCache.Add(_parameterName);
+            _variableDataCache.Add(_animator);
+            _variableDataCache.Add(_parameterName);
         }
         protected override void OnEnable()
         {

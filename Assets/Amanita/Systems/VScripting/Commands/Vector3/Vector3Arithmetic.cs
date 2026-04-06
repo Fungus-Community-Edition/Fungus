@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Vector3 add, sub, mul, div arithmetic
@@ -28,9 +28,9 @@ namespace Amanita.VScripting
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(lhs);
-            variableDataCache.Add(rhs);
-            variableDataCache.Add(output);
+            _variableDataCache.Add(lhs);
+            _variableDataCache.Add(rhs);
+            _variableDataCache.Add(output);
         }
 
         public override void OnEnter()

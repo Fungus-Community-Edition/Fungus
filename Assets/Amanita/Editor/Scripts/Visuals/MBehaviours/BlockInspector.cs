@@ -4,7 +4,7 @@ using UnityEditor;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     /// <summary>
     /// Temp hidden object which lets us use the entire inspector window to inspect the block command list.
@@ -37,13 +37,15 @@ namespace Amanita.VScripting.EditorUtils
         protected void OnEnable()
         {
             ClearEditors();
-            var ammieManager = AmanitaManager.S;
             Flowchart currentFc = EditorSelectionTracker.ActiveFlowchart;
-            if (ammieManager != null && currentFc != null)
+            if (currentFc == null)
             {
-                Debug.Log($"Rebuilding Variable Registry for Block Inspector and Flowchart {currentFc.name}");
-                var varRegistry = ammieManager.VariableRegistry;
-                varRegistry.Rebuild(currentFc);
+                currentFc = EditorSelectionTracker.LastActiveFlowchart;
+            }
+            if (currentFc != null)
+            {
+                //Debug.Log($"Rebuilding Variable Registry for Block Inspector and Flowchart {currentFc.name}");
+                VariableRegistryService.RebuildAll(currentFc);
                 // ^For cases where the fc the FlowchartWindow is handling is not selected
             }
         }

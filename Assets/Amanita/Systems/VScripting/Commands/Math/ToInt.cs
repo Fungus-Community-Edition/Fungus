@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Command to execute and store the result of a float to int conversion
@@ -34,8 +34,8 @@ namespace Amanita.VScripting
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(inValue);
-            variableDataCache.Add(outValue);
+            _variableDataCache.Add(inValue);
+            _variableDataCache.Add(outValue);
         }
 
         public override void OnEnter()

@@ -1,10 +1,12 @@
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 using UnityObject = UnityEngine.Object;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     [System.Serializable]
     [VariableInfo("UnityGeneral", "GameObject", typeof(GameObject))]
+    [MovedFrom(true, "Amanita.VScripting", "Amanita.Core", "GameObjectMuscariable")]
     public class GameObjectMuscariable : Muscariable<GameObject>
     {
         // The Evaluate func by default only handles Equals and NotEquals. Thus, we
@@ -64,8 +66,10 @@ namespace Amanita.VScripting
         }
     }
 
+
     [System.Serializable]
     [VariableInfo("UnityGeneral", "Transform", typeof(Transform))]
+    [MovedFrom(true, "Amanita.VScripting", "Amanita.Core", "TransformMuscariable")]
     public class TransformMuscariable : Muscariable<Transform>
     {
         public TransformMuscariable() : base() { }

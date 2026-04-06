@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Sets the mouse cursor sprite.
@@ -12,16 +12,15 @@ namespace Amanita.VScripting
     public class SetMouseCursor : Command 
     {
         [Tooltip("Texture to use for cursor. Will use default mouse cursor if no sprite is specified")]
-        [SerializeField] protected Texture2D cursorTexture;
+        [SerializeField] protected TextureData _cursorTexture;
 
         [Tooltip("The offset from the top left of the texture to use as the target point")]
-        [SerializeField] protected Vector2 hotSpot;
+        [SerializeField] protected Vector2Data _hotSpot;
+        
 
         // Cached static cursor settings
         protected static Texture2D activeCursorTexture;
         protected static Vector2 activeHotspot;
-
-        #region Public members
 
         public static void ResetMouseCursor()
         {
@@ -33,20 +32,32 @@ namespace Amanita.VScripting
         {
             Cursor.SetCursor(cursorTexture, hotSpot, CursorMode.Auto);
 
-            activeCursorTexture = cursorTexture;
-            activeHotspot = hotSpot;
+            activeCursorTexture = (Texture2D)_cursorTexture.Value;
+            activeHotspot = _hotSpot;
 
             Continue();
         }
 
         public override string GetSummary()
         {
-            if (cursorTexture == null)
+            if (_cursorTexture.Value == null)
             {
                 return "Error: No cursor sprite selected";
             }
 
-            return cursorTexture.name;
+            string result = _cursorTexture.Value.name;
+            if (_cursorTexture.RepresentingVar)
+            {
+                result += $" ({_cursorTexture.VarRef.Key})";
+            }
+
+            result += $" w/ hotspot {_hotSpot.Value}";
+            if (_hotSpot.RepresentingVar)
+            {
+                result += $" ({_hotSpot.VarRef.Key})";
+            }
+
+            return result;
         }
 
         public override Color GetButtonColor()
@@ -54,6 +65,24 @@ namespace Amanita.VScripting
             return CommandColors.Flow;
         }
 
-        #endregion
+        public override void ApplyBackwardsCompatibility()
+        {
+            base.ApplyBackwardsCompatibility();
+
+            if (cursorTexture == null && _cursorTexture != null)
+            {
+                _cursorTexture.Value = cursorTexture;
+                cursorTexture = null;
+            }
+
+            if (hotSpot != default && _hotSpot != null)
+            {
+                _hotSpot.Value = hotSpot;
+                hotSpot = default;
+            }
+        }
+
+        [SerializeField] [HideInInspector] protected Texture2D cursorTexture;
+        [SerializeField] [HideInInspector] protected Vector2 hotSpot;
     }
 }

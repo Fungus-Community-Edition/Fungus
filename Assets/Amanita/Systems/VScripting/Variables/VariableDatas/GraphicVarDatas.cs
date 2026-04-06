@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Container for a string variable reference or constant value.
@@ -9,16 +9,24 @@ namespace Amanita.VScripting
     /// </summary>
     [System.Serializable]
     [VariableData(typeof(string), typeof(IVariable<string>))]
-    public class StringData : VariableData<string>
+    public class StringData : VariableData<string>, ISerializationCallbackReceiver
     {
         [SerializeField]
         [VariableProperty("<Value>", typeof(StringVariable))]
         public StringVariable stringRef;
 
-        public StringData() : base(default) { }
+        [SerializeField]
+        [HideInInspector]
+        public string stringVal;
+
+        public StringData() : base(default)
+        {
+            stringVal = string.Empty;
+        }
 
         public StringData(string startVal) : base(startVal)
         {
+            stringVal = startVal;
         }
 
         public static implicit operator string(StringData spriteData)
@@ -30,6 +38,24 @@ namespace Amanita.VScripting
         {
             get => stringRef;
             set => stringRef = value as StringVariable;
+        }
+
+        protected override string LegacyLiteralVal
+        {
+            get => stringVal;
+            set
+            {
+                if (value == "") 
+                {
+                    // So it's easier for the backwards compatibility to know when to migrate this.
+                    // It mainly checks for null, so...
+                    stringVal = null;
+                }
+                else
+                {
+                    stringVal = value;
+                }
+            }
         }
 
         public override string Value
@@ -84,13 +110,27 @@ namespace Amanita.VScripting
                 return $"\"{Value}\"";
             }
         }
+
+        protected override void DoBackwardsCompatibility()
+        {
+            if (LegacyVarRef != null)
+            {
+                var oldVarRef = LegacyVarRef;
+                VarRef = oldVarRef;
+                LegacyVarRef = null;
+            }
+
+            if (!string.IsNullOrEmpty(LegacyLiteralVal))
+            {
+                var oldLiteralVal = LegacyLiteralVal;
+                LiteralValue = oldLiteralVal;
+                LegacyLiteralVal = "";
+            }
+        }
+
+
     }
 
-    /// <summary>
-    /// Container for a string variable reference or constant value.
-    /// Appears as a multi-line property in the inspector.
-    /// For a single-line property, use StringData.
-    /// </summary>
     [System.Serializable]
     public class StringDataMulti : StringData
     {
@@ -98,13 +138,13 @@ namespace Amanita.VScripting
 
         public StringDataMulti(string startVal) : base(startVal)
         {
+            stringVal = startVal;
         }
 
-        public static implicit operator string(StringDataMulti spriteData)
+        public static implicit operator string(StringDataMulti strData)
         {
-            return spriteData.Value;
+            return strData.Value;
         }
-
     }
 
     /// <summary>
@@ -117,6 +157,9 @@ namespace Amanita.VScripting
         [SerializeField]
         [VariableProperty("<Value>", typeof(ColorVariable))]
         public ColorVariable colorRef;
+
+        [SerializeField]
+        public Color colorVal;
 
         public ColorData() : base(default) { }
         public ColorData(Color startVal = default) : base(startVal) { }
@@ -132,6 +175,12 @@ namespace Amanita.VScripting
             set => colorRef = value as ColorVariable;
         }
 
+        protected override Color LegacyLiteralVal
+        {
+            get => colorVal;
+            set => colorVal = value;
+        }
+
     }
 
     /// <summary>
@@ -144,6 +193,9 @@ namespace Amanita.VScripting
         [SerializeField]
         [VariableProperty("<Value>", typeof(SpriteVariable))]
         public SpriteVariable spriteRef;
+
+        [SerializeField]
+        public Sprite spriteVal;
 
         public SpriteData() : base(default) { }
         public SpriteData(Sprite startVal = null) : base(startVal) { }
@@ -159,6 +211,12 @@ namespace Amanita.VScripting
             set => spriteRef = value as SpriteVariable;
         }
 
+        protected override Sprite LegacyLiteralVal
+        {
+            get => spriteVal;
+            set => spriteVal = value;
+        }
+
     }
 
     /// <summary>
@@ -172,6 +230,9 @@ namespace Amanita.VScripting
         [VariableProperty("<Value>", typeof(TextureVariable))]
         public TextureVariable textureRef;
 
+        [SerializeField]
+        public Texture textureVal;
+
         public TextureData() : base(default) { }
 
         public TextureData(Texture startVal) : base(startVal)
@@ -182,6 +243,12 @@ namespace Amanita.VScripting
         {
             get => textureRef;
             set => textureRef = value as TextureVariable;
+        }
+
+        protected override Texture LegacyLiteralVal
+        {
+            get => textureVal;
+            set => textureVal = value;
         }
 
     }
@@ -197,6 +264,9 @@ namespace Amanita.VScripting
         [VariableProperty("<Value>", typeof(MaterialVariable))]
         public MaterialVariable materialRef;
 
+        [SerializeField]
+        public Material materialVal;
+
         public MaterialData() : base(default) { }
         public MaterialData(Material startVal = null) : base(startVal) { }
 
@@ -210,6 +280,12 @@ namespace Amanita.VScripting
             get => materialRef;
             set => materialRef = value as MaterialVariable;
         }
+
+        protected override Material LegacyLiteralVal
+        {
+            get => materialVal;
+            set => materialVal = value;
+        }
     }
 
     [System.Serializable]
@@ -219,6 +295,9 @@ namespace Amanita.VScripting
         [SerializeField]
         [VariableProperty("<Value>", typeof(AnimatorVariable))]
         public AnimatorVariable animatorRef;
+
+        [SerializeField]
+        public Animator animatorVal;
 
         public static implicit operator Animator(AnimatorData animatorData)
         {
@@ -232,6 +311,12 @@ namespace Amanita.VScripting
         {
             get => animatorRef;
             set => animatorRef = value as AnimatorVariable;
+        }
+
+        protected override Animator LegacyLiteralVal
+        {
+            get => animatorVal;
+            set => animatorVal = value;
         }
     }
 

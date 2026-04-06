@@ -1,6 +1,7 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
-namespace Amanita.VScripting.Commands
+namespace AtMycelia.Amanita.VScripting.Commands
 {
     /// <summary>
     /// Sets a variable to a new value using a simple arithmetic operation. 
@@ -16,8 +17,10 @@ namespace Amanita.VScripting.Commands
     public class SetVariable : Command, ISerializationCallbackReceiver
     {
         [Tooltip("The type of math operation to be performed")]
-        [SerializeField] protected SetOperator setOperator;
-        [SerializeField] protected AnyVariableAndDataPair anyVar = new AnyVariableAndDataPair();
+        [FormerlySerializedAs("setOperator")]
+        [SerializeField] protected SetOperator _setOperator;
+        [FormerlySerializedAs("anyVar")]
+        [SerializeField] protected AnyVariableAndDataPair _anyVar = new AnyVariableAndDataPair();
         // ^Contains both the LHS variable reference and the RHS data
 
 #if UNITY_EDITOR
@@ -26,18 +29,18 @@ namespace Amanita.VScripting.Commands
 
         protected virtual void DoSetOperation()
         {
-            if (anyVar.LhsVariable == null)
+            if (_anyVar.LhsVariable == null)
             {
                 return;
             }
 
-            anyVar.SetOp(setOperator);
+            _anyVar.SetOp(_setOperator);
         }
 
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(anyVar.Data);
+            _variableDataCache.Add(_anyVar.Data);
         }
 
         #region Public members
@@ -45,7 +48,7 @@ namespace Amanita.VScripting.Commands
         /// <summary>
         /// The type of math operation to be performed.
         /// </summary>
-        public virtual SetOperator SetOperator { get { return setOperator; } }
+        public virtual SetOperator SetOperator { get { return _setOperator; } }
 
         public override void OnEnter()
         {
@@ -56,22 +59,29 @@ namespace Amanita.VScripting.Commands
 
         public override string GetSummary()
         {
-            var lhsVar = anyVar.LhsVariable;
+            var lhsVar = _anyVar.LhsVariable;
             if (lhsVar == null)
             {
                 return "Error: Variable not selected";
             }
 
-            string setOperatorDesc = VariableUtil.GetSetOperatorDescription(setOperator);
-            string dataDesc = anyVar.GetDataDescription();
+            string setOperatorDesc = VariableUtil.GetSetOperatorDescription(_setOperator);
+            string dataDesc = _anyVar.GetDataDescription();
             string description = $"{lhsVar.Key} {setOperatorDesc} {dataDesc}";
+            // If the variable doesn't share an owner with us, we should make that clear
+            // in the summary.
+            bool varBelongsToSomethingElse = lhsVar.Owner != null && !ReferenceEquals(lhsVar.Owner, GetFlowchart());
+            if (varBelongsToSomethingElse)
+            {
+                description = $"{lhsVar.Owner.Name}." + description;
+            }
 
             return description;
         }
 
         public override bool HasReference(Variable variable)
         {
-            return anyVar.HasReference(variable);
+            return _anyVar.HasReference(variable);
         }
 
         public override Color GetButtonColor()
@@ -87,43 +97,46 @@ namespace Amanita.VScripting.Commands
         {
             base.RefreshVariableCache();
 
-            anyVar ??= new AnyVariableAndDataPair();
-            anyVar.RefreshVariableCacheHelper(GetFlowchart(), ref referencedVariables);
+            _anyVar ??= new AnyVariableAndDataPair();
+            _anyVar.RefreshVariableCacheHelper(GetFlowchart(), ref referencedVariables);
         }
 #endif
         #endregion Editor caches
 
         #region backwards compat
 
+        
+        public override void ApplyBackwardsCompatibility()
+        {
+            base.ApplyBackwardsCompatibility();
+            if (_oldVariable != null)
+            {
+                _anyVar.LhsVariable = _oldVariable;
+                _oldVariable = null;
+            }
+
+            _anyVar.Refresh();
+        }
+
         [Tooltip("Variable to use in expression")]
         [VariableProperty]
-        [SerializeField] protected Variable variable;
-
-        public void OnBeforeSerialize()
-        {
-            anyVar.OnBeforeSerialize();
-        }
-
-        void ISerializationCallbackReceiver.OnAfterDeserialize()
-        {
-            //anyVar.OnAfterDeserialize();
-        }
-
+        [FormerlySerializedAs("variable")]
+        [SerializeField] protected Variable _oldVariable;
 
         protected override void OnEnable()
         {
             base.OnEnable();
             // We only want this check in the editor, not at runtime
-            if (variable == null || Application.isPlaying)
+            if (_oldVariable == null || Application.isPlaying)
             {
                 return;
             }
             else
             {
-                anyVar.LhsVariable = variable;
+                ApplyBackwardsCompatibility();
             }
 
-            variable = null;
+            _oldVariable = null;
         }
         #endregion
     

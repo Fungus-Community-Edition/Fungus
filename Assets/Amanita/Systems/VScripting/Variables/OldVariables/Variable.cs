@@ -1,25 +1,30 @@
 using System;
 using UnityEngine;
 using UnityEngine.Serialization;
+using UnityEngine.Scripting.APIUpdating;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Scope types for Variables.
     /// </summary>
+    [MovedFrom(true, "Amanita.VScripting", "Amanita.Core")]
     public enum VariableScope
     {
         /// <summary> Can only be accessed by commands in the same Flowchart. </summary>
         Private,
         /// <summary> Can be accessed from any command in any Flowchart. </summary>
         Public,
-        /// <summary> Creates and/or references a global variable of that name, all variables of this name and scope share the same underlying fungus variable and exist for the duration of the instance of Unity.</summary>
-        Global,
+        Global
     }
 
     /// <summary>
     /// Abstract base class for variables.
     /// </summary>
+    [MovedFrom(true, "Amanita.VScripting", "Amanita.Core")]
     [RequireComponent(typeof(Flowchart))]
     [System.Serializable]
     [ExecuteInEditMode]
@@ -157,8 +162,7 @@ namespace Amanita.VScripting
         {
             get
             {
-                owner ??= GetComponent<Flowchart>();
-                return owner;
+                return _owner;
             }
             set
             {
@@ -171,10 +175,10 @@ namespace Amanita.VScripting
 
         protected virtual void OnValidate()
         {
-            owner ??= GetComponent<Flowchart>();
+            _owner ??= GetComponent<Flowchart>();
         }
 
-        protected IVariableSource owner;
+        [SerializeField] [HideInInspector] protected Flowchart _owner;
 
         protected virtual void OnEnable()
         {
@@ -184,11 +188,12 @@ namespace Amanita.VScripting
                 itemID = (byte)oldItemID;
                 oldItemID = 0;
             }
+
         }
 
         protected virtual void Awake()
         {
-            owner ??= GetComponent<Flowchart>();
+            _owner ??= GetComponent<Flowchart>();
         }
 
     }
@@ -196,11 +201,23 @@ namespace Amanita.VScripting
     /// <summary>
     /// Generic concrete base class for variables.
     /// </summary>
+    [MovedFrom(true, "Amanita.VScripting", "Amanita.Core")]
     public abstract class VariableBase<T> : Variable, IVariable<T>
     {
         public override Type ContentType => typeof(T);
 
         [SerializeField] protected T value;
+
+        private bool ShouldBlockValueAssignment()
+        {
+#if UNITY_EDITOR
+            if (!Application.isPlaying)
+            {
+                return EditorUtility.IsPersistent(this) || PrefabUtility.IsPartOfPrefabAsset(this);
+            }
+#endif
+            return false;
+        }
 
         // Explicit IVariable implementation for object-typed access
         object IVariable.BoxedValue
@@ -208,6 +225,11 @@ namespace Amanita.VScripting
             get => value; // boxes T correctly (works for structs like Vector2)
             set
             {
+                if (ShouldBlockValueAssignment())
+                {
+                    return;
+                }
+
                 if (value != null && ContentType.IsAssignableFrom(value.GetType()))
                 {
                     this.value = (T)value;
@@ -223,6 +245,11 @@ namespace Amanita.VScripting
             get => value;
             set
             {
+                if (ShouldBlockValueAssignment())
+                {
+                    return;
+                }
+
                 if (value is T || value == null)
                 {
                     this.value = (T)value;
@@ -243,11 +270,13 @@ namespace Amanita.VScripting
             }
             set
             {
-                if (scope != VariableScope.Global || !Application.isPlaying)
+                if (ShouldBlockValueAssignment())
                 {
-                    this.value = value;
-                    baseVal = value;
+                    return;
                 }
+
+                this.value = value;
+                baseVal = value;
             }
         }
 

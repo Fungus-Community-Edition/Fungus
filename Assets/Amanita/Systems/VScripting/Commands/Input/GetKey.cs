@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Store Input.GetKey in a variable. Supports an optional Negative key input. A negative value will be overridden by a positive one, they do not add.
@@ -46,8 +46,8 @@ namespace Amanita.VScripting
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(keyCodeName);
-            variableDataCache.Add(keyCodeNameNegative);
+            _variableDataCache.Add(keyCodeName);
+            _variableDataCache.Add(keyCodeNameNegative);
         }
 
         public override void OnEnter()

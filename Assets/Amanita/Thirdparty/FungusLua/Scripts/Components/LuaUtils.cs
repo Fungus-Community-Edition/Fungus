@@ -6,10 +6,10 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using MoonSharp.Interpreter;
-using Amanita.Lua.JSON;
-using Amanita.DialogueSys;
+using AtMycelia.Amanita.Lua.JSON;
+using AtMycelia.Amanita.DialogueSys;
 
-namespace Amanita.Lua
+namespace AtMycelia.Amanita.Lua
 {
     /// <summary>
     /// Options for using the Lua FungusModule.
@@ -194,7 +194,6 @@ namespace Amanita.Lua
             // Static classes
             fungusTable["time"] = UserData.CreateStatic(typeof(Time));
             fungusTable["playerprefs"] = UserData.CreateStatic(typeof(PlayerPrefs));
-            fungusTable["prefs"] = UserData.CreateStatic(typeof(AmanitaPrefs));
             fungusTable["factory"] = UserData.CreateStatic(typeof(PODTypeFactory));
 
             // Lua Environment and Lua Utils components

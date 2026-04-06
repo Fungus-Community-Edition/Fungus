@@ -1,8 +1,8 @@
 using UnityEditor;
 using UnityEngine;
-using Amanita.VScripting.EditorUtils;
+using AtMycelia.Amanita.VScripting.EditorUtils;
 
-namespace Amanita.DialogueSys.EditorUtils
+namespace AtMycelia.Amanita.DialogueSys.EditorUtils
 {
     [CustomEditor (typeof(Write))]
     public class WriteEditor : CommandEditor

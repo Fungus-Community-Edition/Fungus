@@ -2,7 +2,7 @@
 using System;
 using UnityEditor;
 using UnityEngine;
-using Amanita.VScripting.EditorUtils;
+using AtMycelia.Amanita.VScripting.EditorUtils;
 
 namespace VScriptingTests.FCWindowOperations
 {

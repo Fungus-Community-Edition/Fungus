@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Normalise a vector3, output can be the same as the input
@@ -17,8 +17,8 @@ namespace Amanita.VScripting
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(vec3In);
-            variableDataCache.Add(vec3Out);
+            _variableDataCache.Add(vec3In);
+            _variableDataCache.Add(vec3Out);
         }
 
         public override void OnEnter()

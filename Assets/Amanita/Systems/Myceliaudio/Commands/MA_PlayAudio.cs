@@ -1,7 +1,7 @@
 using UnityEngine;
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting;
 
-namespace Amanita.Myceliaudio.VScripting
+namespace AtMycelia.Amanita.Myceliaudio.VScripting
 {
     [CommandInfo("Myceliaudio", "MA Play Audio", "")]
     public class MA_PlayAudio : MyceliaudioCommand, ISerializationCallbackReceiver
@@ -332,15 +332,14 @@ namespace Amanita.Myceliaudio.VScripting
             return result;
         }
 
-        public void OnBeforeSerialize() { }
-
-        public void OnAfterDeserialize()
+        public override void ApplyBackwardsCompatibility()
         {
+            base.ApplyBackwardsCompatibility();
             skipIfAlreadyPlaying ??= new BooleanData();
             useConfigSO ??= new BooleanData();
-        }
+        }  
+
 
     }
 
-    
 }

@@ -1,9 +1,9 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
-using Amanita.Tweening;
+using AtMycelia.Amanita.Tweening;
 
-namespace Amanita
+namespace AtMycelia.Amanita
 {
 	/// <summary>
 	/// Manager for main camera. Supports several types of camera transition including snap, pan & fade.
@@ -11,8 +11,10 @@ namespace Amanita
 	public class CameraManager : MonoBehaviour, IAmanitaManagerSubmodule
 	{
 		[SerializeField] private int orderIndex = 0;
+
+		[SerializeField] private CameraManagerConfig config;
 		
-        [Tooltip("Full screen texture used for screen fade effect.")]
+		[Tooltip("Full screen texture used for screen fade effect.")]
 		[SerializeField] protected Texture2D screenFadeTexture;
 
 		[Tooltip("Icon to display when swipe pan mode is active.")]
@@ -31,10 +33,10 @@ namespace Amanita
 		[SerializeField] protected Camera swipeCamera;
 
 		protected float fadeAlpha = 0f;
-        // ^When this changes, OnGUI changes the fadedness of the screen.
+		// ^When this changes, OnGUI changes the fadedness of the screen.
 
-        public int OrderIndex => orderIndex;
-        public virtual float ScreenOpacity => fadeAlpha;
+		public int OrderIndex => orderIndex;
+		public virtual float ScreenOpacity => fadeAlpha;
 
 		// Swipe panning control
 		protected bool swipePanActive;
@@ -59,11 +61,34 @@ namespace Amanita
 			{
 				return;
 			}
+
+			if (config == null)
+			{
+				ApplyConfig(AmanitaConfigResolver.ResolveCameraManagerConfig());
+			}
+
 			IsFullyInitted = true;
-        }
+		}
+
+		public void ApplyConfig(CameraManagerConfig configToApply)
+		{
+			config = configToApply;
+			if (config == null)
+			{
+				return;
+			}
+
+			screenFadeTexture = config.ScreenFadeTexture;
+			swipePanIcon = config.SwipePanIcon;
+			swipeIconPosition = config.SwipeIconPosition;
+			setCameraZ = config.SetCameraZ;
+			cameraZ = config.CameraZ;
+			swipeSpeedMultiplier = config.SwipeSpeedMultiplier;
+		}
+
 		public virtual bool IsFullyInitted { get; protected set; } = false;
 
-        protected virtual void OnGUI()
+		protected virtual void OnGUI()
 		{
 			if (swipePanActive)
 			{

@@ -2,7 +2,7 @@ using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     [RowVisualHandler(menuName: "Graphics",
         contentType: typeof(Color),
@@ -55,7 +55,8 @@ namespace Amanita.VScripting.EditorUtils
                 return;
             }
 
-            colorValueField.SetValueWithoutNotify((Color)_currentVariable.BoxedValue);
+            Color currentCol = (Color)_currentVariable.BoxedValue;
+            colorValueField.SetValueWithoutNotify(currentCol);
             colorValueField.MarkDirtyRepaint();
         }
     }

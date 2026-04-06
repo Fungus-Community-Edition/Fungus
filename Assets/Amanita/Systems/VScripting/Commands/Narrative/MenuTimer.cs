@@ -1,9 +1,9 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 using System.Collections.Generic;
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting;
 
-namespace Amanita.DialogueSys.Commands
+namespace AtMycelia.Amanita.DialogueSys.Commands
 {
     /// <summary>
     /// Displays a timer bar and executes a target block if the player fails to select a menu option in time.
@@ -25,7 +25,7 @@ namespace Amanita.DialogueSys.Commands
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(_duration);
+            _variableDataCache.Add(_duration);
         }
 
         #region Public members

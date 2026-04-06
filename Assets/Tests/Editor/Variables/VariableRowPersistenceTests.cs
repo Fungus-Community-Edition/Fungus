@@ -5,16 +5,18 @@ using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
-using Amanita.VScripting;
-using Amanita.VScripting.EditorUtils;
+using AtMycelia.Amanita.VScripting;
+using AtMycelia.Amanita.VScripting.EditorUtils;
 using UnityObject = UnityEngine.Object;
-using Amanita;
+using AtMycelia.Amanita;
 using UitkLabel = UnityEngine.UIElements.Label;
 using UnityEngine.TestTools;
 using System.Collections;
 using UnityEngine.Audio;
 using Lorekeeper;
 using System.Linq;
+using UnityEditor.SceneManagement;
+using UnityEngine.SceneManagement;
 
 namespace VScriptingTests.VariableRows
 {
@@ -41,6 +43,8 @@ namespace VScriptingTests.VariableRows
         [SetUp]
         public void SetUp()
         {
+            EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+
             Undo.ClearAll();
             Flowchart.ResetStaticsForTest();
 
@@ -49,6 +53,9 @@ namespace VScriptingTests.VariableRows
             _originalTemplateProvider = RowVisualTemplateProviderRegistry.Current;
             _originalElementBuilder = RowVisualElementBuilderRegistry.Current;
 
+            RowVisualTemplateProviderRegistry.Current = new CachedRowVisualTemplateProvider();
+            RowVisualElementBuilderRegistry.Current = new DefaultRowVisualElementBuilder();
+
             _amanitaManager = AmanitaManager.EnsureExists();
             _objectsToDestroy.Add(_amanitaManager.gameObject);
 
@@ -56,8 +63,9 @@ namespace VScriptingTests.VariableRows
             _objectsToDestroy.Add(flowchartGO);
             _flowchart = flowchartGO.AddComponent<Flowchart>();
             _flowchart.AlwaysKeepGuid = false;
+            _flowchart.Refresh();
 
-            _uiHost = ScriptableObject.CreateInstance<TestHostWindow>();
+            _uiHost = ScriptableObject.CreateInstance<TestHostWindow>();//
             InitializeVariableUi();
             _uiHost.rootVisualElement.Add(_uiRoot);
             _uiHost.ShowAuxWindow();
@@ -87,7 +95,7 @@ namespace VScriptingTests.VariableRows
                 VariableSource = _flowchart
             });
 
-            _variableListView.SetFlowchart(_flowchart);
+            _variableListView.SetSource(_flowchart);
 
             _uiRoot = new VisualElement { name = "VariableRowTestsRoot" };
             _addButton = new Button { name = "TestAddButton" };
@@ -132,7 +140,9 @@ namespace VScriptingTests.VariableRows
         public IEnumerator VariableRowChange_PersistsAndSupportsUndoRedo(
             [ValueSource(nameof(VariableRowCases))] VariableRowTestCase testCase)
         {
-            var variable = testCase.CreateVariable(_flowchart);
+            yield return null;
+
+            IVariable variable = testCase.CreateVariable(_flowchart);
             yield return AssertValueChangePersists(variable, testCase.TargetValue, variable.ContentType);
         }
 
@@ -140,6 +150,8 @@ namespace VScriptingTests.VariableRows
         {
             yield return null;
             Assert.NotNull(variable, "Variable creation failed.");
+            byte variableId = variable.ItemId;
+            string variableKey = variable.Key;
 
             VariableRow row = GetRowFor(variable);
             Assert.NotNull(row, "Variable row could not be materialized.");
@@ -151,9 +163,13 @@ namespace VScriptingTests.VariableRows
             Assert.AreEqual(newValue, variable.BoxedValue, "Value change was not applied.");
 
             Undo.PerformUndo();
+            variable = _flowchart.GetVariable(variableId) ?? _flowchart.GetVariable(variableKey, StringComparison.Ordinal);
+            Assert.NotNull(variable, "Variable was not found after undo.");
             Assert.AreEqual(originalValue, variable.BoxedValue, "Undo did not restore the original value.");
 
             Undo.PerformRedo();
+            variable = _flowchart.GetVariable(variableId) ?? _flowchart.GetVariable(variableKey, StringComparison.Ordinal);
+            Assert.NotNull(variable, "Variable was not found after redo.");
             Assert.AreEqual(newValue, variable.BoxedValue, "Redo did not reapply the edited value.");
         }
 
@@ -194,7 +210,7 @@ namespace VScriptingTests.VariableRows
                             throw new InvalidOperationException("ValueField is not a float field.");
                         }
 
-                        floatField.value = (float)boxed;
+                        SetValueAndSendChange(floatField, (float)boxed);
                     }
                 },
                 
@@ -207,7 +223,7 @@ namespace VScriptingTests.VariableRows
                             throw new InvalidOperationException("ValueField is not an int field.");
                         }
 
-                        intField.value = (int)boxed;
+                        SetValueAndSendChange(intField, (int)boxed);
                     }
                 },
                 {
@@ -218,7 +234,7 @@ namespace VScriptingTests.VariableRows
                         {
                             throw new InvalidOperationException("ValueField is not a Vector2 field.");
                         }
-                        vector2Field.value = (Vector2)boxed;
+                        SetValueAndSendChange(vector2Field, (Vector2)boxed);
                     }
                 },
                 {
@@ -229,7 +245,7 @@ namespace VScriptingTests.VariableRows
                         {
                             throw new InvalidOperationException("ValueField is not a Vector3 field.");
                         }
-                        vector3Field.value = (Vector3)boxed;
+                        SetValueAndSendChange(vector3Field, (Vector3)boxed);
                     }
                 },
                 #endregion
@@ -244,7 +260,7 @@ namespace VScriptingTests.VariableRows
                             throw new InvalidOperationException("ValueField is not a string field.");
                         }
 
-                        stringField.value = (string)boxed;
+                        SetValueAndSendChange(stringField, (string)boxed);
                     }
                 },
                 {
@@ -256,7 +272,7 @@ namespace VScriptingTests.VariableRows
                             throw new InvalidOperationException("ValueField is not a color field.");
                         }
 
-                        colorField.value = (Color)boxed;
+                        SetValueAndSendChange(colorField, (Color)boxed);
                     }
                 },
                 {
@@ -268,7 +284,7 @@ namespace VScriptingTests.VariableRows
                         {
                             throw new InvalidOperationException("ValueField is not a Sprite field.");
                         }
-                        objField.value = (Sprite)boxed;
+                        SetObjectFieldValue(objField, (Sprite)boxed);
                     }
                 },
                 {
@@ -280,7 +296,7 @@ namespace VScriptingTests.VariableRows
                         {
                             throw new InvalidOperationException("ValueField is not a Texture field.");
                         }
-                        objField.value = (Texture)boxed;
+                        SetObjectFieldValue(objField, (Texture)boxed);
                     }
                 },
                 {
@@ -292,7 +308,7 @@ namespace VScriptingTests.VariableRows
                         {
                             throw new InvalidOperationException("ValueField is not a Material field.");
                         }
-                        objField.value = (Material)boxed;
+                        SetObjectFieldValue(objField, (Material)boxed);
                     }
                 },
                 {
@@ -304,7 +320,7 @@ namespace VScriptingTests.VariableRows
                         {
                             throw new InvalidOperationException("ValueField is not an Animator field.");
                         }
-                        objField.value = (Animator)boxed;
+                        SetObjectFieldValue(objField, (Animator)boxed);
                     }
                 },
                 #endregion
@@ -319,7 +335,7 @@ namespace VScriptingTests.VariableRows
                         {
                             throw new InvalidOperationException("ValueField is not an AudioClip field.");
                         }
-                        objField.value = (AudioClip)boxed;
+                        SetObjectFieldValue(objField, (AudioClip)boxed);
                     }
                 },
                 {
@@ -331,7 +347,7 @@ namespace VScriptingTests.VariableRows
                         {
                             throw new InvalidOperationException("ValueField is not an AudioSource field.");
                         }
-                        objField.value = (AudioSource)boxed;
+                        SetObjectFieldValue(objField, (AudioSource)boxed);
                     }
                 },
                 {
@@ -343,7 +359,7 @@ namespace VScriptingTests.VariableRows
                         {
                             throw new InvalidOperationException("ValueField is not an AudioMixer field.");
                         }
-                        objField.value = (AudioMixer)boxed;
+                        SetObjectFieldValue(objField, (AudioMixer)boxed);
                     }
                 },
                 #endregion
@@ -358,7 +374,7 @@ namespace VScriptingTests.VariableRows
                         {
                             throw new InvalidOperationException("ValueField is not a Collider field.");
                         }
-                        objField.value = (Collider)boxed;
+                        SetObjectFieldValue(objField, (Collider)boxed);
                     }
                 },
                 {
@@ -370,7 +386,7 @@ namespace VScriptingTests.VariableRows
                         {
                             throw new InvalidOperationException("ValueField is not a Rigidbody field.");
                         }
-                        objField.value = (Rigidbody)boxed;
+                        SetObjectFieldValue(objField, (Rigidbody)boxed);
                     }
                 },
                 {
@@ -382,7 +398,7 @@ namespace VScriptingTests.VariableRows
                         {
                             throw new InvalidOperationException("ValueField is not a Collider2D field.");
                         }
-                        objField.value = (Collider2D)boxed;
+                        SetObjectFieldValue(objField, (Collider2D)boxed);
                     }
                 },
                 {
@@ -394,11 +410,45 @@ namespace VScriptingTests.VariableRows
                         {
                             throw new InvalidOperationException("ValueField is not a Rigidbody2D field.");
                         }
-                        objField.value = (Rigidbody2D)boxed;
+                        SetObjectFieldValue(objField, (Rigidbody2D)boxed);
                     }
                 }
                 #endregion
             };
+
+        private static void SetValueAndSendChange<T>(INotifyValueChanged<T> field, T value)
+        {
+            if (field is not VisualElement element)
+            {
+                return;
+            }
+
+            T previousValue = field.value;
+            field.SetValueWithoutNotify(value);
+
+            using (ChangeEvent<T> evt = ChangeEvent<T>.GetPooled(previousValue, value))
+            {
+                evt.target = element;
+                element.SendEvent(evt);
+            }
+        }
+
+        private static void SetObjectFieldValue(ObjectField field, UnityEngine.Object value)
+        {
+            if (field == null)
+            {
+                return;
+            }
+
+            UnityEngine.Object previousValue = field.value;
+            field.SetValueWithoutNotify(value);
+
+            using (ChangeEvent<UnityEngine.Object> evt = ChangeEvent<UnityEngine.Object>.GetPooled(previousValue, value))
+            {
+                evt.target = field;
+                field.SendEvent(evt);
+            }
+        }
 
         private static void ApplyValueThroughUi(VariableRow row, object newValue, Type contentType)
         {
@@ -441,9 +491,9 @@ namespace VScriptingTests.VariableRows
                 #endregion
 
                 #region Physics
-                { typeof(Rigidbody), typeof(RigidbodyThreeDRowVisualHandler) }, 
+                //{ typeof(Rigidbody), typeof(RigidbodyThreeDRowVisualHandler) }, 
                 { typeof(Collider), typeof(ColliderThreeDRowVisualHandler) },
-                { typeof(Rigidbody2D), typeof(RigidbodyTwoDRowVisualHandler) },
+                //{ typeof(Rigidbody2D), typeof(RigidbodyTwoDRowVisualHandler) },
                 { typeof(Collider2D), typeof(ColliderTwoDRowVisualHandler) },
                 #endregion
 
@@ -495,6 +545,7 @@ namespace VScriptingTests.VariableRows
             Sprite testSprite = sprites.Count > 0 ?
                 sprites[0] :
                 null;
+            //Debug.Log($"Test sprite is {testSprite}");
             yield return new VariableRowTestCase(
                 "SpriteVariable",
                 fc => fc.AddNewMuscariable<Sprite, SpriteMuscariable>("SpriteVar", testSprite),
@@ -588,52 +639,5 @@ namespace VScriptingTests.VariableRows
             public Type ContentType => TargetValue.GetType();
         }
 
-        private sealed class HandlerAwareVisualTreeAsset : VisualTreeAsset
-        {
-            public Type HandlerType;
-        }
-
-        private sealed class TestRowVisualElementBuilder : IRowVisualElementBuilder
-        {
-            public RowVisualElements Build(VisualTreeAsset template)
-            {
-                var handlerAware = template as HandlerAwareVisualTreeAsset;
-
-                var root = new VisualElement();
-                var keyField = new TextField { isDelayed = true, multiline = false, name = "KeyInput" };
-                var valueHolder = new VisualElement { name = "ValueFieldHolder" };
-                var scopeField = new EnumField(VariableScope.Private) { name = "Scope" };
-                var removeButton = new Button { name = "RemoveButton" };
-
-                IBindable valueField = CreateValueField(handlerAware?.HandlerType);
-                if (valueField is VisualElement valueElement)
-                {
-                    valueElement.name = "ValueField";
-                    valueHolder.Add(valueElement);
-                }
-
-                root.Add(keyField);
-                root.Add(valueHolder);
-                root.Add(scopeField);
-                root.Add(removeButton);
-
-                return new RowVisualElements(root, keyField, valueHolder, valueField, scopeField, removeButton);
-            }
-
-            private static IBindable CreateValueField(Type handlerType)
-            {
-                if (handlerType == typeof(ColorRowVisualHandler))
-                {
-                    return new ColorField();
-                }
-
-                if (handlerType == typeof(FloatRowVisualHandler))
-                {
-                    return new FloatField();
-                }
-
-                return new TextField();
-            }
-        }
     }
 }

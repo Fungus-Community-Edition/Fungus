@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Waits for period of time before executing the next command in the block.
@@ -19,7 +19,7 @@ namespace Amanita.VScripting
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(_duration);
+            _variableDataCache.Add(_duration);
         }
 
         protected virtual void OnWaitComplete()

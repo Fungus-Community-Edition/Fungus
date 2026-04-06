@@ -1,8 +1,8 @@
 using UnityEngine;
 using UnityEngine.Serialization;
-using Amanita.LocalizationSys;
+using AtMycelia.Amanita.LocalizationSys;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Set the active language for the scene. A Localization object with a localization file must be present in the scene.
@@ -20,7 +20,7 @@ namespace Amanita.VScripting
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(_languageCode);
+            _variableDataCache.Add(_languageCode);
         }
 
         #region Public members

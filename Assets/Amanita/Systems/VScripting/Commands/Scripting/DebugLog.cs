@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Type of log message. Maps directly to Unity's log types.
@@ -28,7 +28,7 @@ namespace Amanita.VScripting
         [SerializeField] protected DebugLogType logType;
 
         [Tooltip("Text to write to the debug log. Supports variable substitution, e.g. {$Myvar}")]
-        [SerializeField] protected StringDataMulti logMessage;
+        [SerializeField] protected StringDataMulti logMessage = new StringDataMulti();
 
         #region Public members
 

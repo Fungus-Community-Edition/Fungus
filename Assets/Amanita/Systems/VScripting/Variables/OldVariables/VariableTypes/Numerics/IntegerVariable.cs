@@ -1,14 +1,16 @@
 using System;
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Integer variable type.
     /// </summary>
     [VariableInfo("Numeric", "Integer", typeof(int), false)]
     [AddComponentMenu("")]
-    [System.Serializable]
+    [Serializable]
+    [MovedFrom(true, "Amanita.VScripting", "Amanita.Core")]
     public class IntegerVariable : VariableBase<int>
     {
         public override bool IsArithmeticSupported(SetOperator setOperator)

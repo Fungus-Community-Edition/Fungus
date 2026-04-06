@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 using System;
-using Amanita.Tweening;
+using AtMycelia.Amanita.Tweening;
 
-namespace Amanita
+namespace AtMycelia.Amanita
 {
     /// <summary>
     /// Transitions a sprite from its current color to a target color.

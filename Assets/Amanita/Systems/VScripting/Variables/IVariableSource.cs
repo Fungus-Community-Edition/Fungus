@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
-    public interface IVariableSource : IHasUniqueID
+    public interface IVariableSource : IHasUniqueID, IHasName
     {
         event Action<IVariable> VariableAdded;
         event Action<IVariable> VariableRemoved;
@@ -12,6 +12,9 @@ namespace Amanita.VScripting
         IVariable AddVariable(IVariable toAdd);
         void RemoveVariable(IVariable toRemove);
 
+        /// <summary>
+        /// Returns the variable with the given item ID, or null if there is no variable with 
+        /// that item ID in this source.
         IVariable GetVariable(byte itemId);
 
         /// <summary>
@@ -21,24 +24,26 @@ namespace Amanita.VScripting
 
         /// <summary>
         /// Returns the first variable with the given name, or null if there are no 
-        /// variables with that name. Uses the provided StringComparison for the name comparison.
+        /// variables with that name.
         /// </summary>
-        IVariable GetVariableByName(string name, StringComparison strCompare = StringComparison.Ordinal);
+        IVariable GetVariable(string name, StringComparison strCompare = StringComparison.Ordinal);
 
         /// <summary>
-        /// Returns the first variable of the given type with the given name, or null if there are no 
-        /// variables with that name and type. Uses the provided StringComparison for the name comparison.
+        /// Returns the first variable of the given type with the given name, or null if this source
+        /// doesn't have such.
+        /// 
         /// This is good for when you expect a variable to be of a certain type and want to avoid 
         /// having to cast it after retrieval.
         /// </summary>
-        T GetVariableOfTypeByName<T>(string name, StringComparison strCompare = StringComparison.Ordinal)
+        T GetVariableOfType<T>(string name, StringComparison strCompare = StringComparison.Ordinal)
             where T : class, IVariable;
 
         /// <summary>
         /// Returns the first variable of the given type with the given name, or null if there are none
         /// in this source. Uses the provided StringComparison for the name comparison.
         /// </summary>
-        IVariable GetVariableOfTypeByName(Type type, string name, StringComparison strCompare = StringComparison.Ordinal);
+        IVariable GetVariableOfType(Type type, string name,
+            StringComparison strCompare = StringComparison.Ordinal);
 
         bool Contains(IVariable var);
     }

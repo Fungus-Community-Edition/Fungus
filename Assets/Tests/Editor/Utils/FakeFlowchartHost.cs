@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
-using Amanita.VScripting;
-using Amanita.VScripting.EditorUtils;
+using AtMycelia.Amanita.VScripting;
+using AtMycelia.Amanita.VScripting.EditorUtils;
 using UnityEngine.UIElements;
-using Amanita.VScripting.EditorUtils.FcWindow;
+using AtMycelia.Amanita.VScripting.EditorUtils.FcWindow;
 
-namespace Amanita.EditorUtils
+namespace AtMycelia.Amanita.EditorUtils
 {
     public class FakeFlowchartHost : IFlowchartHost, IDisposable
     {
@@ -31,7 +31,7 @@ namespace Amanita.EditorUtils
             inputSignals.Initialize(window);
 
             blockDrawer = new FakeBlockDrawerUitk();
-            graphicsRenderer = new FcWindowGraphicsRenderer(FlowchartCtx, DrawGridCtx, blockDrawer);
+            graphicsRenderer = new FcwGraphicsRenderer(FlowchartCtx, DrawGridCtx, blockDrawer);
             viewportHandlers = new MainViewportManager(FlowchartCtx, FlowchartWindow.Config.MinZoom, FlowchartWindow.Config.MaxZoom);
 
             rootVisualElement.Add(graphicsRenderer);
@@ -199,12 +199,12 @@ namespace Amanita.EditorUtils
         public VisualElement RootVisualElement => rootVisualElement;
         private VisualElement rootVisualElement;
 
-        public FcWindowGraphicsRenderer GraphicsRenderer => graphicsRenderer;
+        public FcwGraphicsRenderer GraphicsRenderer => graphicsRenderer;
         public MainViewportManager ViewportHandlers => viewportHandlers;
         public InputSignalModule InputSignals => inputSignals;
 
         private FlowchartWindow window;
-        private FcWindowGraphicsRenderer graphicsRenderer;
+        private FcwGraphicsRenderer graphicsRenderer;
         private MainViewportManager viewportHandlers;
         private InputSignalModule inputSignals;
         private IBlockDrawerUitk blockDrawer;
@@ -228,10 +228,6 @@ namespace Amanita.EditorUtils
         private sealed class TestFlowchartWindowUitk : FlowchartWindow
         {
             protected override void OnEnable()
-            {
-            }
-
-            protected override void OnDisable()
             {
             }
 

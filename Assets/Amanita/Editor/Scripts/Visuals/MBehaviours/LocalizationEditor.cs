@@ -1,12 +1,11 @@
 using UnityEditor;
 using UnityEngine;
 using System.IO;
-using Amanita.VScripting.EditorUtils;
 
-namespace Amanita.LocalizationSys.EditorUtils
+namespace AtMycelia.Amanita.LocalizationSys.EditorUtils
 {
     [CustomEditor(typeof(Localization))]
-    public class LocalizationEditor : Editor 
+    public class LocalizationEditor : UnityEditor.Editor
     {
         protected SerializedProperty activeLanguageProp;
         protected SerializedProperty localizationFileProp;

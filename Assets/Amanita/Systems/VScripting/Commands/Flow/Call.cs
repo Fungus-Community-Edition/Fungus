@@ -3,7 +3,7 @@ using UnityEngine.Serialization;
 using System.Collections.Generic;
 using System;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Supported modes for calling a block.
@@ -40,14 +40,20 @@ namespace Amanita.VScripting
         [SerializeField] protected StringData startLabel = new StringData();
 
         [Tooltip("Command index to start executing")]
-        [FormerlySerializedAs("commandIndex")]
-        [SerializeField] protected int startIndex;
+        [SerializeField] protected IntegerData startIndex = new IntegerData(0);
     
         [Tooltip("Select if the calling block should stop or continue executing commands, or wait until the called block finishes.")]
         [SerializeField] protected CallMode callMode;
 
-        [SerializeField] private ushort targetBlockId;
+        [SerializeField] [HideInInspector] private ushort targetBlockId;
         public ushort TargetBlockId => targetBlockId;
+
+        protected override void RefreshVariableDataCache()
+        {
+            base.RefreshVariableDataCache();
+            _variableDataCache.Add(startLabel);
+            _variableDataCache.Add(startIndex);
+        }
 
         public override void OnPreCut()
         {
@@ -68,14 +74,15 @@ namespace Amanita.VScripting
             if (targetBlock != null)
             {
                 // Check if calling your own parent block
-                if (ParentBlock != null && ParentBlock.Equals(targetBlock))
+                bool callingOwnParent = ParentBlock != null && targetBlock.Equals(ParentBlock);
+                if (callingOwnParent)
                 {
                     // Just ignore the callmode in this case, and jump to first command in list
                     Continue(0);
                     return;
                 }
 
-                if(targetBlock.IsExecuting())
+                if (targetBlock.IsExecuting())
                 {
                     Debug.LogWarning(targetBlock.BlockName + " cannot be called/executed, it is already running.");
                     Continue();
@@ -180,5 +187,18 @@ namespace Amanita.VScripting
             base.OnValidate();
             RegisterTargetBlockId();
         }
+
+        public override void ApplyBackwardsCompatibility()
+        {
+            base.ApplyBackwardsCompatibility();
+            if (_oldStartIndex >= 0)
+            {
+                startIndex.LiteralValue = _oldStartIndex;
+                _oldStartIndex = -1;
+            }
+        }
+
+        [FormerlySerializedAs("startIndex")]
+        [SerializeField] protected int _oldStartIndex;
     }
 }

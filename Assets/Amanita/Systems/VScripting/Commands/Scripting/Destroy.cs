@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Destroys a specified game object in the scene.
@@ -23,8 +23,8 @@ namespace Amanita.VScripting
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(_targetGameObject);
-            variableDataCache.Add(destroyInXSeconds);
+            _variableDataCache.Add(_targetGameObject);
+            _variableDataCache.Add(destroyInXSeconds);
         }
 
         #region Public members
@@ -69,11 +69,11 @@ namespace Amanita.VScripting
 
         #region Backwards compatibility
 
-        [HideInInspector] [FormerlySerializedAs("targetGameObject")] public GameObject targetGameObjectOLD;
-
-        protected override void OnEnable()
+        
+        public override void ApplyBackwardsCompatibility()
         {
-            base.OnEnable();
+            base.ApplyBackwardsCompatibility();
+            destroyInXSeconds ??= new FloatData(0);
             if (targetGameObjectOLD != null)
             {
                 _targetGameObject.Value = targetGameObjectOLD;
@@ -81,14 +81,9 @@ namespace Amanita.VScripting
             }
         }
 
-        public void OnBeforeSerialize()
-        {
-        }
+        [HideInInspector][FormerlySerializedAs("targetGameObject")] public GameObject targetGameObjectOLD;
 
-        public void OnAfterDeserialize()
-        {
-            destroyInXSeconds ??= new FloatData(0);
-        }
+
 
         #endregion
     }

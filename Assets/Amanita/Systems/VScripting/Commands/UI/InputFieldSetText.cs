@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     [CommandInfo("UI",
         "InputFieldSetText",
@@ -14,8 +14,8 @@ namespace Amanita.VScripting
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(inputFieldHolder);
-            variableDataCache.Add(text);
+            _variableDataCache.Add(inputFieldHolder);
+            _variableDataCache.Add(text);
         }
 
         public override void OnEnter()

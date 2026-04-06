@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Spawns a new object based on a reference to a scene or prefab game object.
@@ -39,12 +39,12 @@ namespace Amanita.VScripting
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(_sourceObject);
-            variableDataCache.Add(_parentTransform);
-            variableDataCache.Add(_spawnAtSelf);
-            variableDataCache.Add(_spawnPosition);
-            variableDataCache.Add(_spawnRotation);
-            variableDataCache.Add(_newlySpawnedObject);
+            _variableDataCache.Add(_sourceObject);
+            _variableDataCache.Add(_parentTransform);
+            _variableDataCache.Add(_spawnAtSelf);
+            _variableDataCache.Add(_spawnPosition);
+            _variableDataCache.Add(_spawnRotation);
+            _variableDataCache.Add(_newlySpawnedObject);
         }
 
         #region Public members

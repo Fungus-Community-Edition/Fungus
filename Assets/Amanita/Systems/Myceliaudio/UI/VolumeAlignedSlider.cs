@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Amanita.Myceliaudio
+namespace AtMycelia.Amanita.Myceliaudio
 {
     /// <summary>
     /// Changes the value of a Slider when the volume of

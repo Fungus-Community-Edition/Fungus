@@ -1,8 +1,8 @@
-using Amanita.Tweening;
+using AtMycelia.Amanita.Tweening;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Fades a sprite to a target color over a period of time.
@@ -31,9 +31,9 @@ namespace Amanita.VScripting
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(duration);
-            variableDataCache.Add(targetColor);
-            variableDataCache.Add(waitUntilFinished);
+            _variableDataCache.Add(duration);
+            _variableDataCache.Add(targetColor);
+            _variableDataCache.Add(waitUntilFinished);
         }
 
         protected virtual void Awake()

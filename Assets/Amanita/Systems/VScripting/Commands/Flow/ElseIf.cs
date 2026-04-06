@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Amanita.VScripting.EventHandlers
+namespace AtMycelia.Amanita.VScripting.EventHandlers
 {
     /// <summary>
     /// Marks the start of a command block to be executed when the preceding If statement is False and the test expression is true.

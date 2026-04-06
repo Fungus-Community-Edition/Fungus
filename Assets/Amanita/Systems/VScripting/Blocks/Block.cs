@@ -4,9 +4,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using AmanitaEventHandler = Amanita.VScripting.EventHandlers.EventHandler;
+using AmanitaEventHandler = AtMycelia.Amanita.VScripting.EventHandlers.EventHandler;
+using UnityEditor;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Execution state of a Block.
@@ -83,9 +84,9 @@ namespace Amanita.VScripting
         /// If set, flowchart will not auto select when it is next executed, used by eventhandlers.
         /// Only effects the editor.
         /// </summary>
-        public bool SuppressNextAutoSelection { get; set; }
+        public bool SuppressNextAutoSelection { get; set; } = true;
 
-        [SerializeField] bool suppressAllAutoSelections = false;
+        [SerializeField] bool suppressAllAutoSelections = true;
         
 
         protected virtual void Awake()
@@ -266,7 +267,7 @@ namespace Amanita.VScripting
                 SuppressNextAutoSelection = false;
                 suppressSelectionChanges = true;
             }
-            else
+            else if (Selection.activeGameObject == flowchart.gameObject)
             {
                 flowchart.SelectedBlock = this;
                 if (commandList.Count > 0)
@@ -282,7 +283,8 @@ namespace Amanita.VScripting
             int i = 0;
             while (true)
             {
-                // Executing commands specify the next command to skip to by setting jumpToCommandIndex using Command.Continue()
+                // Executing commands specify the next command to skip to by setting
+                // jumpToCommandIndex using Command.Continue()
                 if (jumpToCommandIndex > -1)
                 {
                     i = jumpToCommandIndex;
@@ -290,6 +292,7 @@ namespace Amanita.VScripting
                 }
 
                 // Skip disabled commands, comments and labels
+                Debug.Log($"IS command list valid: " + (commandList != null) + $", count: " + (commandList != null ? commandList.Count.ToString() : "null"));
                 while (i < commandList.Count &&
                       (!commandList[i].enabled || 
                         commandList[i].GetType() == typeof(Comment) ||
@@ -316,7 +319,7 @@ namespace Amanita.VScripting
                 var command = commandList[i];
                 activeCommand = command;
 
-                if (flowchart.IsActive() && !suppressSelectionChanges)
+                if (Selection.activeGameObject == flowchart.gameObject && flowchart.IsActive() && !suppressSelectionChanges)
                 {
                     // Auto select a command in some situations
                     if ((flowchart.SelectedCommandCount == 0 && i == 0) ||
@@ -537,7 +540,7 @@ namespace Amanita.VScripting
 
         public virtual bool Equals(Block other)
         {
-            return other != null &&
+            return this != null && other != null &&
                 this.itemId == other.itemId &&
                 this.GetFlowchart().UniqueId == other.GetFlowchart().UniqueId &&
                 this.BlockName == other.BlockName;

@@ -1,8 +1,8 @@
-using Amanita.EditorUtils;
+using AtMycelia.Amanita.EditorUtils;
 using System;
 using UnityEngine.UIElements;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     public class VariableRow : IDisposable
     {
@@ -78,6 +78,14 @@ namespace Amanita.VScripting.EditorUtils
         protected virtual void OnValueFieldChanged(object obj)
         {
             AmanitaEditorSignals.ValueFieldChanged(this, obj);
+        }
+
+        /// <summary>
+        /// Test helper to bypass UI event timing and apply a value change directly.
+        /// </summary>
+        public void ApplyValueForTests(object value)
+        {
+            OnValueFieldChanged(value);
         }
 
         public void Dispose()

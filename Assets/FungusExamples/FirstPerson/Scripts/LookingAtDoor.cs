@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 using UnityPhysics = UnityEngine.Physics;
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting;
 
-namespace Amanita.Examples
+namespace AtMycelia.Amanita.Examples
 {
     public class LookingAtDoor : MonoBehaviour
     {
@@ -12,11 +12,19 @@ namespace Amanita.Examples
         public BlockReference runBlockWhenGazed;
         public Transform eye;
 
+        [ContentTypeConstraint(typeof(bool))]
         public VariableReference fungusBoolHasGazed;
+
 
         public void ActivateNow()
         {
             enabled = true;
+
+            if (fungusBoolHasGazed.Variable == null)
+            {
+                string errorMessage = "LookingAtDoor: No variable set for fungusBoolHasGazed. Please set one in the inspector.";
+                Debug.LogError(errorMessage);
+            }
         }
 
         private void Update()

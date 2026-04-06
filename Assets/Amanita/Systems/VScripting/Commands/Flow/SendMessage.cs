@@ -1,8 +1,8 @@
 using UnityEngine;
 using UnityEngine.Serialization;
-using Amanita.VScripting.EventHandlers;
+using AtMycelia.Amanita.VScripting.EventHandlers;
 
-namespace Amanita.VScripting.Commands
+namespace AtMycelia.Amanita.VScripting.Commands
 {
     /// <summary>
     /// Supported target types for messages.
@@ -39,7 +39,7 @@ namespace Amanita.VScripting.Commands
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(_message);
+            _variableDataCache.Add(_message);
         }
 
         #region Public members

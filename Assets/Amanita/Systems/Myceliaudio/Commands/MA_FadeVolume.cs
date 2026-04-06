@@ -1,8 +1,8 @@
 using UnityEngine;
-using Amanita.VScripting;
-using Amanita.Tweening;
+using AtMycelia.Amanita.VScripting;
+using AtMycelia.Amanita.Tweening;
 
-namespace Amanita.Myceliaudio.VScripting
+namespace AtMycelia.Amanita.Myceliaudio.VScripting
 {
     [CommandInfo("Myceliaudio", "MA Fade Vol", "Fades the volume of an individual track")]
     public class MA_FadeVolume : MyceliaudioCommand, ISerializationCallbackReceiver
@@ -122,10 +122,9 @@ namespace Amanita.Myceliaudio.VScripting
             return result;
         }
 
-        public void OnBeforeSerialize() { }
-
-        public void OnAfterDeserialize()
+        public override void OnAfterDeserialize()
         {
+            base.OnAfterDeserialize();
             targetVol ??= new FloatData();
             duration ??= new FloatData(0);
             waitUntilFinished ??= new BooleanData(false);

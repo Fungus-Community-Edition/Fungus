@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Calculates the inverse lerp, the percentage a value is between two others.
@@ -26,10 +26,10 @@ namespace Amanita.VScripting
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(a);
-            variableDataCache.Add(b);
-            variableDataCache.Add(value);
-            variableDataCache.Add(outValue);
+            _variableDataCache.Add(a);
+            _variableDataCache.Add(b);
+            _variableDataCache.Add(value);
+            _variableDataCache.Add(outValue);
         }
 
         public override void OnEnter()

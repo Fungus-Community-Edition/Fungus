@@ -1,8 +1,7 @@
-using Amanita;
-using Amanita.Myceliaudio;
-using Amanita.SaveSys;
-using Amanita.Utils;
-using Amanita.VScripting;
+using AtMycelia.Amanita;
+using AtMycelia.Amanita.Myceliaudio;
+using AtMycelia.SaveSys;
+using AtMycelia.Amanita.VScripting;
 using FullSerializer;
 using NUnit.Framework;
 using System;
@@ -16,6 +15,8 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.TestTools;
 using UnityObj = UnityEngine.Object;
+using AtMycelia;
+using AtMycelia.Amanita.SaveSys;
 
 namespace SaveSystemTests
 {
@@ -40,12 +41,11 @@ namespace SaveSystemTests
 
         // ---- Core Objects / Singletons ----
         protected AmanitaManager ammyManager;
-        protected SaveSystem saveSys;
         protected ISaveManager saveManager;
         protected SaveWriter saveWriter;
         protected SaveReader saveReader;
         protected Encryptor encryptor;
-        protected SaveStorageSettings storageSettings;
+        protected SaveStorageSettings testStorageSettings;
 
         // ---- Codecs / Appliers ----
         protected FlowchartSaveCodec flowchartSaveCodec;
@@ -110,6 +110,8 @@ namespace SaveSystemTests
         protected string FileExtension => saveWriter != null ? saveWriter.FileExtension : string.Empty;
         protected AudioSystem AudioSys => AudioSystem.S;
 
+        private ManualResetEventSlim saveSysInstallEvent;
+
         [OneTimeSetUp]
         public virtual void DoOneTimeSetUp()
         {
@@ -126,13 +128,27 @@ namespace SaveSystemTests
         [SetUp]
         public virtual void DoSetUp()
         {
+            // Note that this can run after the bootstrapper's done its whole initialization thing, so...
             LogAssert.ignoreFailingMessages = false;
             PlayerPrefs.DeleteAll();
+            SaveSystemBootstrapper.ResetStaticsForTest();
             DestroyExistingAmanitaManagerIfAny();
-            ResetSingletonStatics();
+            ResetSingletonStaticsForSetUp();
+
+#if UNITY_EDITOR
+            if (!Application.isPlaying)
+            {
+                SaveSystemBootstrapper.Enabled = false;
+            }
+            else
+#endif
+            {
+                SaveSystemBootstrapper.Enabled = ReqSaveSystem;
+            }
 
             if (ReqSaveSystem)
             {
+                saveSysInstallEvent = new ManualResetEventSlim(false);
                 SaveSysSignals.BaseSaveSysInstallationComplete += OnBaseSaveSysInstallationComplete;
                 SetupSaveSystemAndDependencies();
                 metaData.SaveVersion = "1.2.3";
@@ -172,10 +188,17 @@ namespace SaveSystemTests
             }
         }
 
-        protected virtual void ResetSingletonStatics()
+        protected virtual void ResetSingletonStaticsForSetUp()
         {
-            SaveSystem.ResetStaticsForTest();
-            SaveSystemInstaller.ResetStaticsForTest();
+            Flowchart.ResetStaticsForTest();
+            AmanitaManager.ResetStaticsForTest();
+            AudioSystem.ResetStaticsForTest();
+        }
+
+        protected virtual void ResetSingletonStaticsForTearDown()
+        {
+            //SaveSystem.ResetStaticsForTest(); // Leave this for one time tear down
+            SaveSystemBootstrapper.ResetStaticsForTest();
             Flowchart.ResetStaticsForTest();
             AmanitaManager.ResetStaticsForTest();
             AudioSystem.ResetStaticsForTest();
@@ -183,30 +206,34 @@ namespace SaveSystemTests
 
         private void SetupSaveSystemAndDependencies()
         {
-            pathToAmanitaManagerPrefab = AmanitaConstants.PathToAmanitaManagerPrefab;
-            AmanitaManager amanitaManagerPrefab = Resources.Load<AmanitaManager>(pathToAmanitaManagerPrefab);
-            ammyManager = UnityObj.Instantiate(amanitaManagerPrefab);
-            AmanitaManager.S = ammyManager;
+            ammyManager = AmanitaManager.EnsureExists();
             ammyManager.Init();
 
             if (AmanitaManager.S != ammyManager)
                 Debug.LogError("AmanitaManager.S was not set correctly!");
 
-            saveSys = ammyManager.GetComponentInChildren<SaveSystem>();
-            SaveSystem.S = saveSys;
-            var installer = ammyManager.GetComponentInChildren<SaveSystemInstaller>();
-            SaveSystemInstaller.S = installer;
+            testStorageSettings = ScriptableObject.CreateInstance<SaveStorageSettings>();
+            testStorageSettings.RelativePath = testPathResolver.RelativePath;
 
-            saveManager = saveSys.SaveManager;
-
-            storageSettings = ScriptableObject.CreateInstance<SaveStorageSettings>();
-            storageSettings.RelativePath = "TestSaves";
+            testPathResolver.StorageSettings = testStorageSettings;
+            otherTestPathResolver.StorageSettings = testStorageSettings;
 
             saveWriter = ScriptableObject.CreateInstance<SaveWriter>();
             saveReader = ScriptableObject.CreateInstance<SaveReader>();
-            saveWriter.StorageSettings = saveReader.StorageSettings = storageSettings;
-            otherTestPathResolver.StorageSettings = storageSettings;
+            saveWriter.StorageSettings = saveReader.StorageSettings = testStorageSettings;
             encryptor = ScriptableObject.CreateInstance<Encryptor>();
+
+            var testInstaller = new TestSaveSystemInstaller
+            {
+                StorageSettings = testStorageSettings,
+                SaveReaderOverride = saveReader,
+                SaveWriterOverride = saveWriter
+            };
+
+            SaveSystemBootstrapper.Installer = testInstaller;
+            SaveSystemBootstrapper.InstallContext = null;
+
+            SaveSystem.SavePathResolver = testPathResolver;
         }
 
         private void InitReadRequestFromWriteRequest()
@@ -254,8 +281,7 @@ namespace SaveSystemTests
             threeDPosVar = (IVariable<Vector3>)flowchart.GetVariable("threeDPos");
             twoDPosVar = (IVariable<Vector2>)flowchart.GetVariable("twoDPos");
 
-            flowchart.AddNewVariable<string, StringVariable>("someStringVar", "Hello, World!");
-            stringVar = flowchart.GetVariable("someStringVar") as IVariable<string>;
+            stringVar = flowchart.AddNewVariable("someStringVar", "Hello, World!");
             transformVar = (IVariable<Transform>)flowchart.GetVariable("someTrans");
         }
 
@@ -279,7 +305,7 @@ namespace SaveSystemTests
             flowchartSaveData = flowchartSaveCodec.EncodeToSave(flowchart);
             MainSave.Add(flowchartSaveData);
 
-            IList<BlockSaveData> blockSaves = blockSaveCodec.EncodeToMultiSave(flowchart);
+            IList<BlockSaveData> blockSaves = blockSaveCodec.EncodeToMultiSaves(flowchart);
             foreach (var blockSave in blockSaves)
             {
                 MainSave.Add(blockSave);
@@ -299,7 +325,7 @@ namespace SaveSystemTests
             toDestroyInTearDown.Add(encryptor);
             toDestroyInTearDown.Add(saveWriter);
             toDestroyInTearDown.Add(saveReader);
-            toDestroyInTearDown.Add(storageSettings);
+            toDestroyInTearDown.Add(testStorageSettings);
             if (AmanitaManager.S != null)
             {
                 toDestroyInTearDown.Add(AmanitaManager.S.gameObject);
@@ -330,7 +356,7 @@ namespace SaveSystemTests
         protected virtual IEnumerator CommonSetup()
         {
             yield return waitToYield;
-            PrepNewPathsForTesting();
+            //PrepNewPathsForTesting();
             PrepAndRegisterSaveData();
         }
 
@@ -356,6 +382,14 @@ namespace SaveSystemTests
                     countdown.Wait();
                 }
             }
+            //saveReader.PathResolver = saveWriter.PathResolver = testPathResolver;
+            if (ReqSaveSystem)
+            {
+                while (!SaveSystem.FullyInitted)
+                {
+                    await Task.Delay(50).ConfigureAwait(false);
+                }
+            }
         }
 
         protected virtual int CommonSetupDelay => 200;
@@ -373,7 +407,7 @@ namespace SaveSystemTests
             flowchartSaveData = flowchartSaveCodec.EncodeToSave(flowchart);
             MainSave.Add(flowchartSaveData);
 
-            foreach (var blockSave in blockSaveCodec.EncodeToMultiSave(flowchart))
+            foreach (var blockSave in blockSaveCodec.EncodeToMultiSaves(flowchart))
             {
                 MainSave.Add(blockSave);
             }
@@ -387,38 +421,32 @@ namespace SaveSystemTests
         // ---- Path Prep ----
         protected virtual void OnBaseSaveSysInstallationComplete()
         {
-            PrepNewPathsForTesting();
-        }
-
-        protected virtual void PrepNewPathsForTesting()
-        {
-            if (!ReqSaveSystem || saveSys == null) return;
-            testPathResolver.RelativePath = "TestSaves";
-            saveSys = SaveSystem.S;
-            saveSys.SavePathResolver = testPathResolver;
+            //PrepNewPathsForTesting();
+            saveSysInstallEvent?.Set();
         }
 
         // ---- Teardown ----
         [TearDown]
         public virtual void DoTearDown()
         {
+            SaveSystemBootstrapper.Enabled = true; // Re-enable in case a test disabled it, to ensure proper teardown of the save system.
             if (ReqSaveSystem)
             {
+                DeleteAllTestSaves();
                 SaveSysSignals.BaseSaveSysInstallationComplete -= OnBaseSaveSysInstallationComplete;
-                if (SaveSystem.S != null)
-                    SaveSystem.S.ClearSaveDataAppliers();
             }
 
+            ResetSingletonStaticsForSetUp();
             UnregisterTestOnlyUids();
-            if (ReqSaveSystem && saveSys != null)
-                DeleteAllTestSaves();
+            
             CleanupTrackedSaveFiles();
             DestroyRegisteredObjects();
-            ResetSingletonStatics();
-
+            
             writeReq.MainState = new CompositeSaveData();
             testOnlyFlowcharts.Clear();
             testOnlyVarSourceAssets.Clear();
+
+            saveSysInstallEvent = null;
         }
 
         protected virtual void CleanupTrackedSaveFiles()
@@ -456,26 +484,19 @@ namespace SaveSystemTests
             encryptor = null;
             saveWriter = null;
             saveReader = null;
-            saveSys = null;
             saveManager = null;
         }
 
         [OneTimeTearDown]
         public virtual void DoOneTimeTearDown()
         {
-            if (ShouldDeleteTestSavesAtEnd && ReqSaveSystem && saveSys != null)
+            if (ShouldDeleteTestSavesAtEnd && ReqSaveSystem && SaveSystem.SaveManager != null)
+            {
                 DeleteAllTestSaves();
+            }
 
-            ResetRelativeSavePaths();
+            SaveSystem.ResetStaticsForTest();
             DestroyResidualSceneAndManager();
-        }
-
-        private void ResetRelativeSavePaths()
-        {
-            if (saveWriter != null)
-                saveWriter.RelativeSavePath = saveWriter.DefaultRelativeSavePath;
-            if (saveReader != null)
-                saveReader.RelativeSavePath = saveReader.DefaultRelativeSavePath;
         }
 
         private void DestroyResidualSceneAndManager()
@@ -515,12 +536,12 @@ namespace SaveSystemTests
         // ---- Save File Deletion ----
         protected void DeleteAllTestSaves()
         {
-            if (saveSys == null) return;
+            if (SaveSystem.SaveManager == null) return;
 
             IList<string> folderPaths = new string[]
             {
-                saveSys.GetSaveDirectory(SaveDirectoryType.DataPath),
-                saveSys.GetSaveDirectory(SaveDirectoryType.PersistentDataPath),
+                SaveSystem.GetSaveDirectory(SaveDirectoryType.DataPath),
+                SaveSystem.GetSaveDirectory(SaveDirectoryType.PersistentDataPath),
                 testPathResolver.GetSaveFolderPath(SaveDirectoryType.DataPath),
                 testPathResolver.GetSaveFolderPath(SaveDirectoryType.PersistentDataPath),
             };

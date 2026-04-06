@@ -1,7 +1,7 @@
 using UnityEngine;
-using Amanita.Tweening;
+using AtMycelia.Amanita.Tweening;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Moves the camera to a location specified by a View object.

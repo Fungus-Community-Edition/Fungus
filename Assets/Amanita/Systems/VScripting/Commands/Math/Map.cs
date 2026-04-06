@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Map a value that exists in 1 range of numbers to another.
@@ -24,12 +24,12 @@ namespace Amanita.VScripting
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(initialRangeLower);
-            variableDataCache.Add(initialRangeUpper);
-            variableDataCache.Add(value);
-            variableDataCache.Add(newRangeLower);
-            variableDataCache.Add(newRangeUpper);
-            variableDataCache.Add(outValue);
+            _variableDataCache.Add(initialRangeLower);
+            _variableDataCache.Add(initialRangeUpper);
+            _variableDataCache.Add(value);
+            _variableDataCache.Add(newRangeLower);
+            _variableDataCache.Add(newRangeUpper);
+            _variableDataCache.Add(outValue);
         }
 
         public override void OnEnter()

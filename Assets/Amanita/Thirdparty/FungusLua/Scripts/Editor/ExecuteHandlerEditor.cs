@@ -5,7 +5,7 @@ using System;
 using UnityEditor;
 using UnityEngine;
 
-namespace Amanita.Lua
+namespace AtMycelia.Amanita.Lua
 {
     [CustomEditor(typeof(ExecuteHandler))]
     public class ExecuteHandlerEditor : Editor

@@ -1,8 +1,8 @@
 using UnityEngine;
-using Amanita.DialogueSys;
+using AtMycelia.Amanita.DialogueSys;
 using UnityEngine.Serialization;
 
-namespace Amanita.VScripting.Commands.Legacy
+namespace AtMycelia.Amanita.VScripting.Commands.Legacy
 {
     /// <summary>
     /// Sets a custom say dialog to use when displaying story text.
@@ -11,29 +11,15 @@ namespace Amanita.VScripting.Commands.Legacy
                  "Set Say Dialog", 
                  "Sets a custom say dialog to use when displaying story text")]
     [AddComponentMenu("")]
-    public class SetSayDialog : Command
+    public class SetSayDialog : Command, ISerializationCallbackReceiver
     {
         [Tooltip("The Say Dialog to use for displaying Say story text")]
         [SerializeField] protected GameObjectData sayDialog = new GameObjectData();
 
-        [HideInInspector] [FormerlySerializedAs("sayDialog")]
-        [SerializeField] protected SayDialog oldSayDialog;
-
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(sayDialog);
-        }
-
-
-        protected override void OnEnable()
-        {
-            base.OnEnable();
-            if (oldSayDialog != null)
-            {
-                sayDialog = new GameObjectData(oldSayDialog.gameObject);
-                oldSayDialog = null;
-            }
+            _variableDataCache.Add(sayDialog);
         }
 
         public override void OnEnter()
@@ -82,5 +68,18 @@ namespace Amanita.VScripting.Commands.Legacy
             return CommandColors.Narrative;
         }
 
+        public override void ApplyBackwardsCompatibility()
+        {
+            base.ApplyBackwardsCompatibility();
+            if (oldSayDialog != null)
+            {
+                sayDialog.Value = oldSayDialog.gameObject;
+                oldSayDialog = null;
+            }
+        }
+
+        [HideInInspector]
+        [FormerlySerializedAs("sayDialog")]
+        [SerializeField] protected SayDialog oldSayDialog;
     }
 }
