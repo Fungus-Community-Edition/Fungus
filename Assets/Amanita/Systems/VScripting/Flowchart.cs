@@ -318,7 +318,19 @@ namespace AtMycelia.Amanita.VScripting
 
         public event Action<IVariable> VariableRemoved = delegate { };
 
-        public int VariableCount => _varManager.Variables.Count;
+        public int VariableCount
+        {
+            get
+            {
+                if (_varManager == null)
+                {
+                    _varManager = gameObject.GetOrAddComponent<VariableManagerComponent>();
+                }
+
+
+                return _varManager.Variables.Count;
+            }
+        }
 
         private bool IsInTheScene
         {
