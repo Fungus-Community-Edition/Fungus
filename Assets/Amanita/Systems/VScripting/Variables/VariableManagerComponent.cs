@@ -149,6 +149,7 @@ namespace AtMycelia.Amanita.VScripting
                 }
 
                 component.MigrateFromFlowchart();
+                component.SetGlobalVarsToPublic();
                 migratedCount++;
             }
 
@@ -250,9 +251,6 @@ namespace AtMycelia.Amanita.VScripting
         /// <summary>
         /// Value is default, scope is private. If you want to specify those, use the generic version of this method.
         /// </summary>
-        /// <param name="contentType"></param>
-        /// <param name="key"></param>
-        /// <returns></returns>
         public Muscariable AddNewVariableOfContentType(Type contentType, string key)
         {
             var result = _variableManager.AddNewVariableOfContentType(contentType, key);
@@ -278,6 +276,29 @@ namespace AtMycelia.Amanita.VScripting
             VariableScope scope = VariableScope.Private)
         {
             return _variableManager.AddNewVariableOfContentType(key, defaultVal, scope);
+        }
+
+        protected virtual void OnValidate()
+        {
+            if (!Application.isPlaying)
+            {
+                EnsureOwner();
+            }
+
+            EditorApplication.delayCall += () => SetGlobalVarsToPublic();
+        }
+
+        void SetGlobalVarsToPublic()
+        {
+            // Since now the Global value in the enum is just there for backwards compat,
+            // let's just convert any variables that are set to Global to Public, since 
+            // the concept of Global vars is now limited to VSAs.
+            var vManager = _variableManager;
+            var globalVars = vManager.Variables.Where(v => v.Scope == VariableScope.Global).ToList();
+            foreach (var globalVar in globalVars)
+            {
+                globalVar.Scope = VariableScope.Public;
+            }
         }
 #endif
     }

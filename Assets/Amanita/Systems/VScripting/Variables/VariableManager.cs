@@ -334,7 +334,7 @@ namespace AtMycelia.Amanita.VScripting
 
         public void Refresh()
         {
-            RemoveAll(elem => elem == null);
+            RemoveAllNulls();
             _lookup ??= new Dictionary<byte, IVariable>();
             _lookup.Clear();
             RegisterIntoVarLookup(_muscariables);
@@ -349,6 +349,12 @@ namespace AtMycelia.Amanita.VScripting
             EditorUtility.SetDirty(this.VarOwner as UnityObj);
 #endif
             Refreshed();
+        }
+
+        private void RemoveAllNulls()
+        {
+            _muscariables.RemoveAll(var => var == null);
+            _legacyVariables.RemoveAll(var => var == null);
         }
 
         public event Action Refreshed = delegate { };
@@ -400,10 +406,6 @@ namespace AtMycelia.Amanita.VScripting
         {
             get
             {
-                // Given how the lookup gets focibly cleared by Unity (what with it being a dict), 
-                // we'll need to Refresh every time we want to get the variables to make sure the
-                // lookup is populated and thus that the list we return is complete.
-                Refresh();
                 return _lookup.Values.ToList();
             }
         }
@@ -743,9 +745,11 @@ namespace AtMycelia.Amanita.VScripting
             }
         }
 
+
         public void RemoveAll(Predicate<IVariable> match)
         {
             var toRemove = _lookup.Values.Where(var => match(var)).ToList();
+            
             foreach (var elem in toRemove)
             {
                 RemoveVariable(elem);
@@ -755,6 +759,7 @@ namespace AtMycelia.Amanita.VScripting
         public Muscariable AddNewVariableOfContentType(Type contentType, string key)
         {
             var result = VariableFactory.CreateByContentType(contentType, null);
+            result.Key = key;
             Integrate(result);
             return result;
         }

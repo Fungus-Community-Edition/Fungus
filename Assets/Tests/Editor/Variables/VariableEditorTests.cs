@@ -142,7 +142,11 @@ namespace VScriptingTests.VariableOperations
             var (serialObj, holdsVar, _) = MakeHolder();
 
             Type boolType = typeof(bool);
-            bool AcceptOnlyBools(IVariable varToCheck) => varToCheck.ContentType.Equals(boolType);
+            bool AcceptOnlyBools(IVariable varToCheck)
+            {
+                bool result = varToCheck.ContentType.Equals(boolType);
+                return result;
+            }
             var (selected, options) = InvokeVariableFieldWithCapture(_firstFc, holdsVar, forcedIndex: 1,
                 filter: AcceptOnlyBools);
 

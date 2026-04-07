@@ -10,6 +10,7 @@ using UITKLabel = UnityEngine.UIElements.Label;
 using UnityEngine.TestTools;
 using UnityObj = UnityEngine.Object;
 using Type = System.Type;
+using StringComparison = System.StringComparison;
 using AtMycelia.Amanita.EditorUtils;
 
 namespace VScriptingTests.VariableOperations
@@ -381,39 +382,41 @@ namespace VScriptingTests.VariableOperations
         }
 
         [Test]
-        public void AcquireFlowchartIfLost_ReacquiresViaGlobalObjectId()
+        public void AcquireSourceIfLost_ReacquiresByUniqueId()
         {
             // Arrange: create a Flowchart in the scene
             var fcHolder = new GameObject("FlowchartHost");
             var flowchart = fcHolder.AddComponent<Flowchart>();
+            flowchart.ForceResetUid();
 
             // Hook it into the view
             _view.SetSource(flowchart);
 
             // Simulate losing the reference (as if after undo/redo)
-            var fiFlowchart = viewType.GetField("_flowchart", bindingFlags);
-            fiFlowchart.SetValue(_view, null);
+            var fiSource = viewType.GetField("_source", bindingFlags);
+            fiSource.SetValue(_view, null);
 
-            // Act: call AcquireFlowchartIfLost
-            var miAcquire = viewType.GetMethod("AcquireFlowchartIfLost", bindingFlags);
+            // Act: call AcquireSourceIfLost
+            var miAcquire = viewType.GetMethod("AcquireSourceIfLost", bindingFlags);
             bool reacquired = (bool)miAcquire.Invoke(_view, null);
 
             // Assert: reacquired and matches original
-            Assert.IsTrue(reacquired, "Flowchart should be reacquired");
-            var reacquiredFlowchart = (Flowchart)fiFlowchart.GetValue(_view);
-            Assert.AreSame(flowchart, reacquiredFlowchart);
+            Assert.IsTrue(reacquired, "Source should be reacquired");
+            var reacquiredSource = (IVariableSource)fiSource.GetValue(_view);
+            Assert.AreSame(flowchart, reacquiredSource);
         }
 
         [Test]
-        public void HandleUndoRedoPerformed_CallsSyncFromFlowchart()
+        public void HandleUndoRedoPerformed_CallsSyncFromSource()
         {
             var fcHost = new GameObject("FlowchartHost");
             try
             {
                 var flowchart = fcHost.AddComponent<Flowchart>();
+                var varManager = flowchart.GetComponent<VariableManagerComponent>();
+                Assert.IsNotNull(varManager, "VariableManagerComponent not found on Flowchart.");
 
-                // Directly set the serialized legacy list
-                AssignLegacyVariables(flowchart, new List<Variable>());
+                varManager.AddNewVariableOfContentType<int>("testVar", 10);
 
                 var testView = new TestVariableListView(new VariableListViewInitArgs
                 {
@@ -438,22 +441,21 @@ namespace VScriptingTests.VariableOperations
         }
 
         [Test]
-        public void SyncFromFlowchart_PopulatesVariablesFromFlowchart()
+        public void SyncFromSource_PopulatesVariablesFromFlowchart()
         {
             // Arrange
             var fcHost = new GameObject("FlowchartHost");
             var flowchart = fcHost.AddComponent<Flowchart>();
+            var varManager = flowchart.GetComponent<VariableManagerComponent>();
+            Assert.IsNotNull(varManager, "VariableManagerComponent not found on Flowchart.");
 
-            var firstVar = CreateVarOnHost<FloatVariable, float>(fcHost, "f1", 1f);
-            var secondVar = CreateVarOnHost<StringVariable, string>(fcHost, "s1", "a");
-
-            AssignLegacyVariables(flowchart, new List<Variable> { firstVar, secondVar });
-            flowchart.Refresh();
+            var firstVar = varManager.AddNewVariableOfContentType<float>("f1", 1f);
+            var secondVar = varManager.AddNewVariableOfContentType<string>("s1", "a");
 
             _view.SetSource(flowchart);
 
             // Act
-            var miSync = viewType.GetMethod("SyncFromFlowchart", bindingFlags);
+            var miSync = viewType.GetMethod("SyncFromSource", bindingFlags);
             miSync.Invoke(_view, null);
 
             // Assert
@@ -462,28 +464,107 @@ namespace VScriptingTests.VariableOperations
         }
 
         [Test]
-        public void SyncFromFlowchart_SkipsNullOrDestroyedVariables()
+        public void SyncFromSource_SkipsNullOrDestroyedVariables()
         {
-            // Arrange
-            var fcHost = new GameObject("FlowchartHost");
-            var flowchart = fcHost.AddComponent<Flowchart>();
+            var destroyedHost = new GameObject("DestroyedVarHost");
+            try
+            {
+                var manager = new VariableManager();
+                var firstVar = manager.AddNewVariableOfContentType<float>("f1", 1f);
 
-            var firstVar = CreateVarOnHost<FloatVariable, float>(fcHost, "f1", 1f);
-            var destroyedVar = CreateVarOnHost<StringVariable, string>(fcHost, "s1", "a");
-            UnityObj.DestroyImmediate((UnityObj)destroyedVar);
+                var destroyedVar = destroyedHost.AddComponent<FloatVariable>();
+                destroyedVar.Key = "dead";
+                UnityObj.DestroyImmediate(destroyedVar);
 
-            AssignLegacyVariables(flowchart, new List<Variable> { firstVar, destroyedVar, null });
-            flowchart.Refresh();
+                var source = new StubVariableSource(new IVariable[]
+                {
+                    firstVar,
+                    null,
+                    destroyedVar,
+                });
 
-            _view.SetSource(flowchart);
+                _view.SetSource(source);
 
-            // Act
-            var miSync = viewType.GetMethod("SyncFromFlowchart", bindingFlags);
-            miSync.Invoke(_view, null);
+                // Act
+                var miSync = viewType.GetMethod("SyncFromSource", bindingFlags);
+                miSync.Invoke(_view, null);
 
-            // Assert
-            var internalVars = (List<IVariable>)_fiVariables.GetValue(_view);
-            CollectionAssert.AreEqual(new[] { firstVar }, internalVars);
+                // Assert
+                var internalVars = (List<IVariable>)_fiVariables.GetValue(_view);
+                CollectionAssert.AreEqual(new[] { firstVar }, internalVars);
+            }
+            finally
+            {
+                UnityObj.DestroyImmediate(destroyedHost);
+            }
+        }
+
+        private sealed class StubVariableSource : IVariableSource
+        {
+            private readonly List<IVariable> _variables;
+
+            public StubVariableSource(IEnumerable<IVariable> variables)
+            {
+                _variables = variables.ToList();
+            }
+
+            public event System.Action<IVariable> VariableAdded = delegate { };
+            public event System.Action<IVariable> VariableRemoved = delegate { };
+
+            public IReadOnlyList<IVariable> Variables => _variables;
+
+            public string UniqueId { get; } = System.Guid.NewGuid().ToString();
+            public string Name { get; set; } = "StubVariableSource";
+
+            public IVariable AddVariable(IVariable toAdd)
+            {
+                _variables.Add(toAdd);
+                VariableAdded(toAdd);
+                return toAdd;
+            }
+
+            public void RemoveVariable(IVariable toRemove)
+            {
+                if (_variables.Remove(toRemove))
+                {
+                    VariableRemoved(toRemove);
+                }
+            }
+
+            public IVariable GetVariable(byte itemId)
+            {
+                return _variables.FirstOrDefault(v => v != null && v.ItemId == itemId);
+            }
+
+            public T GetVariableOfType<T>() where T : class, IVariable
+            {
+                return _variables.OfType<T>().FirstOrDefault();
+            }
+
+            public IVariable GetVariable(string name, StringComparison strCompare = StringComparison.Ordinal)
+            {
+                return _variables.FirstOrDefault(v => v != null && v.Key?.Equals(name, strCompare) == true);
+            }
+
+            public T GetVariableOfType<T>(string name, StringComparison strCompare = StringComparison.Ordinal) where T : class, IVariable
+            {
+                return _variables
+                    .OfType<T>()
+                    .FirstOrDefault(v => v.Key?.Equals(name, strCompare) == true);
+            }
+
+            public IVariable GetVariableOfType(Type type, string name, StringComparison strCompare = StringComparison.Ordinal)
+            {
+                return _variables.FirstOrDefault(v =>
+                    v != null &&
+                    type.IsAssignableFrom(v.GetType()) &&
+                    v.Key?.Equals(name, strCompare) == true);
+            }
+
+            public bool Contains(IVariable var)
+            {
+                return _variables.Contains(var);
+            }
         }
 
         static void AssignLegacyVariables(Flowchart flowchart, List<Variable> variables)

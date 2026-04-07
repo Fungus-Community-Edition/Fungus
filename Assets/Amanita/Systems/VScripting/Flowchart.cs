@@ -1425,7 +1425,6 @@ namespace AtMycelia.Amanita.VScripting
             EditorApplication.delayCall += () =>
             {
                 if (this == null) // Object may have been destroyed
-
                 {
                     return;
                 }
@@ -1500,6 +1499,12 @@ namespace AtMycelia.Amanita.VScripting
         {
             get
             {
+#if UNITY_EDITOR
+                if (this == null) // Possible in unit tests
+                {
+                    return Array.Empty<IVariable>();
+                }
+#endif
                 EnsureVariableManagerComponent();
                 _varManager.Owner = this;
                 return VariableManager.Variables;
