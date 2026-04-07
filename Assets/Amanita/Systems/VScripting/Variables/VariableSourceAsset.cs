@@ -284,6 +284,7 @@ namespace AtMycelia.Amanita.VScripting
         {
             ToggleSubs(false);
             ToggleSubs(true);
+            _varManager.VarOwner = this;
 #if UNITY_EDITOR
             if (!AssetDatabase.Contains(this))
             {

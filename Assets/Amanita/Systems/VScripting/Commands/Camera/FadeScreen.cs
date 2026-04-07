@@ -16,29 +16,29 @@ namespace AtMycelia.Amanita.VScripting
     public class FadeScreen : Command 
     {
         [Tooltip("Time for fade effect to complete")]
-        [SerializeField] protected FloatData duration = new FloatData(1f);
+        [SerializeField] protected FloatData _duration = new FloatData(1f);
 
         [Tooltip("Current target alpha transparency value. The fade gradually adjusts the alpha to approach this target value.")]
-        [SerializeField] protected FloatData targetAlpha = new FloatData(1f);
+        [SerializeField] protected FloatData _targetAlpha = new FloatData(1f);
 
         [Tooltip("Wait until the fade has finished before executing next command")]
-        [SerializeField] protected BooleanData waitUntilFinished = new BooleanData(true);
+        [SerializeField] protected BooleanData _waitUntilFinished = new BooleanData(true);
 
         [Tooltip("Color to render fullscreen fade texture with when screen is obscured.")]
-        [SerializeField] protected ColorData fadeColor = new ColorData(Color.black);
+        [SerializeField] protected ColorData _fadeColor = new ColorData(Color.black);
 
         [Tooltip("Optional texture to use when rendering the fullscreen fade effect.")]
-        [SerializeField] protected Texture2D fadeTexture;
+        [SerializeField] protected Texture2D _fadeTexture;
 
         [SerializeField] protected ScriptableObject fadeTweener;
 
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            _variableDataCache.Add(duration);
-            _variableDataCache.Add(targetAlpha);
-            _variableDataCache.Add(waitUntilFinished);
-            _variableDataCache.Add(fadeColor);
+            _variableDataCache.Add(_duration);
+            _variableDataCache.Add(_targetAlpha);
+            _variableDataCache.Add(_waitUntilFinished);
+            _variableDataCache.Add(_fadeColor);
         }
 
         protected virtual void Awake()
@@ -75,10 +75,10 @@ namespace AtMycelia.Amanita.VScripting
         {
             if (!_migrated)
             {
-                duration.Value = _oldDuration;
-                targetAlpha.Value = _oldTargetAlpha;
-                waitUntilFinished.Value = _oldWaitUntilFinished;
-                fadeColor.Value = _oldFadeColor;
+                _duration.Value = _oldDuration;
+                _targetAlpha.Value = _oldTargetAlpha;
+                _waitUntilFinished.Value = _oldWaitUntilFinished;
+                _fadeColor.Value = _oldFadeColor;
 
                 _oldDuration = -1;
                 _oldTargetAlpha = -1;
@@ -118,26 +118,26 @@ namespace AtMycelia.Amanita.VScripting
             cameraManager.ScreenFadeTexture = DecideFadeTex();
             Texture2D DecideFadeTex()
             {
-                Texture2D result = fadeTexture;
+                Texture2D result = _fadeTexture;
                 if (result == null)
                 {
-                    result = CameraManager.CreateColorTexture(fadeColor.Value, 32, 32);
+                    result = CameraManager.CreateColorTexture(_fadeColor.Value, 32, 32);
                 }
 
                 return result;
             }
 
-            cameraManager.Fade(targetAlpha.Value, duration.Value, OnFadeDone, DoFadeTween);
+            cameraManager.Fade(_targetAlpha.Value, _duration.Value, OnFadeDone, DoFadeTween);
             void OnFadeDone()
             {
-                if (waitUntilFinished.Value)
+                if (_waitUntilFinished.Value)
                 {
                     Debug.Log($"Fade finished, continuing with next command.");
                     Continue();
                 }
             }
 
-            if (!waitUntilFinished.Value)
+            if (!_waitUntilFinished.Value)
             {
                 Continue();
             }
@@ -145,17 +145,17 @@ namespace AtMycelia.Amanita.VScripting
         
         public override string GetSummary()
         {
-            string result = $"Fade to {targetAlpha.Value} ";
-            if (targetAlpha.RepresentingVar)
+            string result = $"Fade to {_targetAlpha.Value} ";
+            if (_targetAlpha.RepresentingVar)
             {
-                result += $"({targetAlpha.VarRef.Key}) ";
+                result += $"({_targetAlpha.VarRef.Key}) ";
             }
 
-            result += $"over {duration.Value} ";
+            result += $"over {_duration.Value} ";
 
-            if (duration.RepresentingVar)
+            if (_duration.RepresentingVar)
             {
-                result += $"({duration.VarRef.Key}) ";
+                result += $"({_duration.VarRef.Key}) ";
             }
 
             result += "seconds";

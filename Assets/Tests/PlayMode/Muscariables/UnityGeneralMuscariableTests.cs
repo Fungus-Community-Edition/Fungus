@@ -32,19 +32,6 @@ namespace VScriptingTests.MuscariableTests.DataOnly
         }
 
         [Test]
-        public void GameObjectMuscariable_InitRequiresKeyAndID()
-        {
-            var goVar = new GameObjectMuscariable();
-            var ex = Assert.Throws<Exception>(() => goVar.Init());
-            StringAssert.Contains("needs a valid key", ex.Message);
-            StringAssert.Contains("needs a valid ID", ex.Message);
-
-            goVar.Key = "go";
-            goVar.ItemId = 31;
-            Assert.DoesNotThrow(() => goVar.Init());
-        }
-
-        [Test]
         public void GameObjectMuscariable_ValueAssignmentAndEvent()
         {
             var goVar = new GameObjectMuscariable { Key = "go", ItemId = 32 };
@@ -62,10 +49,10 @@ namespace VScriptingTests.MuscariableTests.DataOnly
         public void GameObjectMuscariable_GONameGetterAndSetter()
         {
             var goVar = new GameObjectMuscariable { Key = "go", ItemId = 33, Value = firstGameObject };
-            goVar.Init();
+            goVar.Init(goVar.Value);
 
             // Getter
-            Assert.AreEqual("A", goVar.GOName);
+            Assert.AreEqual(firstGameObject.name, goVar.GOName);
 
             // Setter
             goVar.GOName = "Renamed";

@@ -253,7 +253,7 @@ namespace AtMycelia.Amanita.VScripting
 
         public virtual void Init(T startValue = default)
         {
-            this.startValue = startValue;
+            this.startValue = startValue; 
             this.Value = startValue;
         }
 
