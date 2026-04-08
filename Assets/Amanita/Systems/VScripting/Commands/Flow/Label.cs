@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace AtMycelia.Hyphlow
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Marks a position in the command list for execution to jump to.

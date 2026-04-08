@@ -4,7 +4,7 @@ using UnityEditor;
 #endif
 using UnityEngine;
 
-namespace AtMycelia.Hyphlow
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Used by the Flowchart window to serialize the currently active Flowchart object

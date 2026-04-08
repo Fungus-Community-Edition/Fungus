@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     /// <summary>
     /// Custom drawer for the AnyVaraibleAndDataPair, shows only the matching data for the targeted variable

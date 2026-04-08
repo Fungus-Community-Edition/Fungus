@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
-namespace AtMycelia.Hyphlow
+namespace AtMycelia.Amanita.VScripting
 {
     [Serializable]
     [MovedFrom(true, "Amanita.VScripting", "Amanita.Core", "NumericMuscariable")]

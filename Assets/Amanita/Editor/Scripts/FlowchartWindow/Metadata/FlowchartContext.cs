@@ -4,7 +4,7 @@ using UnityEditor;
 using UnityEngine;
 using AtMycelia.Graphics;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     public class FlowchartContext : IDisposable
     {

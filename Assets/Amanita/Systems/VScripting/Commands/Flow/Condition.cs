@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace AtMycelia.Hyphlow
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Base for all Conditional based Commands, Ifs, Loops, and so on.

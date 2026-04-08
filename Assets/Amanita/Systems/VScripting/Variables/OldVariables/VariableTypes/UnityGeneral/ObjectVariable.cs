@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 using UnityObj = UnityEngine.Object;
 
-namespace AtMycelia.Hyphlow
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Object variable type.

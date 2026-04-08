@@ -1,9 +1,9 @@
 using UnityEditor;
 using UnityEngine;
 using AtMycelia.Amanita.EditorUtils;
-using AtMycelia.Hyphlow;
+using AtMycelia.Amanita.VScripting;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     /// <summary>
     /// Editor window for viewing and managing the variable registry configuration, including global variable sources.

@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace AtMycelia.Hyphlow.UI
+namespace AtMycelia.Amanita.VScripting.UI
 {
     public interface IFlowchartUIModel
     {

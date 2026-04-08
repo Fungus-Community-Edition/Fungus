@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace AtMycelia.Hyphlow
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Deletes a saved value from permanent storage.

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace AtMycelia.Hyphlow
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Map a value that exists in 1 range of numbers to another.

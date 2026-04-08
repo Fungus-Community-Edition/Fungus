@@ -1,10 +1,10 @@
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
-using AtMycelia.Hyphlow;
+using AtMycelia.Amanita.VScripting.EventHandlers;
 using AtMycelia.Amanita.EditorUtils;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     [CustomEditor(typeof(EventHandler), true)]
     public class EventHandlerEditor : Editor

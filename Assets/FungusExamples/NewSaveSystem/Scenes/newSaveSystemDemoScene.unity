@@ -1514,7 +1514,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 846271704159223897
-      type: {class: StringMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
+      type: {class: StringMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         scope: 1
         key: firstMarkerID
@@ -1522,7 +1522,7 @@ MonoBehaviour:
         value: first
         startValue: 
     - rid: 846271704159223899
-      type: {class: ColorMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
+      type: {class: ColorMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: someColor
@@ -1530,7 +1530,7 @@ MonoBehaviour:
         value: {r: 0.7647059, g: 0.19999999, b: 0.29125303, a: 0}
         startValue: {r: 0, g: 0, b: 0, a: 0}
     - rid: 4605209356947947849
-      type: {class: FloatMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
+      type: {class: FloatMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         scope: 1
         key: someFloatVar
@@ -1538,7 +1538,7 @@ MonoBehaviour:
         value: 1.234
         startValue: 0
     - rid: 7903257792018382921
-      type: {class: VectorTwoMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
+      type: {class: VectorTwoMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: vecTwoVar
@@ -1546,7 +1546,7 @@ MonoBehaviour:
         value: {x: 5, y: 0}
         startValue: {x: 0, y: 0}
     - rid: 7903257792018382959
-      type: {class: VectorThreeMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
+      type: {class: VectorThreeMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: vecThreeVar
@@ -1602,7 +1602,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 7903257792018382955
-      type: {class: Vector2Data, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
+      type: {class: Vector2Data, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         backingVarRef:
           itemId: 0
@@ -1789,7 +1789,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 7903257792018382953
-      type: {class: ColorData, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
+      type: {class: ColorData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         backingVarRef:
           itemId: 0
@@ -1939,7 +1939,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 7903257792018382965
-      type: {class: Vector3Data, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
+      type: {class: Vector3Data, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         backingVarRef:
           itemId: 0

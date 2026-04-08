@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-namespace AtMycelia.Hyphlow
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Waits for a number of frames before executing the next command in the block.

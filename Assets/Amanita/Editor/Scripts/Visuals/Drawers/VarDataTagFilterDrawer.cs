@@ -4,7 +4,7 @@ using UnityEditorInternal;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
-using AtMycelia.Hyphlow;
+using AtMycelia.Amanita.VScripting;
 using System.Linq;
 using UitkLabel = UnityEngine.UIElements.Label;
 

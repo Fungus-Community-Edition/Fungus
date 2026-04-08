@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
 
-namespace AtMycelia.Hyphlow
+namespace AtMycelia.Amanita.VScripting
 {
 	/// <summary>
 	/// AudioClip variable type.

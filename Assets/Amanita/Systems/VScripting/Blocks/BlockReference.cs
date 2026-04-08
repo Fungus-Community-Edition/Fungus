@@ -1,4 +1,4 @@
-﻿namespace AtMycelia.Hyphlow
+﻿namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// A simple struct wrapping a reference to an Amanita Block. Allows for BlockReferenceDrawer. 

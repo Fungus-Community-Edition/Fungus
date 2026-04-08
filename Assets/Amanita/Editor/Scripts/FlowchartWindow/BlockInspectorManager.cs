@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     /// <summary>
     /// Central authority for creating, showing, and clearing the hidden BlockInspector ScriptableObject.
     /// Automatically reacts to Flowchart/Block selection signals so every editor surface
-    /// stays in sync without relying on FlowchartWindowï¿½s static field directly.
+    /// stays in sync without relying on FlowchartWindow’s static field directly.
     /// </summary>
     [InitializeOnLoad]
     public static class BlockInspectorManager

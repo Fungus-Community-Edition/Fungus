@@ -10,7 +10,7 @@ using UITKLabel = UnityEngine.UIElements.Label;
 using UnityObj = UnityEngine.Object;
 using AtMycelia.Collections;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     /// <summary>
     /// Virtualized, reorderable variable list view (Unity 2022.3 LTS + Unity 6).

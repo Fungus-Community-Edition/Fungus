@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
+namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 {
     /// <summary>
     /// Handles zooming the active Flowchart in response to non-click scroll-wheel input.

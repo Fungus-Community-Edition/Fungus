@@ -7,7 +7,7 @@
         <engine:VisualElement name="ValueFieldHolder" style="flex-grow: 1;">
             <engine:IntegerField value="42" binding-path="value" name="ValueField" class="numericField" />
         </engine:VisualElement>
-        <engine:EnumField value="Private" type="AtMycelia.Hyphlow.VariableScope, AtMycelia.Amanita.Core" name="Scope" data-source-type="AtMycelia.Hyphlow.VariableScope, AtMycelia.Amanita.Core" binding-path="scope" class="scopeRoot" />
+        <engine:EnumField value="Private" type="AtMycelia.Amanita.VScripting.VariableScope, AtMycelia.Amanita.Core" name="Scope" data-source-type="AtMycelia.Amanita.VScripting.VariableScope, AtMycelia.Amanita.Core" binding-path="scope" class="scopeRoot" />
         <engine:Button text="-" name="RemoveButton" class="removeButton" />
     </engine:VisualElement>
 </UXML>

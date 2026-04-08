@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using AtMycelia.Hyphlow;
 
-namespace AtMycelia.Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting.EventHandlers
 {
     /// <summary>
     /// The block will execute when the player is dragging an object which stops touching the target object.
@@ -55,11 +54,11 @@ namespace AtMycelia.Amanita.VScripting
             {
                 if (on)
                 {
-                    _eventDispatcher.AddListener<DragExitedEvent>(OnDragExitedEvent);
+                    EventDispatcher.AddListener<DragExitedEvent>(OnDragExitedEvent);
                 }
                 else
                 {
-                    _eventDispatcher.RemoveListener<DragExitedEvent>(OnDragExitedEvent);
+                    EventDispatcher.RemoveListener<DragExitedEvent>(OnDragExitedEvent);
                 }
             }
         }

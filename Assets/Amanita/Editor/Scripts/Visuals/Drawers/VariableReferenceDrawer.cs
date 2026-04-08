@@ -6,7 +6,7 @@ using System.Linq;
 using System.Reflection;
 using UnityObj = UnityEngine.Object;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     /// <summary>
     /// Custom drawer for VariableReference, allows selecting a target variable.
@@ -21,13 +21,21 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
             UnityObj targetObject = property.serializedObject.targetObject;
             Type[] allowedContentTypes = GetAllowedTypes(fieldInfo);
-
+            AmanitaManager ammieManager = null;
             VariableRegistry varRegistry = null;
 
             EnsurePrerequisites(out bool canContinue);
             void EnsurePrerequisites(out bool success)
             {
                 success = false;
+
+                ammieManager = AmanitaManager.S;
+                if (ammieManager == null)
+                {
+                    EditorGUI.LabelField(position, label.text, "AmanitaManager not found in scene.");
+                    EditorGUI.EndProperty();
+                    return;
+                }
 
                 varRegistry = VariableRegistryService.Registry;
                 if (varRegistry == null)

@@ -2421,7 +2421,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 3688519694093123649
-      type: {class: TextureMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
+      type: {class: TextureMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: cursorTex
@@ -2429,7 +2429,7 @@ MonoBehaviour:
         value: {fileID: 2800000, guid: 22eb050bacf8c401ca8503e24bff3570, type: 3}
         startValue: {fileID: 0}
     - rid: 3688519694093123657
-      type: {class: VectorTwoMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
+      type: {class: VectorTwoMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: cursorHotSpot
@@ -2437,7 +2437,7 @@ MonoBehaviour:
         value: {x: 0, y: 0}
         startValue: {x: 0, y: 0}
     - rid: 3688519694093123660
-      type: {class: TransformMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
+      type: {class: TransformMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: draggableSpr
@@ -2445,7 +2445,7 @@ MonoBehaviour:
         value: {fileID: 2135880373}
         startValue: {fileID: 0}
     - rid: 3688519694093123661
-      type: {class: TransformMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
+      type: {class: TransformMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: dragTargSpr
@@ -2453,7 +2453,7 @@ MonoBehaviour:
         value: {fileID: 442175928}
         startValue: {fileID: 0}
     - rid: 3688519694093123670
-      type: {class: TransformMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
+      type: {class: TransformMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: clickableSpr
@@ -2461,7 +2461,7 @@ MonoBehaviour:
         value: {fileID: 228925352}
         startValue: {fileID: 0}
     - rid: 3688519694093123672
-      type: {class: TransformMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
+      type: {class: TransformMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: clickableSpr2ElecBoogaloo

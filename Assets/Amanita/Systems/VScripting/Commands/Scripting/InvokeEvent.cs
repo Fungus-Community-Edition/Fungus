@@ -2,7 +2,7 @@ using UnityEngine;
 using System;
 using UnityEngine.Events;
 
-namespace AtMycelia.Hyphlow
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Supported types of method invocation.

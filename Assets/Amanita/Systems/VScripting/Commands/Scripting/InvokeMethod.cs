@@ -9,7 +9,7 @@ using System.Linq;
 using UnityObj = UnityEngine.Object;
 using UnityEngine.Serialization;
 
-namespace AtMycelia.Hyphlow.Commands
+namespace AtMycelia.Amanita.VScripting.Commands
 {
     /// <summary>
     /// Invokes a method of a component via reflection. Supports passing multiple parameters and storing returned values in a Fungus variable.

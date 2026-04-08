@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using UnityObject = UnityEngine.Object;
 using UnityEngine.EventSystems;
-using AtMycelia.Hyphlow;
+using AtMycelia.Amanita.VScripting;
 using AtMycelia.Amanita;
 using AtMycelia.SaveSys;
 using AtMycelia.Amanita.Myceliaudio;
@@ -31,7 +31,7 @@ namespace VScriptingTests.MuscariableTests
             PrepAmanitaManagerAndItsSubmodules();
             void PrepAmanitaManagerAndItsSubmodules()
             {
-                pathToAmanitaManagerPrefab = HyphlowConstants.PathToAmanitaManagerPrefab;
+                pathToAmanitaManagerPrefab = AmanitaConstants.PathToAmanitaManagerPrefab;
                 AmanitaManager amanitaManagerPrefab = Resources.Load<AmanitaManager>(pathToAmanitaManagerPrefab);
                 ammyManager = UnityObject.Instantiate(amanitaManagerPrefab);
                 AmanitaManager.S = ammyManager;

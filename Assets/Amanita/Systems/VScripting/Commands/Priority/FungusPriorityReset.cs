@@ -1,4 +1,4 @@
-namespace AtMycelia.Hyphlow
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Resets the FungusPriority count to zero. Useful if you are among logic that is hard to have matching increase and decreases.

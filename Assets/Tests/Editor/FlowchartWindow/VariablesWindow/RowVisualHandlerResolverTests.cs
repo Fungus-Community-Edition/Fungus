@@ -1,8 +1,8 @@
-﻿using AtMycelia.Hyphlow.EditorUtils;
+﻿using AtMycelia.Amanita.VScripting.EditorUtils;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using DefaultHandler = AtMycelia.Hyphlow.EditorUtils.DefaultRowVisualHandler;
+using DefaultHandler = AtMycelia.Amanita.VScripting.EditorUtils.DefaultRowVisualHandler;
 
 namespace VScriptingTests.VariableOperations
 {

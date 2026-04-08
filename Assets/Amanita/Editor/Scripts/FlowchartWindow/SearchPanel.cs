@@ -5,8 +5,8 @@ using UnityEngine;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 using UIToolkitLabel = UnityEngine.UIElements.Label;
-using AtMycelia.Hyphlow;
-using AtMycelia.Hyphlow.EditorUtils;
+using AtMycelia.Amanita.VScripting;
+using AtMycelia.Amanita.VScripting.EditorUtils;
 
 namespace AtMycelia.Amanita.EditorUtils
 {

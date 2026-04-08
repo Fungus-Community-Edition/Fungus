@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace AtMycelia.Hyphlow.Commands
+namespace AtMycelia.Amanita.VScripting.Commands
 {
     /// <summary>
     /// If the test expression is true, execute the following command block.

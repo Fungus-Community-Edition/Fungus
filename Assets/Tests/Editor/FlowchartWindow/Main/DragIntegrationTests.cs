@@ -5,11 +5,11 @@ using System.Linq;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
-using AtMycelia.Hyphlow.EditorUtils;
-using AtMycelia.Hyphlow;
+using AtMycelia.Amanita.VScripting.EditorUtils;
+using AtMycelia.Amanita.VScripting;
 using UnityObj = UnityEngine.Object;
-using AtMycelia.Hyphlow.EditorUtils.FcWindow;
-using FcWindow = AtMycelia.Hyphlow.EditorUtils.FcWindow.FlowchartWindow;
+using AtMycelia.Amanita.VScripting.EditorUtils.FcWindow;
+using FcWindow = AtMycelia.Amanita.VScripting.EditorUtils.FcWindow.FlowchartWindow;
 
 namespace VScriptingTests.FCWindowOperations.Integration
 {

@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using AtMycelia.Hyphlow;
-using AtMycelia.Hyphlow.EditorUtils;
+using AtMycelia.Amanita.VScripting;
+using AtMycelia.Amanita.VScripting.EditorUtils;
 
 namespace AtMycelia.Amanita.EditorUtils
 {

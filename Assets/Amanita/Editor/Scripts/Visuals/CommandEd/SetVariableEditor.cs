@@ -1,10 +1,10 @@
 using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
-using AtMycelia.Hyphlow.Commands;
+using AtMycelia.Amanita.VScripting.Commands;
 using Type = System.Type;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     [CustomEditor(typeof(SetVariable))]
     public class SetVariableEditor : CommandEditor

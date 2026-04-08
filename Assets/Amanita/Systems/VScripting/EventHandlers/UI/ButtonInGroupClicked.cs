@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.UI;
 
-namespace AtMycelia.Hyphlow
+namespace AtMycelia.Amanita.VScripting.EventHandlers
 {
     [EventHandlerInfo("UI/ButtonInGroupClicked", 
         "Button In Group Clicked",

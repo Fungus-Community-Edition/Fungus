@@ -2,7 +2,7 @@ using AtMycelia.Amanita.EditorUtils;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     public class BlockGraphicsGenerator : IBlockGraphicsGenerator
     {
@@ -17,7 +17,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
             {
                 //graphics.offTexture = AmanitaEditorResources.EventNodeOff;
                 //graphics.onTexture = AmanitaEditorResources.EventNodeOn;
-                defaultTint = HyphlowConstants.DefaultEventBlockTint;
+                defaultTint = AmanitaConstants.DefaultEventBlockTint;
             }
             else
             {
@@ -37,13 +37,13 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 {
                     //graphics.offTexture = AmanitaEditorResources.ChoiceNodeOff;
                     //graphics.onTexture = AmanitaEditorResources.ChoiceNodeOn;
-                    defaultTint = HyphlowConstants.DefaultChoiceBlockTint;
+                    defaultTint = AmanitaConstants.DefaultChoiceBlockTint;
                 }
                 else
                 {
                     //graphics.offTexture = AmanitaEditorResources.ProcessNodeOff;
                     //graphics.onTexture = AmanitaEditorResources.ProcessNodeOn;
-                    defaultTint = HyphlowConstants.DefaultProcessBlockTint;
+                    defaultTint = AmanitaConstants.DefaultProcessBlockTint;
                 }
             }
 

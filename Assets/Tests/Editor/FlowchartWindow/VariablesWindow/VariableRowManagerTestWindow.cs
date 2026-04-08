@@ -7,12 +7,12 @@ using UnityEngine.UIElements;
 using UnityObj = UnityEngine.Object;
 using UITKLabel = UnityEngine.UIElements.Label;
 using UnityRandom = UnityEngine.Random;
-using AtMycelia.Hyphlow;
+using AtMycelia.Amanita.VScripting;
 
 // Optional: avoid pulling conflicting types into the global scope
 using AtMycelia.Amanita.EditorUtils;
 using AtMycelia.Collections;
-using AtMycelia.Hyphlow.EditorUtils;
+using AtMycelia.Amanita.VScripting.EditorUtils;
 using AtMycelia.Amanita; // if you keep helpers here
 
 namespace VScriptingTests.VariableOperations
@@ -228,7 +228,7 @@ namespace VScriptingTests.VariableOperations
             _vRowManager = null;
 
             // Load UXML
-            const string pathToUxml = HyphlowConstants.PathToAmanitaVariableDisplayEditorUxml;
+            const string pathToUxml = AmanitaConstants.PathToAmanitaVariableDisplayEditorUxml;
             if (_variableTemplate == null)
             {
                 _variableTemplate = Resources.Load<VisualTreeAsset>(pathToUxml);
@@ -325,7 +325,7 @@ namespace VScriptingTests.VariableOperations
 
         protected void RebindRows()
         {
-            // For safety, remount entirely ï¿½ good for catching binding lifecycle issues
+            // For safety, remount entirely — good for catching binding lifecycle issues
             MountRowsUI();
         }
 

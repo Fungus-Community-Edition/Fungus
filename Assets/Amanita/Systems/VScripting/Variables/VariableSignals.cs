@@ -1,7 +1,7 @@
 using System;
 using UnityObj = UnityEngine.Object;
 
-namespace AtMycelia.Hyphlow
+namespace AtMycelia.Amanita.VScripting
 {
     public static class VariableSignals 
     {

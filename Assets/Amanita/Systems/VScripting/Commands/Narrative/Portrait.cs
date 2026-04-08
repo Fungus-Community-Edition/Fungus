@@ -1,8 +1,7 @@
 using UnityEngine;
 using AtMycelia.Amanita.DialogueSys;
-using AtMycelia.Hyphlow;
 
-namespace AtMycelia.Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting.Commands
 {
     /// <summary>
     /// Controls a character portrait.

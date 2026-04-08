@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
-using AtMycelia.Hyphlow;
 
 namespace AtMycelia.Amanita.VScripting
 {
@@ -11,7 +10,7 @@ namespace AtMycelia.Amanita.VScripting
 	[AddComponentMenu("")]
 	[System.Serializable]
 	[MovedFrom(true, "Amanita.VScripting", "Amanita.Core")]
-	public class CharacterVariable : VariableBase<Character>
+	public class CharacterVariable : VariableBase<Amanita.Character>
 	{ }
 
 	/// <summary>

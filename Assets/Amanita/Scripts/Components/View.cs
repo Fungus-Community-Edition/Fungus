@@ -4,8 +4,7 @@ namespace AtMycelia.Amanita
 {
     /// <summary>
     /// Defines a camera view point.
-    /// The position and rotation are specified using the game object's transform, so this class
-    /// only needs to specify the orthographic view size.
+    /// The position and rotation are specified using the game object's transform, so this class only needs to specify the ortographic view size.
     /// </summary>
     [ExecuteInEditMode]
     public class View : MonoBehaviour
@@ -22,7 +21,7 @@ namespace AtMycelia.Amanita
         protected virtual void Update()
         {
             // Disable scaling to avoid complicating the orthographic size calculations
-            transform.localScale = new Vector3(1, 1 ,1);
+            transform.localScale = new Vector3(1,1,1);
         }
 
         #region Public members

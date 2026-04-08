@@ -1,4 +1,4 @@
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     public interface IConnectionDrawer
     {

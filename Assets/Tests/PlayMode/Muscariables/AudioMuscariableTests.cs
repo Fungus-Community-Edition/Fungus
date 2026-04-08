@@ -1,5 +1,5 @@
 using AtMycelia.Amanita;
-using AtMycelia.Hyphlow;
+using AtMycelia.Amanita.VScripting;
 using Lorekeeper;
 using NUnit.Framework;
 using System;

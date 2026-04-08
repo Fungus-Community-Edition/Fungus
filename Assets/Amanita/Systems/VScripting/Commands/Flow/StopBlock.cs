@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace AtMycelia.Hyphlow.Commands
+namespace AtMycelia.Amanita.VScripting.Commands
 {
     /// <summary>
     /// Stops executing the named Block.

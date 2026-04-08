@@ -4,7 +4,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     /// <summary>
     /// Centralizes editor-side knowledge of which Flowchart/Blocks/Commands are currently selected.

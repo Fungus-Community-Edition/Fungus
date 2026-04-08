@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace AtMycelia.Hyphlow
+namespace AtMycelia.Amanita.VScripting.EventHandlers
 {
     /// <summary>
     /// The block will execute when the Flowchart game object is enabled.

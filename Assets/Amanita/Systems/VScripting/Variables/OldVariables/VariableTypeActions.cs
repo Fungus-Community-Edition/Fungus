@@ -1,6 +1,6 @@
 using System;
 
-namespace AtMycelia.Hyphlow
+namespace AtMycelia.Amanita.VScripting
 {
     public class VariableTypeActions : IEquatable<VariableTypeActions>
     {

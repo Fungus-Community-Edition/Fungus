@@ -5,10 +5,10 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
-using AtMycelia.Hyphlow.EditorUtils;
-using AtMycelia.Hyphlow;
+using AtMycelia.Amanita.VScripting.EditorUtils;
+using AtMycelia.Amanita.VScripting.EventHandlers;
 using Attribute = System.Attribute;
-using AtMycelia.Hyphlow;
+using AtMycelia.Amanita.VScripting;
 
 namespace AtMycelia.Amanita.EditorUtils
 {

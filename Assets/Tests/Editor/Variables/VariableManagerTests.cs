@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Reflection;
-using AtMycelia.Hyphlow;
+using AtMycelia.Amanita.VScripting;
 using NUnit.Framework;
 
 namespace VScriptingTests.Variables

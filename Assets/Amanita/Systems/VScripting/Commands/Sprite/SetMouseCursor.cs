@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace AtMycelia.Hyphlow
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Sets the mouse cursor sprite.

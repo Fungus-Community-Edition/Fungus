@@ -2,7 +2,7 @@ using UnityEngine;
 using AtMycelia.Amanita.DialogueSys;
 using UnityEngine.Serialization;
 
-namespace AtMycelia.Hyphlow.Commands.Legacy
+namespace AtMycelia.Amanita.VScripting.Commands.Legacy
 {
     /// <summary>
     /// Sets a custom say dialog to use when displaying story text.

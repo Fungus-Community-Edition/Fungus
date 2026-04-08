@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     [AttributeUsage(AttributeTargets.Class)]
     public class RowVisualHandlerAttribute : Attribute

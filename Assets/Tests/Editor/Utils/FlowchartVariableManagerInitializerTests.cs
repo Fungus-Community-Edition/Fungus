@@ -6,7 +6,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using AtMycelia.Amanita.EditorUtils;
-using AtMycelia.Hyphlow;
+using AtMycelia.Amanita.VScripting;
 using UnityObject = UnityEngine.Object;
 
 namespace VScriptingTests.Utils

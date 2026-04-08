@@ -1,4 +1,4 @@
-namespace AtMycelia
+namespace AtMycelia.Amanita
 {
     public interface IHasKey
     {

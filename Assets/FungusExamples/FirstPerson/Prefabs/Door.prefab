@@ -760,7 +760,7 @@ MonoBehaviour:
     - rid: -2
       type: {class: , ns: , asm: }
     - rid: 6177420912830185922
-      type: {class: BooleanData, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
+      type: {class: BooleanData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         backingVarRef:
           itemId: 0
@@ -987,7 +987,7 @@ MonoBehaviour:
     - rid: -2
       type: {class: , ns: , asm: }
     - rid: 6177420912830185843
-      type: {class: BooleanData, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
+      type: {class: BooleanData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         backingVarRef:
           itemId: 0
@@ -1350,7 +1350,7 @@ MonoBehaviour:
     - rid: -2
       type: {class: , ns: , asm: }
     - rid: 3688519629742539423
-      type: {class: BooleanData, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
+      type: {class: BooleanData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         backingVarRef:
           itemId: 0
@@ -1596,7 +1596,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 3688519646466015318
-      type: {class: FloatMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
+      type: {class: FloatMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: fadeDur
@@ -1604,7 +1604,7 @@ MonoBehaviour:
         value: 1
         startValue: 0
     - rid: 3688519646466015319
-      type: {class: FloatMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
+      type: {class: FloatMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: fadeOut

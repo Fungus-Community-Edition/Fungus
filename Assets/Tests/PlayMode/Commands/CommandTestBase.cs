@@ -1,4 +1,4 @@
-﻿using AtMycelia.Hyphlow; // or your Flowchart namespace
+﻿using AtMycelia.Amanita.VScripting; // or your Flowchart namespace
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;

@@ -3,12 +3,12 @@ using UnityEngine.UI;
 using System.Reflection;
 using System.Collections.Generic;
 
-namespace AtMycelia.Hyphlow
+namespace AtMycelia.Amanita
 {
     /// <summary>
     /// Helper class for hiding the many, many ways we might want to show text to the user.
     /// </summary>
-    public class TextAdapter
+    public class TextAdapter : IWriterTextDestination
     {
         protected Text textUI;
         protected InputField inputField;
@@ -16,6 +16,7 @@ namespace AtMycelia.Hyphlow
         protected TMPro.TMP_Text tmpro;
         protected Component textComponent;
         protected PropertyInfo textProperty;
+        protected IWriterTextDestination writerTextDestination;
 
         public void InitFromGameObject(GameObject go, bool includeChildren = false)
         {
@@ -30,6 +31,7 @@ namespace AtMycelia.Hyphlow
                 inputField = go.GetComponent<InputField>();
                 textMesh = go.GetComponent<TextMesh>();
                 tmpro = go.GetComponent<TMPro.TMP_Text>();
+                writerTextDestination = go.GetComponent<IWriterTextDestination>();
             }
             else
             {
@@ -37,9 +39,10 @@ namespace AtMycelia.Hyphlow
                 inputField = go.GetComponentInChildren<InputField>();
                 textMesh = go.GetComponentInChildren<TextMesh>();
                 tmpro = go.GetComponentInChildren<TMPro.TMP_Text>();
+                writerTextDestination = go.GetComponentInChildren<IWriterTextDestination>();
             }
             
-            if (textUI == null && inputField == null && textMesh == null)
+            if (textUI == null && inputField == null && textMesh == null && writerTextDestination == null)
             {
                 textComponent = FindFirstComponentWithTextProperty(go, includeChildren);
             }
@@ -89,6 +92,11 @@ namespace AtMycelia.Hyphlow
             {
                 tmpro.richText = true;
             }
+
+            if (writerTextDestination != null)
+            {
+                writerTextDestination.ForceRichText();
+            }
         }
 
         public void SetTextColor(Color textColor)
@@ -114,6 +122,10 @@ namespace AtMycelia.Hyphlow
                 tmpro.color = textColor;
             }
 
+            else if (writerTextDestination != null)
+            {
+                writerTextDestination.SetTextColor(textColor);
+            }
         }
 
         public void SetTextAlpha(float textAlpha)
@@ -145,12 +157,16 @@ namespace AtMycelia.Hyphlow
                 tmpro.alpha = textAlpha;
             }
 
+            else if (writerTextDestination != null)
+            {
+                writerTextDestination.SetTextAlpha(textAlpha);
+            }
         }
 
         public bool HasTextObject()
         {
             return (textUI != null || inputField != null || textMesh != null 
-                || textComponent != null || tmpro != null);
+                || textComponent != null || tmpro != null || writerTextDestination != null);
         }
 
         public bool SupportsRichText()
@@ -173,6 +189,10 @@ namespace AtMycelia.Hyphlow
                 return true;
             }
 
+            if (writerTextDestination != null)
+            {
+                return writerTextDestination.SupportsRichText();
+            }
             return false;
         }
 
@@ -252,6 +272,10 @@ namespace AtMycelia.Hyphlow
                 {
                     return inputField.text;
                 }
+                else if (writerTextDestination != null)
+                {
+                    return Text;
+                }
                 else if (textMesh != null)
                 {
                     return textMesh.text;
@@ -279,6 +303,10 @@ namespace AtMycelia.Hyphlow
                 else if (inputField != null)
                 {
                     inputField.text = value;
+                }
+                else if (writerTextDestination != null)
+                {
+                    Text = value;
                 }
                 else if (textMesh != null)
                 {

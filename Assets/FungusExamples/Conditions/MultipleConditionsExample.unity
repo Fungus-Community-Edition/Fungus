@@ -488,7 +488,7 @@ MonoBehaviour:
     - rid: -2
       type: {class: , ns: , asm: }
     - rid: 6177420819874447779
-      type: {class: BooleanData, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
+      type: {class: BooleanData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         backingVarRef:
           itemId: 2
@@ -499,7 +499,7 @@ MonoBehaviour:
         booleanRef: {fileID: 0}
         booleanVal: 0
     - rid: 6177420819874447980
-      type: {class: IntegerData, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
+      type: {class: IntegerData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         backingVarRef:
           itemId: 4
@@ -1350,7 +1350,7 @@ MonoBehaviour:
     - rid: -2
       type: {class: , ns: , asm: }
     - rid: 6177420826070220866
-      type: {class: StringData, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
+      type: {class: StringData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         backingVarRef:
           itemId: 7
@@ -1361,7 +1361,7 @@ MonoBehaviour:
         stringRef: {fileID: 0}
         stringVal: 
     - rid: 6177420826070220867
-      type: {class: IntegerData, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
+      type: {class: IntegerData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         backingVarRef:
           itemId: 4
@@ -1372,7 +1372,7 @@ MonoBehaviour:
         integerRef: {fileID: 0}
         integerVal: 0
     - rid: 6177420826070220868
-      type: {class: IntegerData, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
+      type: {class: IntegerData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         backingVarRef:
           itemId: 5
@@ -1854,7 +1854,7 @@ MonoBehaviour:
     - rid: -2
       type: {class: , ns: , asm: }
     - rid: 6177420819874447438
-      type: {class: IntegerData, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
+      type: {class: IntegerData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         backingVarRef:
           itemId: 0
@@ -1865,7 +1865,7 @@ MonoBehaviour:
         integerRef: {fileID: 0}
         integerVal: 0
     - rid: 6177420819874447541
-      type: {class: BooleanData, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
+      type: {class: BooleanData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         backingVarRef:
           itemId: 2
@@ -1979,7 +1979,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 6177420826070221573
-      type: {class: IntegerData, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
+      type: {class: IntegerData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         backingVarRef:
           itemId: 0

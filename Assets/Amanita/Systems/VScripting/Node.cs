@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace AtMycelia.Hyphlow
+namespace AtMycelia.Amanita
 {
     /// <summary>
     /// Base class for Flowchart nodes.

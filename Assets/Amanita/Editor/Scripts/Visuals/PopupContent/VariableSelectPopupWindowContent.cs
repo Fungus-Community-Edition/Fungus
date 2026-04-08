@@ -7,7 +7,7 @@ using UnityObj = UnityEngine.Object;
 using Type = System.Type;
 using System.Reflection;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     /// <summary>
     /// Searchable popup window content used to add a Variable component to the current Flowchart.

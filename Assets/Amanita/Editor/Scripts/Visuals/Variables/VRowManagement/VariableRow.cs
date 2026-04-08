@@ -2,7 +2,7 @@ using AtMycelia.Amanita.EditorUtils;
 using System;
 using UnityEngine.UIElements;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     public class VariableRow : IDisposable
     {

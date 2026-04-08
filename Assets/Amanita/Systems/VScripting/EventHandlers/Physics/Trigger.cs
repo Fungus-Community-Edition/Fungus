@@ -1,8 +1,8 @@
-using AtMycelia.Hyphlow;
+using AtMycelia.Amanita.VScripting.EventHandlers;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
 
-namespace AtMycelia.Hyphlow
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// The block will execute when a 3d physics trigger matching some basic conditions is met. 

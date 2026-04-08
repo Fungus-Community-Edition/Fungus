@@ -1,5 +1,5 @@
 using UnityEngine;
-using AtMycelia.Hyphlow;
+using AtMycelia.Amanita.VScripting;
 using AtMycelia.Amanita.Tweening;
 
 namespace AtMycelia.Amanita.Myceliaudio.VScripting

@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace AtMycelia.Hyphlow
+namespace AtMycelia.Amanita.VScripting
 {
     [Serializable]
     [VariableInfo("Physics/ThreeD", "ColliderThreeD", typeof(Collider))]

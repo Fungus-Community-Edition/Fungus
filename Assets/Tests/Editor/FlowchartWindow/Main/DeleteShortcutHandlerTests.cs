@@ -2,7 +2,7 @@ using AtMycelia.Amanita.EditorUtils;
 using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
-using AtMycelia.Hyphlow.EditorUtils;
+using AtMycelia.Amanita.VScripting.EditorUtils;
 
 namespace VScriptingTests.FCWindowOperations
 {

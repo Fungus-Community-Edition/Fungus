@@ -1,6 +1,6 @@
 #pragma warning disable 0649
 
-using AtMycelia.Hyphlow.EditorUtils;
+using AtMycelia.Amanita.VScripting.EditorUtils;
 using UnityEngine;
 
 namespace AtMycelia.Amanita.EditorUtils

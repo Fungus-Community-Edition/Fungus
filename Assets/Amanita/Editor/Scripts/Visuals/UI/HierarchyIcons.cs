@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEditor;
 using System.Linq;
-using AtMycelia.Hyphlow;
+using AtMycelia.Amanita.VScripting;
 
 namespace AtMycelia.Amanita.EditorUtils
 {

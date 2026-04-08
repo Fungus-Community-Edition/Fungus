@@ -546,7 +546,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 3688519675510521925
-      type: {class: FloatMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
+      type: {class: FloatMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: out
@@ -554,7 +554,7 @@ MonoBehaviour:
         value: 1
         startValue: 0
     - rid: 3688519675510521926
-      type: {class: FloatMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
+      type: {class: FloatMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: in
@@ -562,7 +562,7 @@ MonoBehaviour:
         value: 0
         startValue: 0
     - rid: 3688519675510521927
-      type: {class: ColorMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
+      type: {class: ColorMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: black
@@ -570,7 +570,7 @@ MonoBehaviour:
         value: {r: 0, g: 0, b: 0, a: 1}
         startValue: {r: 0, g: 0, b: 0, a: 0}
     - rid: 3688519675510521928
-      type: {class: ColorMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
+      type: {class: ColorMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: purple

@@ -1,6 +1,6 @@
 using AtMycelia.Amanita.Myceliaudio;
 using AtMycelia.Amanita.Myceliaudio.VScripting;
-using AtMycelia.Hyphlow;
+using AtMycelia.Amanita.VScripting;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
@@ -22,10 +22,10 @@ namespace VScriptingTests.Commands
             TrackGroup.Voice
         };
 
-        // Track indexes 0ï¿½2
+        // Track indexes 0–2
         protected static readonly int[] TestTrackIndexes = { 0, 1, 2 };
 
-        // Cartesian product of groups ï¿½ indexes
+        // Cartesian product of groups × indexes
         protected static readonly object[] GroupIndexCases = BuildCases();
         protected static object[] BuildCases()
         {

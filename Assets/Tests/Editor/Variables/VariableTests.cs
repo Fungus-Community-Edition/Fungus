@@ -1,6 +1,6 @@
 using NUnit.Framework;
 using UnityEngine;
-using AtMycelia.Hyphlow;
+using AtMycelia.Amanita.VScripting;
 using System.Collections.Generic;
 using UnityObj = UnityEngine.Object;
 using AtMycelia.Amanita;

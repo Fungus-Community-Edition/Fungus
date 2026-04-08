@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace AtMycelia.Hyphlow
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Plays a state of an animator according to the state name.

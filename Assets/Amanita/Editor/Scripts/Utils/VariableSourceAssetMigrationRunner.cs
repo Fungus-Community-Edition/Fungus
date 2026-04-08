@@ -1,5 +1,5 @@
 #if UNITY_EDITOR
-using AtMycelia.Hyphlow;
+using AtMycelia.Amanita.VScripting;
 using UnityEditor;
 
 namespace AtMycelia.Amanita.EditorUtils

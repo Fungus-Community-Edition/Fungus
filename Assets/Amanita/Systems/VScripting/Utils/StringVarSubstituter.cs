@@ -4,7 +4,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
-namespace AtMycelia.Hyphlow
+namespace AtMycelia.Amanita.VScripting
 {
     public class StringVarSubstituter
     {
@@ -112,7 +112,7 @@ namespace AtMycelia.Hyphlow
 
         private bool TryGetVariableFromGlobalSources(string key, out IVariable variable)
         {
-            VariableRegistryConfig registryConfig = DefaultHyphlowAssets.VariableRegistryConfig;
+            VariableRegistryConfig registryConfig = DefaultAmanitaAssets.VariableRegistryConfig;
             if (registryConfig == null)
             {
                 variable = null;

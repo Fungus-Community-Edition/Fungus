@@ -4,7 +4,7 @@ using System.Reflection;
 using UnityEditor;
 using System.Linq;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     public static class RowVisualHandlerRegistry
     {

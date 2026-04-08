@@ -1,4 +1,4 @@
-namespace AtMycelia.Hyphlow
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Interface to allow the VariableEditor to check that a given fungus variable is compatibile with the object it resides

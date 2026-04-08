@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using AtMycelia.Hyphlow.EditorUtils;
-using AtMycelia.Hyphlow;
+using AtMycelia.Amanita.VScripting.EditorUtils;
+using AtMycelia.Amanita.VScripting;
 using System.Linq;
 
 namespace AtMycelia.Amanita.EditorUtils

@@ -1,6 +1,6 @@
 using AtMycelia.Amanita.EditorUtils;
 
-namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
+namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 {
     internal sealed class FcwClipboardCoordinator
     {

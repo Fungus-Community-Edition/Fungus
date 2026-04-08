@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Debug = UnityEngine.Debug;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     public class RowVisualHandlerPool
     {

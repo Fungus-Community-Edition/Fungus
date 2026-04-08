@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-namespace AtMycelia.Hyphlow
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Singleton service that maintains a variable registry and handles its updates in response to 
@@ -92,13 +92,13 @@ namespace AtMycelia.Hyphlow
 
         public static VariableRegistryConfig LoadDefaultConfig()
         {
-            if (DefaultHyphlowAssets.VariableRegistryConfig == null)
+            if (DefaultAmanitaAssets.VariableRegistryConfig == null)
             {
-                DefaultHyphlowAssets.VariableRegistryConfig =
+                DefaultAmanitaAssets.VariableRegistryConfig =
                     Resources.Load<VariableRegistryConfig>(DefaultConfigResourcesPath);
             }
 
-            return DefaultHyphlowAssets.VariableRegistryConfig;
+            return DefaultAmanitaAssets.VariableRegistryConfig;
         }
 
         private void ToggleSubs(bool on)

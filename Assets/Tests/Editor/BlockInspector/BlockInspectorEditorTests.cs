@@ -1,6 +1,6 @@
 #if UNITY_EDITOR
-using AtMycelia.Hyphlow;
-using AtMycelia.Hyphlow.EditorUtils;
+using AtMycelia.Amanita.VScripting;
+using AtMycelia.Amanita.VScripting.EditorUtils;
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;

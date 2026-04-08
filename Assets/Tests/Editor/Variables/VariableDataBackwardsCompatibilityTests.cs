@@ -1,7 +1,7 @@
 using NUnit.Framework;
 using UnityEngine;
 using System.Reflection;
-using AtMycelia.Hyphlow;
+using AtMycelia.Amanita.VScripting;
 
 namespace VScriptingTests.VariableRows
 {

@@ -3,7 +3,7 @@ using UnityEngine.Serialization;
 using System.Collections.Generic;
 using System;
 
-namespace AtMycelia.Hyphlow
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Supported modes for calling a block.

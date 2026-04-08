@@ -1,7 +1,7 @@
 using UnityEngine;
 
 
-namespace AtMycelia.Hyphlow
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Get or Set a property of a Material component

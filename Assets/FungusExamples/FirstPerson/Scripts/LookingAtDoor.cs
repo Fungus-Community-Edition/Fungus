@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using UnityPhysics = UnityEngine.Physics;
-using AtMycelia.Hyphlow;
+using AtMycelia.Amanita.VScripting;
 
 namespace AtMycelia.Amanita.Examples
 {

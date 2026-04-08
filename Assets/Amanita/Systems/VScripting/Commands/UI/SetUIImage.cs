@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine.UI;
 
-namespace AtMycelia.Hyphlow.Commands
+namespace AtMycelia.Amanita.VScripting.Commands
 {
     /// <summary>
     /// Changes the Image property on a UI element.

@@ -8,7 +8,7 @@
         <engine:VisualElement name="ValueFieldHolder">
             <editor:ObjectField data-source-type="UnityEngine.AudioClip, UnityEngine.AudioModule" name="ValueField" binding-path="value" />
         </engine:VisualElement>
-        <engine:EnumField value="Private" type="AtMycelia.Hyphlow.VariableScope, AtMycelia.Amanita.Core" name="Scope" data-source-type="AtMycelia.Hyphlow.VariableScope, AtMycelia.Amanita.Core" binding-path="scope" class="scopeRoot" />
+        <engine:EnumField value="Private" type="AtMycelia.Amanita.VScripting.VariableScope, AtMycelia.Amanita.Core" name="Scope" data-source-type="AtMycelia.Amanita.VScripting.VariableScope, AtMycelia.Amanita.Core" binding-path="scope" class="scopeRoot" />
         <engine:Button text="-" name="RemoveButton" class="removeButton" />
     </engine:VisualElement>
 </UXML>

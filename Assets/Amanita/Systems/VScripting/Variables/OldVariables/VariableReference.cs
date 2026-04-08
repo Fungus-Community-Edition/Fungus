@@ -2,7 +2,7 @@
 using UnityEngine.Serialization;
 using UnityObj = UnityEngine.Object;
 
-namespace AtMycelia.Hyphlow
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// A reference to a variable belonging to a variable source (Flowchart or VariableSourceAsset).

@@ -7,9 +7,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using AtMycelia.Amanita.EditorUtils;
-using AtMycelia.Hyphlow;
+using AtMycelia.Amanita.VScripting.EventHandlers;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
 	[CustomEditor(typeof(Block))]
 	public class BlockEditor : Editor

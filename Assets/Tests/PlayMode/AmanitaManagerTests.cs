@@ -1,5 +1,5 @@
 using System.Collections;
-using AtMycelia.Hyphlow;
+using System.IO;
 using AtMycelia.Amanita;
 using Lorekeeper;
 using NUnit.Framework;
@@ -117,7 +117,7 @@ public class AmanitaManagerTests
         yield return CreateManagerAsync();
         Assert.IsNotNull(AmanitaManager.S, "Primary AmanitaManager instance was not initialized.");
 
-        var prefab = Resources.Load<AmanitaManager>(HyphlowConstants.PathToAmanitaManagerPrefab);
+        var prefab = Resources.Load<AmanitaManager>(AmanitaConstants.PathToAmanitaManagerPrefab);
         Assert.IsNotNull(prefab, "Unable to load AmanitaManager prefab from Resources.");
 
         var duplicate = Object.Instantiate(prefab);

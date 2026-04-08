@@ -8,7 +8,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 #endif
 
-namespace AtMycelia.Hyphlow
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Centralized registry that keeps Flowcharts discoverable in both the editor and at runtime.

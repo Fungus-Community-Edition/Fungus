@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
-namespace AtMycelia.Hyphlow
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Vector2 variable type.

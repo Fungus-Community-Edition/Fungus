@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     /// <summary>
     /// Handles custom drawing for ConditionExperssions within the VariableCondition and inherited commands.

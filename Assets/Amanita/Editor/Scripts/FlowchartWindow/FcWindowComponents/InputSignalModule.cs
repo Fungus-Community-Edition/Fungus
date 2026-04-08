@@ -3,11 +3,11 @@ using System;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
+namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 {
     /// <summary>
     /// Detects raw IMGUI input inside the UITK flowchart window and relays it to FlowchartWindowSignals.
-    /// Call <see cref="OnGUI(Event)"/> from the owning windowï¿½s OnGUI loop.
+    /// Call <see cref="OnGUI(Event)"/> from the owning window’s OnGUI loop.
     /// </summary>
     public sealed class InputSignalModule : IFlowchartWindowModule, IDisposable
     {

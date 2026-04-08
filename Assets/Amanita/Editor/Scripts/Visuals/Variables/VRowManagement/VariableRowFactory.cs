@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine.UIElements;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     public class VariableRowFactory : IVariableRowFactory<VariableRowFactoryInitArgs>
     {

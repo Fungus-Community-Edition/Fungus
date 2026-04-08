@@ -1,8 +1,9 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
-using AtMycelia.Hyphlow;
+using AtMycelia.Amanita.VScripting.EventHandlers;
+using AtMycelia.Amanita.VScripting;
 
-namespace AtMycelia.Hyphlow
+namespace AtMycelia.Amanita
 {
     /// <summary>
     /// Detects mouse clicks and touches on a Game Object, and sends an event to all Flowchart event handlers in the scene.
@@ -19,13 +20,6 @@ namespace AtMycelia.Hyphlow
 
         [Tooltip("Use the UI Event System to check for clicks. Clicks that hit an overlapping UI object will be ignored. Camera must have a PhysicsRaycaster component, or a Physics2DRaycaster for 2D colliders.")]
         [SerializeField] protected bool useEventSystem;
-
-        protected virtual void Awake()
-        {
-            _eventDispatcher = FindFirstObjectByType<EventDispatcher>();
-        }
-
-        private EventDispatcher _eventDispatcher;
 
         protected virtual void ChangeCursor(Texture2D cursorTexture)
         {
@@ -44,7 +38,9 @@ namespace AtMycelia.Hyphlow
                 return;
             }
 
-            _eventDispatcher.Raise(new ObjectClicked.ObjectClickedEvent(this));
+            var eventDispatcher = AmanitaManager.S.EventDispatcher;
+
+            eventDispatcher.Raise(new ObjectClicked.ObjectClickedEvent(this));
         }
 
         protected virtual void DoPointerEnter()

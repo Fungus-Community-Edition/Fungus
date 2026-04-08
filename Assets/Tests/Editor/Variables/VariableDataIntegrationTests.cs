@@ -2,7 +2,7 @@ using System;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEditor;
-using AtMycelia.Hyphlow;
+using AtMycelia.Amanita.VScripting;
 using UnityObj = UnityEngine.Object;
 
 namespace VScriptingTests.VariableOperations

@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Globalization;
 using AtMycelia.Amanita.Tweening;
-using AtMycelia.Hyphlow;
 
 namespace AtMycelia.Amanita.DialogueSys
 {

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     public class FlowchartMenuItems
     {
@@ -15,7 +15,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
             var flowchart = go.GetComponent<Flowchart>();
             if (flowchart != null)
             {
-                flowchart.Version = HyphlowConstants.CurrentVersion;
+                flowchart.Version = AmanitaConstants.CurrentVersion;
             }
 
             // Only the first created Flowchart in the scene should have a default GameStarted block

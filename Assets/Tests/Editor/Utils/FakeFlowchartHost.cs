@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
-using AtMycelia.Hyphlow;
-using AtMycelia.Hyphlow.EditorUtils;
+using AtMycelia.Amanita.VScripting;
+using AtMycelia.Amanita.VScripting.EditorUtils;
 using UnityEngine.UIElements;
-using AtMycelia.Hyphlow.EditorUtils.FcWindow;
+using AtMycelia.Amanita.VScripting.EditorUtils.FcWindow;
 
 namespace AtMycelia.Amanita.EditorUtils
 {

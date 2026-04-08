@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using AtMycelia.Amanita.EditorUtils;
-using AtMycelia.Hyphlow;
+using AtMycelia.Amanita.VScripting.EventHandlers;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     /// <summary>
     /// Searchable Popup Window for selecting Event type, used by block editor
@@ -60,7 +60,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
                     var obsAttr = item.GetCustomAttribute<System.ObsoleteAttribute>();
 
                     var fliStr = (info.Category.Length > 0 ? info.Category + CATEGORY_CHAR : "")
-                        + (obsAttr != null ? HyphlowConstants.UIPrefixForDeprecated_RichText : "")
+                        + (obsAttr != null ? AmanitaConstants.UIPrefixForDeprecated_RichText : "")
                         + info.EventHandlerName;
                     allItems.Add(new FilteredListItem(i, fliStr, info.HelpText));
                 }

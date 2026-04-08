@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using UitkLabel = UnityEngine.UIElements.Label;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     sealed class MissingFlowchartOverlay : IDisposable
     {

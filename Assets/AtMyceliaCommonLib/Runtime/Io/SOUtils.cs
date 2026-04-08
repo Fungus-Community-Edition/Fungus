@@ -1,9 +1,6 @@
 using System.IO;
-using UnityEngine;
-
-#if UNITY_EDITOR
 using UnityEditor;
-#endif
+using UnityEngine;
 
 namespace AtMycelia
 {
@@ -46,10 +43,10 @@ namespace AtMycelia
             AssetUtils.EnsureFolderExists(folderPath);
             string assetPath = Path.Combine(folderPath, assetName + ".asset").Replace("\\", "/");
 
-            AssetDatabase.CreateAsset(result, assetPath);
-            EditorUtility.SetDirty(result);
-            AssetDatabase.SaveAssetIfDirty(result);
-            AssetDatabase.Refresh();
+            UnityEditor.AssetDatabase.CreateAsset(result, assetPath);
+            UnityEditor.EditorUtility.SetDirty(result);
+            UnityEditor.AssetDatabase.SaveAssetIfDirty(result);
+            UnityEditor.AssetDatabase.Refresh();
 #endif
             return result;
 
@@ -70,8 +67,8 @@ namespace AtMycelia
             string path = AssetDatabase.GUIDToAssetPath(guids[0]);
             return AssetDatabase.LoadAssetAtPath<T>(path);
 #else
-            Debug.LogError("FindFirstInProject<T>() can only be used in the Unity Editor.");
-            return null;
+        Debug.LogError("FindFirstInProject<T>() can only be used in the Unity Editor.");
+        return null;
 #endif
         }
 

@@ -1,9 +1,10 @@
 using UnityEngine;
-using AtMycelia.Hyphlow;
+using AtMycelia.Amanita.VScripting.EventHandlers;
+using AtMycelia.Amanita.VScripting;
 using System.Linq;
 using System.Collections.Generic;
 using System;
-using VSEvent = AtMycelia.Hyphlow.EventHandler;
+using VSEvent = AtMycelia.Amanita.VScripting.EventHandlers.EventHandler;
 
 namespace AtMycelia.SaveSys.VScripting
 {

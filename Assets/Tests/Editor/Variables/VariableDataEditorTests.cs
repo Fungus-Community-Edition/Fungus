@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
-using AtMycelia.Hyphlow;
+using AtMycelia.Amanita.VScripting;
 using System.Reflection;
 using UnityObj = UnityEngine.Object;
 using UnityEngine.TestTools;

@@ -5,8 +5,8 @@ using System.Threading;
 using System;
 using UnityEngine.SceneManagement;
 using AtMycelia.SaveSys;
-using AtMycelia.Hyphlow;
-using AtMycelia.Hyphlow;
+using AtMycelia.Amanita.VScripting;
+using AtMycelia.Amanita.VScripting.EventHandlers;
 
 namespace AtMycelia.Amanita.SaveSys
 {

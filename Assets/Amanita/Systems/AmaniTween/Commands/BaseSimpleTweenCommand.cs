@@ -1,5 +1,5 @@
 using UnityEngine;
-using AtMycelia.Hyphlow;
+using AtMycelia.Amanita.VScripting;
 
 namespace AtMycelia.Amanita.Tweening.VScripting
 {
@@ -39,7 +39,7 @@ namespace AtMycelia.Amanita.Tweening.VScripting
 
         protected virtual void GoWithDefaultTweener()
         {
-            _tweenerSO = DefaultHyphlowAssets.TweenAdapter;
+            _tweenerSO = DefaultAmanitaAssets.TweenAdapter;
         }
 
         protected override void RefreshVariableDataCache()

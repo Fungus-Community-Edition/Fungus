@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace AtMycelia.Hyphlow
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// For VariableData subclasses

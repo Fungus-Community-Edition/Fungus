@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityObject = UnityEngine.Object;
-using AtMycelia.Hyphlow.EditorUtils;
-using AtMycelia.Hyphlow;
+using AtMycelia.Amanita.VScripting.EditorUtils;
+using AtMycelia.Amanita.VScripting;
 
 namespace VScriptingTests.FCWindowOperations
 {

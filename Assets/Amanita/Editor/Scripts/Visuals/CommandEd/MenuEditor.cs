@@ -2,7 +2,7 @@ using UnityEditor;
 using UnityEngine;
 using AmanitaMenu = AtMycelia.Amanita.DialogueSys.Commands.Menu;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     [CustomEditor (typeof(AmanitaMenu))]
     public class MenuEditor : CommandEditor 

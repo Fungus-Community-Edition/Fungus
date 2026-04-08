@@ -5,9 +5,9 @@ using System.Linq;
 using System.Reflection;
 using System;
 using System.Collections.Generic;
-using AtMycelia.Hyphlow.EditorUtils;
+using AtMycelia.Amanita.VScripting.EditorUtils;
 
-namespace AtMycelia.Hyphlow.Commands.EditorUtils
+namespace AtMycelia.Amanita.VScripting.Commands.EditorUtils
 {
     [CustomEditor(typeof(InvokeMethod))]
     public class InvokeMethodEditor : CommandEditor
@@ -218,7 +218,7 @@ namespace AtMycelia.Hyphlow.Commands.EditorUtils
                         var prevColor = style.normal.textColor;
                         style.normal.textColor = Color.red;
                         EditorGUILayout.LabelField(new GUIContent(objParam.ParameterType.Name + 
-                            " cannot be drawn, donï¿½t use this method in the flowchart."), style);
+                            " cannot be drawn, don´t use this method in the flowchart."), style);
                         style.normal.textColor = prevColor;
                     }
 

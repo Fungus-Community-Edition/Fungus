@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using AtMycelia.Hyphlow;
 
-namespace AtMycelia.Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting.EventHandlers
 {
     /// <summary>
     /// The block will execute when the player drags an object and releases it without dropping it on a target object.
@@ -38,11 +37,11 @@ namespace AtMycelia.Amanita.VScripting
             base.ToggleSubs(on);
             if (on)
             {
-                _eventDispatcher.AddListener<DragCancelledEvent>(OnDragCancelledEvent);
+                EventDispatcher.AddListener<DragCancelledEvent>(OnDragCancelledEvent);
             }
             else
             {
-                _eventDispatcher.RemoveListener<DragCancelledEvent>(OnDragCancelledEvent);
+                EventDispatcher.RemoveListener<DragCancelledEvent>(OnDragCancelledEvent);
             }
         }
 

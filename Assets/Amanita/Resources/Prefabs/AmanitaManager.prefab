@@ -1417,12 +1417,12 @@ PrefabInstance:
     - target: {fileID: 61835812667275657, guid: f56d2b69f69539b4d98dccf0aa165f58,
         type: 3}
       propertyPath: 'managedReferences[3688519646466015310]'
-      value: AtMycelia.Amanita.Core AtMycelia.Hyphlow.IntMuscariable
+      value: AtMycelia.Amanita.Core AtMycelia.Amanita.VScripting.IntMuscariable
       objectReference: {fileID: 0}
     - target: {fileID: 61835812667275657, guid: f56d2b69f69539b4d98dccf0aa165f58,
         type: 3}
       propertyPath: 'managedReferences[3688519646466015311]'
-      value: AtMycelia.Amanita.Core AtMycelia.Hyphlow.AudioClipMuscariable
+      value: AtMycelia.Amanita.Core AtMycelia.Amanita.VScripting.AudioClipMuscariable
       objectReference: {fileID: 0}
     - target: {fileID: 61835812667275657, guid: f56d2b69f69539b4d98dccf0aa165f58,
         type: 3}
@@ -1862,22 +1862,22 @@ PrefabInstance:
     - target: {fileID: 3048891292373600861, guid: f56d2b69f69539b4d98dccf0aa165f58,
         type: 3}
       propertyPath: 'managedReferences[3688519646466015312]'
-      value: AtMycelia.Amanita.Core AtMycelia.Hyphlow.AudioClipMuscariable
+      value: AtMycelia.Amanita.Core AtMycelia.Amanita.VScripting.AudioClipMuscariable
       objectReference: {fileID: 0}
     - target: {fileID: 3048891292373600861, guid: f56d2b69f69539b4d98dccf0aa165f58,
         type: 3}
       propertyPath: 'managedReferences[3688519646466015313]'
-      value: AtMycelia.Amanita.Core AtMycelia.Hyphlow.AudioClipMuscariable
+      value: AtMycelia.Amanita.Core AtMycelia.Amanita.VScripting.AudioClipMuscariable
       objectReference: {fileID: 0}
     - target: {fileID: 3048891292373600861, guid: f56d2b69f69539b4d98dccf0aa165f58,
         type: 3}
       propertyPath: 'managedReferences[3688519646466015314]'
-      value: AtMycelia.Amanita.Core AtMycelia.Hyphlow.AudioClipMuscariable
+      value: AtMycelia.Amanita.Core AtMycelia.Amanita.VScripting.AudioClipMuscariable
       objectReference: {fileID: 0}
     - target: {fileID: 3048891292373600861, guid: f56d2b69f69539b4d98dccf0aa165f58,
         type: 3}
       propertyPath: 'managedReferences[3688519646466015315]'
-      value: AtMycelia.Amanita.Core AtMycelia.Hyphlow.AudioClipMuscariable
+      value: AtMycelia.Amanita.Core AtMycelia.Amanita.VScripting.AudioClipMuscariable
       objectReference: {fileID: 0}
     - target: {fileID: 3048891292373600861, guid: f56d2b69f69539b4d98dccf0aa165f58,
         type: 3}

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UnityObj = UnityEngine.Object;
-using AtMycelia.Hyphlow;
+using AtMycelia.Amanita.VScripting;
 using AtMycelia.Amanita;
 
 namespace VScriptingTests

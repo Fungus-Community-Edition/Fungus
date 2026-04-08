@@ -8,7 +8,7 @@ using UnityObj = UnityEngine.Object;
 using UnityEditor;
 #endif
 
-namespace AtMycelia.Hyphlow
+namespace AtMycelia.Amanita.VScripting
 {
     [DisallowMultipleComponent]
     [ExecuteInEditMode]

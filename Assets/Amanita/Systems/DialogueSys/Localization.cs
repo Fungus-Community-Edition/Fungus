@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 using System.Text;
 using Ideafixxxer.CsvParser;
 using AtMycelia;
-using AtMycelia.Hyphlow;
+using AtMycelia.Amanita.VScripting;
 
 namespace AtMycelia.Amanita.LocalizationSys
 {

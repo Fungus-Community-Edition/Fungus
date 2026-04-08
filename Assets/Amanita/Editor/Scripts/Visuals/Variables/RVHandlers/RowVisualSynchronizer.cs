@@ -1,7 +1,7 @@
 using System;
 using UnityEngine.UIElements;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     /// <summary>
     /// Synchronizes the visual elements of a Variable Row with the underlying variable data model.

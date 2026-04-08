@@ -2,7 +2,7 @@ using UnityEditor;
 using UnityEngine;
 using AtMycelia.Amanita.DialogueSys.Commands;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     [CustomEditor (typeof(MenuTimer))]
     public class MenuTimerEditor : CommandEditor 

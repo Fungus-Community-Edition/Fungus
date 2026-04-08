@@ -12,7 +12,7 @@ using UnityEngine.Serialization;
 using UnityEditor;
 #endif
 
-namespace AtMycelia.Hyphlow
+namespace AtMycelia.Amanita.VScripting
 {
     [CreateAssetMenu(fileName = "NewVariableSourceAsset", menuName = "Atelier Mycelia/Amanita/VariableSource")]
     public class VariableSourceAsset : ScriptableObject, IReorderableMuscariableSource,

@@ -1,6 +1,6 @@
 using System;
 
-namespace AtMycelia.Hyphlow
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Attribute class for variables. This helps decide how they're presented as an option

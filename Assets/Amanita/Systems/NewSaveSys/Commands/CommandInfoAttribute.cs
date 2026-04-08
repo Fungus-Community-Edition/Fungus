@@ -1,6 +1,6 @@
 using System;
 
-namespace AtMycelia.Hyphlow
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Attribute class for Fungus commands.

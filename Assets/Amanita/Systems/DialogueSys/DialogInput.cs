@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
-using AtMycelia.Hyphlow;
 
 namespace AtMycelia.Amanita.DialogueSys
 {
@@ -65,7 +64,7 @@ namespace AtMycelia.Amanita.DialogueSys
             if (eventSystem == null)
             {
                 // Auto spawn an Event System from the prefab
-                GameObject prefab = Resources.Load<GameObject>(HyphlowConstants.EventSystemPrefabName);
+                GameObject prefab = Resources.Load<GameObject>(AmanitaConstants.EventSystemPrefabName);
                 if (prefab != null)
                 {
                     GameObject go = Instantiate(prefab) as GameObject;

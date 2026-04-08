@@ -1,5 +1,5 @@
-using AtMycelia.Hyphlow;
-using AtMycelia.Hyphlow.EditorUtils;
+using AtMycelia.Amanita.VScripting;
+using AtMycelia.Amanita.VScripting.EditorUtils;
 using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,7 +11,7 @@ using System.Reflection;
 using System;
 using UnityObj = UnityEngine.Object;
 using System.Linq;
-using AtMycelia;
+using AtMycelia.Amanita;
 
 namespace VScriptingTests.VariableOperations
 {
@@ -147,7 +147,7 @@ namespace VScriptingTests.VariableOperations
         protected UITKLabel _countLabel;
         protected VariableListView _listView;
         protected VariableRowManager manager;
-        protected readonly string pathToUxml = HyphlowConstants.PathToAmanitaVariableDisplayEditorUxml;
+        protected readonly string pathToUxml = AmanitaConstants.PathToAmanitaVariableDisplayEditorUxml;
         protected VisualTreeAsset uxml;
 
         protected readonly List<UnityObj> _toDestroy = new();

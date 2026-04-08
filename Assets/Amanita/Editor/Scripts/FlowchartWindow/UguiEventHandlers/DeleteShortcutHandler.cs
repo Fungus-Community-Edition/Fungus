@@ -1,7 +1,7 @@
 using UnityEngine;
 using AtMycelia.Amanita.EditorUtils;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     public class DeleteShortcutHandler : IUGUIEventHandler
     {

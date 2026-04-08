@@ -1,6 +1,6 @@
 using UnityEngine;
 using AtMycelia.SaveSys;
-using AtMycelia.Hyphlow;
+using AtMycelia.Amanita.VScripting;
 
 namespace AtMycelia.Amanita.SaveSys
 {

@@ -1,6 +1,6 @@
 ﻿using UnityEngine.Assertions;
-using AtMycelia.Hyphlow;
-using AtMycelia.Hyphlow.EditorUtils.FcWindow;
+using AtMycelia.Amanita.VScripting;
+using AtMycelia.Amanita.VScripting.EditorUtils.FcWindow;
 using System.Reflection;
 
 namespace AtMycelia.Amanita.EditorUtils

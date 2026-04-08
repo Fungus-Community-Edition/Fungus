@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
 
-namespace AtMycelia.Hyphlow
+namespace AtMycelia.Amanita
 {
     /// <summary>
     /// Global constants used in various parts of Amanita.
     /// </summary>
-    public static class HyphlowConstants
+    public static class AmanitaConstants
     {
         /// <summary>
         /// Duration of fade for executing icon displayed beside blocks & commands.
