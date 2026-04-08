@@ -4,7 +4,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
-namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
+namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
 {
     internal sealed class FcwEventBinder
     {

@@ -2,7 +2,7 @@ using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting.EditorUtils
+namespace AtMycelia.Hyphlow.EditorUtils
 {
     /// <summary>
     /// Clipboard for copying and pasting Flowchart commands. Stores copies of the selected 

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Base class for all simple Unary

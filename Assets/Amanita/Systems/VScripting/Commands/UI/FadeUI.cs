@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace AtMycelia.Amanita.VScripting.Commands.Legacy
+namespace AtMycelia.Hyphlow.Commands.Legacy
 {
     /// <summary>
     /// Select which type of fade will be applied.

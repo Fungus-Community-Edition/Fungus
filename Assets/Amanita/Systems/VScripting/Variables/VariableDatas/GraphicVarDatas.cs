@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Container for a string variable reference or constant value.

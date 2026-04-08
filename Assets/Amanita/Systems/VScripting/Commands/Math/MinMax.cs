@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Command to store the min or max of 2 values

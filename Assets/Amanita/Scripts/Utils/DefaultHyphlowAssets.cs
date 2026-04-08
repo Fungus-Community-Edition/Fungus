@@ -1,12 +1,14 @@
 using AtMycelia.Amanita.Tweening;
-using AtMycelia.Amanita.VScripting;
+using AtMycelia.Hyphlow;
 
-namespace AtMycelia.Amanita
+namespace AtMycelia.Hyphlow
 {
-    public static class DefaultAmanitaAssets 
+    public static class DefaultHyphlowAssets 
     {
         public static DefaultTweenAdapter TweenAdapter;
         public static VariableRegistryConfig VariableRegistryConfig;
     }
+
+    
 
 }

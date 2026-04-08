@@ -1,11 +1,11 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting.EditorUtils
+namespace AtMycelia.Hyphlow.EditorUtils
 {
     public interface IInputProcessor
     {
         /// <summary>
-        /// Process one Unity Event and return true if it was “consumed.” 
+        /// Process one Unity Event and return true if it was ï¿½consumed.ï¿½ 
         /// </summary>
         bool Process(Event eventToProcess, FlowchartContext context);
     }

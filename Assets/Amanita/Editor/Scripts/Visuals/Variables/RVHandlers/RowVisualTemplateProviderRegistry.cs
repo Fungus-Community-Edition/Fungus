@@ -1,6 +1,6 @@
 using System;
 
-namespace AtMycelia.Amanita.VScripting.EditorUtils
+namespace AtMycelia.Hyphlow.EditorUtils
 {
     public static class RowVisualTemplateProviderRegistry
     {

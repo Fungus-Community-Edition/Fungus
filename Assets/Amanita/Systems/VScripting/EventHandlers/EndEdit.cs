@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace AtMycelia.Amanita.VScripting.EventHandlers
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// The block will execute when the user finishes editing the text in the input field.

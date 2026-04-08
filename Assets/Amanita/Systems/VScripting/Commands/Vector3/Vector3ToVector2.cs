@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Convert fungus vec3 to vec2

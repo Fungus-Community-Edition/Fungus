@@ -1,6 +1,6 @@
 using System;
 
-namespace AtMycelia.Amanita.VScripting
+namespace AtMycelia.Hyphlow
 {
     public interface IVariable : IHasKey, IHasItemID
     {

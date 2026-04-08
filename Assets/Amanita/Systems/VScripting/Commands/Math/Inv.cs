@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Multiplicative Inverse of a float (1/f)

@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 using AtMycelia.Amanita.Tweening;
-using AtMycelia.Amanita.VScripting;
+using AtMycelia.Hyphlow;
 
 namespace AtMycelia.Amanita.EditorUtils
 {
@@ -27,7 +27,7 @@ namespace AtMycelia.Amanita.EditorUtils
 
         public static DefaultTweenAdapter EnsureDefaultTweenAdapter()
         {
-            DefaultTweenAdapter adaptor = DefaultAmanitaAssets.TweenAdapter;
+            DefaultTweenAdapter adaptor = DefaultHyphlowAssets.TweenAdapter;
             if (adaptor == null)
             {
                 string pathToContainingFolder = "AtMycelia/Tweening"; // Relative to Resources
@@ -35,13 +35,13 @@ namespace AtMycelia.Amanita.EditorUtils
                     "DefaultTweenAdapter");
             }
 
-            DefaultAmanitaAssets.TweenAdapter = adaptor;
+            DefaultHyphlowAssets.TweenAdapter = adaptor;
             return adaptor;
         }
 
         public static VariableRegistryConfig EnsureVariableRegistryConfig()
         {
-            VariableRegistryConfig config = DefaultAmanitaAssets.VariableRegistryConfig;
+            VariableRegistryConfig config = DefaultHyphlowAssets.VariableRegistryConfig;
             if (config == null)
             {
                 string pathToContainingFolder = "AtMycelia/Amanita"; // Relative to Resources
@@ -49,7 +49,7 @@ namespace AtMycelia.Amanita.EditorUtils
                     "VariableRegistryConfig");
             }
 
-            DefaultAmanitaAssets.VariableRegistryConfig = config;
+            DefaultHyphlowAssets.VariableRegistryConfig = config;
             return config;
         }
     }

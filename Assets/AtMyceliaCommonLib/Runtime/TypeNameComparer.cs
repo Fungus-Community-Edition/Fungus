@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace AtMycelia.Amanita
+namespace AtMycelia
 {
     public class TypeNameComparer : IEqualityComparer<Type>
     {

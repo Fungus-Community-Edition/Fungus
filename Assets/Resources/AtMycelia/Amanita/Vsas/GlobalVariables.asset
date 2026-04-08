@@ -32,7 +32,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 7903258335965610039
-      type: {class: StringMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      type: {class: StringMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: Naruto
@@ -40,7 +40,7 @@ MonoBehaviour:
         value: Believe it! esytg
         startValue: 
     - rid: 7903258335965610040
-      type: {class: StringMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      type: {class: StringMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: OnePiece
@@ -50,7 +50,7 @@ MonoBehaviour:
           Pirate King!'
         startValue: 
     - rid: 7903258335965610041
-      type: {class: StringMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      type: {class: StringMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: Bleach
@@ -65,7 +65,7 @@ MonoBehaviour:
           are evil.'
         startValue: 
     - rid: 7903258335965610042
-      type: {class: IntMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      type: {class: IntMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: meaningOfLife
@@ -73,7 +73,7 @@ MonoBehaviour:
         value: 24
         startValue: 0
     - rid: 7903258335965610043
-      type: {class: AudioClipMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      type: {class: AudioClipMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: cuteBgm
@@ -81,7 +81,7 @@ MonoBehaviour:
         value: {fileID: 8300000, guid: c2b6a16176ef3b54d8b7aeca96c66316, type: 3}
         startValue: {fileID: 0}
     - rid: 7903258335965610044
-      type: {class: FloatMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      type: {class: FloatMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: pi

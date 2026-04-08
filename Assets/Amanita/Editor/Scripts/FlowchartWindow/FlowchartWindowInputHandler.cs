@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using AtMycelia.Amanita.EditorUtils;
 
-namespace AtMycelia.Amanita.VScripting.EditorUtils
+namespace AtMycelia.Hyphlow.EditorUtils
 {
     public class FlowchartWindowInputHandler : IInputProcessor, IDisposable
     {

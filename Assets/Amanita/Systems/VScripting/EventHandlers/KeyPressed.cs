@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting.EventHandlers
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Key press modes supported by Key Pressed event handler.

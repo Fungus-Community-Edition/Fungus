@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+namespace AtMycelia.Hyphlow
 {
     [System.Serializable]
     public class VarDataTagFilter : ITagFilterable<StringData>, ITagFilterable<string>

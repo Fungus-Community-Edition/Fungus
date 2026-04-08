@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting.EventHandlers
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// The block will execute when the desired OnMouse* message for the monobehaviour is received

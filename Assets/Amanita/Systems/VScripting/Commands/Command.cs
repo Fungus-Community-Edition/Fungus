@@ -5,9 +5,8 @@ using System.Threading.Tasks;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.Serialization;
-using Unity.IO.LowLevel.Unsafe;
 
-namespace AtMycelia.Amanita.VScripting
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Base class for Commands. Commands can be added to Blocks to create an execution sequence.

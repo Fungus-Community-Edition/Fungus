@@ -6,7 +6,7 @@ using UnityEditorInternal;
 using UnityEngine;
 using AtMycelia.Amanita.EditorUtils;
 
-namespace AtMycelia.Amanita.VScripting.EditorUtils
+namespace AtMycelia.Hyphlow.EditorUtils
 {
     public class CommandListAdaptor
     {
@@ -178,7 +178,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             if (!cmd.IsExecuting)
             {
                 float timeRemaining = cmd.ExecutingIconTimer - Time.realtimeSinceStartup;
-                alpha = Mathf.Clamp01(timeRemaining / AmanitaConstants.ExecutingIconFadeTime);
+                alpha = Mathf.Clamp01(timeRemaining / HyphlowConstants.ExecutingIconFadeTime);
             }
 
             var prevColor = GUI.color;
@@ -221,12 +221,12 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
 
         protected virtual string BuildCommandNameLabel(Flowchart f, Command cmd)
         {
-            // Get all CommandInfoAttributes on this type (won’t throw)
+            // Get all CommandInfoAttributes on this type (wonï¿½t throw)
             var infos = cmd.GetType()
                            .GetCustomAttributes(typeof(CommandInfoAttribute), inherit: false)
                            .OfType<CommandInfoAttribute>();
 
-            // Pick the first available or fall back to the GameObject’s name
+            // Pick the first available or fall back to the GameObjectï¿½s name
             string baseName = infos
                 .Select(attr => attr.CommandName)
                 .FirstOrDefault()

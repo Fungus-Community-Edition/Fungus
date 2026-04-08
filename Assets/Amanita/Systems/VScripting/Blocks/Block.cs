@@ -4,10 +4,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using AmanitaEventHandler = AtMycelia.Amanita.VScripting.EventHandlers.EventHandler;
+using AmanitaEventHandler = AtMycelia.Hyphlow.EventHandler;
 using UnityEditor;
 
-namespace AtMycelia.Amanita.VScripting
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Execution state of a Block.
@@ -333,7 +333,7 @@ namespace AtMycelia.Amanita.VScripting
                 command.IsExecuting = true;
                 // This icon timer is managed by the FlowchartWindow class, but we also need to
                 // set it here in case a command starts and finishes execution before the next window update.
-                command.ExecutingIconTimer = Time.realtimeSinceStartup + AmanitaConstants.ExecutingIconFadeTime;
+                command.ExecutingIconTimer = Time.realtimeSinceStartup + HyphlowConstants.ExecutingIconFadeTime;
                 BlockSignals.DoCommandExecute(this, command, i, commandList.Count);
 
 #if UNITY_EDITOR

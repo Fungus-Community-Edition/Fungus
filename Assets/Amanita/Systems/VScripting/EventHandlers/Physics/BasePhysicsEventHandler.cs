@@ -1,10 +1,7 @@
-using AtMycelia.Amanita.VScripting.EventHandlers;
 using AtMycelia.Events;
 using System;
 using UnityEngine;
-using EventHandler = AtMycelia.Amanita.VScripting.EventHandlers.EventHandler;
-
-namespace AtMycelia.Amanita.VScripting
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Base class for all of our physics event handlers

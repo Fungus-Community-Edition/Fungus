@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting.Commands
+namespace AtMycelia.Hyphlow.Commands
 {
     /// <summary>
     /// Abstract base class for TweenUI commands.

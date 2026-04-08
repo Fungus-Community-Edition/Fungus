@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace AtMycelia.Amanita.VScripting.EventHandlers
+namespace AtMycelia.Hyphlow
 {
     [EventHandlerInfo("UI",
         "InputFieldTextChanged",

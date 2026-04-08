@@ -2,13 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace AtMycelia.Amanita.VScripting.EditorUtils
+namespace AtMycelia.Hyphlow.EditorUtils
 {
     public static class FilterUtils
     {
         /// <summary>
         /// Returns all Blocks whose name or command content contains the query.
-        /// Also sets each Block’s FilterState to Full, Partial, or None.
+        /// Also sets each Blockï¿½s FilterState to Full, Partial, or None.
         /// </summary>
         public static IList<Block> FilterBlocks(IReadOnlyCollection<Block> allBlocks, string query)
         {

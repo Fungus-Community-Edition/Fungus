@@ -3,7 +3,7 @@ using AtMycelia.Amanita.EditorUtils;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace AtMycelia.Amanita.VScripting.EditorUtils
+namespace AtMycelia.Hyphlow.EditorUtils
 {
     public sealed class ConnectionDrawer : IDisposable
     {

@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace AtMycelia.Amanita.VScripting.EventHandlers
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// The block will execute when the user changes the value of target UI slider.

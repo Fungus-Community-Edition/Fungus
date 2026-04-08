@@ -5,7 +5,7 @@ using AtMycelia.Amanita.EditorUtils;
 using System;
 using UnityObj = UnityEngine.Object;
 
-namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
+namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
 {
     internal sealed class FcwUiBuilder
     {

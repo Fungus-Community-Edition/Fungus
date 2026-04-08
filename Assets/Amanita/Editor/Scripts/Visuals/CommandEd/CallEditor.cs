@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting.EditorUtils
+namespace AtMycelia.Hyphlow.EditorUtils
 {
     [CustomEditor (typeof(Call))]
     public class CallEditor : CommandEditor 

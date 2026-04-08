@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using AtMycelia.Amanita.EditorUtils;
 
-namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
+namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
 {
 
     public abstract class FcwModuleDispatcher : IModuleDispatcher<IFlowchartWindowModule>

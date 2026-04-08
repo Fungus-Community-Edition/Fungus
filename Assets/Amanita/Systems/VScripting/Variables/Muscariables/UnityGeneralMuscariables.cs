@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 using UnityObject = UnityEngine.Object;
 
-namespace AtMycelia.Amanita.VScripting
+namespace AtMycelia.Hyphlow
 {
     [System.Serializable]
     [VariableInfo("UnityGeneral", "GameObject", typeof(GameObject))]

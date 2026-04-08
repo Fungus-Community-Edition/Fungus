@@ -1,6 +1,6 @@
 using UnityObj = UnityEngine.Object;
 
-namespace AtMycelia.Amanita.VScripting
+namespace AtMycelia.Hyphlow
 {
     public interface IVariablePointer: IVariable
     {

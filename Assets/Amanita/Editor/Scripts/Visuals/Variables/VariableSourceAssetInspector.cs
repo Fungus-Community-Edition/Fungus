@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using AtMycelia.Amanita.EditorUtils;
-using AtMycelia.Amanita.VScripting;
+using AtMycelia.Hyphlow;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UitkLabel = UnityEngine.UIElements.Label;
 
-namespace AtMycelia.Amanita.VScripting.EditorUtils
+namespace AtMycelia.Hyphlow.EditorUtils
 {
     [CustomEditor(typeof(VariableSourceAsset))]
     public class VariableSourceAssetInspector : Editor

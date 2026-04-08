@@ -1,6 +1,6 @@
 using UnityEditor;
 
-namespace AtMycelia.Amanita.VScripting.EditorUtils
+namespace AtMycelia.Hyphlow.EditorUtils
 {
     [CustomEditor (typeof(InvokeEvent))]
     public class InvokeEventEditor : CommandEditor 

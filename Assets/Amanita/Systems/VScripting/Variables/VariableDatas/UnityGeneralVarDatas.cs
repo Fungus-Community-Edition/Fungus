@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
 
-namespace AtMycelia.Amanita.VScripting
+namespace AtMycelia.Hyphlow
 {
     [System.Serializable]
     [VariableData(typeof(Component), typeof(IVariable<Component>), typeof(IVariable<GameObject>))]

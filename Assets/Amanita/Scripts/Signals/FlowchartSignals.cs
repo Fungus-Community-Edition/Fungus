@@ -1,6 +1,6 @@
 using System;
 
-namespace AtMycelia.Amanita.VScripting
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// The static signals related to flowcharts.

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using AtMycelia.Amanita.EditorUtils;
 
-namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
+namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
 {
     public sealed class BlockModuleDispatcher : IModuleDispatcher<IFlowchartWindowModule>
     {

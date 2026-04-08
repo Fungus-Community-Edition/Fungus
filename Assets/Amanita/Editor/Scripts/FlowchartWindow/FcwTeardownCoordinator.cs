@@ -1,6 +1,6 @@
 using UitkLabel = UnityEngine.UIElements.Label;
 
-namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
+namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
 {
     internal sealed class FcwTeardownCoordinator
     {

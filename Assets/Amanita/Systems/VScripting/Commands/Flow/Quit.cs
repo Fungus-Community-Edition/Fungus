@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Quits the application. Does not work in Editor or Webplayer builds. Shouldn't generally be used on iOS.

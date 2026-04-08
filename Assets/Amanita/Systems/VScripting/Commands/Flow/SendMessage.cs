@@ -1,8 +1,8 @@
 using UnityEngine;
 using UnityEngine.Serialization;
-using AtMycelia.Amanita.VScripting.EventHandlers;
+using AtMycelia.Hyphlow;
 
-namespace AtMycelia.Amanita.VScripting.Commands
+namespace AtMycelia.Hyphlow.Commands
 {
     /// <summary>
     /// Supported target types for messages.

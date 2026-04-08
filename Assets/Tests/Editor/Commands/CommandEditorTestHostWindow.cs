@@ -2,11 +2,11 @@
 using System;
 using UnityEditor;
 using UnityEngine;
-using AtMycelia.Amanita.VScripting.EditorUtils;
+using AtMycelia.Hyphlow.EditorUtils;
 
 namespace VScriptingTests.FCWindowOperations
 {
-    // Separate file (already referenced in project open docs) – ensure it still matches usage.
+    // Separate file (already referenced in project open docs) ï¿½ ensure it still matches usage.
     public class CommandEditorTestHostWindow : EditorWindow
     {
         public CommandEditor EditorUnderTest;

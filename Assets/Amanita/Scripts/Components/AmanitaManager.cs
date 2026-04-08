@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
+using AtMycelia.Hyphlow;
 #if ENABLE_INPUT_SYSTEM
 using AtMycelia.Amanita.SaveSys;
 using AtMycelia.Amanita.DialogueSys;
@@ -38,7 +39,7 @@ namespace AtMycelia.Amanita
 
         private static void EnsureDefaultTweenerAvailable()
         {
-            _defaultTweener = DefaultAmanitaAssets.TweenAdapter;
+            _defaultTweener = DefaultHyphlowAssets.TweenAdapter;
         }
 
         static DefaultTweenAdapter _defaultTweener;

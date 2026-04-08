@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using AtMycelia.Amanita.VScripting;
+using AtMycelia.Hyphlow;
 using AtMycelia.Amanita.DialogueSys;
 using AtMycelia.Amanita.Tweening;
 

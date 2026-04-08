@@ -1,7 +1,7 @@
 using System;
 using UnityEngine.UIElements;
 
-namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
+namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
 {
     /// <summary>
     /// Default UITK drawer that produces tinted buttons sized to block text.

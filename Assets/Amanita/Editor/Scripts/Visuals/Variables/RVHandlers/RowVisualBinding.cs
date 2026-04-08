@@ -1,7 +1,7 @@
 using System;
 
 // For binding a RowVisualHandler's visuals to a variable's data.
-namespace AtMycelia.Amanita.VScripting.EditorUtils
+namespace AtMycelia.Hyphlow.EditorUtils
 {
     public sealed class DefaultRowVisualBinder : IRowVisualBinder
     {

@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using AtMycelia.Hyphlow;
 
-namespace AtMycelia.Amanita.VScripting.EventHandlers
+namespace AtMycelia.Amanita
 {
     /// <summary>
     /// The block will execute when the player starts dragging an object.
@@ -37,13 +38,14 @@ namespace AtMycelia.Amanita.VScripting.EventHandlers
 
             if (on)
             {
-                EventDispatcher.AddListener<DragStartedEvent>(OnDragStartedEvent);
+                _eventDispatcher.AddListener<DragStartedEvent>(OnDragStartedEvent);
             }
             else
             {
-                EventDispatcher.RemoveListener<DragStartedEvent>(OnDragStartedEvent);
+                _eventDispatcher.RemoveListener<DragStartedEvent>(OnDragStartedEvent);
             }
         }
+
 
         private void OnDragStartedEvent(DragStartedEvent evt)
         {

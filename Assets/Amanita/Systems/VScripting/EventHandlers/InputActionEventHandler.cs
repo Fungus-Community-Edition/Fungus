@@ -3,7 +3,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace AtMycelia.Amanita.VScripting.EventHandlers
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Execute a block when a targeted InputAction is performed. Optionally reads the value from the action.

@@ -1,7 +1,7 @@
 using UnityEngine;
 
 
-namespace AtMycelia.Amanita.VScripting
+namespace AtMycelia.Hyphlow
 {
 	/// <summary>
 	/// Get or Set a property of a Sprite component

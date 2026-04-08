@@ -1,6 +1,6 @@
 using AtMycelia.Amanita.EditorUtils;
-using AtMycelia.Amanita.VScripting;
-using AtMycelia.Amanita.VScripting.EditorUtils.FcWindow;
+using AtMycelia.Hyphlow;
+using AtMycelia.Hyphlow.EditorUtils.FcWindow;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -9,7 +9,7 @@ using UnityEngine;
 using Type = System.Type;
 using UnityObj = UnityEngine.Object;
 
-namespace AtMycelia.Amanita.VScripting.EditorUtils
+namespace AtMycelia.Hyphlow.EditorUtils
 {
     [CustomPropertyDrawer(typeof(StringData), true)]
     public class StringDataDrawer : VariableDataDrawerBase

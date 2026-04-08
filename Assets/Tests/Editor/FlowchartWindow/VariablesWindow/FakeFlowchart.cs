@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace AtMycelia.Amanita.VScripting.EditorUtils.Tests
+namespace AtMycelia.Hyphlow.EditorUtils.Tests
 {
     // A tiny stand-in for your Flowchart data model.
     // Rename members to match your real Flowchart API (events + variable accessors).

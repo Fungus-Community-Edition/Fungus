@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using AtMycelia.Amanita.EditorUtils;
 
-namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
+namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
 {
     /// <summary>
     /// Shows the empty space popup window on right-click and listens for its button actions.

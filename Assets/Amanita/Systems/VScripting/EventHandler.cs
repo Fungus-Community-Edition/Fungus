@@ -1,10 +1,9 @@
 using System;
 using System.Reflection;
-using Unity.Properties;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace AtMycelia.Amanita.VScripting.EventHandlers
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Attribute class for Fungus event handlers.
@@ -49,8 +48,20 @@ namespace AtMycelia.Amanita.VScripting.EventHandlers
             fChart = GetComponent<Flowchart>();
         }
 
+        protected EventDispatcher _eventDispatcher;
+        protected EventDispatcher EventDispatcher
+        {
+            get
+            {
+                if (_eventDispatcher == null)
+                {
+                    _eventDispatcher = FindFirstObjectByType<EventDispatcher>();
+                }
+                return _eventDispatcher;
+            }
+        }
         #region Public members
-        
+
         /// <summary>
         /// The parent Block which owns this Event Handler.
         /// </summary>
@@ -115,6 +126,7 @@ namespace AtMycelia.Amanita.VScripting.EventHandlers
                 return;
             }
 
+            _eventDispatcher = FindFirstObjectByType<EventDispatcher>();
             if (ToggleSubsOnlyInRuntime && Application.IsPlaying(this))
             {
                 ToggleSubs(true);
@@ -157,6 +169,7 @@ namespace AtMycelia.Amanita.VScripting.EventHandlers
         protected virtual void OnDisable()
         {
             ToggleSubs(false);
+            _eventDispatcher = null;
         }
 
         protected virtual void OnValidate()
@@ -195,17 +208,6 @@ namespace AtMycelia.Amanita.VScripting.EventHandlers
         protected virtual void OnAfterDeserializeBackwardsCompat()
         {
 
-        }
-        protected virtual EventDispatcher EventDispatcher
-        {
-            get
-            {
-                if (AmanitaManager.S != null)
-                {
-                    return AmanitaManager.S.EventDispatcher;
-                }
-                return null;
-            }
         }
         
     }

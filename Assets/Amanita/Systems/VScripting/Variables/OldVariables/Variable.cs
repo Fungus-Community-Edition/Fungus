@@ -6,7 +6,7 @@ using UnityEngine.Scripting.APIUpdating;
 using UnityEditor;
 #endif
 
-namespace AtMycelia.Amanita.VScripting
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Scope types for Variables.

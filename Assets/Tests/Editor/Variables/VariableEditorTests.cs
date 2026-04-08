@@ -1,6 +1,6 @@
 using AtMycelia.Amanita;
-using AtMycelia.Amanita.VScripting;
-using AtMycelia.Amanita.VScripting.EditorUtils;
+using AtMycelia.Hyphlow;
+using AtMycelia.Hyphlow.EditorUtils;
 using NUnit.Framework;
 using System;
 using System.Collections;

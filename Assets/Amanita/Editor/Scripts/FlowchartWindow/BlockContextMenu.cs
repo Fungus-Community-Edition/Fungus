@@ -2,7 +2,7 @@ using UnityEngine.UIElements;
 using UnityEngine;
 using System;
 
-namespace AtMycelia.Amanita.VScripting.EditorUtils
+namespace AtMycelia.Hyphlow.EditorUtils
 {
     /// <summary>
     /// Context menu for Flowchart Blocks in the Flowchart Window viewport. Contains buttons for copying, 

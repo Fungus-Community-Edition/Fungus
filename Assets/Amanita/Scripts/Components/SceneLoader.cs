@@ -2,7 +2,7 @@
 using UnityEngine.SceneManagement;
 using System.Collections;
 
-namespace AtMycelia.Amanita
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Helper component for loading a new scene.

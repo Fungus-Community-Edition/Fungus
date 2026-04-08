@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityObject = UnityEngine.Object;
 
-namespace AtMycelia.Amanita.VScripting.EditorUtils
+namespace AtMycelia.Hyphlow.EditorUtils
 {
     [CustomEditor (typeof(Variable), true)]
     public class VariableEditor : CommandEditor
@@ -212,7 +212,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
                         }
                         else
                         {
-                            // Not an AnyVariableAndDataPair.variable – leave behavior unchanged
+                            // Not an AnyVariableAndDataPair.variable ï¿½ leave behavior unchanged
                             property.managedReferenceValue = chosen;
                         }
                     }

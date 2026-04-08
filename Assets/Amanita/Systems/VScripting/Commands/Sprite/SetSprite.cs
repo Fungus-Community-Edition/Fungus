@@ -3,7 +3,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace AtMycelia.Amanita.VScripting
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Changes the sprite on a SpriteRenderer.

@@ -1,4 +1,4 @@
-namespace AtMycelia.Amanita.VScripting
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Fungus Priority event signalling system.

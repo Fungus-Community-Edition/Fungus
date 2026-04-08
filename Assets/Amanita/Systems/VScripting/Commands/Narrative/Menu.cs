@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 using System.Collections.Generic;
-using AtMycelia.Amanita.VScripting;
+using AtMycelia.Hyphlow;
 
 namespace AtMycelia.Amanita.DialogueSys.Commands
 {

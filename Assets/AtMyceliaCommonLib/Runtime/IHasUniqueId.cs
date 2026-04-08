@@ -1,4 +1,4 @@
-namespace AtMycelia.Amanita
+namespace AtMycelia
 {
     public interface IHasUniqueID
     {

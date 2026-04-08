@@ -2,10 +2,11 @@ using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
 using AtMycelia.Amanita.DialogueSys.VScripting;
-using AtMycelia.Amanita.EditorUtils;
+using AtMycelia.Hyphlow.EditorUtils;
 using AtMycelia.Amanita.DialogueSys;
+using AtMycelia.Hyphlow;
 
-namespace AtMycelia.Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.EditorUtils
 {
     [CustomEditor (typeof(Say))]
     public class SayEditor : CommandEditor

@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
+namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
 {
     /// <summary>
     /// Handles viewport panning in the UITK flowchart window by reacting to scroll-wheel drag deltas.

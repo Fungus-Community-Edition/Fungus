@@ -1,4 +1,4 @@
-﻿namespace AtMycelia.Amanita
+﻿namespace AtMycelia
 {
     /// <summary>
     /// Interface for providing a human readable path to an element, used in editor code to determine where 

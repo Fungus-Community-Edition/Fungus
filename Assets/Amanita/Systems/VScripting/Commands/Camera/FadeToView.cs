@@ -1,7 +1,8 @@
 using AtMycelia.Amanita.Tweening;
+using AtMycelia.Hyphlow;
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+namespace AtMycelia.Amanita
 {
     /// <summary>
     /// Fades the camera out and in again at a position specified by a View object.

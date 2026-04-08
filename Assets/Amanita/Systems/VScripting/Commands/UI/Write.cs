@@ -1,5 +1,5 @@
 using UnityEngine;
-using AtMycelia.Amanita.VScripting;
+using AtMycelia.Hyphlow;
 using UnityEngine.Serialization;
 
 namespace AtMycelia.Amanita.DialogueSys

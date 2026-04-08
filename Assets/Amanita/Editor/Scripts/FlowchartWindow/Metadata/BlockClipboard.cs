@@ -5,7 +5,7 @@ using UnityEditor;
 using UnityEngine;
 using AtMycelia.Collections;
 
-namespace AtMycelia.Amanita.VScripting.EditorUtils
+namespace AtMycelia.Hyphlow.EditorUtils
 {
     /// <summary>
     /// Clipboard for copying and pasting Flowchart blocks. Stores a list of 

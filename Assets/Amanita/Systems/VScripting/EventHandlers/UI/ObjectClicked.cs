@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-namespace AtMycelia.Amanita.VScripting.EventHandlers
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// The block will execute when the user clicks or taps on the clickable object.
@@ -27,11 +27,8 @@ namespace AtMycelia.Amanita.VScripting.EventHandlers
         [Tooltip("Wait for a number of frames before executing the block.")]
         [SerializeField] protected int waitFrames = 1;
 
-        protected EventDispatcher eventDispatcher;
-
         protected override void OnEnable()
         {
-            eventDispatcher = AmanitaManager.S.EventDispatcher;
             base.OnEnable();
         }
 
@@ -40,18 +37,17 @@ namespace AtMycelia.Amanita.VScripting.EventHandlers
             base.ToggleSubs(on);
             if (on)
             {
-                eventDispatcher.AddListener<ObjectClickedEvent>(OnObjectClickedEvent);
+                EventDispatcher.AddListener<ObjectClickedEvent>(OnObjectClickedEvent);
             }
             else
             {
-                eventDispatcher.RemoveListener<ObjectClickedEvent>(OnObjectClickedEvent);
+                EventDispatcher.RemoveListener<ObjectClickedEvent>(OnObjectClickedEvent);
             }
         }
 
         protected override void OnDisable()
         {
             base.OnDisable();
-            eventDispatcher = null;
         }
 
         void OnObjectClickedEvent(ObjectClickedEvent evt)

@@ -2001,7 +2001,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 3688519646466015320
-      type: {class: GameObjectMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      type: {class: GameObjectMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: player
@@ -2009,7 +2009,7 @@ MonoBehaviour:
         value: {fileID: 1377282257}
         startValue: {fileID: 1377282257}
     - rid: 3688519646466015321
-      type: {class: GameObjectMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      type: {class: GameObjectMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: test
@@ -2017,7 +2017,7 @@ MonoBehaviour:
         value: {fileID: 1674035076}
         startValue: {fileID: 1674035076}
     - rid: 3688519646466015368
-      type: {class: FloatMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      type: {class: FloatMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: initCutsceneWait
@@ -3997,7 +3997,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 3688519665286643781
-      type: {class: FloatMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      type: {class: FloatMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: buttonMoveDur
@@ -4005,7 +4005,7 @@ MonoBehaviour:
         value: 1
         startValue: 0
     - rid: 3688519665286643782
-      type: {class: VectorThreeMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      type: {class: VectorThreeMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: Var
@@ -4471,7 +4471,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 3688519646466015391
-      type: {class: GameObjectMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      type: {class: GameObjectMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: thisGameObject

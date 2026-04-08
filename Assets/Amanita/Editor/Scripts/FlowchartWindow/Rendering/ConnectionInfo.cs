@@ -1,4 +1,4 @@
-namespace AtMycelia.Amanita.VScripting.EditorUtils
+namespace AtMycelia.Hyphlow.EditorUtils
 {
     public readonly struct ConnectionInfo
     {

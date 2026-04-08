@@ -8,7 +8,7 @@ using UnityObj = UnityEngine.Object;
 using UnityEditor;
 #endif
 
-namespace AtMycelia.Amanita.VScripting
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Maintains a registry of all available variables from various sources accessible in the scene.
@@ -72,7 +72,6 @@ namespace AtMycelia.Amanita.VScripting
             RegisterOtherFcVars();
             void RegisterOtherFcVars()
             {
-                var amanitaManager = AmanitaManager.S;
                 IReadOnlyList<Flowchart> cachedFcs = FindFlowchartsToGoThrough();
                 IReadOnlyList<Flowchart> FindFlowchartsToGoThrough()
                 {

@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+namespace AtMycelia.Hyphlow
 {
     // To reduce the boilerplate in IVariableData implementors such as AnimatorData and FloatData
     public abstract class VariableData : IVariableData, IRefreshable, ISerializationCallbackReceiver

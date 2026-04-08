@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Type = System.Type;
 
-namespace AtMycelia.Amanita.VScripting.EditorUtils
+namespace AtMycelia.Hyphlow.EditorUtils
 {
     public class RowVisualHandlerResolver : IRowVisualHandlerResolver
     {

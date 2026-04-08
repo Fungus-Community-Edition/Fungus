@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Serialization;
 
 
-namespace AtMycelia.Amanita.VScripting
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Pairing of an AnyVariableData and an variable reference. Internal lookup for

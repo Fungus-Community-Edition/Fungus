@@ -1,7 +1,7 @@
 using System;
 using NUnit.Framework;
 using UnityEngine;
-using AtMycelia.Amanita.VScripting;
+using AtMycelia.Hyphlow;
 
 namespace VScriptingTests.MuscariableTests.DataOnly
 {

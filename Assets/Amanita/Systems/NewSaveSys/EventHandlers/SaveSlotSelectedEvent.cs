@@ -1,11 +1,10 @@
-using AtMycelia.Amanita.VScripting.EventHandlers;
 using UnityEngine;
-using VSEvent = AtMycelia.Amanita.VScripting.EventHandlers.EventHandler;
+using VSEvent = AtMycelia.Hyphlow.EventHandler;
 
 using AtMycelia.SaveSys;
 using UnityEngine.Serialization;
 
-namespace AtMycelia.Amanita.VScripting
+namespace AtMycelia.Hyphlow
 {
     [EventHandlerInfo("SaveSys",
         "Save Slot Selected",

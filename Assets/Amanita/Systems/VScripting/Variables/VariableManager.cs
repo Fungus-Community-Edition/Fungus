@@ -10,7 +10,7 @@ using UnityEngine.Serialization;
 using UnityEditor;
 #endif
 
-namespace AtMycelia.Amanita.VScripting
+namespace AtMycelia.Hyphlow
 {
     [Serializable]
     public sealed class VariableManager : IVariableSource, IMuscariableSource,

@@ -1,5 +1,5 @@
-using AtMycelia.Amanita.VScripting.EventHandlers;
-using AtMycelia.Amanita.VScripting.UI;
+using AtMycelia.Hyphlow;
+using AtMycelia.Hyphlow.UI;
 using AtMycelia.Collections;
 using System;
 using System.Collections;
@@ -9,12 +9,12 @@ using System.Text;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.Serialization;
-using AmanitaEventHandler = AtMycelia.Amanita.VScripting.EventHandlers.EventHandler;
+using AmanitaEventHandler = AtMycelia.Hyphlow.EventHandler;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
-namespace AtMycelia.Amanita.VScripting
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Visual scripting controller for the Flowchart programming language.
@@ -253,13 +253,11 @@ namespace AtMycelia.Amanita.VScripting
                 yield break;
             }
 
-            while (AmanitaManager.S == null || !AmanitaManager.S.IsFullyInitted)
-            {
-                yield return null;
-            }
+            yield return null;
+            yield return null;
+            // ^Waiting 2 frames so AmanitaManager has time for prep
 
-
-            foreach (var elem in gsEventHandler)//
+            foreach (var elem in gsEventHandler)
             {
                 elem.Trigger();
             }
@@ -274,8 +272,6 @@ namespace AtMycelia.Amanita.VScripting
                 // Don't do anything if this isn't even in the scene yet
                 return;
             }
-
-            AmanitaManager.EnsureExists();
 
             Refresh();
             ToggleSubs(true);
@@ -448,7 +444,7 @@ namespace AtMycelia.Amanita.VScripting
 
         protected virtual void UpdateVersion()
         {
-            if (version == AmanitaConstants.CurrentVersion)
+            if (version == HyphlowConstants.CurrentVersion)
             {
                 // No need to update
                 return;
@@ -462,10 +458,10 @@ namespace AtMycelia.Amanita.VScripting
             {
                 var component = components[i];
                 IUpdateable toUpdate = component as IUpdateable;
-                toUpdate?.UpdateToVersion(version, AmanitaConstants.CurrentVersion);
+                toUpdate?.UpdateToVersion(version, HyphlowConstants.CurrentVersion);
             }
 
-            version = AmanitaConstants.CurrentVersion;
+            version = HyphlowConstants.CurrentVersion;
         }
 
         protected virtual void CheckItemIds()
@@ -905,7 +901,7 @@ namespace AtMycelia.Amanita.VScripting
         /// </summary>
         public virtual Block CreateBlock(Vector2 position, string blockName = null)
         {
-            blockName ??= AmanitaConstants.DefaultBlockName;
+            blockName ??= HyphlowConstants.DefaultBlockName;
             Block created = CreateBlockComponent(gameObject);
 #if UNITY_EDITOR
             created._NodeRect = new Rect(position, defaultBlockSize);
@@ -1077,7 +1073,7 @@ namespace AtMycelia.Amanita.VScripting
             // No empty keys allowed
             if (baseKey.Length == 0)
             {
-                baseKey = AmanitaConstants.DefaultBlockName;
+                baseKey = HyphlowConstants.DefaultBlockName;
             }
 
             var blocks = GetComponents<Block>();
@@ -1430,8 +1426,6 @@ namespace AtMycelia.Amanita.VScripting
                 }
 
                 EnsureVariableManagerComponent();
-
-                AmanitaManager.EnsureExists();
 
                 _legacyVariables.RemoveAll((elem) => elem == null);
                 _oldMuscariables.RemoveAll((elem) => elem == null);

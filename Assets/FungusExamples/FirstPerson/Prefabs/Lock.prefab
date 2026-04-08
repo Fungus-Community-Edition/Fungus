@@ -227,7 +227,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 3688519627662688338
-      type: {class: BooleanData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      type: {class: BooleanData, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
       data:
         backingVarRef:
           itemId: 0
@@ -772,7 +772,7 @@ MonoBehaviour:
     - rid: -2
       type: {class: , ns: , asm: }
     - rid: 6177420912830186047
-      type: {class: BooleanData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      type: {class: BooleanData, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
       data:
         backingVarRef:
           itemId: 0
@@ -1022,7 +1022,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 3688519646466015317
-      type: {class: GameObjectMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      type: {class: GameObjectMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: thisGameObject
@@ -1030,7 +1030,7 @@ MonoBehaviour:
         value: {fileID: 1621252211410962}
         startValue: {fileID: 0}
     - rid: 3688519665286643779
-      type: {class: FloatMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      type: {class: FloatMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: buttonMoveDur
@@ -1038,7 +1038,7 @@ MonoBehaviour:
         value: 1
         startValue: 0
     - rid: 3688519665286643780
-      type: {class: VectorThreeMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      type: {class: VectorThreeMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: buttonMoveAmount
@@ -1046,7 +1046,7 @@ MonoBehaviour:
         value: {x: 0, y: 2, z: 0}
         startValue: {x: 0, y: 0, z: 0}
     - rid: 3688519665286643793
-      type: {class: TransformMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      type: {class: TransformMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: buttonTForm

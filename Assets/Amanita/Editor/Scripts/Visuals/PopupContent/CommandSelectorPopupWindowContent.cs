@@ -6,7 +6,7 @@ using System.Linq;
 using System.Reflection;
 using AtMycelia.Amanita.EditorUtils;
 
-namespace AtMycelia.Amanita.VScripting.EditorUtils
+namespace AtMycelia.Hyphlow.EditorUtils
 {
     /// <summary>
     /// Searchable Popup Window for adding a command to a block
@@ -60,7 +60,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
                 var obsAttr = item.Key.GetCustomAttribute<System.ObsoleteAttribute>();
 
                 var fliStr = (item.Value.Category.Length > 0 ? item.Value.Category + CATEGORY_CHAR : "") 
-                    + (obsAttr != null ? AmanitaConstants.UIPrefixForDeprecated_RichText : "")
+                    + (obsAttr != null ? HyphlowConstants.UIPrefixForDeprecated_RichText : "")
                     + item.Value.CommandName;
                 allItems.Add(new FilteredListItem(CommandTypes.IndexOf(item.Key), fliStr, item.Value.HelpText));
             }

@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
-using AtMycelia.Amanita.VScripting.EditorUtils;
-using AtMycelia.Amanita.VScripting;
+using AtMycelia.Hyphlow.EditorUtils;
+using AtMycelia.Hyphlow;
 
 namespace VScriptingTests.FCWindowOperations
 {

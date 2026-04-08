@@ -557,7 +557,7 @@ v3.3.0 {#v3_3_0}
 - Documented all public members for API docs.
 - All serialized fields are now protected, exposed via public properties as needed.
 - Moved all enums to namespace scope.
-- Moved global constants to AmanitaConstants static class.
+- Moved global constants to HyphlowConstants static class.
 - Moved editor resources to the main resources folder
 - Fungus editor code moved to Amanita.EditorUtils namespace
 - Convert singletons to use a single FungusManager singleton #540

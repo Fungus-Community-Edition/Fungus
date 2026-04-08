@@ -1,4 +1,4 @@
-namespace AtMycelia.Amanita.VScripting
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Increases the FungusPriority count, causing the related FungusPrioritySignals to fire.

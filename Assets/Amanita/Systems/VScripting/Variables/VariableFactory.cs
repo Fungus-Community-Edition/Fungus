@@ -3,7 +3,7 @@ using System.Reflection;
 using UnityEngine;
 
 
-namespace AtMycelia.Amanita.VScripting
+namespace AtMycelia.Hyphlow
 {
     public static class VariableFactory
     {
