@@ -68,7 +68,11 @@ namespace SaveSystemTests
             var metaList = new List<ISaveMetaData>();
             for (int i = 0; i < slotUis.Count; i++)
             {
-                metaList.Add(new SaveMetaData { SaveVersion = $"v{i}" });
+                metaList.Add(new SaveMetaData
+                {
+                    SaveVersion = $"v{i}",
+                    SlotNumber = i + 1,
+                });
             }
 
             // Raise the init signal

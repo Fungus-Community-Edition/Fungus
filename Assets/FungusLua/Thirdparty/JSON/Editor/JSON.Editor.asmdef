@@ -1,0 +1,19 @@
+{
+    "name": "Amanita.FungusLuaJSONCheckerEditor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:007db7f7a4c8f944990d71603a110f82",
+        "GUID:f64d27c10b0fca24d92b461d182044a3"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

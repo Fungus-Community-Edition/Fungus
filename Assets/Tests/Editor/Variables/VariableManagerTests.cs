@@ -26,10 +26,10 @@ namespace VScriptingTests.Variables
 
         private static List<Muscariable> GetMuscariablesList(VariableManager manager)
         {
-            FieldInfo field = typeof(VariableManager).GetField("muscariables",
+            FieldInfo field = typeof(VariableManager).GetField("_muscariables",
                 BindingFlags.Instance | BindingFlags.NonPublic);
 
-            Assert.NotNull(field, "VariableManager.muscariables field not found.");
+            Assert.NotNull(field, "VariableManager._muscariables field not found.");
 
             return (List<Muscariable>)field.GetValue(manager);
         }

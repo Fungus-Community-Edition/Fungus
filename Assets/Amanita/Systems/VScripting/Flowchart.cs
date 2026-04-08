@@ -1,4 +1,3 @@
-using AtMycelia.Amanita.Lua;
 using AtMycelia.Amanita.VScripting.EventHandlers;
 using AtMycelia.Amanita.VScripting.UI;
 using AtMycelia.Collections;
@@ -99,10 +98,6 @@ namespace AtMycelia.Amanita.VScripting
         [Tooltip("Unique identifier for this flowchart in localized string keys. If no id is specified then the name of the Flowchart object will be used.")]
         [FormerlySerializedAs("localizationId")]
         [SerializeField] protected string localizationId = "";
-
-        [Tooltip("Lua Environment to be used by default for all Execute Lua commands in this Flowchart")]
-        [FormerlySerializedAs("luaEnvironment")]
-        [SerializeField] protected LuaEnvironment _luaEnvironment;
 
         [Tooltip("The ExecuteLua command adds a global Lua variable with this name bound to the flowchart prior to executing.")]
         [FormerlySerializedAs("_luaBindingName")]
@@ -323,7 +318,19 @@ namespace AtMycelia.Amanita.VScripting
 
         public event Action<IVariable> VariableRemoved = delegate { };
 
-        public int VariableCount => _varManager.Variables.Count;
+        public int VariableCount
+        {
+            get
+            {
+                if (_varManager == null)
+                {
+                    _varManager = gameObject.GetOrAddComponent<VariableManagerComponent>();
+                }
+
+
+                return _varManager.Variables.Count;
+            }
+        }
 
         private bool IsInTheScene
         {
@@ -837,11 +844,6 @@ namespace AtMycelia.Amanita.VScripting
         /// Unique identifier for identifying this flowchart in localized string keys.
         /// </summary>
         public virtual string LocalizationId { get { return localizationId; } }
-
-        /// <summary>
-        /// Lua Environment to be used by default for all Execute Lua commands in this Flowchart.
-        /// </summary>
-        public virtual LuaEnvironment LuaEnv { get { return _luaEnvironment; } }
 
         /// <summary>
         /// The ExecuteLua command adds a global Lua variable with this name bound to the flowchart prior to executing.
@@ -1423,7 +1425,6 @@ namespace AtMycelia.Amanita.VScripting
             EditorApplication.delayCall += () =>
             {
                 if (this == null) // Object may have been destroyed
-
                 {
                     return;
                 }
@@ -1498,6 +1499,12 @@ namespace AtMycelia.Amanita.VScripting
         {
             get
             {
+#if UNITY_EDITOR
+                if (this == null) // Possible in unit tests
+                {
+                    return Array.Empty<IVariable>();
+                }
+#endif
                 EnsureVariableManagerComponent();
                 _varManager.Owner = this;
                 return VariableManager.Variables;
@@ -1660,19 +1667,14 @@ namespace AtMycelia.Amanita.VScripting
             _varManager.Clear();
         }
 
-        public Muscariable AddNewVariableOfContentType(Type contentType, string key)
-        {
-            return ((IMuscariableSource)_varManager).AddNewVariableOfContentType(contentType, key);
-        }
-
         public Muscariable AddVariable(Muscariable toAdd)
         {
-            return ((IVariableSource<Muscariable>)_varManager).AddVariable(toAdd);
+            return _varManager.AddVariable(toAdd);
         }
 
         public virtual void RemoveVariable(Muscariable toRemove)
         {
-            ((IVariableSource<Muscariable>)_varManager).RemoveVariable(toRemove);
+            _varManager.RemoveVariable(toRemove);
         }
 
         T IVariableSource.GetVariableOfType<T>()
@@ -1701,7 +1703,11 @@ namespace AtMycelia.Amanita.VScripting
             where TVarType : Muscariable<TContentType>, new()
         {
             var result = _varManager.AddNewVariableOfContentType(typeof(TContentType), key) as TVarType;
-            result.Scope = scope;
+            if (result != null)
+            {
+                result.Scope = scope;
+                result.Init(defaultValue);
+            }
             return result;
         }
 
@@ -1709,8 +1715,24 @@ namespace AtMycelia.Amanita.VScripting
             TContentType defaultValue = default,
             VariableScope scope = VariableScope.Private)
         {
-            var result = _varManager.AddNewVariableOfContentType(typeof(TContentType), key);
-            return result as IVariable<TContentType>;
+            var result = _varManager.AddNewVariableOfContentType(typeof(TContentType), key) as IVariable<TContentType>;
+            if (result != null)
+            {
+                result.Value = defaultValue;
+                result.Scope = scope;
+            }
+            return result;
+        }
+
+        public Muscariable AddNewVariableOfContentType<TContentType>(string k, TContentType defaultVal,
+            VariableScope scope = VariableScope.Private)
+        {
+            return _varManager.AddNewVariableOfContentType(k, defaultVal, scope);
+        }
+
+        public Muscariable AddNewVariableOfContentType(Type contentType, string key)
+        {
+            return _varManager.AddNewVariableOfContentType(contentType, key);
         }
     }
     

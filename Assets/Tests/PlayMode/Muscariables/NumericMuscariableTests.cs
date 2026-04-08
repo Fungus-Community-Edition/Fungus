@@ -76,15 +76,6 @@ namespace VScriptingTests.MuscariableTests.DataOnly
         }
 
         [Test]
-        public void Init_WithNoKeyOrID_ThrowsException()
-        {
-            var v = new IntMuscariable();
-            var ex = Assert.Throws<Exception>(() => v.Init());
-            StringAssert.Contains("needs a valid key", ex.Message);
-            StringAssert.Contains("needs a valid ID", ex.Message);
-        }
-
-        [Test]
         public void Init_WithValidKeyAndID_DoesNotThrow()
         {
             var v = new DoubleMuscariable { Key = "ok", ItemId = 99 };

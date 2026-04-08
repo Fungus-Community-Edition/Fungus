@@ -214,11 +214,12 @@ namespace SaveSystemTests
             // Create a second flowchart in the scene
             var secondFlowchartGO = new GameObject("SecondFlowchart");
             var secondFlowchart = secondFlowchartGO.AddComponent<Flowchart>();
+            var secondFcVarManager = secondFlowchart.GetComponent<VariableManagerComponent>();
             RegisterTestFlowchart(secondFlowchart);
 
             // Add a variable to the second flowchart
             string initSecondVarVal = "initial";
-            var secondVar = secondFlowchart.AddNewMuscariable<string, StringMuscariable>("secondVar", initSecondVarVal);
+            var secondVar = secondFlowchart.AddNewVariable<string>("secondVar", initSecondVarVal);
 
             FlowchartSaveData secondSaveData = flowchartSaveCodec.EncodeToSave(secondFlowchart);
 

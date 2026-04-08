@@ -180,9 +180,13 @@ namespace AtMycelia.Amanita.DialogueSys.VScripting
 
             string subbedText = flowchart.SubstituteVariables(displayText);
 
-            sayDialog.Say(subbedText, !_extendPrevious, _waitForClick, _fadeWhenDone, _stopVoiceover, _waitForVO, _voiceOverClip, delegate {
+            void OnSayComplete()
+            {
                 Continue();
-            });
+                Debug.Log("Finished writing text: " + subbedText, this);
+            }
+            sayDialog.Say(subbedText, !_extendPrevious, _waitForClick, _fadeWhenDone, _stopVoiceover,
+                _waitForVO, _voiceOverClip, OnSayComplete);
         }
 
         protected virtual void DecideSayDialogToUse(out bool success)
@@ -373,53 +377,51 @@ namespace AtMycelia.Amanita.DialogueSys.VScripting
 
         }
 
-        [SerializeField]
-        [HideInInspector] protected bool _migrated;
         [FormerlySerializedAs("storyText")]
         [SerializeField] protected string _oldStoryText = "";
         [Tooltip("Notes about this story text for other authors, localization, etc.")]
 
         [FormerlySerializedAs("description")]
-        [SerializeField] protected string _oldDescription = "";
+        [SerializeField] [HideInInspector] protected string _oldDescription = "";
 
         [Tooltip("Character that is speaking")]
         [FormerlySerializedAs("character")]
-        [SerializeField] protected Character _oldCharacter;
+        [SerializeField][HideInInspector] protected Character _oldCharacter;
 
         [Tooltip("Portrait that represents speaking character")]
         [FormerlySerializedAs("portrait")]
-        [SerializeField] protected Sprite _oldPortrait;
+        [SerializeField][HideInInspector] protected Sprite _oldPortrait;
 
         [Tooltip("Voiceover audio to play when writing the text")]
         [FormerlySerializedAs("voiceOverClip")]
-        [SerializeField] protected AudioClip _oldVoiceOverClip;
+        [SerializeField][HideInInspector] protected AudioClip _oldVoiceOverClip;
 
         [Tooltip("Always show this Say text when the command is executed multiple times")]
         [FormerlySerializedAs("showAlways")]
-        [SerializeField] protected bool _oldShowAlways = true;
+        [SerializeField][HideInInspector] protected bool _oldShowAlways = true;
 
         [Tooltip("Number of times to show this Say text when the command is executed multiple times")]
         [FormerlySerializedAs("showCount")]
-        [SerializeField] protected int _oldShowCount = 1;
+        [SerializeField] [HideInInspector] protected int _oldShowCount = 1;
 
         [Tooltip("Type this text in the previous dialog box.")]
         [FormerlySerializedAs("extendPrevious")]
-        [SerializeField] protected bool _oldExtendPrevious = false;
+        [SerializeField] [HideInInspector] protected bool _oldExtendPrevious = false;
 
         [Tooltip("Fade out the dialog box when writing has finished and not waiting for input.")]
         [FormerlySerializedAs("fadeWhenDone")]
-        [SerializeField] protected bool _oldFadeWhenDone = true;
+        [SerializeField] [HideInInspector] protected bool _oldFadeWhenDone = true;
 
         [Tooltip("Wait for player to click before continuing.")]
         [FormerlySerializedAs("waitForClick")]
-        [SerializeField] protected bool _oldWaitForClick = true;
+        [SerializeField] [HideInInspector] protected bool _oldWaitForClick = true;
 
         [Tooltip("Stop playing voiceover when text finishes writing.")]
         [FormerlySerializedAs("stopVoiceover")]
-        [SerializeField] protected bool _oldStopVoiceover = true;
+        [SerializeField] [HideInInspector] protected bool _oldStopVoiceover = true;
 
         [Tooltip("Wait for the Voice Over to complete before continuing")]
         [FormerlySerializedAs("waitForVO")]
-        [SerializeField] protected bool _oldWaitForVO = false;
+        [SerializeField] [HideInInspector] protected bool _oldWaitForVO = false;
     }
 }

@@ -149,6 +149,7 @@ namespace AtMycelia.Amanita.VScripting
                 }
 
                 component.MigrateFromFlowchart();
+                component.SetGlobalVarsToPublic();
                 migratedCount++;
             }
 
@@ -247,9 +248,13 @@ namespace AtMycelia.Amanita.VScripting
             _variableManager.ReorderVariables(newlyOrderedVars);
         }
 
+        /// <summary>
+        /// Value is default, scope is private. If you want to specify those, use the generic version of this method.
+        /// </summary>
         public Muscariable AddNewVariableOfContentType(Type contentType, string key)
         {
-            return _variableManager.AddNewVariableOfContentType(contentType, key);
+            var result = _variableManager.AddNewVariableOfContentType(contentType, key);
+            return result;
         }
 
         public Muscariable AddVariable(Muscariable toAdd)
@@ -265,6 +270,35 @@ namespace AtMycelia.Amanita.VScripting
         public void Clear()
         {
             _variableManager.Clear();
+        }
+
+        public Muscariable AddNewVariableOfContentType<TContentType>(string key, TContentType defaultVal = default, 
+            VariableScope scope = VariableScope.Private)
+        {
+            return _variableManager.AddNewVariableOfContentType(key, defaultVal, scope);
+        }
+
+        protected virtual void OnValidate()
+        {
+            if (!Application.isPlaying)
+            {
+                EnsureOwner();
+            }
+
+            EditorApplication.delayCall += () => SetGlobalVarsToPublic();
+        }
+
+        void SetGlobalVarsToPublic()
+        {
+            // Since now the Global value in the enum is just there for backwards compat,
+            // let's just convert any variables that are set to Global to Public, since 
+            // the concept of Global vars is now limited to VSAs.
+            var vManager = _variableManager;
+            var globalVars = vManager.Variables.Where(v => v.Scope == VariableScope.Global).ToList();
+            foreach (var globalVar in globalVars)
+            {
+                globalVar.Scope = VariableScope.Public;
+            }
         }
 #endif
     }

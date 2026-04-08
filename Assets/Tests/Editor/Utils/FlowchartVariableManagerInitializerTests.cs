@@ -59,27 +59,21 @@ namespace VScriptingTests.Utils
         }
 
         [Test]
-        public void InitializeFlowcharts_MigratesLegacyAndOldMuscariablesAndClearsLists()
+        public void InitializeFlowcharts_DoesNotRemoveVariablesFromManager()
         {
-            Muscariable oldMuscariable = VariableFactory.CreateByContentType(typeof(string));
-            oldMuscariable.Key = "OldMuscariable";
-            oldMuscariable.BoxedValue = "LegacyValue";
+            var varManager = _flowchart.GetComponent<VariableManagerComponent>();
+            Assert.IsNotNull(varManager, "VariableManagerComponent not found on Flowchart.");
 
-            StringVariable legacyVariable = _flowchart.gameObject.AddComponent<StringVariable>();
-            legacyVariable.Key = "LegacyVariable";
-            legacyVariable.BoxedValue = "LegacyVarValue";
+            var managedVar = varManager.AddNewVariableOfContentType<string>("ManagedVar", "Value");
+            Assert.IsNotNull(managedVar, "Failed to add variable to VariableManagerComponent.");
 
-            _flowchart.SetOldMuscariables(new List<Muscariable> { oldMuscariable });
-            _flowchart.SetLegacyVariables(new List<Variable> { legacyVariable });
+            int beforeCount = varManager.Variables.Count;
 
             InvokeInitializeFlowcharts();
 
-            Assert.That(_flowchart.OldMuscariables.Count, Is.EqualTo(0), "Old muscariable list was not cleared.");
-            Assert.That(_flowchart.LegacyVariables.Count, Is.EqualTo(0), "Legacy variable list was not cleared.");
-            Assert.That(_flowchart.Variables.Any(variable => ReferenceEquals(variable, oldMuscariable)), Is.True,
-                "Old muscariable was not migrated into the variable manager.");
-            Assert.That(_flowchart.Variables.Any(variable => ReferenceEquals(variable, legacyVariable)), Is.True,
-                "Legacy variable was not migrated into the variable manager.");
+            Assert.AreEqual(beforeCount, varManager.Variables.Count, "VariableManagerComponent variables should not be removed.");
+            Assert.That(varManager.Variables.Any(variable => ReferenceEquals(variable, managedVar)), Is.True,
+                "Managed variable should still be present after initialization.");
         }
 
         private static void InvokeInitializeFlowcharts()

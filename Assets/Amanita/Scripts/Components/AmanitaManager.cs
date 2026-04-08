@@ -111,7 +111,8 @@ namespace AtMycelia.Amanita
 #if UNITY_EDITOR
                     // Note: FindObjectsOfTypeAll includes stuff in the scene AND project files, even in edit mode.
                     var postAll = Resources.FindObjectsOfTypeAll<AmanitaManager>()
-                        .Where((elem) => !EditorUtility.IsPersistent(elem.gameObject) && elem != newlyInstantiated && elem != null);
+                        .Where((elem) => !EditorUtility.IsPersistent(elem.gameObject) && elem != 
+                        newlyInstantiated && elem != null);
                     // ^This Where clause is so we skip project files. Apparently, FindFirstObjectByType can miss
                     // stuff in the scene.
 
@@ -137,23 +138,20 @@ namespace AtMycelia.Amanita
 
         private static AmanitaManager CreateNewManager()
         {
-            GameObject managerGo = new GameObject(nameof(AmanitaManager));
-            AmanitaManager manager = managerGo.AddComponent<AmanitaManager>();
+            AmanitaManager prefab = Resources.Load<AmanitaManager>(_pathToPrefab);
+            if (prefab == null)
+            {
+                string errorMessage = $"AmanitaManager prefab not found at Resources/{_pathToPrefab}. " +
+                    $"Please ensure it exists and is located there.";
+                Debug.LogError(errorMessage);
+                return null;
+            }
 
-            CreateSubmodule<CameraManager>(nameof(CameraManager), managerGo.transform);
-            CreateSubmodule<EventDispatcher>(nameof(EventDispatcher), managerGo.transform);
-            CreateSubmodule<NarrativeLog>(nameof(NarrativeLog), managerGo.transform);
-            CreateSubmodule<TweenManager>(nameof(TweenManager), managerGo.transform);
-
+            AmanitaManager manager = Instantiate(prefab);
             return manager;
         }
 
-        private static T CreateSubmodule<T>(string name, Transform parent) where T : Component
-        {
-            GameObject go = new GameObject(name);
-            go.transform.SetParent(parent, false);
-            return go.AddComponent<T>();
-        }
+        private static readonly string _pathToPrefab = "Prefabs/AmanitaManager"; // Relative to Resources
 
         public void Init()
         {

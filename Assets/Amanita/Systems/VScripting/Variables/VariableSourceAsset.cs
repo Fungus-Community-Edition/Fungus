@@ -15,8 +15,8 @@ using UnityEditor;
 namespace AtMycelia.Amanita.VScripting
 {
     [CreateAssetMenu(fileName = "NewVariableSourceAsset", menuName = "Atelier Mycelia/Amanita/VariableSource")]
-    public class VariableSourceAsset : ScriptableObject, IReorderableMuscariableSource, IForceResetUidHandler,
-        IRefreshable
+    public class VariableSourceAsset : ScriptableObject, IReorderableMuscariableSource,
+        IForceResetUidHandler, IRefreshable
     {
         [SerializeField] private bool _includeInSaves = true;
         [FormerlySerializedAs("uniqueId")]
@@ -98,17 +98,19 @@ namespace AtMycelia.Amanita.VScripting
         /// <summary>
         /// Creates and returns a new Muscariable of the content type,
         /// assigning it the passed key and starting value.
+        /// Ignores the scope param, as VariableSourceAssets don't have scopes for their variables.
         /// </summary>
         public virtual Muscariable<TContent> AddNewVariableOfContentType<TContent>(string key,
-            TContent startingVal = default)
+            TContent startingVal = default, VariableScope scope = VariableScope.Private)
         {
             var result = _varManager.AddNewVariable(key, startingVal, VariableScope.Public);
             return (Muscariable<TContent>)result; 
         }
 
-        public virtual Muscariable AddNewVariableOfContentType(Type contentType, string key)
+        public virtual Muscariable AddNewVariableOfContentType(Type contentType, string key, object defaultVal,
+            VariableScope scope = VariableScope.Private)
         {
-            var result = _varManager.AddNewVariableOfContentType(contentType, key);
+            var result = _varManager.AddNewVariableOfContentType(contentType, key, defaultVal, scope);
             return result;
         }
 
@@ -282,6 +284,7 @@ namespace AtMycelia.Amanita.VScripting
         {
             ToggleSubs(false);
             ToggleSubs(true);
+            _varManager.VarOwner = this;
 #if UNITY_EDITOR
             if (!AssetDatabase.Contains(this))
             {
@@ -463,6 +466,17 @@ namespace AtMycelia.Amanita.VScripting
             AssetDatabase.SaveAssetIfDirty(this);
             AssetDatabase.Refresh();
         }
+
+        Muscariable IMuscariableSource.AddNewVariableOfContentType<TContentType>(string k, TContentType defaultVal, VariableScope scope)
+        {
+            return ((IMuscariableSource)_varManager).AddNewVariableOfContentType(k, defaultVal, scope);
+        }
+
+        public Muscariable AddNewVariableOfContentType(Type contentType, string key)
+        {
+            return ((IMuscariableSource)_varManager).AddNewVariableOfContentType(contentType, key);
+        }
+
 #endif
     }
 

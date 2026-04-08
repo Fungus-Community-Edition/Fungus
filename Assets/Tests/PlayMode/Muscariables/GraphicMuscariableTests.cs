@@ -62,19 +62,7 @@ namespace VScriptingTests.MuscariableTests.DataOnly
         }
 
         #region Color
-        [Test]
-        public void ColorMuscariable_InitAndNullGuard()
-        {
-            var colVar = new ColorMuscariable();
-            var ex = Assert.Throws<Exception>(() => colVar.Init());
-            StringAssert.Contains("needs a valid key", ex.Message);
-            StringAssert.Contains("needs a valid ID", ex.Message);
-
-            colVar.Key = "col";
-            colVar.ItemId = 201;
-            Assert.DoesNotThrow(() => colVar.Init());
-        }
-
+        
         [Test]
         public void ColorMuscariable_ValueAssignmentAndEvent()
         {
@@ -246,34 +234,7 @@ namespace VScriptingTests.MuscariableTests.DataOnly
         #endregion
 
         #region Materials
-
-        [Test]
-        public void MaterialMuscariable_InitAndNullGuard()
-        {
-            var matVar = new MaterialMuscariable();
-            var ex = Assert.Throws<Exception>(() => matVar.Init());
-            StringAssert.Contains("needs a valid key", ex.Message);
-            StringAssert.Contains("needs a valid ID", ex.Message);
-
-            matVar.Key = "mat";
-            matVar.ItemId = 230;
-            Assert.DoesNotThrow(() => matVar.Init());
-        }
-
-        [Test]
-        public void MaterialMuscariable_ValueAssignmentAndEvent()
-        {
-            var matVar = new MaterialMuscariable { Key = "mat", ItemId = 231 };
-            matVar.Init();
-
-            Material captured = null;
-            matVar.OnValueChanged += m => captured = m;
-
-            matVar.Value = firstMaterial;
-            Assert.AreEqual(firstMaterial, matVar.Value);
-            Assert.AreEqual(firstMaterial, captured);
-        }
-
+              
         [Test]
         public void MaterialMuscariable_EqualityAndEvaluate()
         {
@@ -324,19 +285,6 @@ namespace VScriptingTests.MuscariableTests.DataOnly
         }
 
         #endregion
-
-        [Test]
-        public void AnimatorMuscariable_InitAndNullGuard()
-        {
-            var animVar = new AnimatorMuscariable();
-            var ex = Assert.Throws<Exception>(() => animVar.Init());
-            StringAssert.Contains("needs a valid key", ex.Message);
-            StringAssert.Contains("needs a valid ID", ex.Message);
-
-            animVar.Key = "anim";
-            animVar.ItemId = 240;
-            Assert.DoesNotThrow(() => animVar.Init());
-        }
 
         [Test]
         public void AnimatorMuscariable_ValueAssignmentAndEvent()

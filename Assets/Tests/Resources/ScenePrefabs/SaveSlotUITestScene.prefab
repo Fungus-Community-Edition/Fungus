@@ -500,6 +500,11 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1507031660960170913, guid: f56d2b69f69539b4d98dccf0aa165f58,
+        type: 3}
+      propertyPath: _varManager
+      value: 
+      objectReference: {fileID: 8532071047716042164}
     - target: {fileID: 1561041471715967448, guid: f56d2b69f69539b4d98dccf0aa165f58,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -1319,5 +1324,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7a334fe2ffb574b3583ff3b18b4792d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &8532071047716042164 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 61835812667275657, guid: f56d2b69f69539b4d98dccf0aa165f58,
+    type: 3}
+  m_PrefabInstance: {fileID: 8553371645701278781}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3326e6921119d6f4fb53c4243fb91015, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
