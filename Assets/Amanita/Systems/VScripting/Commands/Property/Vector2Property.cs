@@ -1,6 +1,8 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
 	/// <summary>
 	/// Get or Set a property of a Vector2 component
@@ -9,6 +11,7 @@ namespace AtMycelia.Amanita.VScripting
 				 "Vector2",
 				 "Get or Set a property of a Vector2 component")]
 	[AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
 	public class Vector2Property : BaseVariableProperty
 	{
 		//generated property

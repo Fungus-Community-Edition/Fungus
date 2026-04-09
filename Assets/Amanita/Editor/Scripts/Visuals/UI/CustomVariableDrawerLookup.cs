@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting.EditorUtils
+namespace AtMycelia.Hyphlow.EditorUtils
 {
     /// <summary>
     /// Fungus Variables are drawn via EditorGUI.Property by default, however, some types may require a custom replacement.

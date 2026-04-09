@@ -29,7 +29,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 3688519627662688443
-      type: {class: BoolMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      type: {class: BoolMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: isUnlocked
@@ -37,7 +37,7 @@ MonoBehaviour:
         value: 0
         startValue: 0
     - rid: 3688519627662688444
-      type: {class: BoolMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      type: {class: BoolMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: isComplete
@@ -45,7 +45,7 @@ MonoBehaviour:
         value: 0
         startValue: 0
     - rid: 3688519627662688445
-      type: {class: BoolMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      type: {class: BoolMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: hasKey

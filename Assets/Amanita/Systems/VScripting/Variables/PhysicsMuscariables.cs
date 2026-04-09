@@ -1,10 +1,13 @@
 using System;
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     [Serializable]
     [VariableInfo("Physics/ThreeD", "ColliderThreeD", typeof(Collider))]
+    [MovedFrom("AtMycelia.Amanita.VScripting")]
     public class ColliderThreeDMuscariable : Muscariable<Collider>
     {
         // We use SerializeField here (instead of SerializeReference) due to the way
@@ -101,6 +104,7 @@ namespace AtMycelia.Amanita.VScripting
     
     [Serializable]
     [VariableInfo("Physics/TwoD", "ColliderTwoD", typeof(Collider2D))]
+    [MovedFrom("AtMycelia.Amanita.VScripting")]
     public class ColliderTwoDMuscariable : Muscariable<Collider2D>
     {
         [SerializeField] protected Collider2D colliderRef;

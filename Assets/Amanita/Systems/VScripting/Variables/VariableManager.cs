@@ -10,9 +10,12 @@ using UnityEngine.Serialization;
 using UnityEditor;
 #endif
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     [Serializable]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public sealed class VariableManager : IVariableSource, IMuscariableSource,
         IReorderableVariableSource, IReorderableMuscariableSource
     {

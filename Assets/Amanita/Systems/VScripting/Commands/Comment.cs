@@ -1,6 +1,8 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Use comments to record design notes and reminders about your game.
@@ -9,6 +11,7 @@ namespace AtMycelia.Amanita.VScripting
                  "Comment", 
                  "Use comments to record design notes and reminders about your game.")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class Comment : Command
     {   
         [Tooltip("Name of Commenter")]

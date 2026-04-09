@@ -1,7 +1,8 @@
+using AtMycelia.Hyphlow;
 using UnityEngine;
-using AtMycelia.Amanita.VScripting;
+using UnityEngine.Scripting.APIUpdating;
 
-namespace AtMycelia.Amanita.DialogueSys.Commands
+namespace AtMycelia.Amanita.DialogueSys.VScripting
 {
     /// <summary>
     /// Supported display operations for Stage.
@@ -30,6 +31,7 @@ namespace AtMycelia.Amanita.DialogueSys.Commands
     [CommandInfo("Narrative", 
                  "Control Stage",
                  "Controls the stage on which character portraits are displayed.")]
+    [MovedFrom("AtMycelia.Amanita.DialogueSys.Commands")]
     public class ControlStage : ControlWithDisplay<StageDisplayType> 
     {
         [Tooltip("Stage to display characters on")]

@@ -1,5 +1,3 @@
-using AtMycelia.Amanita.VScripting.EventHandlers;
-using AtMycelia.Amanita.VScripting.UI;
 using AtMycelia.Collections;
 using System;
 using System.Collections;
@@ -7,14 +5,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using AtMycelia.Amanita;
+using AtMycelia.Hyphlow;
+using AtMycelia.Hyphlow.UI;
 using UnityEngine;
 using UnityEngine.Serialization;
-using AmanitaEventHandler = AtMycelia.Amanita.VScripting.EventHandlers.EventHandler;
+using AmanitaEventHandler = AtMycelia.Hyphlow.EventHandler;
+using EventHandler = AtMycelia.Hyphlow.EventHandler;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Visual scripting controller for the Flowchart programming language.
@@ -22,6 +26,7 @@ namespace AtMycelia.Amanita.VScripting
     /// </summary>
     [ExecuteInEditMode]
     [RequireComponent(typeof(VariableManagerComponent))]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class Flowchart : MonoBehaviour, ISubstitutionHandler,
         IReorderableVariableSource, IReorderableMuscariableSource,
         IForceResetUidHandler, ISerializationCallbackReceiver, ITearDownResponder, IRefreshable,
@@ -570,7 +575,7 @@ namespace AtMycelia.Amanita.VScripting
             #endregion
 
             #region Destroy EventHandlers that aren't on any blocks
-            var eventHandlers = GetComponents<AmanitaEventHandler>();
+            var eventHandlers = GetComponents<EventHandler>();
             for (int i = 0; i < eventHandlers.Length; i++)
             {
                 var eventHandler = eventHandlers[i];
@@ -733,7 +738,7 @@ namespace AtMycelia.Amanita.VScripting
                 {
                     command.hideFlags = HideFlags.HideInInspector;
                 }
-                var eventHandlers = GetComponents<AmanitaEventHandler>();
+                var eventHandlers = GetComponents<EventHandler>();
                 for (int i = 0; i < eventHandlers.Length; i++)
                 {
                     var eventHandler = eventHandlers[i];

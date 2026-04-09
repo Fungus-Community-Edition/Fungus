@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using AtMycelia.Amanita.VScripting;
+using AtMycelia.Hyphlow;
 
 namespace AtMycelia.Amanita.Examples
 {

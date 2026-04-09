@@ -1,8 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
+using AtMycelia.Hyphlow;
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting.EventHandlers
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// The block will execute when the player is dragging an object which stops touching the target object.
@@ -12,10 +15,12 @@ namespace AtMycelia.Amanita.VScripting.EventHandlers
     /// </summary>
     [EventHandlerInfo("Sprite",
                       "Drag Exited",
-                      "The block will execute when the player is dragging an object which stops touching the target object.")]
+                      "The block will execute when the player is dragging an object which " +
+                      "stops touching the target object.")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
-    public class DragExited : EventHandler, ISerializationCallbackReceiver
+    [MovedFrom("AtMycelia.Amanita.VScripting.EventHandlers")]
+	public class DragExited : EventHandler, ISerializationCallbackReceiver
     {
         public class DragExitedEvent
         {

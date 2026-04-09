@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
-namespace AtMycelia.Amanita.VScripting
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Collider variable type.
@@ -9,8 +9,8 @@ namespace AtMycelia.Amanita.VScripting
     [VariableInfo("Physics/ThreeD", "Collider", typeof(Collider), false)]
     [AddComponentMenu("")]
     [System.Serializable]
-    [MovedFrom(true, "Amanita.VScripting", "Amanita.Core")]
-    public class ColliderVariable : VariableBase<UnityEngine.Collider>
+    [MovedFrom(true, "AtMycelia.Amanita.VScripting", "AtMycelia.Amanita.Core")]
+    public class ColliderVariable : VariableBase<Collider>
     { }
 
     

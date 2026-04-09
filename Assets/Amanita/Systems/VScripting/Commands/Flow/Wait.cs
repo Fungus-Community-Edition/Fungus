@@ -1,7 +1,9 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Waits for period of time before executing the next command in the block.
@@ -11,6 +13,7 @@ namespace AtMycelia.Amanita.VScripting
                  "Waits for period of time before executing the next command in the block.")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class Wait : Command
     {
         [Tooltip("Duration to wait for")]

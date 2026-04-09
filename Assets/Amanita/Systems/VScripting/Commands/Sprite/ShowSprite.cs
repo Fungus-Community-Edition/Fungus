@@ -1,7 +1,9 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Makes a sprite visible / invisible by setting the color alpha.
@@ -11,6 +13,7 @@ namespace AtMycelia.Amanita.VScripting
                  "Makes a sprite visible / invisible by setting the color alpha.")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class ShowSprite : Command
     {
         [Tooltip("Sprite object to be made visible / invisible")]

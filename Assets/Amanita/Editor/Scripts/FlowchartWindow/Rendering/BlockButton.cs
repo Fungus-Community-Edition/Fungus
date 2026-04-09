@@ -1,10 +1,10 @@
 using System;
-using AtMycelia.Amanita.VScripting.EditorUtils;
+using AtMycelia.Hyphlow.EditorUtils;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UitkLabel = UnityEngine.UIElements.Label;
 
-namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
+namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
 {
     /// <summary>
     /// A button representing a Block in the flowchart. Displays the Block's name and changes 

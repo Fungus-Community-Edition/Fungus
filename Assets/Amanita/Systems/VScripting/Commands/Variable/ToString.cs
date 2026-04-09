@@ -1,6 +1,8 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Stores the result of a ToString on given variable in a string.
@@ -9,6 +11,7 @@ namespace AtMycelia.Amanita.VScripting
                  "To String",
                  "Stores the result of a ToString on given variable in a string.")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class ToString : Command
     {
         [Tooltip("Target variable to get String of.")]

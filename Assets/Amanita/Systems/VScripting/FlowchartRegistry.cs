@@ -8,11 +8,14 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 #endif
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Centralized registry that keeps Flowcharts discoverable in both the editor and at runtime.
     /// </summary>
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public static class FlowchartRegistry
     {
         private static readonly bool _readAssetFlowchartsInRuntime = false;

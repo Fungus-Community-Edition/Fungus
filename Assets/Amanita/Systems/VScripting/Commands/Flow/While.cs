@@ -1,6 +1,8 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting.Commands
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Continuously loop through a block of commands while the condition is true. Use the Break command to force the loop to terminate immediately.
@@ -9,6 +11,7 @@ namespace AtMycelia.Amanita.VScripting.Commands
                  "While", 
                  "Continuously loop through a block of commands while the condition is true. Use the Break command to force the loop to terminate immediately.")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class While : If
     {
         #region Public members

@@ -1,6 +1,8 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting.Commands
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Stops execution of all Flowcharts in the scene.
@@ -9,6 +11,7 @@ namespace AtMycelia.Amanita.VScripting.Commands
                  "Stop All Flowcharts",
                  "Stops execution of all Blocks in all Flowcharts in the scene.")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class StopAllFlowcharts : Command
     {
         [Tooltip("Flowcharts with any of these GameObjects as their target will not be stopped.")]

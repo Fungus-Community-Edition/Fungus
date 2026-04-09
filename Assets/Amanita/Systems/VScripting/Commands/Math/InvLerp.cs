@@ -1,6 +1,8 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Calculates the inverse lerp, the percentage a value is between two others.
@@ -9,6 +11,7 @@ namespace AtMycelia.Amanita.VScripting
                  "InvLerp",
                  "Calculates the inverse lerp, the percentage a value is between two others.")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class InvLerp : Command
     {
         [Tooltip("Clamp percentage to 0-1?")]

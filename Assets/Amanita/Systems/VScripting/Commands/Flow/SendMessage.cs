@@ -1,8 +1,10 @@
 using UnityEngine;
 using UnityEngine.Serialization;
-using AtMycelia.Amanita.VScripting.EventHandlers;
+using AtMycelia.Hyphlow;
 
-namespace AtMycelia.Amanita.VScripting.Commands
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Supported target types for messages.
@@ -28,6 +30,7 @@ namespace AtMycelia.Amanita.VScripting.Commands
         "Blocks can listen for this message using a Message Received event handler.")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class SendMessage : Command
     {
         [Tooltip("Target flowchart(s) to send the message to")]

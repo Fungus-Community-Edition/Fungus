@@ -1,4 +1,4 @@
-namespace AtMycelia.Amanita.VScripting.EditorUtils
+namespace AtMycelia.Hyphlow.EditorUtils
 {
     /// <summary>
     /// Extension methods for VariableSourceAsset to be used in the editor.

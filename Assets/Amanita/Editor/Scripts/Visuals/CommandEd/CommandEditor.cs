@@ -5,7 +5,7 @@ using UnityEditorInternal;
 using System.Reflection;
 using AtMycelia.Amanita.EditorUtils;
 
-namespace AtMycelia.Amanita.VScripting.EditorUtils
+namespace AtMycelia.Hyphlow.EditorUtils
 {
     [CustomEditor (typeof(Command), true)]
     public class CommandEditor : Editor 

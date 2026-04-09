@@ -2,9 +2,12 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     [System.Serializable]
+    [MovedFrom("AtMycelia.Amanita.VScripting")]
     public class VarDataTagFilter : ITagFilterable<StringData>, ITagFilterable<string>
     {
         [Tooltip("Only fire the event if one of the tags match. Empty means any will fire.")]

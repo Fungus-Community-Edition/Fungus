@@ -1,11 +1,14 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     [CommandInfo("UI",
         "InputFieldSetText",
         "As it says on the tin.")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class InputFieldSetText : Command
     {
         [SerializeField] protected GameObjectData inputFieldHolder;

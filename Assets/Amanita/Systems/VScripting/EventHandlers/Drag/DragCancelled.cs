@@ -1,8 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
+using AtMycelia.Amanita;
 using UnityEngine;
+using AtMycelia.Hyphlow;
+using UnityEngine.Scripting.APIUpdating;
 
-namespace AtMycelia.Amanita.VScripting.EventHandlers
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// The block will execute when the player drags an object and releases it without dropping it on a target object.
@@ -11,7 +14,8 @@ namespace AtMycelia.Amanita.VScripting.EventHandlers
                       "Drag Cancelled",
                       "The block will execute when the player drags an object and releases it without dropping it on a target object.")]
     [AddComponentMenu("")]
-    public class DragCancelled : EventHandler, ISerializationCallbackReceiver
+    [MovedFrom("AtMycelia.Amanita.VScripting.EventHandlers")]
+	public class DragCancelled : EventHandler, ISerializationCallbackReceiver
     {
         public class DragCancelledEvent
         {

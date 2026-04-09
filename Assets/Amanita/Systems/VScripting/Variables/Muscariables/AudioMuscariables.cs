@@ -1,11 +1,11 @@
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
-namespace AtMycelia.Amanita.VScripting
+namespace AtMycelia.Hyphlow
 {
     [System.Serializable]
     [VariableInfo("Audio", "AudioClip", typeof(AudioClip))]
-    [MovedFrom(true, "Amanita.VScripting", "Amanita.Core", "AudioClipMuscariable")]
+    [MovedFrom(true, "AtMycelia.Amanita.VScripting", "AtMycelia.Amanita.Core", "AudioClipMuscariable")]
     public class AudioClipMuscariable : Muscariable<AudioClip>
     {
         public AudioClipMuscariable() : base() { }
@@ -45,7 +45,7 @@ namespace AtMycelia.Amanita.VScripting
 
     [System.Serializable]
     [VariableInfo("Audio", "AudioSource", typeof(AudioSource))]
-    [MovedFrom(true, "Amanita.VScripting", "Amanita.Core", "AudioSourceMuscariable")]
+    [MovedFrom(true, "AtMycelia.Amanita.VScripting", "AtMycelia.Amanita.Core", "AudioSourceMuscariable")]
     public class AudioSourceMuscariable : Muscariable<AudioSource>
     {
         public AudioSourceMuscariable() : base() { }

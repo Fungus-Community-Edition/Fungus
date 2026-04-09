@@ -4,8 +4,11 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public static class VariableDataTypeRegistry
     {
         // Key is var type, value is data type

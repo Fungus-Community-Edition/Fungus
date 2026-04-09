@@ -1,16 +1,19 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Pairing of an AnyVariableData and an variable reference. Internal lookup for
     /// matching the right kind of variable with the correct data in the AnyVariableData.
     /// </summary>
     [Serializable]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class AnyVariableAndDataPair : ISerializationCallbackReceiver
     {
         [SerializeField] private VariableReference varRef = new VariableReference();

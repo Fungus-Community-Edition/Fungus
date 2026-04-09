@@ -1,5 +1,8 @@
-﻿namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public static class VariableUtil
     {
         public static string GetCompareOperatorDescription(CompareOperator compareOperator)

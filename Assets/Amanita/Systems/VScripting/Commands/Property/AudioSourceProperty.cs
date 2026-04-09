@@ -1,6 +1,8 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
 	/// <summary>
 	/// Get or Set a property of a AudioSource component
@@ -9,6 +11,7 @@ namespace AtMycelia.Amanita.VScripting
 				 "AudioSource",
 				 "Get or Set a property of a AudioSource component")]
 	[AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
 	public class AudioSourceProperty : BaseVariableProperty
 	{
 		//generated property

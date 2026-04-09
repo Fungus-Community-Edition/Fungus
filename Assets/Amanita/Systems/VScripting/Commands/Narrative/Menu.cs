@@ -1,9 +1,10 @@
-using UnityEngine;
-using UnityEngine.Serialization;
+using AtMycelia.Hyphlow;
 using System.Collections.Generic;
-using AtMycelia.Amanita.VScripting;
+using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
+using UnityEngine.Serialization;
 
-namespace AtMycelia.Amanita.DialogueSys.Commands
+namespace AtMycelia.Amanita.DialogueSys.VScripting
 {
     /// <summary>
     /// Displays a button in a multiple choice menu.
@@ -12,6 +13,7 @@ namespace AtMycelia.Amanita.DialogueSys.Commands
                  "Menu", 
                  "Displays a button in a multiple choice menu")]
     [AddComponentMenu("")]
+    [MovedFrom("AtMycelia.Amanita.DialogueSys.Commands")]
     public class Menu : Command, ILocalizable, IBlockCaller
     {
         [Tooltip("Text to display on the menu button")]

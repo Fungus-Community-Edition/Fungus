@@ -1,6 +1,8 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Pass a value through an AnimationCurve
@@ -9,6 +11,7 @@ namespace AtMycelia.Amanita.VScripting
                  "Curve",
                  "Pass a value through an AnimationCurve")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class Curve : BaseUnaryMathCommand
     {
         [SerializeField]

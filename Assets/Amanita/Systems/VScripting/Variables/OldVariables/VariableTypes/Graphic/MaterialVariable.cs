@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
-namespace AtMycelia.Amanita.VScripting
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Material variable type.
@@ -9,7 +9,7 @@ namespace AtMycelia.Amanita.VScripting
     [VariableInfo("Graphic", "Material", typeof(Material), false)]
     [AddComponentMenu("")]
     [System.Serializable]
-    [MovedFrom(true, "Amanita.VScripting", "Amanita.Core")]
+    [MovedFrom(true, "AtMycelia.Amanita.VScripting", "AtMycelia.Amanita.Core")]
     public class MaterialVariable : VariableBase<Material>
     {
     }

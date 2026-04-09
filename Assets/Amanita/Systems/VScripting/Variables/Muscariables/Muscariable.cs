@@ -2,13 +2,13 @@ using System;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
-namespace AtMycelia.Amanita.VScripting
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Base class for a more lightweight reimplementation of Fungus Variables.
     /// </summary>
     [Serializable]
-    [MovedFrom(true, "Amanita.VScripting", "Amanita.Core", "Muscariable")]
+    [MovedFrom(true, "AtMycelia.Amanita.VScripting", "AtMycelia.Amanita.Core", "Muscariable")]
     public abstract class Muscariable : IVariable, IEquatable<Muscariable>
     {
         [SerializeField] protected VariableScope scope = VariableScope.Private;
@@ -234,7 +234,7 @@ namespace AtMycelia.Amanita.VScripting
     }
 
     [Serializable]
-    [MovedFrom(true, "Amanita.VScripting", "Amanita.Core")]
+    [MovedFrom(true, "AtMycelia.Amanita.VScripting", "AtMycelia.Amanita.Core")]
     public abstract class Muscariable<T> : Muscariable, IVariable<T>, IEquatable<T>, IEquatable<IVariable<T>>
     {
         [SerializeField] protected T value, startValue;

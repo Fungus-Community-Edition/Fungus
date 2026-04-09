@@ -1,6 +1,8 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Sets an float variable to a random value in the defined range.
@@ -9,6 +11,7 @@ namespace AtMycelia.Amanita.VScripting
                  "Random Float", 
                  "Sets an float variable to a random value in the defined range.")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class RandomFloat : Command 
     {
         [Tooltip("The variable whos value will be set")]

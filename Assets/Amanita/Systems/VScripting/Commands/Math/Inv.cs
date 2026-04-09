@@ -1,6 +1,8 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Multiplicative Inverse of a float (1/f)
@@ -9,6 +11,7 @@ namespace AtMycelia.Amanita.VScripting
                  "Inverse",
                  "Multiplicative Inverse of a float (1/f)")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class Inv : BaseUnaryMathCommand
     {
         public override void OnEnter()

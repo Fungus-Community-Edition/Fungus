@@ -1,6 +1,8 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting.EventHandlers
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Marks the start of a command block to be executed when the preceding If statement is False and the test expression is true.
@@ -9,6 +11,7 @@ namespace AtMycelia.Amanita.VScripting.EventHandlers
                  "Else If", 
                  "Marks the start of a command block to be executed when the preceding If statement is False and the test expression is true.")]
     [AddComponentMenu("")]
+    [MovedFrom("AtMycelia.Amanita.VScripting.EventHandlers")]
     public class ElseIf : VariableCondition
     {
         protected override bool IsElseIf { get { return true; } }

@@ -1,9 +1,10 @@
-using UnityEngine;
-using UnityEngine.Serialization;
+using AtMycelia.Hyphlow;
 using System.Collections.Generic;
-using AtMycelia.Amanita.VScripting;
+using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
+using UnityEngine.Serialization;
 
-namespace AtMycelia.Amanita.DialogueSys.Commands
+namespace AtMycelia.Amanita.DialogueSys.VScripting
 {
     /// <summary>
     /// Displays a timer bar and executes a target block if the player fails to select a menu option in time.
@@ -13,6 +14,7 @@ namespace AtMycelia.Amanita.DialogueSys.Commands
                  "Displays a timer bar and executes a target block if the player fails to select a menu option in time.")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
+    [MovedFrom("AtMycelia.Amanita.DialogueSys.Commands")]
     public class MenuTimer : Command, IBlockCaller
     {
         [Tooltip("Length of time to display the timer for")]

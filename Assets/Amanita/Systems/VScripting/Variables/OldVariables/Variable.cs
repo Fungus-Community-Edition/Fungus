@@ -6,12 +6,12 @@ using UnityEngine.Scripting.APIUpdating;
 using UnityEditor;
 #endif
 
-namespace AtMycelia.Amanita.VScripting
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Scope types for Variables.
     /// </summary>
-    [MovedFrom(true, "Amanita.VScripting", "Amanita.Core")]
+    [MovedFrom(true, "AtMycelia.Amanita.VScripting", "AtMycelia.Amanita.Core")]
     public enum VariableScope
     {
         /// <summary> Can only be accessed by commands in the same Flowchart. </summary>
@@ -24,9 +24,9 @@ namespace AtMycelia.Amanita.VScripting
     /// <summary>
     /// Abstract base class for variables.
     /// </summary>
-    [MovedFrom(true, "Amanita.VScripting", "Amanita.Core")]
+    [MovedFrom(true, "AtMycelia.Amanita.VScripting", "AtMycelia.Amanita.Core")]
     [RequireComponent(typeof(Flowchart))]
-    [System.Serializable]
+    [Serializable]
     [ExecuteInEditMode]
     public abstract class Variable : MonoBehaviour, IVariable
     {
@@ -201,7 +201,7 @@ namespace AtMycelia.Amanita.VScripting
     /// <summary>
     /// Generic concrete base class for variables.
     /// </summary>
-    [MovedFrom(true, "Amanita.VScripting", "Amanita.Core")]
+    [MovedFrom(true, "AtMycelia.Amanita.VScripting", "AtMycelia.Amanita.Core")]
     public abstract class VariableBase<T> : Variable, IVariable<T>
     {
         public override Type ContentType => typeof(T);

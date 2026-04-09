@@ -2,10 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
+using AtMycelia.Amanita;
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class StringVarSubstituter
     {
         public string SubstituteVariables(string input, IVariableSource variableSource)

@@ -1,6 +1,7 @@
 using AtMycelia.Amanita.Tweening;
 using UnityEngine;
 using UnityEngine.Serialization;
+using AtMycelia.Hyphlow;
 
 namespace AtMycelia.Amanita.VScripting
 {
@@ -20,7 +21,8 @@ namespace AtMycelia.Amanita.VScripting
         [Tooltip("Length of time to perform the fade")]
         [SerializeField] protected FloatData duration = new FloatData(1f);
 
-        [Tooltip("Target color to fade to. To only fade transparency level, set the color to white and set the alpha to required transparency.")]
+        [Tooltip("Target color to fade to. To only fade transparency level, set the color to white and " +
+                 "set the alpha to required transparency.")]
         [SerializeField] protected ColorData targetColor = new ColorData(Color.white);
 
         [Tooltip("Wait until the fade has finished before executing the next command")]

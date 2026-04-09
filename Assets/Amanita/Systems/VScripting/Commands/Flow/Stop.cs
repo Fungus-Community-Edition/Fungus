@@ -1,6 +1,8 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Stop executing the Block that contains this command.
@@ -9,6 +11,7 @@ namespace AtMycelia.Amanita.VScripting
                  "Stop", 
                  "Stop executing the Block that contains this command.")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class Stop : Command
     {
         #region Public members

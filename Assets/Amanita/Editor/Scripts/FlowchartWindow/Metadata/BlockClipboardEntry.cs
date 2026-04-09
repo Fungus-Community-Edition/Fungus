@@ -1,12 +1,13 @@
-﻿using AtMycelia.Amanita.VScripting.EventHandlers;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using AtMycelia.Amanita;
+using AtMycelia.Hyphlow;
 using UnityEditor;
 using UnityEngine;
 using ClipboardObject = AtMycelia.Amanita.EditorUtils.ClipboardObject;
 using Object = UnityEngine.Object;
 
-namespace AtMycelia.Amanita.VScripting.EditorUtils
+namespace AtMycelia.Hyphlow.EditorUtils
 {
     public class BlockClipboardEntry
     {

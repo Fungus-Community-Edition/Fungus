@@ -1,11 +1,13 @@
-﻿using UnityEngine;
+using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
-namespace AtMycelia.Amanita
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Base class for Flowchart nodes.
     /// </summary>
     [AddComponentMenu("")]
+    [MovedFrom("AtMycelia.Amanita.VScripting")]
     public class Node : MonoBehaviour
     {
         [SerializeField] protected Rect nodeRect = new Rect(0, 0, 120, 30);

@@ -1,6 +1,8 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting.Commands
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// If the test expression is true, execute the following command block.
@@ -9,6 +11,7 @@ namespace AtMycelia.Amanita.VScripting.Commands
                  "If", 
                  "If the test expression is true, execute the following command block.")]
     [AddComponentMenu("")]
+    [MovedFrom("AtMycelia.Amanita.VScripting.Commands")]
     public class If : VariableCondition
     {
     }

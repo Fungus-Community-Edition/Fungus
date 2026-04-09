@@ -1,6 +1,8 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Container for a string variable reference or constant value.
@@ -9,6 +11,7 @@ namespace AtMycelia.Amanita.VScripting
     /// </summary>
     [System.Serializable]
     [VariableData(typeof(string), typeof(IVariable<string>))]
+    [MovedFrom("AtMycelia.Amanita.VScripting")]
     public class StringData : VariableData<string>, ISerializationCallbackReceiver
     {
         [SerializeField]
@@ -132,6 +135,7 @@ namespace AtMycelia.Amanita.VScripting
     }
 
     [System.Serializable]
+    [MovedFrom("AtMycelia.Amanita.VScripting")]
     public class StringDataMulti : StringData
     {
         public StringDataMulti() : base(default) { }
@@ -152,6 +156,7 @@ namespace AtMycelia.Amanita.VScripting
     /// </summary>
     [System.Serializable]
     [VariableData(typeof(Color), typeof(IVariable<Color>))]
+    [MovedFrom("AtMycelia.Amanita.VScripting")]
     public class ColorData : VariableData<Color>
     {
         [SerializeField]
@@ -188,6 +193,7 @@ namespace AtMycelia.Amanita.VScripting
     /// </summary>
     [System.Serializable]
     [VariableData(typeof(Sprite), typeof(IVariable<Sprite>))]
+    [MovedFrom("AtMycelia.Amanita.VScripting")]
     public class SpriteData : VariableData<Sprite>
     {
         [SerializeField]
@@ -224,6 +230,7 @@ namespace AtMycelia.Amanita.VScripting
     /// </summary>
     [System.Serializable]
     [VariableData(typeof(Texture), typeof(IVariable<Texture>))]
+    [MovedFrom("AtMycelia.Amanita.VScripting")]
     public class TextureData : VariableData<Texture>
     {
         [SerializeField]
@@ -258,6 +265,7 @@ namespace AtMycelia.Amanita.VScripting
     /// </summary>
     [System.Serializable]
     [VariableData(typeof(Material), typeof(IVariable<Material>))]
+    [MovedFrom("AtMycelia.Amanita.VScripting")]
     public class MaterialData : VariableData<Material>
     {
         [SerializeField]
@@ -290,6 +298,7 @@ namespace AtMycelia.Amanita.VScripting
 
     [System.Serializable]
     [VariableData(typeof(Animator), typeof(IVariable<Animator>))]
+    [MovedFrom("AtMycelia.Amanita.VScripting")]
     public class AnimatorData : VariableData<Animator>
     {
         [SerializeField]

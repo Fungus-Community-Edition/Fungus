@@ -4,10 +4,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using AmanitaEventHandler = AtMycelia.Amanita.VScripting.EventHandlers.EventHandler;
+using AtMycelia.Amanita;
+using AmanitaEventHandler = AtMycelia.Hyphlow.EventHandler;
 using UnityEditor;
+using EventHandler = AtMycelia.Hyphlow.EventHandler;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Execution state of a Block.
@@ -26,6 +30,7 @@ namespace AtMycelia.Amanita.VScripting
     [ExecuteInEditMode]
     [RequireComponent(typeof(Flowchart))]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class Block : Node, IEquatable<Block>
     {
         [SerializeField] protected ushort itemId = 0; 
@@ -39,7 +44,7 @@ namespace AtMycelia.Amanita.VScripting
         [SerializeField] protected string description = "";
 
         [Tooltip("An optional Event Handler which can execute the block when an event occurs")]
-        [SerializeField] protected AmanitaEventHandler eventHandler;
+        [SerializeField] protected EventHandler eventHandler;
 
         [SerializeField] protected List<Command> commandList = new List<Command>();
 
@@ -173,7 +178,7 @@ namespace AtMycelia.Amanita.VScripting
         /// An optional Event Handler which can execute the block when an event occurs.
         /// Note: Using the concrete class instead of the interface here because of weird editor behaviour.
         /// </summary>
-        public virtual AmanitaEventHandler _EventHandler { get { return eventHandler; } set { eventHandler = value; } }
+        public virtual EventHandler _EventHandler { get { return eventHandler; } set { eventHandler = value; } }
 
         /// <summary>
         /// The currently executing command.

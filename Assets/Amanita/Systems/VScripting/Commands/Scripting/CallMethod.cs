@@ -1,6 +1,8 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Calls a named method on a GameObject using the GameObject.SendMessage() system.
@@ -11,6 +13,7 @@ namespace AtMycelia.Amanita.VScripting
                  "Call Method", 
                  "Calls a named method on a GameObject using the GameObject.SendMessage() system.")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class CallMethod : Command
     {
         [Tooltip("Target monobehavior which contains the method we want to call")]

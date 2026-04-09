@@ -1,5 +1,5 @@
 using UnityEngine;
-using AtMycelia.Amanita.VScripting;
+using AtMycelia.Hyphlow;
 using UnityEngine.Serialization;
 
 namespace AtMycelia.Amanita.DialogueSys.VScripting
@@ -183,7 +183,7 @@ namespace AtMycelia.Amanita.DialogueSys.VScripting
             void OnSayComplete()
             {
                 Continue();
-                Debug.Log("Finished writing text: " + subbedText, this);
+                //Debug.Log("Finished writing text: " + subbedText, this);
             }
             sayDialog.Say(subbedText, !_extendPrevious, _waitForClick, _fadeWhenDone, _stopVoiceover,
                 _waitForVO, _voiceOverClip, OnSayComplete);

@@ -1,4 +1,4 @@
-namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
+namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
 {
     public sealed class FcwModuleHost
     {

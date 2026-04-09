@@ -1,6 +1,8 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Command to execute and store the result of a Log
@@ -9,6 +11,7 @@ namespace AtMycelia.Amanita.VScripting
                  "Log",
                  "Command to execute and store the result of a Log")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class Log : BaseUnaryMathCommand
     {
         public enum Mode

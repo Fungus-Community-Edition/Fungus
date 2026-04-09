@@ -1,6 +1,8 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Get or Set the x,y,z fields of a vector3 via floatvars
@@ -9,6 +11,7 @@ namespace AtMycelia.Amanita.VScripting
                  "Fields",
                  "Get or Set the x,y,z fields of a vector3 via floatvars")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class Vector3Fields : Command
     {
         public enum GetSet

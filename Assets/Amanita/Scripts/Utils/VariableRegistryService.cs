@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
+using AtMycelia.Amanita;
 using UnityEngine;
 
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
-namespace AtMycelia.Amanita.VScripting
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Singleton service that maintains a variable registry and handles its updates in response to 

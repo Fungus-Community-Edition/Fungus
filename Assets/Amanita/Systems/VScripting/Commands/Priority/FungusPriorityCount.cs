@@ -1,4 +1,6 @@
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Copy the value of the Priority Count to a local IntegerVariable, intended primarily to assist with debugging use of Priority.
@@ -6,6 +8,7 @@ namespace AtMycelia.Amanita.VScripting
     [CommandInfo("PrioritySignals",
                  "Get Priority Count",
                  "Copy the value of the Priority Count to a local IntegerVariable, intended primarily to assist with debugging use of Priority.")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class FungusPriorityCount : Command
     {
         [VariableProperty(typeof(IntegerVariable))]

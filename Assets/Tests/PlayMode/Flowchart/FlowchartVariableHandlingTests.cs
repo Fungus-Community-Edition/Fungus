@@ -6,7 +6,7 @@ using System.Reflection;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
-using AtMycelia.Amanita.VScripting;
+using AtMycelia.Hyphlow;
 using AtMycelia.Amanita;
 using UnityObj = UnityEngine.Object;
 

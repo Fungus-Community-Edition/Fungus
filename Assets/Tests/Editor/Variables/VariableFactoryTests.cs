@@ -1,7 +1,7 @@
 using NUnit.Framework;
 using System;
 using UnityEngine;
-using AtMycelia.Amanita.VScripting;
+using AtMycelia.Hyphlow;
 using UnityEngine.TestTools;
 
 namespace VScriptingTests.VariableOperations

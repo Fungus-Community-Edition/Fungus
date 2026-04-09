@@ -1,6 +1,8 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Reads in a text file and stores the contents in a string variable.
@@ -8,6 +10,7 @@ namespace AtMycelia.Amanita.VScripting
     [CommandInfo("Variable",
                  "Read Text File",
                  "Reads in a text file and stores the contents in a string variable")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class ReadTextFile : Command
     {
         [Tooltip("Text file to read into the string variable")]

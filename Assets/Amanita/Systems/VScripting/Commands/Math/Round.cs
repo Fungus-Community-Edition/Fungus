@@ -1,6 +1,8 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Command to execute and store the result of a Round
@@ -9,6 +11,7 @@ namespace AtMycelia.Amanita.VScripting
                  "Round",
                  "Command to execute and store the result of a Round")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class Round : BaseUnaryMathCommand
     {
         public enum Mode

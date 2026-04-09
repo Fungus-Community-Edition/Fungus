@@ -1,6 +1,8 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Quits the application. Does not work in Editor or Webplayer builds. Shouldn't generally be used on iOS.
@@ -9,6 +11,7 @@ namespace AtMycelia.Amanita.VScripting
                  "Quit", 
                  "Quits the application. Does not work in Editor or Webplayer builds. Shouldn't generally be used on iOS.")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class Quit : Command 
     {
         #region Public members

@@ -2,7 +2,9 @@ using UnityEngine;
 using AtMycelia.Amanita.DialogueSys;
 using UnityEngine.Serialization;
 
-namespace AtMycelia.Amanita.VScripting.Commands.Legacy
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow.Legacy
 {
     /// <summary>
     /// Sets a custom say dialog to use when displaying story text.
@@ -11,6 +13,7 @@ namespace AtMycelia.Amanita.VScripting.Commands.Legacy
                  "Set Say Dialog", 
                  "Sets a custom say dialog to use when displaying story text")]
     [AddComponentMenu("")]
+    [MovedFrom("AtMycelia.Amanita.VScripting.Legacy")]
     public class SetSayDialog : Command, ISerializationCallbackReceiver
     {
         [Tooltip("The Say Dialog to use for displaying Say story text")]

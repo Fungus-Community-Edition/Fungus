@@ -1,7 +1,10 @@
+using AtMycelia.Amanita;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Sets the text property on a UI Text object and/or an Input Field object.
@@ -10,6 +13,7 @@ namespace AtMycelia.Amanita.VScripting
                  "Set Text", 
                  "Sets the text property on a UI Text object and/or an Input Field object.")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class SetText : Command, ILocalizable 
     {
         [Tooltip("Text object to set text on. Can be a UI Text, Text Field or Text Mesh object.")]

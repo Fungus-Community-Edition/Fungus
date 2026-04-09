@@ -1,11 +1,14 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Temporary buffer object used when copying and pasting commands.
     /// </summary>
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class CommandCopyBuffer : Block 
     {
         protected static CommandCopyBuffer instance;

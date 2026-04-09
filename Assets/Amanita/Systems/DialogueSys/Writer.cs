@@ -124,6 +124,10 @@ namespace AtMycelia.Amanita.DialogueSys
 
         protected virtual void Awake()
         {
+            if (shakerSO == null)
+            {
+                shakerSO = DefaultAmanitaAssets.TweenAdapter;
+            }
             posShaker = shakerSO as IPositionShaker;
             if (posShaker == null)
             {

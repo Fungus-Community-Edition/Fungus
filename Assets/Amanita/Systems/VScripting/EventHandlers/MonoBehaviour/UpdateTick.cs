@@ -1,6 +1,8 @@
-﻿using UnityEngine;
+using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting.EventHandlers
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// The block will execute every chosen Update, or FixedUpdate or LateUpdate.
@@ -9,6 +11,7 @@ namespace AtMycelia.Amanita.VScripting.EventHandlers
                       "Update",
                       "The block will execute every chosen Update, or FixedUpdate or LateUpdate.")]
     [AddComponentMenu("")]
+    [MovedFrom("AtMycelia.Amanita.VScripting.EventHandlers")]
     public class UpdateTick : EventHandler
     {
         [System.Flags]

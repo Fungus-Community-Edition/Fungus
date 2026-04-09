@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+namespace AtMycelia.Hyphlow
 {
     [CreateAssetMenu(fileName = "VariableRegistryConfig", menuName = "Atelier Mycelia/Amanita/Variable Registry Config")]
     public sealed class VariableRegistryConfig : ScriptableObject

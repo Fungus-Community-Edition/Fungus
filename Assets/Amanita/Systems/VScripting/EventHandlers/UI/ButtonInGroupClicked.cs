@@ -2,11 +2,14 @@ using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.UI;
 
-namespace AtMycelia.Amanita.VScripting.EventHandlers
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     [EventHandlerInfo("UI/ButtonInGroupClicked", 
         "Button In Group Clicked",
         "Called when any buttons parented to specified GameObjects are clicked.")]
+    [MovedFrom("AtMycelia.Amanita.VScripting.EventHandlers")]
     public class ButtonInGroupClicked : EventHandler
     {
         [Tooltip("The buttons parented to any of these will be responded to.")]

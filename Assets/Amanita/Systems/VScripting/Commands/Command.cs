@@ -3,16 +3,20 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Reflection;
+using AtMycelia.Amanita;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Unity.IO.LowLevel.Unsafe;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Base class for Commands. Commands can be added to Blocks to create an execution sequence.
     /// </summary>
     [ExecuteInEditMode]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public abstract class Command : MonoBehaviour, IVariableReference, IRefreshable, IOnPreCutHandler,
         ISerializationCallbackReceiver, IBackwardsCompatibilityApplier
     {

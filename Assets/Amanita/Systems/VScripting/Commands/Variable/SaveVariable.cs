@@ -1,6 +1,8 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Save an Boolean, Integer, Float or String variable to persistent storage using a string key.
@@ -13,6 +15,7 @@ namespace AtMycelia.Amanita.VScripting
                  "The value can be loaded again later using the Load Variable command. You can also " +
                  "use the Set Save Profile command to manage separate save profiles for multiple players.")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class SaveVariable : Command
     {
         [Tooltip("Name of the saved value. Supports variable substition e.g. \"player_{$PlayerNumber}")]

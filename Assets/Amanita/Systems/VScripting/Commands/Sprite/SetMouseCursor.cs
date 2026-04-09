@@ -1,6 +1,8 @@
-﻿using UnityEngine;
+using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Sets the mouse cursor sprite.
@@ -9,6 +11,7 @@ namespace AtMycelia.Amanita.VScripting
                  "Set Mouse Cursor", 
                  "Sets the mouse cursor sprite.")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class SetMouseCursor : Command 
     {
         [Tooltip("Texture to use for cursor. Will use default mouse cursor if no sprite is specified")]

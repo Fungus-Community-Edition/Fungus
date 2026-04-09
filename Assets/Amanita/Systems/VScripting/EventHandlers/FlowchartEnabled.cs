@@ -1,6 +1,8 @@
-﻿using UnityEngine;
+using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting.EventHandlers
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// The block will execute when the Flowchart game object is enabled.
@@ -9,6 +11,7 @@ namespace AtMycelia.Amanita.VScripting.EventHandlers
                       "Flowchart Enabled",
                       "The block will execute when the Flowchart game object is enabled.")]
     [AddComponentMenu("")]
+    [MovedFrom("AtMycelia.Amanita.VScripting.EventHandlers")]
     public class FlowchartEnabled : EventHandler
     {   
         protected override void OnEnable()

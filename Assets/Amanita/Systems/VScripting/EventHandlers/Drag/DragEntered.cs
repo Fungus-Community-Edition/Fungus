@@ -1,8 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
+using AtMycelia.Hyphlow;
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting.EventHandlers
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// The block will execute when the player is dragging an object which starts touching the target object.
@@ -15,7 +18,8 @@ namespace AtMycelia.Amanita.VScripting.EventHandlers
                       "The block will execute when the player is dragging an object which starts touching the target object.")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
-    public class DragEntered : EventHandler, ISerializationCallbackReceiver
+    [MovedFrom("AtMycelia.Amanita.VScripting.EventHandlers")]
+	public class DragEntered : EventHandler, ISerializationCallbackReceiver
     {
         public class DragEnteredEvent
         {

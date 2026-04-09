@@ -1,7 +1,10 @@
 using System;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class VariableTypeActions : IEquatable<VariableTypeActions>
     {
         public Func<IVariable, IVariableData, CompareOperator, bool> CompareFunc = (ivar, ivardata, op)

@@ -1,7 +1,9 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Resets a trigger parameter on an Animator component.
@@ -11,6 +13,7 @@ namespace AtMycelia.Amanita.VScripting
                  "Resets a trigger parameter on an Animator component.")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class ResetAnimTrigger : Command
     {
         [Tooltip("Reference to an Animator component in a game object")]

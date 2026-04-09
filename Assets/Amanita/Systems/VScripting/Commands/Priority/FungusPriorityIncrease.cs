@@ -1,4 +1,6 @@
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Increases the FungusPriority count, causing the related FungusPrioritySignals to fire.
@@ -8,6 +10,7 @@ namespace AtMycelia.Amanita.VScripting
                  "Priority Up",
                  "Increases the FungusPriority count, causing the related FungusPrioritySignals to fire. " +
                 "Intended to be used to notify external systems that fungus is doing something important and they should perhaps pause.")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class FungusPriorityIncrease : Command
     {
         public override void OnEnter()

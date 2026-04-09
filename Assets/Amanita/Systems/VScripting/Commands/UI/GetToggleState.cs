@@ -1,7 +1,9 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Gets the state of a toggle UI object and stores it in a boolean variable.
@@ -9,6 +11,7 @@ namespace AtMycelia.Amanita.VScripting
     [CommandInfo("UI",
                  "Get Toggle State",
                  "Gets the state of a toggle UI object and stores it in a boolean variable.")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class GetToggleState : Command 
     {
         [Tooltip("Target toggle object to get the value from")]

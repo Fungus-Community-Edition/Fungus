@@ -2,7 +2,9 @@ using System;
 using UnityEngine;
 using baseObj = System.Object;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// A VariableData class that can hold any type of variable data. It does this by holding a 

@@ -1,12 +1,14 @@
+using AtMycelia.Hyphlow;
 using UnityEngine;
-using AtMycelia.Amanita.VScripting;
+using UnityEngine.Scripting.APIUpdating;
 using UnityEngine.Serialization;
 
-namespace AtMycelia.Amanita.DialogueSys
+namespace AtMycelia.Amanita.DialogueSys.VScripting
 {
     /// <summary>
     /// Text coloring mode for Write command.
     /// </summary>
+    [MovedFrom("AtMycelia.Amanita.DialogueSys")]
     public enum TextColor
     {
         /// <summary> Don't change the text color. </summary>
@@ -26,6 +28,7 @@ namespace AtMycelia.Amanita.DialogueSys
                  "Write", 
                  "Writes content to a UI Text or Text Mesh object.")]
     [AddComponentMenu("")]
+    [MovedFrom("AtMycelia.Amanita.DialogueSys")]
     public class Write : Command, ILocalizable
     {
         [Tooltip("Text object to set text on. Text, Input Field and Text Mesh objects are supported.")]

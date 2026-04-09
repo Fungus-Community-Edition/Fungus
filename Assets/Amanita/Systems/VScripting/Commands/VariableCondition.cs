@@ -2,8 +2,11 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public abstract class VariableCondition : Condition, ISerializationCallbackReceiver
     {
         public enum AnyOrAll

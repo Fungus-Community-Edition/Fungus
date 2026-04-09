@@ -1,7 +1,9 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Sets the state of a toggle UI object.
@@ -9,6 +11,7 @@ namespace AtMycelia.Amanita.VScripting
     [CommandInfo("UI",
                  "Set Toggle State",
                  "Sets the state of a toggle UI object")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class SetToggleState : Command 
     {
         [Tooltip("Target toggle object to set the state on")]

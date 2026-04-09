@@ -1,12 +1,15 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Container for an integer variable reference or constant value.
     /// </summary>
     [System.Serializable]
     [VariableData(typeof(int), typeof(IVariable<int>))]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class IntegerData : VariableData<int>
     {
         [SerializeField]
@@ -44,6 +47,7 @@ namespace AtMycelia.Amanita.VScripting
     /// </summary>
     [VariableData(typeof(float), typeof(IVariable<float>))]
     [System.Serializable]
+    [MovedFrom("AtMycelia.Amanita.VScripting")]
     public class FloatData : VariableData<float>
     {
         [SerializeField]
@@ -81,6 +85,7 @@ namespace AtMycelia.Amanita.VScripting
     /// </summary>
     [System.Serializable]
     [VariableData(typeof(bool), typeof(IVariable<bool>))]
+    [MovedFrom("AtMycelia.Amanita.VScripting")]
     public class BooleanData : VariableData<bool>
     {
         [SerializeField]
@@ -116,6 +121,7 @@ namespace AtMycelia.Amanita.VScripting
     /// </summary>
     [System.Serializable]
     [VariableData(typeof(Vector2), typeof(IVariable<Vector2>))]
+    [MovedFrom("AtMycelia.Amanita.VScripting")]
     public class Vector2Data : VariableData<Vector2>
     {
         [SerializeField]
@@ -146,6 +152,7 @@ namespace AtMycelia.Amanita.VScripting
     /// </summary>
     [System.Serializable]
     [VariableData(typeof(Vector3), typeof(IVariable<Vector3>))]
+    [MovedFrom("AtMycelia.Amanita.VScripting")]
     public class Vector3Data : VariableData<Vector3>
     {
         [SerializeField]

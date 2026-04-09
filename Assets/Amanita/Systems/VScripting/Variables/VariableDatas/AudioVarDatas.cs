@@ -1,12 +1,15 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
 	/// <summary>
 	/// Container for a AudioClip variable reference or constant value.
 	/// </summary>
 	[System.Serializable]
 	[VariableData(typeof(AudioClip), typeof(IVariable<AudioClip>))]
+    [MovedFrom("AtMycelia.Amanita.VScripting")]
 	public class AudioClipData : VariableData<AudioClip>
 	{
 		[SerializeField]
@@ -39,7 +42,8 @@ namespace AtMycelia.Amanita.VScripting
 	/// </summary>
 	[System.Serializable]
 	[VariableData(typeof(AudioSource), typeof(IVariable<AudioSource>))]
-	public class AudioSourceData : VariableData<AudioSource>
+    [MovedFrom("AtMycelia.Amanita.VScripting")]
+    public class AudioSourceData : VariableData<AudioSource>
 	{
 		[SerializeField]
 		[VariableProperty("<Value>", typeof(AudioSourceVariable))]

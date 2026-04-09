@@ -1,6 +1,8 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Calls DontDestroyOnLoad on the target gameobject.
@@ -9,6 +11,7 @@ namespace AtMycelia.Amanita.VScripting
                  "DestroyOnLoad",
                  "Calls DontDestroyOnLoad on the target gameobject")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class DestroyOnLoad : Command
     {
         [SerializeField] protected GameObjectData target;

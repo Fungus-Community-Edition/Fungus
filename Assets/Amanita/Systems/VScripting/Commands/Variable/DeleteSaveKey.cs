@@ -1,6 +1,8 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Deletes a saved value from permanent storage.
@@ -9,6 +11,7 @@ namespace AtMycelia.Amanita.VScripting
                  "Delete Save Key", 
                  "Deletes a saved value from permanent storage.")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class DeleteSaveKey : Command
     {
         [Tooltip("Name of the saved value. Supports variable substition e.g. \"player_{$PlayerNumber}")]

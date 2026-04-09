@@ -1,11 +1,14 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Base for all Conditional based Commands, Ifs, Loops, and so on.
     /// </summary>
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public abstract class Condition : Command
     {
         public override bool NonStandardPaste => true;

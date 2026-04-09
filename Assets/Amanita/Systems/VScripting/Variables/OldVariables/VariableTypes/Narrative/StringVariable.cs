@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
-namespace AtMycelia.Amanita.VScripting
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// String variable type.
@@ -9,7 +9,7 @@ namespace AtMycelia.Amanita.VScripting
     [VariableInfo("Graphic", "String", typeof(string), false)]
     [AddComponentMenu("")]
     [System.Serializable]
-    [MovedFrom(true, "Amanita.VScripting", "Amanita.Core")]
+    [MovedFrom(true, "AtMycelia.Amanita.VScripting", "AtMycelia.Amanita.Core")]
     public class StringVariable : VariableBase<string>
     {
     }

@@ -1,9 +1,13 @@
 using System;
+using AtMycelia.Amanita;
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     // To reduce the boilerplate in IVariableData implementors such as AnimatorData and FloatData
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public abstract class VariableData : IVariableData, IRefreshable, ISerializationCallbackReceiver
     {
         [SerializeField] protected VariableReference backingVarRef = new VariableReference();

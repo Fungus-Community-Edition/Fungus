@@ -1,7 +1,9 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace AtMycelia.Amanita.VScripting.Commands
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Stops execution of all Blocks in a Flowchart.
@@ -10,6 +12,7 @@ namespace AtMycelia.Amanita.VScripting.Commands
                  "Stop Flowchart", 
                  "Stops execution of all Blocks in a Flowchart")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class StopFlowchart : Command
     {       
         [Tooltip("Stop all executing Blocks in the Flowchart that contains this command")]

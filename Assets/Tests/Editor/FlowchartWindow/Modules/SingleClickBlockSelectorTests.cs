@@ -1,12 +1,12 @@
 using System.Collections.Generic;
-using AtMycelia.Amanita.VScripting;
-using AtMycelia.Amanita.VScripting.EditorUtils;
+using AtMycelia.Hyphlow;
+using AtMycelia.Hyphlow.EditorUtils;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
-using AtMycelia.Amanita.VScripting.EditorUtils.FcWindow;
-using FcWindow = AtMycelia.Amanita.VScripting.EditorUtils.FcWindow.FlowchartWindow;
+using AtMycelia.Hyphlow.EditorUtils.FcWindow;
+using FcWindow = AtMycelia.Hyphlow.EditorUtils.FcWindow.FlowchartWindow;
 
 namespace VScriptingTests.FlowchartWindow.Modules
 {

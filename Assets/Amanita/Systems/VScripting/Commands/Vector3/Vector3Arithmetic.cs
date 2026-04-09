@@ -1,6 +1,8 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Vector3 add, sub, mul, div arithmetic
@@ -9,6 +11,7 @@ namespace AtMycelia.Amanita.VScripting
                  "Arithmetic",
                  "Vector3 add, sub, mul, div arithmetic")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class Vector3Arithmetic : Command
     {
         [SerializeField]

@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 
-namespace AtMycelia.Amanita
+namespace AtMycelia
 {
     public static class ScriptableObjectExtensions
     {
@@ -15,8 +15,10 @@ namespace AtMycelia.Amanita
             // As editor-centric as this method is, we want this in the core assembly so that other classes can
             // call it without needing to create an editor assembly dependency. Given how Amanita's core
             // editor one depends on Amanita's core runtime one... yeah.
+#if UNITY_EDITOR
             EditorUtility.SetDirty(sObj);
             AssetDatabase.SaveAssetIfDirty(sObj);
+#endif
 
         }
 

@@ -3,7 +3,9 @@ using UnityEngine.Serialization;
 using System.Collections.Generic;
 using System;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Supported modes for calling a block.
@@ -27,6 +29,7 @@ namespace AtMycelia.Amanita.VScripting
                  "Call", 
                  "Execute another block in the same Flowchart as the command, or in a different Flowchart.")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class Call : Command, IBlockCaller
     {
         [Tooltip("Flowchart which contains the block to execute. If none is specified then the current Flowchart is used.")]

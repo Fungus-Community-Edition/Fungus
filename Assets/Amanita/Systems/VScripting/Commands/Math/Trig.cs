@@ -1,6 +1,8 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Command to execute and store the result of basic trigonometry
@@ -9,6 +11,7 @@ namespace AtMycelia.Amanita.VScripting
                  "Trig",
                  "Command to execute and store the result of basic trigonometry")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class Trig : BaseUnaryMathCommand
     {
         public enum Function

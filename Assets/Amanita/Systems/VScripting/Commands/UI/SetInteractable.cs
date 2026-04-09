@@ -1,8 +1,10 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Set the interactable state of selectable objects.
@@ -10,6 +12,7 @@ namespace AtMycelia.Amanita.VScripting
     [CommandInfo("UI", 
                  "Set Interactable", 
                  "Set the interactable state of selectable objects.")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class SetInteractable : Command 
     {
         [Tooltip("List of objects to be affected by the command")]

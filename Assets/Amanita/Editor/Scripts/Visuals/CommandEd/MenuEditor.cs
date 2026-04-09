@@ -1,6 +1,8 @@
 using UnityEditor;
 using UnityEngine;
-using AmanitaMenu = AtMycelia.Amanita.DialogueSys.Commands.Menu;
+using AmanitaMenu = AtMycelia.Amanita.DialogueSys.VScripting.Menu;
+using AtMycelia.Hyphlow.EditorUtils;
+using AtMycelia.Amanita.DialogueSys.VScripting;
 
 namespace AtMycelia.Amanita.VScripting.EditorUtils
 {

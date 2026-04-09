@@ -1,7 +1,9 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Destroys a specified game object in the scene.
@@ -11,6 +13,7 @@ namespace AtMycelia.Amanita.VScripting
                  "Destroys a specified game object in the scene.")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class Destroy : Command, ISerializationCallbackReceiver
     {
         [Tooltip("Reference to game object to destroy")]

@@ -1,10 +1,11 @@
 ﻿using System;
+using AtMycelia.Amanita;
 using UnityEngine;
 using UnityEngine.UIElements;
 using EditorObjectField = UnityEditor.UIElements.ObjectField;
 using UnityObj = UnityEngine.Object;
 
-namespace AtMycelia.Amanita.VScripting.EditorUtils
+namespace AtMycelia.Hyphlow.EditorUtils
 {
     public abstract class RowVisualHandler : IRowVisualHandler, IResettable
     {

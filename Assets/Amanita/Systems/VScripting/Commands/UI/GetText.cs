@@ -1,7 +1,10 @@
+using AtMycelia.Amanita;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Gets the text property from a UI Text object and stores it in a string variable.
@@ -10,6 +13,7 @@ namespace AtMycelia.Amanita.VScripting
                  "Get Text", 
                  "Gets the text property from a UI Text object and stores it in a string variable.")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class GetText : Command 
     {
         [Tooltip("Text object to get text value from")]

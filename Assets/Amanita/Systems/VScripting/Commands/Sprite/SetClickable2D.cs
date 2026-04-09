@@ -1,4 +1,7 @@
+using AtMycelia.Amanita;
+using AtMycelia.Hyphlow;
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
 namespace AtMycelia.Amanita.VScripting
 {
@@ -11,7 +14,7 @@ namespace AtMycelia.Amanita.VScripting
     [AddComponentMenu("")]
     public class SetClickable2D : Command
     {       
-        [Tooltip("Reference to Clickable2D component on a gameobject")]
+        [Tooltip("Reference to Clickable2D component on a GameObject")]
         [SerializeField] protected Clickable2D targetClickable2D;
 
         [Tooltip("Set to true to enable the component")]

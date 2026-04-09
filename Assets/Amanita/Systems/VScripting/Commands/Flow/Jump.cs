@@ -1,7 +1,9 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Move execution to a specific Label command in the same block.
@@ -11,6 +13,7 @@ namespace AtMycelia.Amanita.VScripting
                  "Move execution to a specific Label command in the same block")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class Jump : Command
     {
         [Tooltip("Name of a label in this block to jump to")]

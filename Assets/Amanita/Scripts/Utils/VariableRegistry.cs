@@ -2,13 +2,14 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using AtMycelia.Amanita;
 using UnityObj = UnityEngine.Object;
 
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
-namespace AtMycelia.Amanita.VScripting
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Maintains a registry of all available variables from various sources accessible in the scene.

@@ -1,6 +1,8 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Loop over a fixed integer range, similar to a common for loop.
@@ -12,6 +14,7 @@ namespace AtMycelia.Amanita.VScripting
                  "For",
                  "Loop over a fixed integer range, similar to a common for loop.")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class LoopRange : Condition
     {
         [Tooltip("Starting value for the counter variable")]

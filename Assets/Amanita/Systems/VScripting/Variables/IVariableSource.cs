@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
+using AtMycelia.Amanita;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     public interface IVariableSource : IHasUniqueID, IHasName
     {

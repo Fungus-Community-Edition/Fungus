@@ -1,10 +1,13 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     [CommandInfo("Variable", 
         "StringToFloat",
         "Converts a string into a float")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class StringToFloat : Command
     {
         [SerializeField] protected StringData input;

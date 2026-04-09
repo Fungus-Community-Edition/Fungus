@@ -1,14 +1,19 @@
-﻿using UnityEngine;
+using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting.EventHandlers
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
-    /// The block will execute when the desired OnTransform related message for the monobehaviour is received.
+    /// The block will execute when the desired OnTransform related
+    /// message for the Monobehaviour is received.
     /// </summary>
     [EventHandlerInfo("MonoBehaviour",
                       "Transform",
-                      "The block will execute when the desired OnTransform related message for the monobehaviour is received.")]
+                      "The block will execute when the desired OnTransform " +
+                      "related message for the Nonobehaviour is received.")]
     [AddComponentMenu("")]
+    [MovedFrom("AtMycelia.Amanita.VScripting.EventHandlers")]
     public class TransformChanged : EventHandler
     {
 

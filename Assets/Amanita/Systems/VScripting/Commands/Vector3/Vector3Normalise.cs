@@ -1,6 +1,8 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Normalise a vector3, output can be the same as the input
@@ -9,6 +11,7 @@ namespace AtMycelia.Amanita.VScripting
                  "Normalise",
                  "Normalise a Vector3")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class Vector3Normalise : Command
     {
         [SerializeField]

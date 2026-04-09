@@ -2,7 +2,9 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using AtMycelia.Amanita.LocalizationSys;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Set the active language for the scene. A Localization object with a localization file must be present in the scene.
@@ -12,6 +14,7 @@ namespace AtMycelia.Amanita.VScripting
                  "Set the active language for the scene. A Localization object with a localization file must be present in the scene.")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class SetLanguage : Command
     {
         [Tooltip("Code of the language to set. e.g. ES, DE, JA")]

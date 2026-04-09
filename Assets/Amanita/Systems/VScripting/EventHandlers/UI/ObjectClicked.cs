@@ -1,7 +1,10 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
+using AtMycelia.Hyphlow;
 
-namespace AtMycelia.Amanita.VScripting.EventHandlers
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// The block will execute when the user clicks or taps on the clickable object.
@@ -10,6 +13,7 @@ namespace AtMycelia.Amanita.VScripting.EventHandlers
                       "Object Clicked",
                       "The block will execute when the user clicks or taps on the clickable object.")]
     [AddComponentMenu("")]
+    [MovedFrom("AtMycelia.Amanita.VScripting.EventHandlers")]
     public class ObjectClicked : EventHandler
     {   
         public class ObjectClickedEvent

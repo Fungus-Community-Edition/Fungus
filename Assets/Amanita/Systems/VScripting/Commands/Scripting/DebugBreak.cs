@@ -1,6 +1,8 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Writes a log message to the debug console.
@@ -9,6 +11,7 @@ namespace AtMycelia.Amanita.VScripting
                  "Debug Break",
                  "Calls Debug.Break if enabled. Also useful for putting a visual studio breakbpoint within.")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class DebugBreak : Command
     {
         [SerializeField] new protected BooleanData enabled = new BooleanData(true);

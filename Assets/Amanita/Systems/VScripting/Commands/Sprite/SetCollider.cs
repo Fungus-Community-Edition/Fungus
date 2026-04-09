@@ -1,7 +1,9 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Sets all collider (2d or 3d) components on the target objects to be active / inactive.
@@ -10,6 +12,7 @@ namespace AtMycelia.Amanita.VScripting
                  "Set Collider", 
                  "Sets all collider (2d or 3d) components on the target objects to be active / inactive")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class SetCollider : Command
     {       
         [Tooltip("A list of gameobjects containing collider components to be set active / inactive")]

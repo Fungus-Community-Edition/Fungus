@@ -1,7 +1,9 @@
 using UnityEngine;
 using System.Collections;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Waits for a number of frames before executing the next command in the block.
@@ -11,6 +13,7 @@ namespace AtMycelia.Amanita.VScripting
                  "Waits for a number of frames before executing the next command in the block.")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class WaitFrames : Command
     {
         [Tooltip("Number of frames to wait for")]

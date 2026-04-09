@@ -1,7 +1,9 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections.Generic;
 
-namespace AtMycelia.Amanita.VScripting.Commands
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Controls the render order of sprites by setting the Order In Layer property of a list of sprites.
@@ -10,6 +12,7 @@ namespace AtMycelia.Amanita.VScripting.Commands
                  "Set Sprite Order", 
                  "Controls the render order of sprites by setting the Order In Layer property of a list of sprites.")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class SetSpriteOrder : Command 
     {
         [Tooltip("List of sprites to set the order in layer property on")]

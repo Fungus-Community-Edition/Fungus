@@ -1,6 +1,8 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
 	/// <summary>
 	/// Get or Set a property of a Transform component
@@ -9,6 +11,7 @@ namespace AtMycelia.Amanita.VScripting
 				 "Transform",
 				 "Get or Set a property of a Transform component")]
 	[AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
 	public class TransformProperty : BaseVariableProperty
 	{
 		//generated property

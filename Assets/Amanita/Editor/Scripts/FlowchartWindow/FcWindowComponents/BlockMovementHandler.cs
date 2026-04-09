@@ -5,7 +5,7 @@ using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
+namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
 {
     public sealed class BlockMovementHandler : IFlowchartWindowModule, ILeftMouseDragResponder,
         ILeftMouseUpResponder

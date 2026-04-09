@@ -1,7 +1,8 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Scripting.APIUpdating;
 
-namespace AtMycelia.Amanita.VScripting.EventHandlers
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// The block will execute when the user finishes editing the text in the input field.
@@ -10,6 +11,7 @@ namespace AtMycelia.Amanita.VScripting.EventHandlers
                       "End Edit",
                       "The block will execute when the user finishes editing the text in the input field.")]
     [AddComponentMenu("")]
+    [MovedFrom("AtMycelia.Amanita.VScripting.EventHandlers")]
     public class EndEdit : EventHandler
     {   
         [Tooltip("The UI Input Field that the user can enter text into")]

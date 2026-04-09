@@ -1,7 +1,9 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 
-namespace AtMycelia.Amanita.VScripting.EventHandlers
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// The block will execute when the user clicks on the target UI button object.
@@ -10,6 +12,7 @@ namespace AtMycelia.Amanita.VScripting.EventHandlers
                       "Button Clicked",
                       "The block will execute when the user clicks on the target UI button object.")]
     [AddComponentMenu("")]
+    [MovedFrom("AtMycelia.Amanita.VScripting.EventHandlers")]
     public class ButtonClicked : EventHandler
     {   
         [Tooltip("The UI Button that the user can click on")]

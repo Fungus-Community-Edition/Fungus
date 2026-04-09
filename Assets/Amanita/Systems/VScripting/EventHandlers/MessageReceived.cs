@@ -1,6 +1,8 @@
-﻿using UnityEngine;
+using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting.EventHandlers
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// The block will execute when the specified message is received from a Send Message command.
@@ -9,6 +11,7 @@ namespace AtMycelia.Amanita.VScripting.EventHandlers
                       "Message Received",
                       "The block will execute when the specified message is received from a Send Message command.")]
     [AddComponentMenu("")]
+    [MovedFrom("AtMycelia.Amanita.VScripting.EventHandlers")]
     public class MessageReceived : EventHandler 
     {
         [Tooltip("Fungus message to listen for")]

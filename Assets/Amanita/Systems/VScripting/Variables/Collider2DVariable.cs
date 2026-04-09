@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
-namespace AtMycelia.Amanita.VScripting
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Collider2D variable type.
@@ -9,7 +9,7 @@ namespace AtMycelia.Amanita.VScripting
     [VariableInfo("Physics/TwoD", "Collider2D", typeof(Collider2D), false)]
     [AddComponentMenu("")]
     [System.Serializable]
-    [MovedFrom(true, "Amanita.VScripting", "Amanita.Core")]
+    [MovedFrom(true, "AtMycelia.Amanita.VScripting", "AtMycelia.Amanita.Core")]
     public class Collider2DVariable : VariableBase<Collider2D>
     { }
 

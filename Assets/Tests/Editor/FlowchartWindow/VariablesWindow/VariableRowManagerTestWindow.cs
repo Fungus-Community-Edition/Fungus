@@ -7,12 +7,12 @@ using UnityEngine.UIElements;
 using UnityObj = UnityEngine.Object;
 using UITKLabel = UnityEngine.UIElements.Label;
 using UnityRandom = UnityEngine.Random;
-using AtMycelia.Amanita.VScripting;
+using AtMycelia.Hyphlow;
 
 // Optional: avoid pulling conflicting types into the global scope
 using AtMycelia.Amanita.EditorUtils;
 using AtMycelia.Collections;
-using AtMycelia.Amanita.VScripting.EditorUtils;
+using AtMycelia.Hyphlow.EditorUtils;
 using AtMycelia.Amanita; // if you keep helpers here
 
 namespace VScriptingTests.VariableOperations

@@ -1,14 +1,18 @@
 using System;
 using System.Reflection;
+using AtMycelia.Amanita;
 using Unity.Properties;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace AtMycelia.Amanita.VScripting.EventHandlers
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Attribute class for Fungus event handlers.
     /// </summary>
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class EventHandlerInfoAttribute : Attribute
     {
         public EventHandlerInfoAttribute(string category, string eventHandlerName, string helpText)

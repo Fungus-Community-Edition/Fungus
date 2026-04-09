@@ -1,7 +1,7 @@
 using UnityEngine.UIElements;
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting.EditorUtils
+namespace AtMycelia.Hyphlow.EditorUtils
 {
     [RowVisualHandler(menuName: "Graphics",
         contentType: typeof(string),

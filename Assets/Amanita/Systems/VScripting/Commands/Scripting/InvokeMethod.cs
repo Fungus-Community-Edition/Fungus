@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Reflection;
 using System.Collections.Generic;
@@ -9,7 +9,9 @@ using System.Linq;
 using UnityObj = UnityEngine.Object;
 using UnityEngine.Serialization;
 
-namespace AtMycelia.Amanita.VScripting.Commands
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Invokes a method of a component via reflection. Supports passing multiple parameters and storing returned values in a Fungus variable.
@@ -18,6 +20,7 @@ namespace AtMycelia.Amanita.VScripting.Commands
                  "Invoke Method", 
                  "Invokes a method of a component via reflection. Supports passing multiple " +
                  "parameters and storing returned values in an Amanita variable.")]
+    [MovedFrom("AtMycelia.Amanita.VScripting.Commands")]
     public class InvokeMethod : Command
     {
         [Tooltip("A description of what this command does. Appears in the command summary.")]

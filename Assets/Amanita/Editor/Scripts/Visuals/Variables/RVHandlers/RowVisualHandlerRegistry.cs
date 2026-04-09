@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Reflection;
 using UnityEditor;
 using System.Linq;
+using AtMycelia.Amanita;
 
-namespace AtMycelia.Amanita.VScripting.EditorUtils
+namespace AtMycelia.Hyphlow.EditorUtils
 {
     public static class RowVisualHandlerRegistry
     {

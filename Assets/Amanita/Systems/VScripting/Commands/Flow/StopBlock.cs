@@ -1,6 +1,8 @@
-﻿using UnityEngine;
+using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting.Commands
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Stops executing the named Block.
@@ -8,6 +10,7 @@ namespace AtMycelia.Amanita.VScripting.Commands
     [CommandInfo("Flow", 
                  "Stop Block", 
                  "Stops executing the named Block")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class StopBlock : Command, IBlockCaller
     {
         [Tooltip("Flowchart containing the Block. If none is specified, the parent Flowchart is used.")]

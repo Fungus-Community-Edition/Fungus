@@ -1,6 +1,8 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Command to execute and store the result of a Sqrt
@@ -9,6 +11,7 @@ namespace AtMycelia.Amanita.VScripting
                  "Sqrt",
                  "Command to execute and store the result of a Sqrt")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class Sqrt : BaseUnaryMathCommand
     {
         public override void OnEnter()

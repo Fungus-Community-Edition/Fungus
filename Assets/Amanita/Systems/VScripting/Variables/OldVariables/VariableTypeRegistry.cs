@@ -1,13 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using AtMycelia.Amanita;
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// A registry and instantiator for legacy and muscari types alike.
     /// </summary>
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public static class VariableTypeRegistry
     {
         private static readonly IList<Type> _legacyTypes = new List<Type>();

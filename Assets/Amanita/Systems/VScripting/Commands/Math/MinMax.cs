@@ -1,6 +1,8 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Command to store the min or max of 2 values
@@ -9,6 +11,7 @@ namespace AtMycelia.Amanita.VScripting
                  "MinMax",
                  "Command to store the min or max of 2 values")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class MinMax : Command
     {
         public enum Function

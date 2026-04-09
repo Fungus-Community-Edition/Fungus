@@ -1,8 +1,9 @@
-using UnityEngine;
+using AtMycelia.Hyphlow;
 using System.Collections;
-using AtMycelia.Amanita.VScripting;
+using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
-namespace AtMycelia.Amanita.DialogueSys.Commands
+namespace AtMycelia.Amanita.DialogueSys.VScripting
 {
     /// <summary>
     /// Do multiple say and portrait commands in a single block of text. Format is: [character] [portrait] [stage position] [hide] [<<< | >>>] [clear | noclear] [wait | nowait] [fade | nofade] [: Story text].
@@ -12,6 +13,7 @@ namespace AtMycelia.Amanita.DialogueSys.Commands
                  "Do multiple say and portrait commands in a single block of text. Format is: [character] [portrait] [stage position] [hide] [<<< | >>>] [clear | noclear] [wait | nowait] [fade | nofade] [: Story text]")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
+    [MovedFrom("AtMycelia.Amanita.DialogueSys.Commands")]
     public class Conversation : Command
     {
         [HyphlowTextArea(5, 10)]

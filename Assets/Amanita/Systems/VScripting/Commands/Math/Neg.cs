@@ -1,6 +1,8 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Negate a float
@@ -9,6 +11,7 @@ namespace AtMycelia.Amanita.VScripting
                  "Negate",
                  "Negate a float")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class Neg : BaseUnaryMathCommand
     {
         public override void OnEnter()

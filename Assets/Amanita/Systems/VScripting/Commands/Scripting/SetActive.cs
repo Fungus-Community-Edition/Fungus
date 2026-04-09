@@ -1,7 +1,9 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Sets a game object in the scene to be active / inactive.
@@ -11,6 +13,7 @@ namespace AtMycelia.Amanita.VScripting
                  "Sets a game object in the scene to be active / inactive.")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class SetActive : Command
     {
         [Tooltip("Reference to game object to enable / disable")]

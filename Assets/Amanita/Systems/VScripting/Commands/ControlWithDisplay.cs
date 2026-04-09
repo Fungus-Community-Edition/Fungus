@@ -1,8 +1,11 @@
 using System;
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class ControlWithDisplay<TDisplayEnum> : Command
     {
         [Tooltip("Display type")]

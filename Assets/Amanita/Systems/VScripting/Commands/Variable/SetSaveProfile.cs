@@ -1,7 +1,9 @@
 using UnityEngine;
 using System;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Sets the active profile that the Save Variable and Load Variable commands will use. This is useful to crete multiple player save games. Once set, the profile applies across all Flowcharts and will also persist across scene loads.
@@ -10,6 +12,7 @@ namespace AtMycelia.Amanita.VScripting
                  "Set Save Profile", 
                  "Sets the active profile that the Save Variable and Load Variable commands will use. This is useful to crete multiple player save games. Once set, the profile applies across all Flowcharts and will also persist across scene loads.")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class SetSaveProfile : Command
     {
         [Tooltip("Name of save profile to make active.")]

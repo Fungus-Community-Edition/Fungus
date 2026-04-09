@@ -1,6 +1,8 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Attempts to parse a string into a given fungus variable type, such as integer or float
@@ -9,6 +11,7 @@ namespace AtMycelia.Amanita.VScripting
                  "From String",
                  "Attempts to parse a string into a given fungus variable type, such as integer or float")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class FromString : Command
     {
         [Tooltip("Source of string data to parse into another variables value")]

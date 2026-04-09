@@ -1,6 +1,8 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Resets the state of all commands and variables in the Flowchart.
@@ -9,6 +11,7 @@ namespace AtMycelia.Amanita.VScripting
                  "Reset", 
                  "Resets the state of all commands and variables in the Flowchart.")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class Reset : Command
     {   
         [Tooltip("Reset state of all commands in the script")]

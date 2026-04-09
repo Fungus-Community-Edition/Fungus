@@ -1,6 +1,8 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting.EventHandlers
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Key press modes supported by Key Pressed event handler.
@@ -22,6 +24,7 @@ namespace AtMycelia.Amanita.VScripting.EventHandlers
                       "Key Pressed",
                       "The block will execute when a key press event occurs.")]
     [AddComponentMenu("")]
+    [MovedFrom("AtMycelia.Amanita.VScripting.EventHandlers")]
     public class KeyPressed : EventHandler
     {
         [Tooltip("The type of keypress to activate on")]

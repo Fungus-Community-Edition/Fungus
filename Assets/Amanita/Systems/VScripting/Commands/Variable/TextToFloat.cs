@@ -2,11 +2,14 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     [CommandInfo("Variable",
         "Text To Float",
         "Takes the value of a Text field and applies the float version of it to a Float Variable")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class TextToFloat : Command
     {
         [SerializeField] protected GameObjectData hasTextField;

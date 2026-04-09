@@ -1,7 +1,9 @@
 using UnityEngine;
 
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
 	/// <summary>
 	/// Get or Set a property of a Texture component
@@ -10,6 +12,7 @@ namespace AtMycelia.Amanita.VScripting
 				 "Texture",
 				 "Get or Set a property of a Texture component")]
 	[AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
 	public class TextureProperty : BaseVariableProperty
 	{
 		//generated property

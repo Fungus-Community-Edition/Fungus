@@ -1,5 +1,7 @@
+using AtMycelia.Amanita;
 using AtMycelia.Amanita.Tweening;
 using UnityEngine;
+using AtMycelia.Hyphlow;
 
 namespace AtMycelia.Amanita.VScripting
 {

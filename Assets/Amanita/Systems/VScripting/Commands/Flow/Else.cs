@@ -1,6 +1,8 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Marks the start of a command block to be executed when the preceding If statement is False.
@@ -9,6 +11,7 @@ namespace AtMycelia.Amanita.VScripting
                  "Else", 
                  "Marks the start of a command block to be executed when the preceding If statement is False.")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class Else : Command
     {
         #region Public members

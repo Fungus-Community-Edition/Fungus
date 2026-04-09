@@ -1,8 +1,11 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     [System.Serializable]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class FungusException : System.Exception
     {
         public FungusException()

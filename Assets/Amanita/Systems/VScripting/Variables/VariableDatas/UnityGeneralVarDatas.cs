@@ -1,10 +1,13 @@
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     [System.Serializable]
     [VariableData(typeof(Component), typeof(IVariable<Component>), typeof(IVariable<GameObject>))]
+    [MovedFrom("AtMycelia.Amanita.VScripting")]
     public class ComponentData : VariableData<Component>
     {
         protected override Variable LegacyVarRef
@@ -32,6 +35,7 @@ namespace AtMycelia.Amanita.VScripting
     /// </summary>
     [System.Serializable]
     [VariableData(typeof(GameObject), typeof(IVariable<GameObject>))]
+    [MovedFrom("AtMycelia.Amanita.VScripting")]
     public class GameObjectData : VariableData<GameObject>
     {
         [SerializeField]
@@ -114,6 +118,7 @@ namespace AtMycelia.Amanita.VScripting
     /// </summary>
     [System.Serializable]
     [VariableData(typeof(Transform), typeof(IVariable<Transform>))]
+    [MovedFrom("AtMycelia.Amanita.VScripting")]
     public class TransformData : VariableData<Transform>
     {
         [SerializeField]
@@ -178,6 +183,7 @@ namespace AtMycelia.Amanita.VScripting
     /// </summary>
     [System.Serializable]
     [VariableData(typeof(UnityObj), typeof(IVariable<UnityObj>))]
+    [MovedFrom("AtMycelia.Amanita.VScripting")]
     public class ObjectData : VariableData<UnityObj>
     {
         [SerializeField]

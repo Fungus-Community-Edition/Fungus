@@ -1,6 +1,8 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Map a value that exists in 1 range of numbers to another.
@@ -9,6 +11,7 @@ namespace AtMycelia.Amanita.VScripting
                  "Map",
                  "Map a value that exists in 1 range of numbers to another.")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class Map : Command
     {
         //[Tooltip("LHS Value ")]

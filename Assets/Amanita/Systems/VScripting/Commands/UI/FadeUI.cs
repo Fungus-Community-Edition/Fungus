@@ -2,12 +2,14 @@ using AtMycelia.Amanita.Tweening;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Scripting.APIUpdating;
 
-namespace AtMycelia.Amanita.VScripting.Commands.Legacy
+namespace AtMycelia.Hyphlow.Legacy
 {
     /// <summary>
     /// Select which type of fade will be applied.
     /// </summary>
+    [MovedFrom("AtMycelia.Amanita.VScripting.Legacy")]
     public enum FadeMode
     {
         /// <summary> Fade the alpha color component only. </summary>
@@ -22,6 +24,7 @@ namespace AtMycelia.Amanita.VScripting.Commands.Legacy
     [CommandInfo("UI",
                  "Fade UI",
                  "Fades a UI object")]
+    [MovedFrom("AtMycelia.Amanita.VScripting.Legacy")]
     public class FadeUI : TweenUI 
     {
         [SerializeField] protected FadeMode fadeMode = FadeMode.Alpha;

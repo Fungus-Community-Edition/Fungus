@@ -1,6 +1,9 @@
+using AtMycelia.Amanita;
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Reload the current scene
@@ -9,6 +12,7 @@ namespace AtMycelia.Amanita.VScripting
                  "Reload",
                  "Reload the current scene")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class ReloadScene : Command
     {
         [Tooltip("Image to display while loading the scene")]

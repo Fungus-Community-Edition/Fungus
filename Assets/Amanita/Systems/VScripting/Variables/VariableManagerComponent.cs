@@ -8,10 +8,13 @@ using UnityObj = UnityEngine.Object;
 using UnityEditor;
 #endif
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     [DisallowMultipleComponent]
     [ExecuteInEditMode]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class VariableManagerComponent : MonoBehaviour, IVariableSource, IMuscariableSource,
         IReorderableVariableSource, IReorderableMuscariableSource
     {

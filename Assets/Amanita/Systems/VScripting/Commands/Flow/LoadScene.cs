@@ -1,7 +1,10 @@
+using AtMycelia.Amanita;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Loads a new Unity scene and displays an optional loading image. This is useful
@@ -17,6 +20,7 @@ namespace AtMycelia.Amanita.VScripting
                  "The scene to be loaded must be added to the scene list in Build Settings.")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class LoadScene : Command
     {
         [Tooltip("Name of the scene to load. The scene must also be added to the build settings.")]

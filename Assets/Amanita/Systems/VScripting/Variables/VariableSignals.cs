@@ -1,8 +1,11 @@
 using System;
 using UnityObj = UnityEngine.Object;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public static class VariableSignals 
     {
         public static Action<IVariable> PreValueChange = delegate { };

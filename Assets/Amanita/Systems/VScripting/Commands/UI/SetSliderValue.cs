@@ -1,7 +1,9 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Sets or Gets the value property of a slider object.
@@ -9,6 +11,7 @@ namespace AtMycelia.Amanita.VScripting
     [CommandInfo("UI",
                  "Set or Get Slider Value",
                  "Sets or Gets the value property of a slider object")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class SetSliderValue : Command 
     {
         [Tooltip("Target slider object to set the value on")]

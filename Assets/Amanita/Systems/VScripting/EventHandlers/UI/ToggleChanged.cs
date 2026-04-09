@@ -1,15 +1,20 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 
-namespace AtMycelia.Amanita.VScripting.EventHandlers
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// The block will execute when the user toggles on the target UI toggle object.
     /// </summary>
     [EventHandlerInfo("UI",
                       "Toggle Changed",
-                      "The block will execute when the state of the target UI toggle object changes. The state of the toggle is stored in the Toggle State boolean variable.")]
+                      "The block will execute when the state of the target UI " +
+                      "toggle object changes. The state of the toggle is stored in the " +
+                      "Toggle State boolean variable.")]
     [AddComponentMenu("")]
+    [MovedFrom("AtMycelia.Amanita.VScripting.EventHandlers")]
     public class ToggleChanged : EventHandler
     {   
         [Tooltip("The block will execute when the state of the target UI toggle object changes.")]

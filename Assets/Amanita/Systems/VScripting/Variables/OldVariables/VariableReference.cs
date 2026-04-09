@@ -1,8 +1,10 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.Serialization;
 using UnityObj = UnityEngine.Object;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// A reference to a variable belonging to a variable source (Flowchart or VariableSourceAsset).
@@ -10,6 +12,7 @@ namespace AtMycelia.Amanita.VScripting
     /// you will need to subclass this.
     /// </summary>
     [System.Serializable]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class VariableReference
     {
         // What we do is store the id of the var, and then return the var itself based on

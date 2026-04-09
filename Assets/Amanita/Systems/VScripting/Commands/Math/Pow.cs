@@ -1,6 +1,8 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Raise a value to the power of another
@@ -9,6 +11,7 @@ namespace AtMycelia.Amanita.VScripting
                  "Pow",
                  "Raise a value to the power of another.")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class Pow : Command
     {
         [SerializeField]

@@ -4,7 +4,7 @@ using System.Collections;
 using UnityEngine.EventSystems;
 using System.Linq;
 using System;
-using AtMycelia.Amanita.VScripting;
+using AtMycelia.Hyphlow;
 
 namespace AtMycelia.Amanita.DialogueSys
 {

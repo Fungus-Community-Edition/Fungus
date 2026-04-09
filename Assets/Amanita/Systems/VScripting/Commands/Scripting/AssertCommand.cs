@@ -1,7 +1,9 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.Assertions;
 
-namespace AtMycelia.Amanita.VScripting.Commands
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Assert on 2 Amanita variable values.
@@ -10,6 +12,7 @@ namespace AtMycelia.Amanita.VScripting.Commands
                  "Assert",
                  "Assert based on compared values.")]
     [AddComponentMenu("")]
+    [MovedFrom("AtMycelia.Amanita.VScripting.Commands")]
     public class AssertCommand : Command
     {
         [SerializeField]

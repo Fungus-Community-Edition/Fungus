@@ -1,6 +1,8 @@
-﻿using UnityEngine;
+using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Plays a state of an animator according to the state name.
@@ -9,6 +11,7 @@ namespace AtMycelia.Amanita.VScripting
                  "Play Anim State", 
                  "Plays a state of an animator according to the state name")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class PlayAnimState : Command 
     {
         [Tooltip("Reference to an Animator component in a game object")]

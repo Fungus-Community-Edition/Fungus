@@ -1,6 +1,8 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Convert fungus vec3 to vec2
@@ -9,6 +11,7 @@ namespace AtMycelia.Amanita.VScripting
                  "ToVector2",
                  "Convert Fungus Vector3 to Fungus Vector2")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class Vector3ToVector2 : Command
     {
         [SerializeField]

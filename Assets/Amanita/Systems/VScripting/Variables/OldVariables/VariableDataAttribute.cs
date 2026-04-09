@@ -1,12 +1,15 @@
 using System;
 using System.Collections.Generic;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// For VariableData subclasses
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, Inherited = false)]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public sealed class VariableDataAttribute : Attribute
     {
         public Type ContentType { get; private set; }

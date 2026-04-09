@@ -1,6 +1,8 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Store Input.GetAxis in a variable
@@ -9,6 +11,7 @@ namespace AtMycelia.Amanita.VScripting
                  "GetAxis",
                  "Store Input.GetAxis in a variable")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class GetAxis : Command
     {
         [SerializeField]

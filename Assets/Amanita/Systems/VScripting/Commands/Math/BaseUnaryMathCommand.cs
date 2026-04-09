@@ -1,11 +1,14 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Base class for all simple Unary
     /// </summary>
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public abstract class BaseUnaryMathCommand : Command
     {
         [Tooltip("Value to be passed in to the function.")]

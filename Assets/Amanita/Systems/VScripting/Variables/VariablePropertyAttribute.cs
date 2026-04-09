@@ -2,12 +2,15 @@ using UnityEngine;
 using Type = System.Type;
 using System.Collections.Generic;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Attribute class for variable properties. We use these so that fields in Commands
     /// that should ONLY take variable inputs accept the intended variable types.
     /// </summary>
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public sealed class VariablePropertyAttribute : PropertyAttribute
     {
         public VariablePropertyAttribute()

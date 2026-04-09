@@ -3,10 +3,11 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using AtMycelia.Amanita;
 using AtMycelia.Amanita.EditorUtils;
-using AtMycelia.Amanita.VScripting.EventHandlers;
+using AtMycelia.Hyphlow;
 
-namespace AtMycelia.Amanita.VScripting.EditorUtils
+namespace AtMycelia.Hyphlow.EditorUtils
 {
     /// <summary>
     /// Searchable Popup Window for selecting Event type, used by block editor

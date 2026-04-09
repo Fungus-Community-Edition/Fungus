@@ -1,12 +1,15 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Container for a Collider variable reference or constant value.
     /// </summary>
     [System.Serializable]
     [VariableData(typeof(Collider), typeof(ColliderVariable))]
+    [MovedFrom("AtMycelia.Amanita.VScripting")]
     public class ColliderData : VariableData<Collider>
     {
         [SerializeField]
@@ -41,6 +44,7 @@ namespace AtMycelia.Amanita.VScripting
     /// </summary>
     [System.Serializable]
     [VariableData(typeof(Collider2D), typeof(Collider2DVariable))]
+    [MovedFrom("AtMycelia.Amanita.VScripting")]
     public class Collider2DData : VariableData<Collider2D>
     {
         [SerializeField]

@@ -1,7 +1,9 @@
 using UnityEngine;
 
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Get or Set a property of a Color component
@@ -10,6 +12,7 @@ namespace AtMycelia.Amanita.VScripting
                  "Color",
                  "Get or Set a property of a Color component")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class ColorProperty : BaseVariableProperty
     {
 		//generated property

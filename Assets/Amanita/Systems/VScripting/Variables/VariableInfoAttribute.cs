@@ -1,12 +1,15 @@
 using System;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Attribute class for variables. This helps decide how they're presented as an option
     /// when selecting a variable to add to a Flowchart.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public sealed class VariableInfoAttribute : System.Attribute
     {
         // Note do not use "isPreviewedOnly:true", it causes the script to fail to load without errors shown

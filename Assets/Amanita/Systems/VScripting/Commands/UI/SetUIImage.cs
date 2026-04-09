@@ -1,8 +1,9 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using UnityEngine.Scripting.APIUpdating;
 
-namespace AtMycelia.Amanita.VScripting.Commands
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Changes the Image property on a UI element.
@@ -11,6 +12,7 @@ namespace AtMycelia.Amanita.VScripting.Commands
                  "Set UI Image", 
                  "Changes the Image property of a list of UI Images.")]
     [AddComponentMenu("")]
+    [MovedFrom("AtMycelia.Amanita.VScripting.Commands")]
     public class SetUIImage : Command 
     {
         [Tooltip("List of UI Images to set the source image property on")]

@@ -1,4 +1,4 @@
-using AtMycelia.Amanita.VScripting.EditorUtils;
+using AtMycelia.Hyphlow.EditorUtils;
 
 namespace AtMycelia.Amanita.EditorUtils
 {

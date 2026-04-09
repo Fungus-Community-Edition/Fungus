@@ -1,6 +1,8 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Type of log message. Maps directly to Unity's log types.
@@ -22,6 +24,7 @@ namespace AtMycelia.Amanita.VScripting
                  "Debug Log", 
                  "Writes a log message to the debug console.")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class DebugLog : Command 
     {
         [Tooltip("Display type of debug log info")]

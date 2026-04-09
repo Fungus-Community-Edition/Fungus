@@ -1,11 +1,14 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace AtMycelia.Amanita.VScripting.EventHandlers
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     [EventHandlerInfo("UI",
         "InputFieldTextChanged",
         "Executes this block when an input field's text changes.")]
+    [MovedFrom("AtMycelia.Amanita.VScripting.EventHandlers")]
     public class InputFieldTextChanged : EventHandler
     {
         [SerializeField] [VariableProperty(typeof(GameObjectVariable))]

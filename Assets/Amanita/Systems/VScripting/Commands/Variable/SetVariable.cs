@@ -1,7 +1,8 @@
 using UnityEngine;
 using UnityEngine.Serialization;
+using UnityEngine.Scripting.APIUpdating;
 
-namespace AtMycelia.Amanita.VScripting.Commands
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Sets a variable to a new value using a simple arithmetic operation. 
@@ -14,6 +15,7 @@ namespace AtMycelia.Amanita.VScripting.Commands
         "variable of the same type.")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
+    [MovedFrom("AtMycelia.Amanita.VScripting.Commands")]
     public class SetVariable : Command, ISerializationCallbackReceiver
     {
         [Tooltip("The type of math operation to be performed")]

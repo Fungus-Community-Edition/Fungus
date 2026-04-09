@@ -2,7 +2,9 @@ using UnityEngine;
 using System;
 using UnityEngine.Events;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Supported types of method invocation.
@@ -31,6 +33,7 @@ namespace AtMycelia.Amanita.VScripting
                  "Calls a list of component methods via the Unity Event System (as used in the Unity UI). " + 
                  "This command is more efficient than the Invoke Method command but can only pass a single parameter and doesn't support return values.")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class InvokeEvent : Command
     {
         [Tooltip("A description of what this command does. Appears in the command summary.")]

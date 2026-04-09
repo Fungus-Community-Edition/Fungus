@@ -1,6 +1,8 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Marks a position in the command list for execution to jump to.
@@ -9,6 +11,7 @@ namespace AtMycelia.Amanita.VScripting
                  "Label", 
                  "Marks a position in the command list for execution to jump to.")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class Label : Command
     {
         [Tooltip("Display name for the label")]

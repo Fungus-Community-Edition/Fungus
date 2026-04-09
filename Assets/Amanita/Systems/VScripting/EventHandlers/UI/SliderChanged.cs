@@ -1,7 +1,8 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Scripting.APIUpdating;
 
-namespace AtMycelia.Amanita.VScripting.EventHandlers
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// The block will execute when the user changes the value of target UI slider.
@@ -10,6 +11,7 @@ namespace AtMycelia.Amanita.VScripting.EventHandlers
                       "Slider Changed",
                       "The block will execute when the user changes the value of target UI slider.")]
     [AddComponentMenu("")]
+    [MovedFrom("AtMycelia.Amanita.VScripting.EventHandlers")]
     public class SliderChanged : EventHandler
     {
         [Tooltip("The UI Slider that the user can click on")]

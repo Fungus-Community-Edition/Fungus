@@ -1,6 +1,8 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Command to contain a value between a lower and upper bound, with optional wrapping modes
@@ -9,6 +11,7 @@ namespace AtMycelia.Amanita.VScripting
                  "Clamp",
                  "Command to contain a value between a lower and upper bound, with optional wrapping modes")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class Clamp : Command
     {
         public enum Mode

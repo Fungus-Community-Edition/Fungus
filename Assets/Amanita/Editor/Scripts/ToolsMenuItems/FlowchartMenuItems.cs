@@ -1,7 +1,8 @@
-﻿using UnityEngine;
+﻿using AtMycelia.Amanita;
+using UnityEngine;
 using UnityEditor;
 
-namespace AtMycelia.Amanita.VScripting.EditorUtils
+namespace AtMycelia.Hyphlow.EditorUtils
 {
     public class FlowchartMenuItems
     {

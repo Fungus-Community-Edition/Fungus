@@ -1,7 +1,8 @@
 using UnityEngine;
-using AtMycelia.Amanita.VScripting;
+using AtMycelia.Hyphlow;
+using UnityEngine.Scripting.APIUpdating;
 
-namespace AtMycelia.Amanita.DialogueSys.Commands
+namespace AtMycelia.Amanita.DialogueSys.VScripting
 {
     /// <summary>
     /// Clears the options from a menu dialogue.
@@ -9,6 +10,7 @@ namespace AtMycelia.Amanita.DialogueSys.Commands
     [CommandInfo("Narrative",
                  "Clear Menu",
                  "Clears the options from a menu dialogue")]
+    [MovedFrom("AtMycelia.Amanita.DialogueSys.VScripting.Commands")]
     public class ClearMenu : Command 
     {
         [Tooltip("Menu Dialog to clear the options on")]

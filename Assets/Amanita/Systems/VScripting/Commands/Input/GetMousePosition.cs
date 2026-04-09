@@ -1,6 +1,8 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Store Input.mousePosition and mouse screen conversions in a variable(s)
@@ -9,6 +11,7 @@ namespace AtMycelia.Amanita.VScripting
                  "Get Mouse Position",
                  "Store various interpretations of Input.mousePosition")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class GetMousePosition : Command
     {
         [VariableProperty(typeof(Vector2Variable))]

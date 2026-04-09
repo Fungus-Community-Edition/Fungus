@@ -1,7 +1,9 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Spawns a new object based on a reference to a scene or prefab game object.
@@ -15,6 +17,7 @@ namespace AtMycelia.Amanita.VScripting
                  "Instantiate a game object")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class SpawnObject : Command
     {
         [Tooltip("Game object to copy when spawning. Can be a scene object or a prefab.")]

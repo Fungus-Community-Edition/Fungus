@@ -1,4 +1,6 @@
-﻿namespace AtMycelia.Amanita.VScripting
+﻿using AtMycelia.Amanita;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Interface for indicating that the class holds a reference to and may call a block

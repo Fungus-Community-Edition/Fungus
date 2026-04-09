@@ -1,6 +1,8 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Linearly Interpolate from A to B
@@ -9,6 +11,7 @@ namespace AtMycelia.Amanita.VScripting
                  "Lerp",
                  "Linearly Interpolate from A to B")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class Lerp : Command
     {
         public enum Mode

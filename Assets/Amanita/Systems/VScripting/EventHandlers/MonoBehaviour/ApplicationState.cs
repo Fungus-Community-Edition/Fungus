@@ -1,14 +1,18 @@
-﻿using UnityEngine;
+using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting.EventHandlers
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// The block will execute when the desired OnApplication message for the monobehaviour is received.
     /// </summary>
     [EventHandlerInfo("MonoBehaviour",
                       "Application",
-                      "The block will execute when the desired OnApplication message for the monobehaviour is received.")]
+                      "The block will execute when the desired OnApplication message " +
+                      "for the Monobehaviour is received.")]
     [AddComponentMenu("")]
+    [MovedFrom("AtMycelia.Amanita.VScripting.EventHandlers")]
     public class ApplicationState : EventHandler
     {
 

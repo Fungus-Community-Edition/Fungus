@@ -1,6 +1,8 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Force a loop to terminate immediately.
@@ -9,6 +11,7 @@ namespace AtMycelia.Amanita.VScripting
                  "Break",
                  "Force a loop to terminate immediately.")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class Break : Command
     {
         #region Public members

@@ -2,6 +2,7 @@ using AtMycelia.Collections;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AtMycelia.Amanita;
 using UnityEngine;
 using Type = System.Type;
 using UnityEngine.SceneManagement;
@@ -12,9 +13,12 @@ using UnityEngine.Serialization;
 using UnityEditor;
 #endif
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     [CreateAssetMenu(fileName = "NewVariableSourceAsset", menuName = "Atelier Mycelia/Amanita/VariableSource")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class VariableSourceAsset : ScriptableObject, IReorderableMuscariableSource,
         IForceResetUidHandler, IRefreshable
     {

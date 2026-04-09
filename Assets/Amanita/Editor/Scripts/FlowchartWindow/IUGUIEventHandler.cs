@@ -1,4 +1,4 @@
-using AtMycelia.Amanita.VScripting.EditorUtils;
+using AtMycelia.Hyphlow.EditorUtils;
 using UnityEngine;
 
 namespace AtMycelia.Amanita.EditorUtils

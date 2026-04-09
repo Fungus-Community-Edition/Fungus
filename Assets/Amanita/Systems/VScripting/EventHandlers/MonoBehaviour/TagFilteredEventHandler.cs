@@ -1,12 +1,15 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting.EventHandlers
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Base class for all of our physics event handlers
     /// </summary>
     [AddComponentMenu("")]
-    public abstract class TagFilteredEventHandler : EventHandler
+    [MovedFrom("AtMycelia.Amanita.VScripting.EventHandlers")]
+	public abstract class TagFilteredEventHandler : EventHandler
     {
         protected StringData[] _tagFilter = new StringData[0];
 

@@ -1,6 +1,6 @@
 using UnityEngine;
 using MoonSharp.Interpreter;
-using AtMycelia.Amanita.VScripting;
+using AtMycelia.Hyphlow;
 
 namespace AtMycelia.Amanita.Lua.VScripting
 {

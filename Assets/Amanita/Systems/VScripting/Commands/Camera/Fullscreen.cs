@@ -1,6 +1,7 @@
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
-namespace AtMycelia.Amanita.VScripting
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Fullscreen mode options.
@@ -18,10 +19,11 @@ namespace AtMycelia.Amanita.VScripting
     /// <summary>
     /// Sets the application to fullscreen, windowed or toggles the current state.
     /// </summary>
-    [CommandInfo("Camera", 
+    [CommandInfo("Screen", 
                  "Fullscreen", 
                  "Sets the application to fullscreen, windowed or toggles the current state.")]
     [AddComponentMenu("")]
+    [MovedFrom("AtMycelia.Amanita.VScripting")]
     public class Fullscreen : Command 
     {
         [SerializeField] protected FullscreenMode fullscreenMode;

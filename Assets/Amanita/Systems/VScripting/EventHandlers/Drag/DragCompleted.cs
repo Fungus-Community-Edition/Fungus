@@ -1,8 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
+using AtMycelia.Amanita;
 using UnityEngine;
+using AtMycelia.Hyphlow;
+using UnityEngine.Scripting.APIUpdating;
 
-namespace AtMycelia.Amanita.VScripting.EventHandlers
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// The block will execute when the player drags an object and successfully drops it on a target object.
@@ -14,7 +17,8 @@ namespace AtMycelia.Amanita.VScripting.EventHandlers
                       "Drag Completed",
                       "The block will execute when the player drags an object and successfully drops it on a target object.")]
     [AddComponentMenu("")]
-    public class DragCompleted : EventHandler, ISerializationCallbackReceiver
+    [MovedFrom("AtMycelia.Amanita.VScripting.EventHandlers")]
+	public class DragCompleted : EventHandler, ISerializationCallbackReceiver
     {
         public class DragCompletedEvent
         {

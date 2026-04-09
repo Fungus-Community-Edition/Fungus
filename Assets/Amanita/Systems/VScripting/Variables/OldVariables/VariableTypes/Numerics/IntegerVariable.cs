@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
-namespace AtMycelia.Amanita.VScripting
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Integer variable type.
@@ -10,7 +10,7 @@ namespace AtMycelia.Amanita.VScripting
     [VariableInfo("Numeric", "Integer", typeof(int), false)]
     [AddComponentMenu("")]
     [Serializable]
-    [MovedFrom(true, "Amanita.VScripting", "Amanita.Core")]
+    [MovedFrom(true, "AtMycelia.Amanita.VScripting", "AtMycelia.Amanita.Core")]
     public class IntegerVariable : VariableBase<int>
     {
         public override bool IsArithmeticSupported(SetOperator setOperator)

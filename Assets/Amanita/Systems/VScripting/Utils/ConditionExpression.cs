@@ -1,12 +1,15 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Class for a single condition. A list of this is used for multiple conditions.
     /// </summary>
     [System.Serializable]
     [ExecuteInEditMode]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class ConditionExpression
     {
         [SerializeField] protected CompareOperator compareOperator;

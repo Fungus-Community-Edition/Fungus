@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
-namespace AtMycelia.Amanita.VScripting
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Float variable type.
@@ -10,7 +10,7 @@ namespace AtMycelia.Amanita.VScripting
     [VariableInfo("Numeric", "Float", typeof(float), false)]
     [AddComponentMenu("")]
     [System.Serializable]
-    [MovedFrom(true, "Amanita.VScripting", "Amanita.Core")]
+    [MovedFrom(true, "AtMycelia.Amanita.VScripting", "AtMycelia.Amanita.Core")]
     public class FloatVariable : VariableBase<float>
     {
         public override bool IsArithmeticSupported(SetOperator setOperator)

@@ -1,7 +1,9 @@
 using UnityEngine;
 
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Get or Set a property of a Material component
@@ -10,6 +12,7 @@ namespace AtMycelia.Amanita.VScripting
                  "Material",
                  "Get or Set a property of a Material component")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class MaterialProperty : BaseVariableProperty
     {
 		//generated property

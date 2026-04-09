@@ -5,9 +5,9 @@ using System.Linq;
 using System.Reflection;
 using System;
 using System.Collections.Generic;
-using AtMycelia.Amanita.VScripting.EditorUtils;
+using AtMycelia.Hyphlow.EditorUtils;
 
-namespace AtMycelia.Amanita.VScripting.Commands.EditorUtils
+namespace AtMycelia.Hyphlow.EditorUtils
 {
     [CustomEditor(typeof(InvokeMethod))]
     public class InvokeMethodEditor : CommandEditor

@@ -1,10 +1,13 @@
-﻿using System;
+using System;
 using System.Reflection;
 using UnityEngine;
 
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public static class VariableFactory
     {
         #region Muscariables

@@ -1,6 +1,8 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Marks the end of a conditional block.
@@ -9,6 +11,7 @@ namespace AtMycelia.Amanita.VScripting
                  "End", 
                  "Marks the end of a conditional block.")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class End : Command
     {
         #region Public members

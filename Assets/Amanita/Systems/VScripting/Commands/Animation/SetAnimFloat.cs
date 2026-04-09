@@ -1,7 +1,9 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Sets a float parameter on an Animator component to control a Unity animation.
@@ -11,6 +13,7 @@ namespace AtMycelia.Amanita.VScripting
                  "Sets a float parameter on an Animator component to control a Unity animation")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class SetAnimFloat : Command
     {
         [Tooltip("Reference to an Animator component in a game object")]

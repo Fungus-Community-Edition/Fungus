@@ -3,7 +3,9 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace AtMycelia.Amanita.VScripting.EventHandlers
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Execute a block when a targeted InputAction is performed. Optionally reads the value from the action.
@@ -12,6 +14,7 @@ namespace AtMycelia.Amanita.VScripting.EventHandlers
                       "Input Action",
                       "Execute a block when a targeted InputAction is performed. Optionally reads the value from the action.")]
     [AddComponentMenu("")]
+    [MovedFrom("AtMycelia.Amanita.VScripting.EventHandlers")]
     public class InputActionEventHandler : EventHandler
     {
         [SerializeField] protected InputActionReference inputAction;

@@ -1,11 +1,13 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
-namespace AtMycelia.Amanita.VScripting.Commands
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Abstract base class for TweenUI commands.
     /// </summary>
+    [MovedFrom("AtMycelia.Amanita.VScripting.Commands")]
     public abstract class TweenUI : Command 
     {
         [Tooltip("List of objects to be affected by the tween")]

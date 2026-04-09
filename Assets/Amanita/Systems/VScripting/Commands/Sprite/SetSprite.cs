@@ -3,7 +3,9 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Changes the sprite on a SpriteRenderer.
@@ -12,6 +14,7 @@ namespace AtMycelia.Amanita.VScripting
                  "Set Sprite", 
                  "Changes the sprite property of a list of Sprite Renderers.")]
     [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class SetSprite : Command 
     {
         [Tooltip("List of sprites to set the sprite property on")]

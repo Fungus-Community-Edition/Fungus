@@ -1,14 +1,18 @@
-﻿using UnityEngine;
+using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting.EventHandlers
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// The block will execute when the desired Rendering related message for the monobehaviour is received.
     /// </summary>
     [EventHandlerInfo("MonoBehaviour",
                       "Render",
-                      "The block will execute when the desired Rendering related message for the monobehaviour is received.")]
+                      "The block will execute when the desired Rendering related " +
+                      "message for the Monobehaviour is received.")]
     [AddComponentMenu("")]
+    [MovedFrom("AtMycelia.Amanita.VScripting.EventHandlers")]
     public class Render : EventHandler
     {
 

@@ -1,6 +1,8 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Opens the specified URL in the browser.
@@ -8,6 +10,7 @@ namespace AtMycelia.Amanita.VScripting
     [CommandInfo("Scripting",
                  "Open URL",
                  "Opens the specified URL in the browser.")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
     public class OpenURL : Command
     {
         [Tooltip("URL to open in the browser")]

@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
-namespace AtMycelia.Amanita.VScripting
+namespace AtMycelia.Hyphlow
 {
     /// <summary>
     /// Sprite variable type.
@@ -9,7 +9,7 @@ namespace AtMycelia.Amanita.VScripting
     [VariableInfo("Graphic", "Sprite", typeof(Sprite), false)]
     [AddComponentMenu("")]
     [System.Serializable]
-    [MovedFrom(true, "Amanita.VScripting", "Amanita.Core")]
+    [MovedFrom(true, "AtMycelia.Amanita.VScripting", "AtMycelia.Amanita.Core")]
     public class SpriteVariable : VariableBase<Sprite>
     {
     }

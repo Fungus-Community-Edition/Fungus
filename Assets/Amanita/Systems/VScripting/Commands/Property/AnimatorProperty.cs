@@ -1,7 +1,9 @@
 using UnityEngine;
 
 
-namespace AtMycelia.Amanita.VScripting
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
 {
 	/// <summary>
 	/// Get or Set a property of a Animator component
@@ -10,6 +12,7 @@ namespace AtMycelia.Amanita.VScripting
 				 "Animator",
 				 "Get or Set a property of a Animator component")]
 	[AddComponentMenu("")]
+[MovedFrom("AtMycelia.Amanita.VScripting")]
 	public class AnimatorProperty : BaseVariableProperty
 	{
 		//generated property
