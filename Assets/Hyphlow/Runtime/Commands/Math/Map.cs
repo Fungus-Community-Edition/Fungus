@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                  "Map",
                  "Map a value that exists in 1 range of numbers to another.")]
     [AddComponentMenu("")]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class Map : Command
     {
         //[Tooltip("LHS Value ")]

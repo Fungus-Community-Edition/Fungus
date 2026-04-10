@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                  "Load Variable", 
                  "Loads a saved value and stores it in a Boolean, Integer, Float or String variable. If the key is not found then the variable is not modified.")]
     [AddComponentMenu("")]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class LoadVariable : Command
     {
         [Tooltip("Name of the saved value. Supports variable substition e.g. \"player_{$PlayerNumber}\"")]

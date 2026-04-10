@@ -12,7 +12,7 @@ namespace AtMycelia.Hyphlow
 				 "Animator",
 				 "Get or Set a property of a Animator component")]
 	[AddComponentMenu("")]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
 	public class AnimatorProperty : BaseVariableProperty
 	{
 		//generated property

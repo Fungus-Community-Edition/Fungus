@@ -28,7 +28,7 @@ namespace AtMycelia.Hyphlow
         "Blocks can listen for this message using a Message Received event handler.")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class SendMessage : Command
     {
         [Tooltip("Target flowchart(s) to send the message to")]

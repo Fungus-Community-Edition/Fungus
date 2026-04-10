@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                  "Clamp",
                  "Command to contain a value between a lower and upper bound, with optional wrapping modes")]
     [AddComponentMenu("")]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class Clamp : Command
     {
         public enum Mode

@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                  "Get Text", 
                  "Gets the text property from a UI Text object and stores it in a string variable.")]
     [AddComponentMenu("")]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class GetText : Command 
     {
         [Tooltip("Text object to get text value from")]

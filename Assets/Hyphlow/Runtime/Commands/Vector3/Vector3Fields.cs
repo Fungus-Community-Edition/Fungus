@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                  "Fields",
                  "Get or Set the x,y,z fields of a vector3 via floatvars")]
     [AddComponentMenu("")]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class Vector3Fields : Command
     {
         public enum GetSet

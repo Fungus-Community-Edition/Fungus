@@ -4,6 +4,7 @@ using UnityEngine.Serialization;
 using System.Collections.Generic;
 using AtMycelia.Hyphlow;
 using AtMycelia.Amanita.VScripting;
+using AtMycelia.Hyphlow.Sys;
 using AtMycelia.Hyphlow.Tweening;
 
 namespace AtMycelia.Amanita
@@ -189,7 +190,7 @@ namespace AtMycelia.Amanita
             beingDragged = false;
         }
 
-        private DefaultTweenAdapter Tweener => DefaultHyphlowAssets.TweenAdapter;
+        private DefaultTweenAdapter Tweener => HyphlowRuntimeSysAssets.S.TweenAdapter;
 
         protected virtual void DoPointerEnter()
         {

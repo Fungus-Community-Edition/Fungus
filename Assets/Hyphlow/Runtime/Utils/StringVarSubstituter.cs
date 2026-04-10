@@ -1,3 +1,4 @@
+using AtMycelia.Hyphlow.Sys;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,7 +9,7 @@ using UnityEngine.Scripting.APIUpdating;
 
 namespace AtMycelia.Hyphlow
 {
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class StringVarSubstituter
     {
         public string SubstituteVariables(string input, IVariableSource variableSource)
@@ -115,7 +116,7 @@ namespace AtMycelia.Hyphlow
 
         private bool TryGetVariableFromGlobalSources(string key, out IVariable variable)
         {
-            VariableRegistryConfig registryConfig = DefaultHyphlowAssets.VariableRegistryConfig;
+            VariableRegistryConfig registryConfig = HyphlowRuntimeSysAssets.S.VariableRegistryConfig;
             if (registryConfig == null)
             {
                 variable = null;

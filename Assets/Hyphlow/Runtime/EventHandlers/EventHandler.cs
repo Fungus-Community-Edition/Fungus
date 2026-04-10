@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
     /// <summary>
     /// Attribute class for Fungus event handlers.
     /// </summary>
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class EventHandlerInfoAttribute : Attribute
     {
         public EventHandlerInfoAttribute(string category, string eventHandlerName, string helpText)

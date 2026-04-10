@@ -1,3 +1,4 @@
+using AtMycelia.Hyphlow.Sys;
 using UnityEditor;
 using UnityEngine;
 using AtMycelia.Hyphlow.Tweening;
@@ -20,35 +21,57 @@ namespace AtMycelia.Hyphlow.EditorUtils
         private static void DoTheEnsuring()
         {
             Debug.Log($"Doing default asset maintenance...");
+            EnsureHyphlowRuntimeSysAssets();
             EnsureDefaultTweenAdapter();
             EnsureVariableRegistryConfig();
         }
 
+        public static HyphlowRuntimeSysAssets EnsureHyphlowRuntimeSysAssets()
+        {
+            HyphlowRuntimeSysAssets assets = HyphlowRuntimeSysAssets.S;
+            if (assets == null)
+            {
+                var all = Resources.LoadAll<HyphlowRuntimeSysAssets>("");
+                if (all.Length > 0)
+                {
+                    assets = all[0];
+                }
+            }
+
+            if (assets == null)
+            {
+                string pathToContainingFolder = "AtMycelia/Hyphlow/Sys"; // Relative to Resources
+                assets = SOUtils.EnsureSOExists<HyphlowRuntimeSysAssets>(pathToContainingFolder,
+                    "HyphlowRuntimeSysAssets");
+            }
+            HyphlowRuntimeSysAssets.S = assets;
+            return assets;
+        }
         public static DefaultTweenAdapter EnsureDefaultTweenAdapter()
         {
-            DefaultTweenAdapter adaptor = DefaultHyphlowAssets.TweenAdapter;
+            DefaultTweenAdapter adaptor = HyphlowRuntimeSysAssets.S.TweenAdapter;
             if (adaptor == null)
             {
-                string pathToContainingFolder = "AtMycelia/Tweening"; // Relative to Resources
+                string pathToContainingFolder = "AtMycelia/Hyphlow/Sys"; // Relative to Resources
                 adaptor = SOUtils.EnsureSOExists<DefaultTweenAdapter>(pathToContainingFolder,
                     "DefaultTweenAdapter");
             }
 
-            DefaultHyphlowAssets.TweenAdapter = adaptor;
+            HyphlowRuntimeSysAssets.S.TweenAdapter = adaptor;
             return adaptor;
         }
 
         public static VariableRegistryConfig EnsureVariableRegistryConfig()
         {
-            VariableRegistryConfig config = DefaultHyphlowAssets.VariableRegistryConfig;
+            VariableRegistryConfig config = HyphlowRuntimeSysAssets.S.VariableRegistryConfig;
             if (config == null)
             {
-                string pathToContainingFolder = "AtMycelia/Amanita"; // Relative to Resources
+                string pathToContainingFolder = "AtMycelia/Hyphlow/Sys"; // Relative to Resources
                 config = SOUtils.EnsureSOExists<VariableRegistryConfig>(pathToContainingFolder,
                     "VariableRegistryConfig");
             }
 
-            DefaultHyphlowAssets.VariableRegistryConfig = config;
+            HyphlowRuntimeSysAssets.S.VariableRegistryConfig = config;
             return config;
         }
     }

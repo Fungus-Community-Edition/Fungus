@@ -12,7 +12,7 @@ namespace AtMycelia.Hyphlow
                  "Set Text", 
                  "Sets the text property on a UI Text object and/or an Input Field object.")]
     [AddComponentMenu("")]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class SetText : Command
     {
         [Tooltip("Text object to set text on. Can be a UI Text, Text Field or Text Mesh object.")]

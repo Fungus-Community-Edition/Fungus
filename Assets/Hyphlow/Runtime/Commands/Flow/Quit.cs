@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                  "Quit", 
                  "Quits the application. Does not work in Editor or Webplayer builds. Shouldn't generally be used on iOS.")]
     [AddComponentMenu("")]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class Quit : Command 
     {
         #region Public members

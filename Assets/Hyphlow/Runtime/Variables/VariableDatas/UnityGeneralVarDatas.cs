@@ -7,7 +7,7 @@ namespace AtMycelia.Hyphlow
 {
     [System.Serializable]
     [VariableData(typeof(Component), typeof(IVariable<Component>), typeof(IVariable<GameObject>))]
-    [MovedFrom("AtMycelia.Hyphlow")]
+    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class ComponentData : VariableData<Component>
     {
         protected override Variable LegacyVarRef
@@ -35,7 +35,7 @@ namespace AtMycelia.Hyphlow
     /// </summary>
     [System.Serializable]
     [VariableData(typeof(GameObject), typeof(IVariable<GameObject>))]
-    [MovedFrom("AtMycelia.Hyphlow")]
+    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class GameObjectData : VariableData<GameObject>
     {
         [SerializeField]
@@ -118,7 +118,7 @@ namespace AtMycelia.Hyphlow
     /// </summary>
     [System.Serializable]
     [VariableData(typeof(Transform), typeof(IVariable<Transform>))]
-    [MovedFrom("AtMycelia.Hyphlow")]
+    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class TransformData : VariableData<Transform>
     {
         [SerializeField]
@@ -183,7 +183,7 @@ namespace AtMycelia.Hyphlow
     /// </summary>
     [System.Serializable]
     [VariableData(typeof(UnityObj), typeof(IVariable<UnityObj>))]
-    [MovedFrom("AtMycelia.Hyphlow")]
+    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class ObjectData : VariableData<UnityObj>
     {
         [SerializeField]

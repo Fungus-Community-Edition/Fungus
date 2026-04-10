@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                  "Delete Save Key", 
                  "Deletes a saved value from permanent storage.")]
     [AddComponentMenu("")]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class DeleteSaveKey : Command
     {
         [Tooltip("Name of the saved value. Supports variable substition e.g. \"player_{$PlayerNumber}")]

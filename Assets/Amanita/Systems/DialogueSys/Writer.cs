@@ -6,6 +6,7 @@ using System.Text;
 using System.Globalization;
 using AtMycelia.Hyphlow.Tweening;
 using AtMycelia.Hyphlow;
+using AtMycelia.Hyphlow.Sys;
 
 namespace AtMycelia.Amanita.DialogueSys
 {
@@ -127,7 +128,7 @@ namespace AtMycelia.Amanita.DialogueSys
         {
             if (shakerSO == null)
             {
-                shakerSO = DefaultHyphlowAssets.TweenAdapter;
+                shakerSO = HyphlowRuntimeSysAssets.S.TweenAdapter;
             }
             posShaker = shakerSO as IPositionShaker;
             if (posShaker == null)

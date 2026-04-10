@@ -15,7 +15,7 @@ using UnityEngine.Scripting.APIUpdating;
 namespace AtMycelia.Hyphlow
 {
     [Serializable]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public sealed class VariableManager : IVariableSource, IMuscariableSource,
         IReorderableVariableSource, IReorderableMuscariableSource
     {
@@ -85,6 +85,7 @@ namespace AtMycelia.Hyphlow
             _muscariables.RemoveByReference(toRemove as Muscariable);
 
             _lookup.Remove(toRemove.ItemId);
+            MarkOwnerAsDirty();
             VariableRemoved(toRemove);
         }
 
@@ -292,6 +293,7 @@ namespace AtMycelia.Hyphlow
                 _legacyVariables.Add(toAdd as Variable);
             }
             _lookup[toAdd.ItemId] = toAdd;
+            MarkOwnerAsDirty();
             VariableAdded(toAdd);
         }
 
@@ -343,14 +345,6 @@ namespace AtMycelia.Hyphlow
             RegisterIntoVarLookup(_muscariables);
             RegisterIntoVarLookup(_legacyVariables);
             EnsureValidIds();
-
-#if UNITY_EDITOR
-            if (VarOwner as UnityObj == null)
-            {
-                return;
-            }
-            EditorUtility.SetDirty(this.VarOwner as UnityObj);
-#endif
             Refreshed();
         }
 
@@ -409,7 +403,10 @@ namespace AtMycelia.Hyphlow
         {
             get
             {
-                return _lookup.Values.ToList();
+                var result = new List<IVariable>(_muscariables.Count + _legacyVariables.Count);
+                result.AddRange(_muscariables);
+                result.AddRange(_legacyVariables);
+                return result;
             }
         }
 
@@ -722,15 +719,22 @@ namespace AtMycelia.Hyphlow
 
         public void ReorderVariables(IList<IVariable> newlyOrderedVars)
         {
+            if (newlyOrderedVars == null || newlyOrderedVars.Count == 0)
+            {
+                return;
+            }
+
+            var orderedSnapshot = newlyOrderedVars.ToList();
             var whatWeGot = _lookup.Values.ToList();
-            if (!newlyOrderedVars.SameContentsAs(whatWeGot))
+            if (!orderedSnapshot.SameContentsAs(whatWeGot))
             {
                 Debug.LogWarning("Attempted to reorder variables with a list that doesn't have the same " +
                     "contents as the current variables. Reorder aborted.");
                 return;
             }
+
             Clear();
-            AddMultiVars(newlyOrderedVars);
+            AddMultiVars(orderedSnapshot);
             Reordered();
         }
 
@@ -765,6 +769,16 @@ namespace AtMycelia.Hyphlow
             result.Key = key;
             Integrate(result);
             return result;
+        }
+
+        private void MarkOwnerAsDirty()
+        {
+#if UNITY_EDITOR
+            if (VarOwner is UnityObj unityObj)
+            {
+                EditorUtility.SetDirty(unityObj);
+            }
+#endif
         }
     }
 }

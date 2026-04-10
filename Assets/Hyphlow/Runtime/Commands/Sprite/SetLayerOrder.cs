@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                  "Set Sorting Layer", 
                  "Sets the Renderer sorting layer of every child of a game object. Applies to all Renderers (including mesh, skinned mesh, and sprite).")]
     [AddComponentMenu("")]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class SetSortingLayer : Command 
     {
         [Tooltip("Root Object that will have the Sorting Layer set. Any children will also be affected")]

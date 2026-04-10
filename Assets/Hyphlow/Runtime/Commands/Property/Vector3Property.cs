@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
 				 "Vector3",
 				 "Get or Set a property of a Vector3 component")]
 	[AddComponentMenu("")]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
 	public class Vector3Property : BaseVariableProperty
 	{
 		//generated property

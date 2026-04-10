@@ -7,7 +7,7 @@ namespace AtMycelia.Hyphlow
     [CommandInfo("Variable", 
         "StringToFloat",
         "Converts a string into a float")]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class StringToFloat : Command
     {
         [SerializeField] protected StringData input;

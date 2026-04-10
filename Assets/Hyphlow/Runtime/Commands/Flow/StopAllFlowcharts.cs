@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                  "Stop All Flowcharts",
                  "Stops execution of all Blocks in all Flowcharts in the scene.")]
     [AddComponentMenu("")]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class StopAllFlowcharts : Command
     {
         [Tooltip("Flowcharts with any of these GameObjects as their target will not be stopped.")]

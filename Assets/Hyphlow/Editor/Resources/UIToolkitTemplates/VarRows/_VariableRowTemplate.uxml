@@ -4,7 +4,7 @@
         <engine:Label text="Type Label" name="TypeLabel" view-data-key="" class="varRowTypeLabel" />
         <engine:TextField name="KeyInput" view-data-key="" hide-placeholder-on-focus="true" binding-path="key" class="varRowInputField keyInput" />
         <engine:VisualElement name="ValueFieldHolder" view-data-key="" />
-        <engine:EnumField value="Private" type="AtMycelia.Hyphlow.VariableScope, AtMycelia.Hyphlow.Core" name="Scope" data-source-type="AtMycelia.Hyphlow.VariableScope, AtMycelia.Hyphlow.Core" view-data-key="" binding-path="scope" class="scopeRoot" />
+        <engine:EnumField value="Private" type="AtMycelia.Hyphlow.VariableScope, Assembly-CSharp" name="Scope" data-source-type="AtMycelia.Hyphlow.VariableScope, Assembly-CSharp" view-data-key="" binding-path="scope" class="scopeRoot" />
         <engine:Button text="-" name="RemoveButton" view-data-key="" class="removeButton" />
     </engine:VisualElement>
 </UXML>

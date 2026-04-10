@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                  "From String",
                  "Attempts to parse a string into a given fungus variable type, such as integer or float")]
     [AddComponentMenu("")]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class FromString : Command
     {
         [Tooltip("Source of string data to parse into another variables value")]

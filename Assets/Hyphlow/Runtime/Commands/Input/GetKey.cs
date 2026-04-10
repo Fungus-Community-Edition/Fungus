@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                  "GetKey",
                  "Store Input.GetKey in a variable. Supports an optional Negative key input. A negative value will be overridden by a positive one, they do not add.")]
     [AddComponentMenu("")]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class GetKey : Command
     {
         [SerializeField]

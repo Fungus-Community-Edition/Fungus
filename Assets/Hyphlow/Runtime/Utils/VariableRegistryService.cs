@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using AtMycelia.Hyphlow.Sys;
 using UnityEngine;
 
 #if UNITY_EDITOR
@@ -92,13 +93,13 @@ namespace AtMycelia.Hyphlow
 
         public static VariableRegistryConfig LoadDefaultConfig()
         {
-            if (DefaultHyphlowAssets.VariableRegistryConfig == null)
+            if (HyphlowRuntimeSysAssets.S.VariableRegistryConfig == null)
             {
-                DefaultHyphlowAssets.VariableRegistryConfig =
+                HyphlowRuntimeSysAssets.S.VariableRegistryConfig =
                     Resources.Load<VariableRegistryConfig>(DefaultConfigResourcesPath);
             }
 
-            return DefaultHyphlowAssets.VariableRegistryConfig;
+            return HyphlowRuntimeSysAssets.S.VariableRegistryConfig;
         }
 
         private void ToggleSubs(bool on)

@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                  "To String",
                  "Stores the result of a ToString on given variable in a string.")]
     [AddComponentMenu("")]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class ToString : Command
     {
         [Tooltip("Target variable to get String of.")]

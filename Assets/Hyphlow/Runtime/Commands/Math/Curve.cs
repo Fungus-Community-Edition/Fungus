@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                  "Curve",
                  "Pass a value through an AnimationCurve")]
     [AddComponentMenu("")]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class Curve : BaseUnaryMathCommand
     {
         [SerializeField]

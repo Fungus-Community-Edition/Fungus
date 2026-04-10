@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                  "MinMax",
                  "Command to store the min or max of 2 values")]
     [AddComponentMenu("")]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class MinMax : Command
     {
         public enum Function

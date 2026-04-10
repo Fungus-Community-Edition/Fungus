@@ -9,7 +9,7 @@ namespace AtMycelia.Hyphlow
     /// For VariableData subclasses
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, Inherited = false)]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public sealed class VariableDataAttribute : Attribute
     {
         public Type ContentType { get; private set; }

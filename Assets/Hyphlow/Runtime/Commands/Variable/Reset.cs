@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                  "Reset", 
                  "Resets the state of all commands and variables in the Flowchart.")]
     [AddComponentMenu("")]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class Reset : Command
     {   
         [Tooltip("Reset state of all commands in the script")]

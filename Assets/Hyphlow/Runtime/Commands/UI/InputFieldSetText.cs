@@ -8,7 +8,7 @@ namespace AtMycelia.Hyphlow
     [CommandInfo("UI",
         "InputFieldSetText",
         "As it says on the tin.")]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class InputFieldSetText : Command
     {
         [SerializeField] protected GameObjectData inputFieldHolder;

@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                  "ToInt",
                  "Command to execute and store the result of a float to int conversion")]
     [AddComponentMenu("")]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class ToInt : Command
     {
         public enum Mode

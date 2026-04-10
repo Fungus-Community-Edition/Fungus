@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                  "Abs",
                  "Command to execute and store the result of a Abs")]
     [AddComponentMenu("")]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class Abs : BaseUnaryMathCommand
     {
         public override void OnEnter()

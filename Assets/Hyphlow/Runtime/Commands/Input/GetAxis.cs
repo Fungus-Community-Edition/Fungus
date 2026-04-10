@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                  "GetAxis",
                  "Store Input.GetAxis in a variable")]
     [AddComponentMenu("")]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class GetAxis : Command
     {
         [SerializeField]

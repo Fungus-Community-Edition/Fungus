@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 using System.Linq;
 using UnityObj = UnityEngine.Object;
@@ -270,6 +271,42 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
         }
 
+        private static UnityObj ResolveRecordTarget()
+        {
+            if (curSource is Flowchart flowchart)
+            {
+                VariableManagerComponent manager = flowchart.GetComponent<VariableManagerComponent>();
+                if (manager != null)
+                {
+                    return manager;
+                }
+
+                return flowchart;
+            }
+
+            return curSource as UnityObj;
+        }
+
+        private static void MarkDirty(UnityObj target)
+        {
+            if (target == null)
+            {
+                return;
+            }
+
+            EditorUtility.SetDirty(target);
+
+            if (target is Component component && component.gameObject.scene.IsValid())
+            {
+                EditorSceneManager.MarkSceneDirty(component.gameObject.scene);
+            }
+
+            if (PrefabUtility.IsPartOfPrefabInstance(target))
+            {
+                PrefabUtility.RecordPrefabInstancePropertyModifications(target);
+            }
+        }
+
         /// <summary>
         /// Creates a new Variable of the supplied type on the active flowchart.
         /// Optionally attempts to place it after an existing variable with the suggested name.
@@ -279,31 +316,35 @@ namespace AtMycelia.Hyphlow.EditorUtils
         public static void AddVariable(object varTypeToAdd, string suggestedName)
         {
             if (varTypeToAdd is not Type variableType)
-                return;
-
-            UnityObj varSourceObj = curSource as UnityObj;
-
-            if (varSourceObj != null)
             {
-                // We'll assume that the var type passed is a Muscariable instead of a legacy type
-                VariableInfoAttribute info = VariableEditor.GetVariableInfo(variableType);
-                Type muscariType = typeof(Muscariable);
-                if (info == null || !muscariType.IsAssignableFrom(variableType))
-                {
-                    Debug.LogError($"Type {variableType.Name} is not a Muscariable or does not " +
-                        $"have a VariableInfo attribute.");
-                    return;
-                }
-
-                string typeName = info.ContentType.Name;
-                if (typeName.Equals("Single"))
-                {
-                    typeName = "Float";
-                }
-
-                Undo.RecordObject(varSourceObj, $"Add {typeName} Variable");
-                curSource.AddNewVariableOfContentType(info.ContentType, suggestedName);
+                return;
             }
+
+            UnityObj varSourceObj = ResolveRecordTarget();
+            if (varSourceObj == null || curSource == null)
+            {
+                return;
+            }
+
+            // We'll assume that the var type passed is a Muscariable instead of a legacy type
+            VariableInfoAttribute info = VariableEditor.GetVariableInfo(variableType);
+            Type muscariType = typeof(Muscariable);
+            if (info == null || !muscariType.IsAssignableFrom(variableType))
+            {
+                Debug.LogError($"Type {variableType.Name} is not a Muscariable or does not " +
+                    $"have a VariableInfo attribute.");
+                return;
+            }
+
+            string typeName = info.ContentType.Name;
+            if (typeName.Equals("Single"))
+            {
+                typeName = "Float";
+            }
+
+            Undo.RecordObject(varSourceObj, $"Add {typeName} Variable");
+            curSource.AddNewVariableOfContentType(info.ContentType, suggestedName);
+            MarkDirty(varSourceObj);
         }
 
         #endregion

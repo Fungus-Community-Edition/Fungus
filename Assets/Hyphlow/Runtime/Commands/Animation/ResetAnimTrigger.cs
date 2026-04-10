@@ -13,7 +13,7 @@ namespace AtMycelia.Hyphlow
                  "Resets a trigger parameter on an Animator component.")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class ResetAnimTrigger : Command
     {
         [Tooltip("Reference to an Animator component in a game object")]

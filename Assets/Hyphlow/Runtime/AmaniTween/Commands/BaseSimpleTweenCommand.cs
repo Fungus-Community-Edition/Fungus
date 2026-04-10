@@ -1,3 +1,4 @@
+using AtMycelia.Hyphlow.Sys;
 using UnityEngine;
 
 namespace AtMycelia.Hyphlow.Tweening.VScripting
@@ -38,7 +39,7 @@ namespace AtMycelia.Hyphlow.Tweening.VScripting
 
         protected virtual void GoWithDefaultTweener()
         {
-            _tweenerSO = DefaultHyphlowAssets.TweenAdapter;
+            _tweenerSO = HyphlowRuntimeSysAssets.S.TweenAdapter;
         }
 
         protected override void RefreshVariableDataCache()

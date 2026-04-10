@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
     /// </summary>
     [System.Serializable]
     [VariableData(typeof(string), typeof(IVariable<string>))]
-    [MovedFrom("AtMycelia.Hyphlow")]
+    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class StringData : VariableData<string>, ISerializationCallbackReceiver
     {
         [SerializeField]
@@ -135,7 +135,7 @@ namespace AtMycelia.Hyphlow
     }
 
     [System.Serializable]
-    [MovedFrom("AtMycelia.Hyphlow")]
+    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class StringDataMulti : StringData
     {
         public StringDataMulti() : base(default) { }
@@ -156,7 +156,7 @@ namespace AtMycelia.Hyphlow
     /// </summary>
     [System.Serializable]
     [VariableData(typeof(Color), typeof(IVariable<Color>))]
-    [MovedFrom("AtMycelia.Hyphlow")]
+    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class ColorData : VariableData<Color>
     {
         [SerializeField]
@@ -193,7 +193,7 @@ namespace AtMycelia.Hyphlow
     /// </summary>
     [System.Serializable]
     [VariableData(typeof(Sprite), typeof(IVariable<Sprite>))]
-    [MovedFrom("AtMycelia.Hyphlow")]
+    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class SpriteData : VariableData<Sprite>
     {
         [SerializeField]
@@ -230,7 +230,7 @@ namespace AtMycelia.Hyphlow
     /// </summary>
     [System.Serializable]
     [VariableData(typeof(Texture), typeof(IVariable<Texture>))]
-    [MovedFrom("AtMycelia.Hyphlow")]
+    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class TextureData : VariableData<Texture>
     {
         [SerializeField]
@@ -265,7 +265,7 @@ namespace AtMycelia.Hyphlow
     /// </summary>
     [System.Serializable]
     [VariableData(typeof(Material), typeof(IVariable<Material>))]
-    [MovedFrom("AtMycelia.Hyphlow")]
+    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class MaterialData : VariableData<Material>
     {
         [SerializeField]
@@ -298,7 +298,7 @@ namespace AtMycelia.Hyphlow
 
     [System.Serializable]
     [VariableData(typeof(Animator), typeof(IVariable<Animator>))]
-    [MovedFrom("AtMycelia.Hyphlow")]
+    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class AnimatorData : VariableData<Animator>
     {
         [SerializeField]

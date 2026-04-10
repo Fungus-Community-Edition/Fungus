@@ -12,7 +12,7 @@ namespace AtMycelia.Hyphlow
                  "Set Sprite Order", 
                  "Controls the render order of sprites by setting the Order In Layer property of a list of sprites.")]
     [AddComponentMenu("")]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class SetSpriteOrder : Command 
     {
         [Tooltip("List of sprites to set the order in layer property on")]

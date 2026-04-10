@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using AtMycelia.Amanita;
 using AtMycelia.Hyphlow.UI;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -23,9 +22,8 @@ namespace AtMycelia.Hyphlow
     /// </summary>
     [ExecuteInEditMode]
     [RequireComponent(typeof(VariableManagerComponent))]
-[MovedFrom("AtMycelia.Hyphlow")]
-    public class Flowchart : MonoBehaviour, ISubstitutionHandler,
-        IReorderableVariableSource, IReorderableMuscariableSource,
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    public class Flowchart : MonoBehaviour, ISubstitutionHandler, IReorderableMuscariableSource,
         IForceResetUidHandler, ISerializationCallbackReceiver, ITearDownResponder, IRefreshable,
         IBackwardsCompatibilityApplier
     {

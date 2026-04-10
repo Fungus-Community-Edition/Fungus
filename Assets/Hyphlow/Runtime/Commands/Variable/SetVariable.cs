@@ -16,7 +16,7 @@ namespace AtMycelia.Hyphlow
     [AddComponentMenu("")]
     [ExecuteInEditMode]
     [MovedFrom("AtMycelia.Amanita.VScripting.Commands")]
-    public class SetVariable : Command, ISerializationCallbackReceiver
+    public class SetVariable : Command
     {
         [Tooltip("The type of math operation to be performed")]
         [FormerlySerializedAs("setOperator")]
@@ -107,7 +107,6 @@ namespace AtMycelia.Hyphlow
 
         #region backwards compat
 
-        
         public override void ApplyBackwardsCompatibility()
         {
             base.ApplyBackwardsCompatibility();

@@ -14,8 +14,8 @@ namespace AtMycelia.Hyphlow.EditorUtils
             Color defaultTint;
             if (block._EventHandler != null)
             {
-                //graphics.offTexture = HyphlowEditorResources.EventNodeOff;
-                //graphics.onTexture = HyphlowEditorResources.EventNodeOn;
+                //graphics.offTexture = HyphlowEditorSysAssets.EventNodeOff;
+                //graphics.onTexture = HyphlowEditorSysAssets.EventNodeOn;
                 defaultTint = HyphlowConstants.DefaultEventBlockTint;
             }
             else
@@ -34,14 +34,14 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
                 if (blockGraphicsUniqueListWorkSpace.Count > 1)
                 {
-                    //graphics.offTexture = HyphlowEditorResources.ChoiceNodeOff;
-                    //graphics.onTexture = HyphlowEditorResources.ChoiceNodeOn;
+                    //graphics.offTexture = HyphlowEditorSysAssets.ChoiceNodeOff;
+                    //graphics.onTexture = HyphlowEditorSysAssets.ChoiceNodeOn;
                     defaultTint = HyphlowConstants.DefaultChoiceBlockTint;
                 }
                 else
                 {
-                    //graphics.offTexture = HyphlowEditorResources.ProcessNodeOff;
-                    //graphics.onTexture = HyphlowEditorResources.ProcessNodeOn;
+                    //graphics.offTexture = HyphlowEditorSysAssets.ProcessNodeOff;
+                    //graphics.onTexture = HyphlowEditorSysAssets.ProcessNodeOn;
                     defaultTint = HyphlowConstants.DefaultProcessBlockTint;
                 }
             }

@@ -13,7 +13,7 @@ namespace AtMycelia.Hyphlow
                  "Sets a game object in the scene to be active / inactive.")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class SetActive : Command
     {
         [Tooltip("Reference to game object to enable / disable")]

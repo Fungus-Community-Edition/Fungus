@@ -167,15 +167,13 @@ MonoBehaviour:
   _oldMuscariables: []
   description: 
   uiModel:
-    _selectedBlocks:
-    - {fileID: 349764837}
-    _selectedCommands:
-    - {fileID: 349764841}
+    _selectedBlocks: []
+    _selectedCommands: []
     _owner: {fileID: 349764832}
-    <ScrollPos>k__BackingField: {x: 0, y: 2.7272727}
+    <ScrollPos>k__BackingField: {x: 0, y: 7.5349655}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesExpanded>k__BackingField: 0
-    <Zoom>k__BackingField: 1.1
+    <Zoom>k__BackingField: 1.3000001
     <BlockViewHeight>k__BackingField: 223
     <ScrollViewRect>k__BackingField:
       serializedVersion: 2
@@ -191,7 +189,6 @@ MonoBehaviour:
   showLineNumbers: 0
   hideCommands: []
   localizationId: 
-  _luaEnvironment: {fileID: 0}
   luaBindingName: flowchart
   includeInSaves: 1
   saveBlocks: 1
@@ -239,16 +236,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 4
   indentLevel: 0
-  duration:
+  _duration:
     backingVarRef:
       itemId: 1
       owningSource: {fileID: 349764833}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 3
+    value: 1
     floatRef: {fileID: 0}
     floatVal: 0
-  targetAlpha:
+  _targetAlpha:
     backingVarRef:
       itemId: 2
       owningSource: {fileID: 349764833}
@@ -257,7 +254,7 @@ MonoBehaviour:
     value: 1
     floatRef: {fileID: 0}
     floatVal: 0
-  waitUntilFinished:
+  _waitUntilFinished:
     backingVarRef:
       itemId: 0
       owningSource: {fileID: 349764833}
@@ -266,22 +263,30 @@ MonoBehaviour:
     value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
-  fadeColor:
+  _fadeColor:
     backingVarRef:
       itemId: 4
       owningSource: {fileID: 349764833}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {r: 0, g: 0, b: 0, a: 0}
+    value: {r: 0, g: 0, b: 0, a: 1}
     colorRef: {fileID: 0}
     colorVal: {r: 0, g: 0, b: 0, a: 0}
-  fadeTexture: {fileID: 0}
+  _fadeTexture:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 349764833}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 0}
+    textureRef: {fileID: 0}
+    textureVal: {fileID: 0}
   fadeTweener: {fileID: 0}
-  _oldDuration: -1
-  _oldTargetAlpha: -1
-  _oldWaitUntilFinished: 0
-  _oldFadeColor: {r: 0, g: 0, b: 0, a: 0}
-  _migrated: 1
+  _oldDuration: 1
+  _oldTargetAlpha: 1
+  _oldWaitUntilFinished: 1
+  _oldFadeColor: {r: 0, g: 0, b: 0, a: 1}
+  _oldFadeTexture: {fileID: 0}
 --- !u!114 &349764836
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -299,7 +304,7 @@ MonoBehaviour:
   itemID: 1
   oldItemID: 0
   _owner: {fileID: 349764833}
-  value: 3
+  value: 1.5
 --- !u!114 &349764837
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -361,25 +366,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 2
   indentLevel: 0
-  duration:
+  _duration:
     backingVarRef:
       itemId: 1
       owningSource: {fileID: 349764833}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 3
+    value: 1
     floatRef: {fileID: 0}
     floatVal: 0
-  targetAlpha:
+  _targetAlpha:
     backingVarRef:
       itemId: 3
       owningSource: {fileID: 349764833}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    value: 1
     floatRef: {fileID: 0}
     floatVal: 0
-  waitUntilFinished:
+  _waitUntilFinished:
     backingVarRef:
       itemId: 0
       owningSource: {fileID: 349764833}
@@ -388,22 +393,30 @@ MonoBehaviour:
     value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
-  fadeColor:
+  _fadeColor:
     backingVarRef:
       itemId: 4
       owningSource: {fileID: 349764833}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {r: 0, g: 0, b: 0, a: 0}
+    value: {r: 0, g: 0, b: 0, a: 1}
     colorRef: {fileID: 0}
     colorVal: {r: 0, g: 0, b: 0, a: 0}
-  fadeTexture: {fileID: 0}
+  _fadeTexture:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 349764833}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 0}
+    textureRef: {fileID: 0}
+    textureVal: {fileID: 0}
   fadeTweener: {fileID: 0}
-  _oldDuration: -1
-  _oldTargetAlpha: -1
+  _oldDuration: 1
+  _oldTargetAlpha: 1
   _oldWaitUntilFinished: 1
-  _oldFadeColor: {r: 0, g: 0, b: 0, a: 0}
-  _migrated: 1
+  _oldFadeColor: {r: 0, g: 0, b: 0, a: 1}
+  _oldFadeTexture: {fileID: 0}
 --- !u!114 &349764840
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -418,25 +431,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 5
   indentLevel: 0
-  duration:
+  _duration:
     backingVarRef:
       itemId: 1
       owningSource: {fileID: 349764833}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 3
+    value: 1
     floatRef: {fileID: 0}
     floatVal: 0
-  targetAlpha:
+  _targetAlpha:
     backingVarRef:
       itemId: 2
       owningSource: {fileID: 349764833}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    value: 1
     floatRef: {fileID: 0}
     floatVal: 0
-  waitUntilFinished:
+  _waitUntilFinished:
     backingVarRef:
       itemId: 0
       owningSource: {fileID: 349764833}
@@ -445,22 +458,30 @@ MonoBehaviour:
     value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
-  fadeColor:
+  _fadeColor:
     backingVarRef:
       itemId: 5
       owningSource: {fileID: 349764833}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {r: 0, g: 0, b: 0, a: 0}
+    value: {r: 0, g: 0, b: 0, a: 1}
     colorRef: {fileID: 0}
     colorVal: {r: 0, g: 0, b: 0, a: 0}
-  fadeTexture: {fileID: 0}
+  _fadeTexture:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 349764833}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 0}
+    textureRef: {fileID: 0}
+    textureVal: {fileID: 0}
   fadeTweener: {fileID: 0}
-  _oldDuration: -1
-  _oldTargetAlpha: -1
+  _oldDuration: 1
+  _oldTargetAlpha: 1
   _oldWaitUntilFinished: 1
-  _oldFadeColor: {r: 0, g: 0, b: 0, a: 0}
-  _migrated: 1
+  _oldFadeColor: {r: 0, g: 0, b: 0, a: 1}
+  _oldFadeTexture: {fileID: 0}
 --- !u!114 &349764841
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -475,25 +496,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 3
   indentLevel: 0
-  duration:
+  _duration:
     backingVarRef:
       itemId: 1
       owningSource: {fileID: 349764833}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 3
+    value: 1
     floatRef: {fileID: 0}
     floatVal: 0
-  targetAlpha:
+  _targetAlpha:
     backingVarRef:
       itemId: 3
       owningSource: {fileID: 349764833}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    value: 1
     floatRef: {fileID: 0}
     floatVal: 0
-  waitUntilFinished:
+  _waitUntilFinished:
     backingVarRef:
       itemId: 0
       owningSource: {fileID: 349764833}
@@ -502,22 +523,30 @@ MonoBehaviour:
     value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
-  fadeColor:
+  _fadeColor:
     backingVarRef:
       itemId: 5
       owningSource: {fileID: 349764833}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {r: 0, g: 0, b: 0, a: 0}
+    value: {r: 0, g: 0, b: 0, a: 1}
     colorRef: {fileID: 0}
     colorVal: {r: 0, g: 0, b: 0, a: 0}
-  fadeTexture: {fileID: 0}
+  _fadeTexture:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 349764833}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 0}
+    textureRef: {fileID: 0}
+    textureVal: {fileID: 0}
   fadeTweener: {fileID: 0}
-  _oldDuration: -1
-  _oldTargetAlpha: -1
+  _oldDuration: 1
+  _oldTargetAlpha: 1
   _oldWaitUntilFinished: 1
-  _oldFadeColor: {r: 0, g: 0, b: 0, a: 0}
-  _migrated: 1
+  _oldFadeColor: {r: 0, g: 0, b: 0, a: 1}
+  _oldFadeTexture: {fileID: 0}
 --- !u!114 &349764842
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -546,7 +575,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 3688519675510521925
-      type: {class: FloatMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
+      type: {class: FloatMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         scope: 0
         key: out
@@ -554,7 +583,7 @@ MonoBehaviour:
         value: 1
         startValue: 0
     - rid: 3688519675510521926
-      type: {class: FloatMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
+      type: {class: FloatMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         scope: 0
         key: in
@@ -562,7 +591,7 @@ MonoBehaviour:
         value: 0
         startValue: 0
     - rid: 3688519675510521927
-      type: {class: ColorMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
+      type: {class: ColorMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         scope: 0
         key: black
@@ -570,12 +599,12 @@ MonoBehaviour:
         value: {r: 0, g: 0, b: 0, a: 1}
         startValue: {r: 0, g: 0, b: 0, a: 0}
     - rid: 3688519675510521928
-      type: {class: ColorMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
+      type: {class: ColorMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         scope: 0
         key: purple
         itemID: 5
-        value: {r: 0.79593945, g: 0, b: 1, a: 1}
+        value: {r: 0.8679245, g: 0.1514774, b: 0.7912634, a: 1}
         startValue: {r: 0, g: 0, b: 0, a: 0}
 --- !u!1 &709131380
 GameObject:
@@ -1240,6 +1269,11 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7036876570447449985, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -0.000019036232
+      objectReference: {fileID: 0}
     - target: {fileID: 7045509288082565552, guid: a717114cba7201448ae3154bfb3fb737,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -1353,12 +1387,42 @@ PrefabInstance:
     - target: {fileID: 8741691010097801699, guid: a717114cba7201448ae3154bfb3fb737,
         type: 3}
       propertyPath: _oldDuration
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8741691010097801699, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: _duration.value
       value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 8741691010097801699, guid: a717114cba7201448ae3154bfb3fb737,
         type: 3}
+      propertyPath: _oldFadeColor.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8741691010097801699, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
       propertyPath: _oldTargetAlpha
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8741691010097801699, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: _fadeColor.value.a
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8741691010097801699, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: _targetAlpha.value
       value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8741691010097801699, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: _oldWaitUntilFinished
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8741691010097801699, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: _waitUntilFinished.value
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8741691010097801699, guid: a717114cba7201448ae3154bfb3fb737,
         type: 3}
@@ -1373,6 +1437,11 @@ PrefabInstance:
     - target: {fileID: 8741691010097801699, guid: a717114cba7201448ae3154bfb3fb737,
         type: 3}
       propertyPath: targetAlpha.backingVarRef.owningSource
+      value: 
+      objectReference: {fileID: 1917205879}
+    - target: {fileID: 8741691010097801699, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: _fadeTexture.backingVarRef.owningSource
       value: 
       objectReference: {fileID: 1917205879}
     - target: {fileID: 8741691010097801699, guid: a717114cba7201448ae3154bfb3fb737,

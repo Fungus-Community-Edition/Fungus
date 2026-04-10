@@ -53,6 +53,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
             BuildManager(_inspectorRoot);
             AddMigrationButton(_inspectorRoot);
+            AddRefreshButton(_inspectorRoot);
         }
 
         protected void BuildManager(VisualElement rootElem)
@@ -107,10 +108,30 @@ namespace AtMycelia.Hyphlow.EditorUtils
             rootElem.Add(migrateButton);
         }
 
-        protected void OnMigrateClicked()
+        private void OnMigrateClicked()
         {
             VariableManagerComponent component = (VariableManagerComponent)target;
             component.MigrateFromFlowchart();
+        }
+
+        protected void AddRefreshButton(VisualElement rootElem)
+        {
+            Button refreshButton = new Button(OnRefreshClicked)
+            {
+                text = "Refresh",
+                tooltip = "Might need to use this if you're getting errors about null vars on this GameObject."
+            };
+
+            refreshButton.style.height = 30;
+            refreshButton.style.fontSize = 14;
+            refreshButton.style.marginTop = 6;
+            rootElem.Add(refreshButton);
+        }
+
+        private void OnRefreshClicked()
+        {
+            VariableManagerComponent component = (VariableManagerComponent)target;
+            component.Refresh();
         }
     }
 }

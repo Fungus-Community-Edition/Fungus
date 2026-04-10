@@ -10,7 +10,7 @@ namespace AtMycelia.Hyphlow
     [CommandInfo("Flow", 
                  "Stop Block", 
                  "Stops executing the named Block")]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class StopBlock : Command, IBlockCaller
     {
         [Tooltip("Flowchart containing the Block. If none is specified, the parent Flowchart is used.")]

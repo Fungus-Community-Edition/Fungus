@@ -13,7 +13,7 @@ namespace AtMycelia.Hyphlow
                  "Call Method", 
                  "Calls a named method on a GameObject using the GameObject.SendMessage() system.")]
     [AddComponentMenu("")]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class CallMethod : Command
     {
         [Tooltip("Target monobehavior which contains the method we want to call")]

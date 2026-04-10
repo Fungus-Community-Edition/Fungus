@@ -2,6 +2,7 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 using AtMycelia.Hyphlow;
+using AtMycelia.Hyphlow.Sys;
 using AtMycelia.Hyphlow.Tweening;
 
 namespace AtMycelia.Amanita
@@ -280,7 +281,7 @@ namespace AtMycelia.Amanita
 			
 		}
 
-		private DefaultTweenAdapter DefaultTweener => DefaultHyphlowAssets.TweenAdapter;
+		private DefaultTweenAdapter DefaultTweener => HyphlowRuntimeSysAssets.S.TweenAdapter;
 
 		protected Tween<float> _neoFadeTween;
 		protected virtual void UpdateFadeAlpha(float newVal)

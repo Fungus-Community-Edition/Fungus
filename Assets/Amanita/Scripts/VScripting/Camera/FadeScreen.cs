@@ -28,8 +28,8 @@ namespace AtMycelia.Amanita.VScripting
         [Tooltip("Color to render fullscreen fade texture with when screen is obscured.")]
         [SerializeField] protected ColorData _fadeColor = new ColorData(Color.black);
 
-        [Tooltip("Optional texture to use when rendering the fullscreen fade effect.")]
-        [SerializeField] protected Texture2D _fadeTexture;
+        [Tooltip("Optional texture to use when rendering the fullscreen fade effect.")] 
+        [SerializeField] protected TextureData _fadeTexture = new TextureData();
 
         [SerializeField] protected ScriptableObject fadeTweener;
 
@@ -40,6 +40,7 @@ namespace AtMycelia.Amanita.VScripting
             _variableDataCache.Add(_targetAlpha);
             _variableDataCache.Add(_waitUntilFinished);
             _variableDataCache.Add(_fadeColor);
+            _variableDataCache.Add(_fadeTexture);
         }
 
         protected virtual void Awake()
@@ -59,7 +60,8 @@ namespace AtMycelia.Amanita.VScripting
 
             if (doFade == null)
             {
-                Debug.LogWarning($"Fade tweener passed to FadeScreen is invalid. It needs to implement IGeneralTweenAdapter<float>. Going back to default.");
+                Debug.LogWarning($"Fade tweener passed to FadeScreen is invalid. It needs to " +
+                                 $"implement IGeneralTweenAdapter<float>. Going back to default.");
                 fadeTweener = DefaultTweener;
                 doFade = DefaultTweener;
             }
@@ -74,23 +76,40 @@ namespace AtMycelia.Amanita.VScripting
 
         private void BackwardsCompatibility()
         {
-            if (!_migrated)
+            if (_oldDuration != 1)
             {
                 _duration.Value = _oldDuration;
-                _targetAlpha.Value = _oldTargetAlpha;
-                _waitUntilFinished.Value = _oldWaitUntilFinished;
-                _fadeColor.Value = _oldFadeColor;
-
-                _oldDuration = -1;
-                _oldTargetAlpha = -1;
-                _oldWaitUntilFinished = false;
-                _oldFadeColor = Color.clear;
-                
-                _migrated = true;
-#if UNITY_EDITOR
-                UnityEditor.EditorUtility.SetDirty(this);
-#endif
+                _oldDuration = 1;
             }
+
+            if (_oldTargetAlpha != 1)
+            {
+                _targetAlpha.Value = _oldTargetAlpha;
+                _oldTargetAlpha = 1;
+            }
+
+            if (!_oldWaitUntilFinished)
+            {
+                _waitUntilFinished.Value = _oldWaitUntilFinished;
+                _oldWaitUntilFinished = true;
+            }
+
+            if (_oldFadeColor != Color.black)
+            {
+                _fadeColor.Value = _oldFadeColor;
+                _oldFadeColor = Color.black;
+            }
+
+            if (_oldFadeTexture != null)
+            {
+                _fadeTexture.Value = _oldFadeTexture;
+                _oldFadeTexture = null;
+            }
+                
+#if UNITY_EDITOR
+            UnityEditor.EditorUtility.SetDirty(this);
+#endif
+            
         }
 
         [FormerlySerializedAs("duration")]
@@ -105,8 +124,9 @@ namespace AtMycelia.Amanita.VScripting
         [FormerlySerializedAs("fadeColor")]
         [SerializeField] [HideInInspector] protected Color _oldFadeColor = Color.black;
 
-        [SerializeField]
-        [HideInInspector] private bool _migrated;
+        [FormerlySerializedAs("fadeTexture")]
+        [FormerlySerializedAs("_fadeTexture")]
+        [SerializeField] protected Texture2D _oldFadeTexture;
 
         protected IGeneralTweenAdapter<float> doFade;
 
@@ -119,7 +139,7 @@ namespace AtMycelia.Amanita.VScripting
             cameraManager.ScreenFadeTexture = DecideFadeTex();
             Texture2D DecideFadeTex()
             {
-                Texture2D result = _fadeTexture;
+                Texture2D result = _fadeTexture.Value as Texture2D;
                 if (result == null)
                 {
                     result = CameraManager.CreateColorTexture(_fadeColor.Value, 32, 32);
@@ -133,7 +153,6 @@ namespace AtMycelia.Amanita.VScripting
             {
                 if (_waitUntilFinished.Value)
                 {
-                    Debug.Log($"Fade finished, continuing with next command.");
                     Continue();
                 }
             }

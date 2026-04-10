@@ -44,11 +44,11 @@ namespace AtMycelia.Hyphlow.EditorUtils
 				return;
 			}
 
-			upIcon = HyphlowEditorResources.Up;
-			downIcon = HyphlowEditorResources.Down;
-			addIcon = HyphlowEditorResources.Add;
-			duplicateIcon = HyphlowEditorResources.Duplicate;
-			deleteIcon = HyphlowEditorResources.Delete;
+			upIcon = HyphlowEditorSysAssets.Up;
+			downIcon = HyphlowEditorSysAssets.Down;
+			addIcon = HyphlowEditorSysAssets.Add;
+			duplicateIcon = HyphlowEditorSysAssets.Duplicate;
+			deleteIcon = HyphlowEditorSysAssets.Delete;
 
 			commandListProperty = serializedObject.FindProperty("commandList");
 

@@ -26,7 +26,7 @@ namespace AtMycelia.Hyphlow
     [ExecuteInEditMode]
     [RequireComponent(typeof(Flowchart))]
     [AddComponentMenu("")]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class Block : Node, IEquatable<Block>
     {
         [SerializeField] protected ushort itemId = 0; 

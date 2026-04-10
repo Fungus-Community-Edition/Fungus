@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using AtMycelia.Hyphlow;
 using AtMycelia.Amanita.DialogueSys;
+using AtMycelia.Hyphlow.Sys;
 using AtMycelia.Hyphlow.Tweening;
 
 namespace AtMycelia.Amanita.UI.Legacy
@@ -200,7 +201,7 @@ namespace AtMycelia.Amanita.UI.Legacy
             narrativeLogActive = !narrativeLogActive;
         }
 
-        private static DefaultTweenAdapter DefaultTweener => DefaultHyphlowAssets.TweenAdapter;
+        private static DefaultTweenAdapter DefaultTweener => HyphlowRuntimeSysAssets.S.TweenAdapter;
 
         #endregion
     }

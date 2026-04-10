@@ -21,7 +21,7 @@ namespace VScriptingTests.FCWindowOperations
 
             public FakeDrawer()
             {
-                FlowchartWindowConfig config = HyphlowEditorResources.FcwConfig;
+                FlowchartWindowConfig config = HyphlowEditorSysAssets.FcwConfig;
                 blockTemplate = config.BlockUxml;
                 baseStyleSheet = config.BlockStyleSheet;
                 selectedStyleSheet = config.SelectedBlockStyleSheet;

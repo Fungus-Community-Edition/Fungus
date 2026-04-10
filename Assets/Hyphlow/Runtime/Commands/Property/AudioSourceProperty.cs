@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
 				 "AudioSource",
 				 "Get or Set a property of a AudioSource component")]
 	[AddComponentMenu("")]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
 	public class AudioSourceProperty : BaseVariableProperty
 	{
 		//generated property

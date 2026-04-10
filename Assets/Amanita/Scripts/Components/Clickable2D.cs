@@ -11,7 +11,7 @@ namespace AtMycelia.Amanita
 	/// The Game Object must have a Collider or Collider2D component attached.
 	/// Use in conjunction with the ObjectClicked Flowchart event handler.
 	/// </summary>
-	[MovedFrom("AtMycelia.Hyphlow")]
+	[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
 	public class Clickable2D : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
 	{
 		[Tooltip("Is object clicking enabled")]

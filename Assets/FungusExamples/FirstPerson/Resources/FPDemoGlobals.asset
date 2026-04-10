@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c1983cb934fee6c4bae9941b65c8c798, type: 3}
-  m_Name: FirstPersonDemoGlobals
+  m_Name: FPDemoGlobals
   m_EditorClassIdentifier: 
   _includeInSaves: 1
   _uniqueId: f4f0f1e5-bf1c-4a97-97bc-7b20c53dd436
@@ -50,5 +50,5 @@ MonoBehaviour:
         scope: 0
         key: hasKey
         itemID: 3
-        value: 0
+        value: 1
         startValue: 0

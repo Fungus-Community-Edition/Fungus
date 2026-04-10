@@ -1,3 +1,4 @@
+using AtMycelia.Hyphlow.Sys;
 using UnityEngine;
 using Type = System.Type;
 
@@ -11,7 +12,7 @@ namespace AtMycelia.Hyphlow.Tweening
             bool isItValid = ValidateTweener(tweener, interfaceTypeNeeded, whatItIsFor, logMessages);
             if (!isItValid)
             {
-                tweener = DefaultHyphlowAssets.TweenAdapter;
+                tweener = HyphlowRuntimeSysAssets.S.TweenAdapter;
             }
             return isItValid;
         }

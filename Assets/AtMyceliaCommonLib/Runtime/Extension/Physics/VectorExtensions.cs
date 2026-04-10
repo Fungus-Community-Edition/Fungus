@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita.Physics
+namespace AtMycelia.Physics
 {
     public static class VectorExtensions
     {

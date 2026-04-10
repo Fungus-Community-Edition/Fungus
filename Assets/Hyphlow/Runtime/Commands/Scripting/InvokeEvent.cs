@@ -33,7 +33,7 @@ namespace AtMycelia.Hyphlow
                  "Calls a list of component methods via the Unity Event System (as used in the Unity UI). " + 
                  "This command is more efficient than the Invoke Method command but can only pass a single parameter and doesn't support return values.")]
     [AddComponentMenu("")]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class InvokeEvent : Command
     {
         [Tooltip("A description of what this command does. Appears in the command summary.")]

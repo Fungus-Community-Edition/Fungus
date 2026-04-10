@@ -11,7 +11,7 @@ using UitkLabel = UnityEngine.UIElements.Label;
 namespace AtMycelia.Hyphlow.EditorUtils
 {
     [CustomPropertyDrawer(typeof(VarDataTagFilter))]
-    [MovedFrom("AtMycelia.Hyphlow")]
+    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class VarDataTagFilterDrawer : PropertyDrawer
     {
         private const float LABEL_RATIO = 0.2f;

@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                  "DestroyOnLoad",
                  "Calls DontDestroyOnLoad on the target gameobject")]
     [AddComponentMenu("")]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class DestroyOnLoad : Command
     {
         [SerializeField] protected GameObjectData target;

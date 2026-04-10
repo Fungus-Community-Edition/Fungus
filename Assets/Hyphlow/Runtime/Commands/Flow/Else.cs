@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                  "Else", 
                  "Marks the start of a command block to be executed when the preceding If statement is False.")]
     [AddComponentMenu("")]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class Else : Command
     {
         #region Public members

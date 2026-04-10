@@ -13,7 +13,7 @@ namespace AtMycelia.Hyphlow
     /// matching the right kind of variable with the correct data in the AnyVariableData.
     /// </summary>
     [Serializable]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class AnyVariableAndDataPair : ISerializationCallbackReceiver
     {
         [SerializeField] private VariableReference varRef = new VariableReference();

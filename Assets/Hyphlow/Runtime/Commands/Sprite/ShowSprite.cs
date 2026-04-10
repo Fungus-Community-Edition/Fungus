@@ -13,7 +13,7 @@ namespace AtMycelia.Hyphlow
                  "Makes a sprite visible / invisible by setting the color alpha.")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class ShowSprite : Command
     {
         [Tooltip("Sprite object to be made visible / invisible")]

@@ -18,7 +18,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
                 return;
             }
 
-            addTexture = HyphlowEditorResources.AddSmall;
+            addTexture = HyphlowEditorSysAssets.AddSmall;
         }
 
         /// <summary>

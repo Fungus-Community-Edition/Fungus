@@ -14,9 +14,9 @@ namespace AtMycelia.Hyphlow
 {
     [DisallowMultipleComponent]
     [ExecuteInEditMode]
-[MovedFrom("AtMycelia.Hyphlow")]
-    public class VariableManagerComponent : MonoBehaviour, IVariableSource, IMuscariableSource,
-        IReorderableVariableSource, IReorderableMuscariableSource
+    [MovedFrom(true, "AtMycelia.Hyphlow", 
+        "AtMycelia.Amanita.Core")]
+    public class VariableManagerComponent : MonoBehaviour, IReorderableMuscariableSource
     {
         [SerializeField, HideInInspector] private UnityObj _unityObjOwner;
         [SerializeField, HideInInspector] private VariableManager _variableManager = new VariableManager();
@@ -297,11 +297,26 @@ namespace AtMycelia.Hyphlow
             // let's just convert any variables that are set to Global to Public, since 
             // the concept of Global vars is now limited to VSAs.
             var vManager = _variableManager;
-            var globalVars = vManager.Variables.Where(v => v.Scope == VariableScope.Global).ToList();
+
+            var globalVars = vManager.Variables.Where(VarIsGlobal).ToList();//
             foreach (var globalVar in globalVars)
             {
                 globalVar.Scope = VariableScope.Public;
             }
+        }
+
+        private bool VarIsGlobal(IVariable var)
+        {
+            if (var == null)
+            {
+                string errorMessage =
+                    $"Found null var in manager on GameObject {this.name}. There might be an issue with " +
+                    $"a Flowchart in the scene.";
+                Debug.LogError(errorMessage);
+                return false;
+            }
+            bool result = var.Scope == VariableScope.Global;
+            return result;
         }
 #endif
     }

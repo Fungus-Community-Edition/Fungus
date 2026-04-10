@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                  "Exp",
                  "Command to execute and store the result of a Exp")]
     [AddComponentMenu("")]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class Exp : BaseUnaryMathCommand
     {
         public override void OnEnter()

@@ -13,7 +13,7 @@ namespace AtMycelia.Hyphlow
                  "Waits for a number of frames before executing the next command in the block.")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class WaitFrames : Command
     {
         [Tooltip("Number of frames to wait for")]

@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                  "Log",
                  "Command to execute and store the result of a Log")]
     [AddComponentMenu("")]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class Log : BaseUnaryMathCommand
     {
         public enum Mode

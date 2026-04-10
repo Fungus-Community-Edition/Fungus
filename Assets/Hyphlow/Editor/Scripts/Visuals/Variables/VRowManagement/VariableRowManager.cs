@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityObj = UnityEngine.Object;
@@ -365,6 +366,26 @@ namespace AtMycelia.Hyphlow.EditorUtils
             return result;
         }
 
+        private static void MarkDirty(UnityObj target)
+        {
+            if (target == null || Application.isPlaying)
+            {
+                return;
+            }
+
+            EditorUtility.SetDirty(target);
+
+            if (target is Component component && component.gameObject.scene.IsValid())
+            {
+                EditorSceneManager.MarkSceneDirty(component.gameObject.scene);
+            }
+
+            if (PrefabUtility.IsPartOfPrefabInstance(target))
+            {
+                PrefabUtility.RecordPrefabInstancePropertyModifications(target);
+            }
+        }
+
         protected void RecordAndApplyChange(IVariable variable, string description, Action<IVariable> applyChange)
         {
             if (variable == null || applyChange == null)
@@ -391,6 +412,8 @@ namespace AtMycelia.Hyphlow.EditorUtils
             {
                 EnsureVariableSource(variable.Owner);
             }
+
+            MarkDirty(toRecord);
 
             if (variableSource is ScriptableObject so)
             {

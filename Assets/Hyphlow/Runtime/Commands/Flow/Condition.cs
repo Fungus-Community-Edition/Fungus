@@ -8,7 +8,7 @@ namespace AtMycelia.Hyphlow
     /// Base for all Conditional based Commands, Ifs, Loops, and so on.
     /// </summary>
     [AddComponentMenu("")]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public abstract class Condition : Command
     {
         public override bool NonStandardPaste => true;

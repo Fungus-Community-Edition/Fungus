@@ -13,7 +13,7 @@ namespace AtMycelia.Hyphlow
                  "Sets a float parameter on an Animator component to control a Unity animation")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class SetAnimFloat : Command
     {
         [Tooltip("Reference to an Animator component in a game object")]

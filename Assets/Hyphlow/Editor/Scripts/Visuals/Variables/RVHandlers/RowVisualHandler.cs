@@ -181,9 +181,28 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 return;
             }
 
+            EnsureScopeFieldInitialized();
+
             RowBindingContext context = new RowBindingContext(_currentVariable, _visualElements,
                 ApplyVarValueToValueField);
             VisualBinder.Bind(context);
+        }
+
+        protected virtual void EnsureScopeFieldInitialized()
+        {
+            if (ScopeField == null)
+            {
+                return;
+            }
+
+            Enum currentValue = ScopeField.value;
+            if (currentValue == null || currentValue.GetType() != typeof(VariableScope))
+            {
+                VariableScope initValue = _currentVariable != null ? 
+                    _currentVariable.Scope : 
+                    VariableScope.Private;
+                ScopeField.Init(initValue);
+            }
         }
 
         protected virtual IRowVisualBinder VisualBinder => RowVisualBinderRegistry.Current;

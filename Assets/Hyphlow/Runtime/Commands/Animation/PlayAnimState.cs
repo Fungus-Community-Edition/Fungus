@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                  "Play Anim State", 
                  "Plays a state of an animator according to the state name")]
     [AddComponentMenu("")]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class PlayAnimState : Command 
     {
         [Tooltip("Reference to an Animator component in a game object")]

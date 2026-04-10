@@ -9,8 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d2af387304e4b454b9ce8b815799cad0, type: 3}
-  m_Name: AmanitaEditorResources
+  m_Script: {fileID: 11500000, guid: c9cb465272796ed479da619d12345ac8, type: 3}
+  m_Name: HyphlowEditorSysAssets
   m_EditorClassIdentifier: 
   add:
     free: {fileID: 2800000, guid: 24a867d6b4cdda04cb3aa3350f9ec7d0, type: 3}
@@ -29,7 +29,7 @@ MonoBehaviour:
     pro: {fileID: 2800000, guid: 2f17490d993c84bd7872ef6588ffba47, type: 3}
   fungus_mushroom:
     free: {fileID: 2800000, guid: 1c99c9bf7557e23469ed5dfce00504c0, type: 3}
-    pro: {fileID: 2800000, guid: 6368c1c16ebb1694091262337e4f8c44, type: 3}
+    pro: {fileID: 2800000, guid: 1c99c9bf7557e23469ed5dfce00504c0, type: 3}
   up:
     free: {fileID: 2800000, guid: 8f1242ad894201f43b2b6d52fd990f77, type: 3}
     pro: {fileID: 2800000, guid: 2a76a781db2994b33b83cd84b8835da7, type: 3}
@@ -44,9 +44,6 @@ MonoBehaviour:
     pro: {fileID: 0}
   command_background:
     free: {fileID: 2800000, guid: a5c9a4271b3de4e4f86eff7f8a1bd768, type: 3}
-    pro: {fileID: 0}
-  connection_point:
-    free: {fileID: 2800000, guid: f08a4c27d7efe4aa6a35348a4e8aec8f, type: 3}
     pro: {fileID: 0}
   event_node_off:
     free: {fileID: 2800000, guid: 0e16a209826864df7b05f6d3901aae7a, type: 3}

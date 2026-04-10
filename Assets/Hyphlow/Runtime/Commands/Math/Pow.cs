@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                  "Pow",
                  "Raise a value to the power of another.")]
     [AddComponentMenu("")]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class Pow : Command
     {
         [SerializeField]

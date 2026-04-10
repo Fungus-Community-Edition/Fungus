@@ -107,14 +107,13 @@ GameObject:
   - component: {fileID: 114558234713279786}
   - component: {fileID: 114429204895628372}
   - component: {fileID: 114471595115387154}
-  - component: {fileID: 114269318563166244}
-  - component: {fileID: 114411963098608266}
   - component: {fileID: 114275658263394176}
   - component: {fileID: 114572511229188600}
   - component: {fileID: -3901912534168384290}
   - component: {fileID: 6388932191286628349}
   - component: {fileID: 995435950799189955}
   - component: {fileID: 5592028959173968553}
+  - component: {fileID: 366039408287291324}
   m_Layer: 0
   m_Name: Lock
   m_TagString: Untagged
@@ -227,7 +226,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 3688519627662688338
-      type: {class: BooleanData, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
+      type: {class: BooleanData, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         backingVarRef:
           itemId: 0
@@ -369,7 +368,6 @@ MonoBehaviour:
     gameObjectVal: {fileID: 0}
   _characterCached: {fileID: 0}
   oldSetSayDialog: {fileID: 0}
-  _migrated: 0
   _oldStoryText: 
   _oldDescription: 
   _oldCharacter: {fileID: 0}
@@ -542,7 +540,6 @@ MonoBehaviour:
     gameObjectVal: {fileID: 0}
   _characterCached: {fileID: 0}
   oldSetSayDialog: {fileID: 0}
-  _migrated: 0
   _oldStoryText: 
   _oldDescription: 
   _oldCharacter: {fileID: 0}
@@ -772,7 +769,7 @@ MonoBehaviour:
     - rid: -2
       type: {class: , ns: , asm: }
     - rid: 6177420912830186047
-      type: {class: BooleanData, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
+      type: {class: BooleanData, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         backingVarRef:
           itemId: 0
@@ -782,42 +779,6 @@ MonoBehaviour:
         value: 0
         booleanRef: {fileID: 0}
         booleanVal: 0
---- !u!114 &114269318563166244
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1621252211410962}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d02d9822eec54c98afe95bb497211b3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  scope: 2
-  key: isUnlocked
-  itemID: 2
-  oldItemID: 0
-  _owner: {fileID: 114572511229188600}
-  value: 0
---- !u!114 &114411963098608266
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1621252211410962}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d02d9822eec54c98afe95bb497211b3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  scope: 2
-  key: hasKey
-  itemID: 1
-  oldItemID: 0
-  _owner: {fileID: 114572511229188600}
-  value: 0
 --- !u!114 &114275658263394176
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -850,6 +811,7 @@ MonoBehaviour:
   - {fileID: 114347840029698070}
   - {fileID: 114302250439265382}
   - {fileID: -3901912534168384290}
+  - {fileID: 366039408287291324}
   - {fileID: 5592028959173968553}
   - {fileID: 114494055204058732}
   - {fileID: 114597286569973654}
@@ -902,7 +864,6 @@ MonoBehaviour:
   showLineNumbers: 0
   hideCommands: []
   localizationId: 
-  _luaEnvironment: {fileID: 0}
   luaBindingName: flowchart
   includeInSaves: 1
   saveBlocks: 1
@@ -923,6 +884,7 @@ MonoBehaviour:
   - {fileID: 114471595115387154}
   - {fileID: -3901912534168384290}
   - {fileID: 5592028959173968553}
+  - {fileID: 366039408287291324}
   nextValidVarID: 6
   uniqueId: 540ce04b-48ee-4e9a-b420-3987f41973f7
   references:
@@ -935,7 +897,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1621252211410962}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2fab8abf0343545abbfebd9a7b7b34bd, type: 3}
   m_Name: 
@@ -1012,17 +974,15 @@ MonoBehaviour:
     - rid: 3688519665286643779
     - rid: 3688519665286643780
     - rid: 3688519665286643793
-    _legacyVariables:
-    - {fileID: 114411963098608266}
-    - {fileID: 114269318563166244}
-    _nextValidVarID: 7
+    _legacyVariables: []
+    _nextValidVarID: 8
     _isInitted: 1
   _cachedFlowchart: {fileID: 114572511229188600}
   references:
     version: 2
     RefIds:
     - rid: 3688519646466015317
-      type: {class: GameObjectMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
+      type: {class: GameObjectMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         scope: 0
         key: thisGameObject
@@ -1030,7 +990,7 @@ MonoBehaviour:
         value: {fileID: 1621252211410962}
         startValue: {fileID: 0}
     - rid: 3688519665286643779
-      type: {class: FloatMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
+      type: {class: FloatMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         scope: 0
         key: buttonMoveDur
@@ -1038,7 +998,7 @@ MonoBehaviour:
         value: 1
         startValue: 0
     - rid: 3688519665286643780
-      type: {class: VectorThreeMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
+      type: {class: VectorThreeMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         scope: 0
         key: buttonMoveAmount
@@ -1046,7 +1006,7 @@ MonoBehaviour:
         value: {x: 0, y: 2, z: 0}
         startValue: {x: 0, y: 0, z: 0}
     - rid: 3688519665286643793
-      type: {class: TransformMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
+      type: {class: TransformMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         scope: 0
         key: buttonTForm
@@ -1077,7 +1037,7 @@ MonoBehaviour:
     floatRef: {fileID: 0}
     floatVal: 0
   _tweenerSO: {fileID: 11400000, guid: 2456e8060d1222e4cac681fb832cd207, type: 2}
-  _toFrom: 1
+  _startMode: 1
   _relativity: 2
   _repeats:
     backingVarRef:
@@ -1140,3 +1100,71 @@ MonoBehaviour:
     value: {x: 0, y: 0, z: 0}
     vector3Ref: {fileID: 0}
     vector3Val: {x: 0, y: 0, z: 0}
+--- !u!114 &366039408287291324
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1621252211410962}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0cfd75ed26c3a940b9c0e70659fa6fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 15
+  indentLevel: 1
+  _duration:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 114572511229188600}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 1
+    floatRef: {fileID: 0}
+    floatVal: 0
+  _tweenerSO: {fileID: 11400000, guid: 2456e8060d1222e4cac681fb832cd207, type: 2}
+  _stopPreviousTweens:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 114572511229188600}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _waitUntilFinished:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 114572511229188600}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _toScale:
+    backingVarRef:
+      itemId: 7
+      owningSource: {fileID: 114572511229188600}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 0}
+  _targetScale:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {x: 0, y: 0, z: 0}
+    vector3Ref: {fileID: 0}
+    vector3Val: {x: 0, y: 0, z: 0}
+  _scaleFromValue:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {x: 0, y: 0, z: 0}
+    vector3Ref: {fileID: 0}
+    vector3Val: {x: 0, y: 0, z: 0}
+  _toFrom: 1

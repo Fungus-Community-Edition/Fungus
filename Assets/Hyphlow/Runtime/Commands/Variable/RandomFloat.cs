@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                  "Random Float", 
                  "Sets an float variable to a random value in the defined range.")]
     [AddComponentMenu("")]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class RandomFloat : Command 
     {
         [Tooltip("The variable whos value will be set")]

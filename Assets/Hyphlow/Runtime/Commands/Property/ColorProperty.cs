@@ -12,7 +12,7 @@ namespace AtMycelia.Hyphlow
                  "Color",
                  "Get or Set a property of a Color component")]
     [AddComponentMenu("")]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class ColorProperty : BaseVariableProperty
     {
 		//generated property

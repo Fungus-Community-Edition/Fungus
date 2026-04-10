@@ -76,23 +76,23 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
             EditorGUILayout.Space();
             //ideally if any are null, but typically it is all or nothing that have broken links due to version changes or moving files external to Unity
-            if (HyphlowEditorResources.Add == null)
+            if (HyphlowEditorSysAssets.Add == null)
             {
-                EditorGUILayout.HelpBox("HyphlowEditorResources need to be regenerated!", MessageType.Error);
+                EditorGUILayout.HelpBox("HyphlowEditorSysAssets need to be regenerated!", MessageType.Error);
             }
 
-            if (GUILayout.Button(new GUIContent("Select Amanita Editor Resources SO", "If Amanita icons are not showing correctly you may need to reassign the references in the HyphlowEditorResources. Button below will locate it.")))
+            if (GUILayout.Button(new GUIContent("Select Amanita Editor Resources SO", "If Amanita icons are not showing correctly you may need to reassign the references in the HyphlowEditorSysAssets. Button below will locate it.")))
             {
-                var ids = AssetDatabase.FindAssets("t:HyphlowEditorResources");
+                var ids = AssetDatabase.FindAssets("t:HyphlowEditorSysAssets");
                 if (ids.Length > 0)
                 {
                     var p = AssetDatabase.GUIDToAssetPath(ids[0]);
-                    var asset = AssetDatabase.LoadAssetAtPath<HyphlowEditorResources>(p);
+                    var asset = AssetDatabase.LoadAssetAtPath<HyphlowEditorSysAssets>(p);
                     Selection.activeObject = asset;
                 }
                 else
                 {
-                    Debug.LogError("No HyphlowEditorResources found!");
+                    Debug.LogError("No HyphlowEditorSysAssets found!");
                 }
             }
 

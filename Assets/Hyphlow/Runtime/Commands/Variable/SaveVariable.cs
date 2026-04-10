@@ -15,7 +15,7 @@ namespace AtMycelia.Hyphlow
                  "The value can be loaded again later using the Load Variable command. You can also " +
                  "use the Set Save Profile command to manage separate save profiles for multiple players.")]
     [AddComponentMenu("")]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class SaveVariable : Command
     {
         [Tooltip("Name of the saved value. Supports variable substition e.g. \"player_{$PlayerNumber}")]

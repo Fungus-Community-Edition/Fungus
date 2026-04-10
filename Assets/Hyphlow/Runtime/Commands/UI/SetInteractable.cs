@@ -12,7 +12,7 @@ namespace AtMycelia.Hyphlow
     [CommandInfo("UI", 
                  "Set Interactable", 
                  "Set the interactable state of selectable objects.")]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class SetInteractable : Command 
     {
         [Tooltip("List of objects to be affected by the command")]

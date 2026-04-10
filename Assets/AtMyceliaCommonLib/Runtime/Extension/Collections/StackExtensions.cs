@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace AtMycelia.Amanita
+namespace AtMycelia.Collections
 {
     public static class StackExtensions 
     {

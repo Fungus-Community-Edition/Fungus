@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                  "Round",
                  "Command to execute and store the result of a Round")]
     [AddComponentMenu("")]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class Round : BaseUnaryMathCommand
     {
         public enum Mode

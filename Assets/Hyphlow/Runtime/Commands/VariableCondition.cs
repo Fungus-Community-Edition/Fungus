@@ -6,7 +6,7 @@ using UnityEngine.Scripting.APIUpdating;
 
 namespace AtMycelia.Hyphlow
 {
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public abstract class VariableCondition : Condition, ISerializationCallbackReceiver
     {
         public enum AnyOrAll

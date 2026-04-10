@@ -12,7 +12,7 @@ namespace AtMycelia.Hyphlow
 				 "Texture",
 				 "Get or Set a property of a Texture component")]
 	[AddComponentMenu("")]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
 	public class TextureProperty : BaseVariableProperty
 	{
 		//generated property

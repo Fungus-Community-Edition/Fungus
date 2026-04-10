@@ -4,7 +4,7 @@ using UnityEngine.Scripting.APIUpdating;
 
 namespace AtMycelia.Hyphlow
 {
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class VariableTypeActions : IEquatable<VariableTypeActions>
     {
         public Func<IVariable, IVariableData, CompareOperator, bool> CompareFunc = (ivar, ivardata, op)

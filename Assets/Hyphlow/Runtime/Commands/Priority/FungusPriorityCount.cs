@@ -8,7 +8,7 @@ namespace AtMycelia.Hyphlow
     [CommandInfo("PrioritySignals",
                  "Get Priority Count",
                  "Copy the value of the Priority Count to a local IntegerVariable, intended primarily to assist with debugging use of Priority.")]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class FungusPriorityCount : Command
     {
         [VariableProperty(typeof(IntegerVariable))]

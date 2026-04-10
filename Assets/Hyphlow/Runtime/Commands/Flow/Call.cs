@@ -29,7 +29,7 @@ namespace AtMycelia.Hyphlow
                  "Call", 
                  "Execute another block in the same Flowchart as the command, or in a different Flowchart.")]
     [AddComponentMenu("")]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class Call : Command, IBlockCaller
     {
         [Tooltip("Flowchart which contains the block to execute. If none is specified then the current Flowchart is used.")]

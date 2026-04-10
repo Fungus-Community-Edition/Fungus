@@ -12,7 +12,7 @@ namespace AtMycelia.Hyphlow
                  "Material",
                  "Get or Set a property of a Material component")]
     [AddComponentMenu("")]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class MaterialProperty : BaseVariableProperty
     {
 		//generated property

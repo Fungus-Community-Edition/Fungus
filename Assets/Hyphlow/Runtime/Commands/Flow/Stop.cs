@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                  "Stop", 
                  "Stop executing the Block that contains this command.")]
     [AddComponentMenu("")]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class Stop : Command
     {
         #region Public members

@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                  "Set Mouse Cursor", 
                  "Sets the mouse cursor sprite.")]
     [AddComponentMenu("")]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class SetMouseCursor : Command 
     {
         [Tooltip("Texture to use for cursor. Will use default mouse cursor if no sprite is specified")]

@@ -12,7 +12,7 @@ namespace AtMycelia.Hyphlow
                  "Set Save Profile", 
                  "Sets the active profile that the Save Variable and Load Variable commands will use. This is useful to crete multiple player save games. Once set, the profile applies across all Flowcharts and will also persist across scene loads.")]
     [AddComponentMenu("")]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class SetSaveProfile : Command
     {
         [Tooltip("Name of save profile to make active.")]

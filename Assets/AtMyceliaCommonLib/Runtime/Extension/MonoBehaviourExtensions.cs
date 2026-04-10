@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace AtMycelia.Amanita
+namespace AtMycelia
 {
     public static class MonoBehaviourExtensions
     {

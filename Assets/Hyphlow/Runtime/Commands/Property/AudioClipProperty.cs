@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
 				 "AudioClip",
 				 "Get or Set a property of a AudioClip component")]
 	[AddComponentMenu("")]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
 	public class AudioClipProperty : BaseVariableProperty
 	{
 		//generated property

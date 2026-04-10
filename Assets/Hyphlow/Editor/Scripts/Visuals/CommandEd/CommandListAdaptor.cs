@@ -182,7 +182,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
             var prevColor = GUI.color;
             GUI.color = new Color(1f, 1f, 1f, alpha);
-            GUI.DrawTexture(iconRect, HyphlowEditorResources.PlaySmall, ScaleMode.ScaleToFit, true);
+            GUI.DrawTexture(iconRect, HyphlowEditorSysAssets.PlaySmall, ScaleMode.ScaleToFit, true);
             GUI.color = prevColor;
         }
 
@@ -258,7 +258,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
             if (commandLabelStyle == null)
             {
                 commandLabelStyle = new GUIStyle(GUI.skin.label);
-                commandLabelStyle.normal.background = HyphlowEditorResources.CommandBackground;
+                commandLabelStyle.normal.background = HyphlowEditorSysAssets.CommandBackground;
                 commandLabelStyle.normal.textColor = Color.black;
                 int borderSize = 5;
                 commandLabelStyle.border.top = borderSize;

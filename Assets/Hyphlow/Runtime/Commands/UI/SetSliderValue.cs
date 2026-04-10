@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
     [CommandInfo("UI",
                  "Set or Get Slider Value",
                  "Sets or Gets the value property of a slider object")]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class SetSliderValue : Command 
     {
         [Tooltip("Target slider object to set the value on")]

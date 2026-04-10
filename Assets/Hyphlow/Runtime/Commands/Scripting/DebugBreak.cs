@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                  "Debug Break",
                  "Calls Debug.Break if enabled. Also useful for putting a visual studio breakbpoint within.")]
     [AddComponentMenu("")]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class DebugBreak : Command
     {
         [SerializeField] new protected BooleanData enabled = new BooleanData(true);

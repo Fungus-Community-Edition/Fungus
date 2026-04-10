@@ -19,7 +19,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
     public class HierarchyIcons
     {
         // the Amanita icon
-        static Texture2D TextureIcon { get { return HyphlowEditorResources.FungusMushroom; } }
+        static Texture2D TextureIcon { get { return HyphlowEditorSysAssets.FungusMushroom; } }
 
         //sorted list of the GO instance IDs that have flowcharts on them
         static List<int> flowchartIDs = new List<int>();

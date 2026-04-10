@@ -33,7 +33,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
         public static FlowchartWindow S => _s;
         private static FlowchartWindow _s;
 
-        public static FlowchartWindowConfig Config => HyphlowEditorResources.FcwConfig;
+        public static FlowchartWindowConfig Config => HyphlowEditorSysAssets.FcwConfig;
 
         public Flowchart Flowchart => _fcContext?.Flowchart;
         private FlowchartContext _fcContext;

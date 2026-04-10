@@ -7,7 +7,7 @@ namespace AtMycelia.Hyphlow
     /// Base class for Flowchart nodes.
     /// </summary>
     [AddComponentMenu("")]
-    [MovedFrom("AtMycelia.Hyphlow")]
+    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class Node : MonoBehaviour
     {
         [SerializeField] protected Rect nodeRect = new Rect(0, 0, 120, 30);

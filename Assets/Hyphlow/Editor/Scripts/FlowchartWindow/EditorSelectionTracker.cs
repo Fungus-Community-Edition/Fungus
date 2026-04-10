@@ -70,6 +70,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
         {
             DestroyLegacyStateInstances();
             AttemptInitialHydration();
+            ToggleSubs(false);
             ToggleSubs(true);
         }
 

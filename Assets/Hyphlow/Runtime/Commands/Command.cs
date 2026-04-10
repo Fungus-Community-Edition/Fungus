@@ -1,13 +1,14 @@
+using AtMycelia.Amanita;
+using AtMycelia.Hyphlow.Sys;
+using AtMycelia.Hyphlow.Tweening;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Reflection;
-using AtMycelia.Amanita;
-using AtMycelia.Hyphlow.Tweening;
+using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.Scripting.APIUpdating;
+using UnityEngine.Serialization;
 
 namespace AtMycelia.Hyphlow
 {
@@ -15,7 +16,7 @@ namespace AtMycelia.Hyphlow
     /// Base class for Commands. Commands can be added to Blocks to create an execution sequence.
     /// </summary>
     [ExecuteInEditMode]
-[MovedFrom("AtMycelia.Hyphlow")]
+[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public abstract class Command : MonoBehaviour, IVariableReference, IRefreshable, IOnPreCutHandler,
         ISerializationCallbackReceiver, IBackwardsCompatibilityApplier
     {
@@ -521,7 +522,7 @@ namespace AtMycelia.Hyphlow
             
         }
 
-        protected virtual DefaultTweenAdapter DefaultTweener => DefaultHyphlowAssets.TweenAdapter;
+        protected virtual DefaultTweenAdapter DefaultTweener => HyphlowRuntimeSysAssets.S.TweenAdapter;
 
 
     }

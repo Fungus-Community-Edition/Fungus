@@ -292,16 +292,67 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 366039408287291324, guid: 35bb61afc1f4fe74d9e3be3be019faa9,
+        type: 3}
+      propertyPath: _toScale.backingVarRef.itemId
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 995435950799189955, guid: 35bb61afc1f4fe74d9e3be3be019faa9,
+        type: 3}
+      propertyPath: 'managedReferences[3688519809322189135]'
+      value: AtMycelia.Hyphlow.Core AtMycelia.Hyphlow.TransformMuscariable
+      objectReference: {fileID: 0}
+    - target: {fileID: 995435950799189955, guid: 35bb61afc1f4fe74d9e3be3be019faa9,
+        type: 3}
+      propertyPath: _variableManager._muscariables.Array.size
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 995435950799189955, guid: 35bb61afc1f4fe74d9e3be3be019faa9,
+        type: 3}
+      propertyPath: managedReferences[3688519809322189135].key
+      value: thisTForm
+      objectReference: {fileID: 0}
+    - target: {fileID: 995435950799189955, guid: 35bb61afc1f4fe74d9e3be3be019faa9,
+        type: 3}
+      propertyPath: '_variableManager._muscariables.Array.data[4]'
+      value: 3688519809322189135
+      objectReference: {fileID: 0}
     - target: {fileID: 995435950799189955, guid: 35bb61afc1f4fe74d9e3be3be019faa9,
         type: 3}
       propertyPath: managedReferences[3688519665286643793].value
       value: 
       objectReference: {fileID: 2089339401}
+    - target: {fileID: 995435950799189955, guid: 35bb61afc1f4fe74d9e3be3be019faa9,
+        type: 3}
+      propertyPath: managedReferences[3688519809322189135].scope
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 995435950799189955, guid: 35bb61afc1f4fe74d9e3be3be019faa9,
+        type: 3}
+      propertyPath: managedReferences[3688519809322189135].value
+      value: 
+      objectReference: {fileID: 494460560}
+    - target: {fileID: 995435950799189955, guid: 35bb61afc1f4fe74d9e3be3be019faa9,
+        type: 3}
+      propertyPath: managedReferences[3688519809322189135].itemID
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 995435950799189955, guid: 35bb61afc1f4fe74d9e3be3be019faa9,
+        type: 3}
+      propertyPath: managedReferences[3688519809322189135].startValue
+      value: 
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 35bb61afc1f4fe74d9e3be3be019faa9, type: 3}
+--- !u!4 &494460560 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4329592467799608, guid: 35bb61afc1f4fe74d9e3be3be019faa9,
+    type: 3}
+  m_PrefabInstance: {fileID: 494460559}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &640305172
 GameObject:
   m_ObjectHideFlags: 0
@@ -1991,7 +2042,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 3688519646466015320
-      type: {class: GameObjectMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
+      type: {class: GameObjectMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         scope: 0
         key: player
@@ -1999,7 +2050,7 @@ MonoBehaviour:
         value: {fileID: 1377282257}
         startValue: {fileID: 1377282257}
     - rid: 3688519646466015321
-      type: {class: GameObjectMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
+      type: {class: GameObjectMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         scope: 0
         key: test
@@ -2007,7 +2058,7 @@ MonoBehaviour:
         value: {fileID: 1674035076}
         startValue: {fileID: 1674035076}
     - rid: 3688519646466015368
-      type: {class: FloatMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
+      type: {class: FloatMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         scope: 0
         key: initCutsceneWait
@@ -3039,6 +3090,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 114089687185085138, guid: 929d45c4d9c08874ba1eaf9ba09de51d,
+        type: 3}
+      propertyPath: _duration.backingVarRef.owningSource
+      value: 
+      objectReference: {fileID: 862034981}
+    - target: {fileID: 114089687185085138, guid: 929d45c4d9c08874ba1eaf9ba09de51d,
+        type: 3}
+      propertyPath: _fadeColor.backingVarRef.owningSource
+      value: 
+      objectReference: {fileID: 862034981}
+    - target: {fileID: 114089687185085138, guid: 929d45c4d9c08874ba1eaf9ba09de51d,
+        type: 3}
+      propertyPath: _targetAlpha.backingVarRef.owningSource
+      value: 
+      objectReference: {fileID: 862034981}
+    - target: {fileID: 114089687185085138, guid: 929d45c4d9c08874ba1eaf9ba09de51d,
+        type: 3}
+      propertyPath: _waitUntilFinished.backingVarRef.owningSource
+      value: 
+      objectReference: {fileID: 862034981}
     - target: {fileID: 114383920395763002, guid: 929d45c4d9c08874ba1eaf9ba09de51d,
         type: 3}
       propertyPath: uiModel.<Zoom>k__BackingField
@@ -3382,7 +3453,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
 --- !u!114 &1193009297
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -3986,7 +4057,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 3688519665286643781
-      type: {class: FloatMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
+      type: {class: FloatMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         scope: 0
         key: buttonMoveDur
@@ -3994,7 +4065,7 @@ MonoBehaviour:
         value: 1
         startValue: 0
     - rid: 3688519665286643782
-      type: {class: VectorThreeMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
+      type: {class: VectorThreeMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         scope: 0
         key: Var
@@ -4458,7 +4529,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 3688519646466015391
-      type: {class: GameObjectMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Amanita.Core}
+      type: {class: GameObjectMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         scope: 0
         key: thisGameObject
