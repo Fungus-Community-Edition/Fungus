@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
-using AtMycelia.Hyphlow;
-using AtMycelia.Hyphlow.EditorUtils;
 using UnityEngine.UIElements;
 using AtMycelia.Hyphlow.EditorUtils.FcWindow;
 
-namespace AtMycelia.Amanita.EditorUtils
+namespace AtMycelia.Hyphlow.EditorUtils
 {
     public class FakeFlowchartHost : IFlowchartHost, IDisposable
     {

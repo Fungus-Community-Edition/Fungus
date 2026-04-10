@@ -11,7 +11,11 @@
         "AmanitaLegacyCollection",
         "AtMycelia.Common",
         "AtMycelia.Marasmius.Core",
-        "AtMycelia.Marasmius.Editor"
+        "AtMycelia.Marasmius.Editor",
+        "AtMycelia.Hyphlow.Core",
+        "AtMycelia.Hyphlow.Editor",
+        "AtMycelia.Common.Editor",
+        "AtMycelia.MarasmiusHyphlowInt.Core"
     ],
     "includePlatforms": [
         "Editor"

@@ -24,7 +24,7 @@ namespace VScriptingTests.FlowchartWindow.Modules
         [SetUp]
         public void SetUp()
         {
-            AtMycelia.Amanita.EditorUtils.TestUtils.ResetFlowchartWindowSingleton();
+            AtMycelia.Hyphlow.EditorUtils.TestUtils.ResetFlowchartWindowSingleton();
             previousSelection = Selection.activeGameObject;
 
             flowchartObject = new GameObject("Flowchart_Test");

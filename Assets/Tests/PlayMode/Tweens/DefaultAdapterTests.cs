@@ -1,5 +1,6 @@
 using AtMycelia.Amanita;
-using AtMycelia.Amanita.Tweening;
+using AtMycelia.Hyphlow;
+using AtMycelia.Hyphlow.Tweening;
 using NUnit.Framework;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
@@ -16,9 +17,10 @@ public class DefaultAdapterTests : MonoBehaviour
     {
         _testGo = new GameObject("TweenTestGO");
         manager = AmanitaManager.EnsureExists();
-        _adapter = AmanitaManager.DefaultTweener; 
+        _adapter = DefaultTweener; 
     }
 
+    private static DefaultTweenAdapter DefaultTweener => DefaultHyphlowAssets.TweenAdapter;
     protected GameObject _testGo;
     protected AmanitaManager manager;
 

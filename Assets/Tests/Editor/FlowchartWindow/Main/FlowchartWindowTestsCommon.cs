@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using AtMycelia.Hyphlow;
 using AtMycelia.Hyphlow.EditorUtils;
-using AtMycelia.Amanita.EditorUtils;
 
 namespace VScriptingTests.FCWindowOperations
 {

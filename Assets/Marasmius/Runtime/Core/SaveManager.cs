@@ -53,35 +53,6 @@ namespace AtMycelia.SaveSys
             this.Loader = loader;
             this.MetaFactory = metaFactory;
             this.MainStateFactory = mainStateFactory;
-
-            static async Task StopAllExecutingFlowchartBlocks()
-            {
-                // TODO: Create a Command that stops all Executing Flowchart blocks,
-                // and get it executed in a Flowchart instead of handled here
-                //var flowcharts = FlowchartRegistry.GetSceneFlowcharts();
-                //for (int i = 0; i < flowcharts.Count; i++)
-                //{
-                //    var fc = flowcharts[i];
-                //    if (fc == null)
-                //    {
-                //        continue;
-                //    }
-                //    // We only want to stop this flowchart's executing blocks if it is NOT set 
-                //    // to persist across scenes. Otherwise, stopping its blocks here would
-                //    // interrupt any ongoing logic that is meant to continue.
-                //    bool isPersistent = fc.gameObject.scene.name == "DontDestroyOnLoad";
-                //    if (isPersistent || !fc.HasExecutingBlocks())
-                //    {
-                //        continue;
-                //    }
-
-                //    // If any blocks are executing, stop them so the next scene can start its Init
-                //    Debug.Log($"Stopping all executing blocks in Flowchart named {fc.name} with " +
-                //        $"GUID {fc.UniqueId} before loading save.");
-                //    fc.StopAllBlocks();
-                //}
-                await Task.CompletedTask;
-            }
         }
 
         public virtual ISaveRepository SaveRepo { get; set; }

@@ -11,7 +11,6 @@ using UnityEngine.TestTools;
 using UnityObj = UnityEngine.Object;
 using Type = System.Type;
 using StringComparison = System.StringComparison;
-using AtMycelia.Amanita.EditorUtils;
 
 namespace VScriptingTests.VariableOperations
 {

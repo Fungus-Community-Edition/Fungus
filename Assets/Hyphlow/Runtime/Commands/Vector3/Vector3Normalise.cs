@@ -1,0 +1,55 @@
+using UnityEngine;
+
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
+{
+    /// <summary>
+    /// Normalise a vector3, output can be the same as the input
+    /// </summary>
+    [CommandInfo("Vector3",
+                 "Normalise",
+                 "Normalise a Vector3")]
+    [AddComponentMenu("")]
+[MovedFrom("AtMycelia.Hyphlow")]
+    public class Vector3Normalise : Command
+    {
+        [SerializeField]
+        protected Vector3Data vec3In, vec3Out;
+
+        protected override void RefreshVariableDataCache()
+        {
+            base.RefreshVariableDataCache();
+            _variableDataCache.Add(vec3In);
+            _variableDataCache.Add(vec3Out);
+        }
+
+        public override void OnEnter()
+        {
+            vec3Out.Value = vec3In.Value.normalized;
+
+            Continue();
+        }
+
+        public override string GetSummary()
+        {
+            if (vec3Out.vector3Ref == null)
+                return "";
+            else
+                return vec3Out.vector3Ref.Key;
+        }
+
+        public override Color GetButtonColor()
+        {
+            return CommandColors.Flow;
+        }
+
+        public override bool HasReference(Variable variable)
+        {
+            if (ReferenceEquals(vec3In.VarRef, variable) || ReferenceEquals(vec3Out.VarRef, variable))
+                return true;
+
+            return false;
+        }
+    }
+}

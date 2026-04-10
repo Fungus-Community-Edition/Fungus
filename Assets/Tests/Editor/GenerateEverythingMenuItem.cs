@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using AtMycelia.Hyphlow;
-using AtMycelia.Hyphlow;
 
-namespace AtMycelia.Amanita.EditorUtils
+namespace AtMycelia.Hyphlow.EditorUtils
 {
     public static class GenerateEverythingMenuItem
     {

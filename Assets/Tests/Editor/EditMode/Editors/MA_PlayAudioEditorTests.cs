@@ -8,7 +8,7 @@ using UnityEngine;
 using AtMycelia.Hyphlow;
 using AtMycelia.Amanita.Myceliaudio.VScripting;
 using UnityObj = UnityEngine.Object;
-using AtMycelia.Amanita.EditorUtils;
+using AtMycelia.Hyphlow.EditorUtils;
 
 namespace VScriptingTests.CommandEditorOperations
 {

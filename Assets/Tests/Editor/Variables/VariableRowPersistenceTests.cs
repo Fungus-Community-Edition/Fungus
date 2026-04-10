@@ -16,7 +16,6 @@ using UnityEngine.Audio;
 using Lorekeeper;
 using System.Linq;
 using UnityEditor.SceneManagement;
-using UnityEngine.SceneManagement;
 
 namespace VScriptingTests.VariableRows
 {

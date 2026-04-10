@@ -1,4 +1,3 @@
-using AtMycelia.Amanita;
 using AtMycelia.SaveSys.EditorUtils;
 using NUnit.Framework;
 using System.IO;
@@ -11,6 +10,7 @@ using UnityEngine.UIElements;
 using Type = System.Type;
 using AtMycelia;
 using AtMycelia.SaveSys;
+using AtMycelia.Hyphlow;
 
 public class SaveSysSettingsWindowTests
 {
@@ -219,7 +219,7 @@ public class SaveSysSettingsWindowTests
             "Assigned SaveReader should match selected type.");
 
         // Prefer the prepackaged default instance if present
-        var defaultReader = Resources.LoadAll<ScriptableObject>(AmanitaConstants.PathToSaveSysDefaultsFolder)
+        var defaultReader = Resources.LoadAll<ScriptableObject>(HyphlowConstants.PathToSaveSysDefaultsFolder)
             .FirstOrDefault(x => x != null && x.GetType() == _saveReaderType);
         if (defaultReader != null)
         {
@@ -263,7 +263,7 @@ public class SaveSysSettingsWindowTests
             "Assigned SaveWriter should match selected type.");
 
         // Prefer the prepackaged default instance if present
-        var defaultWriter = Resources.LoadAll<ScriptableObject>(AmanitaConstants.PathToSaveSysDefaultsFolder)
+        var defaultWriter = Resources.LoadAll<ScriptableObject>(HyphlowConstants.PathToSaveSysDefaultsFolder)
             .FirstOrDefault(x => x != null && x.GetType() == _saveWriterType);
         if (defaultWriter != null)
         {

@@ -2,8 +2,7 @@ using System.Collections;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
-using AtMycelia.Amanita.Tweening;
-using AtMycelia.Amanita.Tweening.VScripting;
+using AtMycelia.Hyphlow.Tweening.VScripting;
 using UnityObj = UnityEngine.Object;
 
 namespace AmaniTweenTests.Commands

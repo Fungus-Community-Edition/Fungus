@@ -6,6 +6,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
 using AtMycelia.Amanita;
+using AtMycelia.Hyphlow.Tweening;
 
 namespace VScriptingTests.Commands
 {
@@ -63,8 +64,10 @@ namespace VScriptingTests.Commands
             typeof(MA_FadeVolume).GetField("waitUntilFinished", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
                 .SetValue(cmd, new BooleanData(true));
             typeof(MA_FadeVolume).GetField("fadeTween", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                .SetValue(cmd, AmanitaManager.DefaultTweener); // default adapter
+                .SetValue(cmd, DefaultTweener); // default adapter
         }
+
+        private static MyceliaudioTweenAdapter DefaultTweener => DefaultAmanitaAssets.MyceliaudioTweener;
 
         protected override void AssertFinalState()
         {

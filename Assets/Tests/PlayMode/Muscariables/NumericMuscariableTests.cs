@@ -1,6 +1,5 @@
 using AtMycelia.Hyphlow;
 using NUnit.Framework;
-using System;
 
 namespace VScriptingTests.MuscariableTests.DataOnly
 {
