@@ -7,7 +7,7 @@ using UnityEngine.TestTools;
 using System.Collections.Generic;
 using UnityObject = UnityEngine.Object;
 using System;
-using AtMycelia.Amanita.VScripting;
+using AtMycelia.Hyphlow;
 using BindingFlags = System.Reflection.BindingFlags;
 using AtMycelia.Amanita.SaveSys;
 
@@ -214,11 +214,12 @@ namespace SaveSystemTests
             // Create a second flowchart in the scene
             var secondFlowchartGO = new GameObject("SecondFlowchart");
             var secondFlowchart = secondFlowchartGO.AddComponent<Flowchart>();
+            var secondFcVarManager = secondFlowchart.GetComponent<VariableManagerComponent>();
             RegisterTestFlowchart(secondFlowchart);
 
             // Add a variable to the second flowchart
             string initSecondVarVal = "initial";
-            var secondVar = secondFlowchart.AddNewMuscariable<string, StringMuscariable>("secondVar", initSecondVarVal);
+            var secondVar = secondFlowchart.AddNewVariable<string>("secondVar", initSecondVarVal);
 
             FlowchartSaveData secondSaveData = flowchartSaveCodec.EncodeToSave(secondFlowchart);
 

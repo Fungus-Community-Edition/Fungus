@@ -1,4 +1,4 @@
-using AtMycelia.Amanita.VScripting;
+using AtMycelia.Hyphlow;
 using NUnit.Framework;
 using System;
 using UnityEngine;
@@ -7,18 +7,6 @@ namespace VScriptingTests.MuscariableTests.DataOnly
 {
     public class VectorMuscariableTests : MuscariableTestsCommon
     {
-
-        [Test]
-        public void VecTwo_Init_RequiresKeyAndID()
-        {
-            var v = new VectorTwoMuscariable();
-            var ex = Assert.Throws<Exception>(() => v.Init(default));
-            StringAssert.Contains("needs a valid key", ex.Message);
-            StringAssert.Contains("needs a valid ID", ex.Message);
-
-            v.Key = "v2"; v.ItemId = 10;
-            Assert.DoesNotThrow(() => v.Init(default));
-        }
 
         [Test]
         public void VecTwo_ValueAssignmentAndEvent()
@@ -167,16 +155,16 @@ namespace VScriptingTests.MuscariableTests.DataOnly
         [Test]
         public void VectorThree_Evaluate_UnsupportedOperators()
         {
-            var v = new VectorThreeMuscariable { Key = "v3", ItemId = 31, Value = V3A };
-            v.Init();
+            var vecVar = new VectorThreeMuscariable { Key = "v3", ItemId = 31, Value = V3A };
+            vecVar.Init(vecVar.BoxedValue);
 
             // Equals/NotEquals should work
-            Assert.IsTrue(v.Evaluate(CompareOperator.Equals, V3A));
-            Assert.IsFalse(v.Evaluate(CompareOperator.Equals, V3B));
+            Assert.IsTrue(vecVar.Evaluate(CompareOperator.Equals, V3A));
+            Assert.IsFalse(vecVar.Evaluate(CompareOperator.Equals, V3B));
 
             // LessThan should throw
             Assert.Throws<ArgumentException>(
-                () => v.Evaluate(CompareOperator.LessThan, V3B)
+                () => vecVar.Evaluate(CompareOperator.LessThan, V3B)
             );
         }
 

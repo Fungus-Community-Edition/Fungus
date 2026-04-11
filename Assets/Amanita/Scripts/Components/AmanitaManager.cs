@@ -1,5 +1,5 @@
 ﻿using AtMycelia.SaveSys;
-using AtMycelia.Amanita.Tweening;
+using AtMycelia.Hyphlow.Tweening;
 using FullSerializer;
 using Lorekeeper;
 using System.Collections.Generic;
@@ -7,7 +7,6 @@ using System.Linq;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
 #if ENABLE_INPUT_SYSTEM
-using AtMycelia.Amanita.SaveSys;
 using AtMycelia.Amanita.DialogueSys;
 #endif
 
@@ -23,25 +22,8 @@ namespace AtMycelia.Amanita
     public sealed class AmanitaManager : MonoBehaviour, ITearDownResponder
     {
         [SerializeField, HideInInspector] private GameObject tweenAnchorHolder;
-        private SaveLoadedBlockExecutor saveLoadedBlockExecutor = new SaveLoadedBlockExecutor();
 
         public static fsSerializer DefaultSerializer { get; } = new fsSerializer();
-
-        public static DefaultTweenAdapter DefaultTweener
-        {
-            get
-            {
-                EnsureDefaultTweenerAvailable();
-                return _defaultTweener;
-            }
-        }
-
-        private static void EnsureDefaultTweenerAvailable()
-        {
-            _defaultTweener = DefaultAmanitaAssets.TweenAdapter;
-        }
-
-        static DefaultTweenAdapter _defaultTweener;
 
         volatile static AmanitaManager _s;  // The keyword "volatile" is friendly to multi-threading.
         private static readonly object _ensureLock = new object();
@@ -51,28 +33,28 @@ namespace AtMycelia.Amanita
             get
             {
                 EnsureShadowDbAvailable();
-                return shadowDb;
+                return _shadowDb;
             }
             private set
             {
-                shadowDb = value;
+                _shadowDb = value;
             }
         }
 
         private static void EnsureShadowDbAvailable()
         {
-            if (shadowDb != null)
+            if (_shadowDb != null)
             {
                 return;
             }
-            shadowDb = Resources.Load<ShadowDatabase>("ShadowDatabase"); // We expect Lorekeeper to have placed it here.
-            if (shadowDb == null)
+            _shadowDb = Resources.Load<ShadowDatabase>("ShadowDatabase"); // We expect Lorekeeper to have placed it here.
+            if (_shadowDb == null)
             {
                 Debug.LogError("ShadowDatabase asset not found in Resources/ShadowDatabase.");
             }
         }
 
-        private static ShadowDatabase shadowDb;
+        private static ShadowDatabase _shadowDb;
 
         /// <summary>
         /// Ensure a single AmanitaManager instance exists in the scene (robust to edit-mode and concurrent calls).
@@ -111,7 +93,8 @@ namespace AtMycelia.Amanita
 #if UNITY_EDITOR
                     // Note: FindObjectsOfTypeAll includes stuff in the scene AND project files, even in edit mode.
                     var postAll = Resources.FindObjectsOfTypeAll<AmanitaManager>()
-                        .Where((elem) => !EditorUtility.IsPersistent(elem.gameObject) && elem != newlyInstantiated && elem != null);
+                        .Where((elem) => !EditorUtility.IsPersistent(elem.gameObject) && elem != 
+                        newlyInstantiated && elem != null);
                     // ^This Where clause is so we skip project files. Apparently, FindFirstObjectByType can miss
                     // stuff in the scene.
 
@@ -137,23 +120,20 @@ namespace AtMycelia.Amanita
 
         private static AmanitaManager CreateNewManager()
         {
-            GameObject managerGo = new GameObject(nameof(AmanitaManager));
-            AmanitaManager manager = managerGo.AddComponent<AmanitaManager>();
+            AmanitaManager prefab = Resources.Load<AmanitaManager>(_pathToPrefab);
+            if (prefab == null)
+            {
+                string errorMessage = $"AmanitaManager prefab not found at Resources/{_pathToPrefab}. " +
+                    $"Please ensure it exists and is located there.";
+                Debug.LogError(errorMessage);
+                return null;
+            }
 
-            CreateSubmodule<CameraManager>(nameof(CameraManager), managerGo.transform);
-            CreateSubmodule<EventDispatcher>(nameof(EventDispatcher), managerGo.transform);
-            CreateSubmodule<NarrativeLog>(nameof(NarrativeLog), managerGo.transform);
-            CreateSubmodule<TweenManager>(nameof(TweenManager), managerGo.transform);
-
+            AmanitaManager manager = Instantiate(prefab);
             return manager;
         }
 
-        private static T CreateSubmodule<T>(string name, Transform parent) where T : Component
-        {
-            GameObject go = new GameObject(name);
-            go.transform.SetParent(parent, false);
-            return go.AddComponent<T>();
-        }
+        private static readonly string _pathToPrefab = "Prefabs/AmanitaManager"; // Relative to Resources
 
         public void Init()
         {
@@ -208,8 +188,7 @@ namespace AtMycelia.Amanita
 
         public bool IsFullyInitted
         {
-            get => (TweenManager != null && TweenManager.IsFullyInitted) &&
-                (NarrativeLog != null && NarrativeLog.IsFullyInitted);
+            get => (NarrativeLog != null && NarrativeLog.IsFullyInitted);
         }
 
         private void PrepSubmodules()
@@ -221,7 +200,6 @@ namespace AtMycelia.Amanita
                 CameraManager = GetComponentInChildren<CameraManager>();
                 EventDispatcher = GetComponentInChildren<EventDispatcher>();
                 NarrativeLog = GetComponentInChildren<NarrativeLog>();
-                TweenManager = GetComponentInChildren<TweenManager>();
             }
 
             ApplySceneOverrides();
@@ -290,7 +268,6 @@ namespace AtMycelia.Amanita
             }
         }
 
-        private TweenManager TweenManager { get; set; }
         #region Public methods
 
         /// <summary>
@@ -432,7 +409,6 @@ namespace AtMycelia.Amanita
 
         private void OnEnable()
         {
-            saveLoadedBlockExecutor.OnEnable();
             ToggleSubs(true);
         }
 
@@ -450,12 +426,6 @@ namespace AtMycelia.Amanita
 
         private void OnSaveSlotLoaded(CompositeSaveData saveData)
         {
-            if (saveLoadedBlockExecutor == null)
-            {
-                Debug.LogWarning("SaveLoadedBlockExecutor is not assigned. SaveLoaded blocks will not execute.");
-                return;
-            }
-
         }
 
 #if UNITY_EDITOR
@@ -478,7 +448,6 @@ namespace AtMycelia.Amanita
 
         private void OnDisable()
         {
-            saveLoadedBlockExecutor.OnDisable();
             ToggleSubs(false);
         }
     }

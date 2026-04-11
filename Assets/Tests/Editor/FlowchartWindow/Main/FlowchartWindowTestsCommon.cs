@@ -1,9 +1,8 @@
 ﻿using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
-using AtMycelia.Amanita.VScripting;
-using AtMycelia.Amanita.VScripting.EditorUtils;
-using AtMycelia.Amanita.EditorUtils;
+using AtMycelia.Hyphlow;
+using AtMycelia.Hyphlow.EditorUtils;
 
 namespace VScriptingTests.FCWindowOperations
 {

@@ -1,9 +1,10 @@
-using UnityEngine;
-using UnityEngine.UI;
+using AtMycelia.Hyphlow;
+using AtMycelia.Hyphlow.Tweening;
 using System;
 using System.Collections;
-using MoonSharp.Interpreter;
-using AtMycelia.Amanita.Tweening;
+using AtMycelia.Hyphlow.Sys;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace AtMycelia.Amanita.DialogueSys
 {
@@ -58,7 +59,8 @@ namespace AtMycelia.Amanita.DialogueSys
     /// Is only really used via Stage, it's child class. This class continues to exist to support existing API
     /// dependant code. All functionality is stage dependant.
     /// </summary>
-    public class PortraitController : MonoBehaviour
+// Change to partial so Lua package can add Lua-only overloads.
+    public partial class PortraitController : MonoBehaviour
     {
         // Timer for waitUntilFinished functionality
         protected float waitTimer;
@@ -312,7 +314,7 @@ namespace AtMycelia.Amanita.DialogueSys
             //    .setEase(stage.FadeEaseType);
             
             Vector3 targetPos = options.toPosition.position;
-            _moveTween = AmanitaManager.DefaultTweener.TweenPosition(stateHolder, stateHolder.transform.position, targetPos, duration);
+            _moveTween = DefaultTweener.TweenPosition(stateHolder, stateHolder.transform.position, targetPos, duration);
             if (options.waitUntilFinished)
             {
                 waitTimer = duration;
@@ -451,7 +453,7 @@ namespace AtMycelia.Amanita.DialogueSys
             Image portraitImage = options.character.State.portraitImage;
             if (portraitImage.color != Color.white)
             {
-                AmanitaManager.DefaultTweener.TweenBasic(() => portraitImage.color,
+                DefaultTweener.TweenBasic(() => portraitImage.color,
                     (newCol) => portraitImage.color = newCol,
                     Color.white, duration);
             }
@@ -459,7 +461,7 @@ namespace AtMycelia.Amanita.DialogueSys
             Color withTargetAlpha = portraitImage.color;
             withTargetAlpha.a = 1f;
 
-            AmanitaManager.DefaultTweener.TweenBasic(() => portraitImage.color,
+            DefaultTweener.TweenBasic(() => portraitImage.color,
                     (newCol) => portraitImage.color = newCol,
                     withTargetAlpha, duration);
 
@@ -488,7 +490,7 @@ namespace AtMycelia.Amanita.DialogueSys
                 rectTransform.gameObject.SetActive(false);
             }
             Image image = rectTransform.GetComponent<Image>();
-            AmanitaManager.DefaultTweener.TweenGraphicAlpha(image, image.color.a, 0f, duration, HideTheRect);
+            DefaultTweener.TweenGraphicAlpha(image, image.color.a, 0f, duration, HideTheRect);
         }
 
         /// <summary>
@@ -545,18 +547,18 @@ namespace AtMycelia.Amanita.DialogueSys
             //LeanTween.color(character.State.portraitImage.rectTransform, targetColor, duration).setEase(stage.FadeEaseType).setRecursive(false);
 
             Image image = character.State.portraitImage;
-            AmanitaManager.DefaultTweener.TweenBasic(() => image.color,
+            DefaultTweener.TweenBasic(() => image.color,
                 (newCol) => image.color = newCol,
                 targetColor, duration);
         }
+
+        private static DefaultTweenAdapter DefaultTweener => HyphlowRuntimeSysAssets.S.TweenAdapter;
 
         #region Overloads and Helpers
 
         /// <summary>
         /// Shows character at a named position in the stage
         /// </summary>
-        /// <param name="character"></param>
-        /// <param name="position">Named position on stage</param>
         public virtual void Show(Character character, string position)
         {
             PortraitOptions options = new PortraitOptions(true);
@@ -569,10 +571,6 @@ namespace AtMycelia.Amanita.DialogueSys
         /// <summary>
         /// Shows character moving from a position to a position
         /// </summary>
-        /// <param name="character"></param>
-        /// <param name="portrait"></param>
-        /// <param name="fromPosition">Where the character will appear</param>
-        /// <param name="toPosition">Where the character will move to</param>
         public virtual void Show(Character character, string portrait, string fromPosition, string toPosition)
         {
             PortraitOptions options = new PortraitOptions(true);
@@ -586,23 +584,8 @@ namespace AtMycelia.Amanita.DialogueSys
         }
 
         /// <summary>
-        /// From lua, you can pass an options table with named arguments
-        /// example:
-        ///     stage.show{character=jill, portrait="happy", fromPosition="right", toPosition="left"}
-        /// Any option available in the PortraitOptions is available from Lua
-        /// </summary>
-        /// <param name="optionsTable">Moonsharp Table</param>
-        public virtual void Show(Table optionsTable)
-        {
-            Show(PortraitUtil.ConvertTableToPortraitOptions(optionsTable, stage));
-        }
-
-
-        /// <summary>
         /// Simple show command that shows the character with an available named portrait
         /// </summary>
-        /// <param name="character">Character to show</param>
-        /// <param name="portrait">Named portrait to show for the character, i.e. "angry", "happy", etc</param>
         public virtual void ShowPortrait(Character character, string portrait)
         {
             PortraitOptions options = new PortraitOptions(true);
@@ -624,7 +607,6 @@ namespace AtMycelia.Amanita.DialogueSys
         /// <summary>
         /// Simple character hide command
         /// </summary>
-        /// <param name="character">Character to hide</param>
         public virtual void Hide(Character character)
         {
             PortraitOptions options = new PortraitOptions(true);
@@ -636,8 +618,6 @@ namespace AtMycelia.Amanita.DialogueSys
         /// <summary>
         /// Move the character to a position then hide it
         /// </summary>
-        /// <param name="character">Character to hide</param>
-        /// <param name="toPosition">Where the character will disapear to</param>
         public virtual void Hide(Character character, string toPosition)
         {
             PortraitOptions options = new PortraitOptions(true);
@@ -646,18 +626,6 @@ namespace AtMycelia.Amanita.DialogueSys
             options.move = true;
 
             Hide(options);
-        }
-
-        /// <summary>
-        /// From lua, you can pass an options table with named arguments
-        /// example:
-        ///     stage.hide{character=jill, toPosition="left"}
-        /// Any option available in the PortraitOptions is available from Lua
-        /// </summary>
-        /// <param name="optionsTable">Moonsharp Table</param>
-        public virtual void Hide(Table optionsTable)
-        {
-            Hide(PortraitUtil.ConvertTableToPortraitOptions(optionsTable, stage));
         }
         
         /// <summary>
@@ -670,7 +638,6 @@ namespace AtMycelia.Amanita.DialogueSys
 
             MoveToFront(CleanPortraitOptions(options));
         }
-
 
         protected virtual void DoMoveTween(Character character, RectTransform fromPosition, RectTransform toPosition, float moveDuration, Boolean waitUntilFinished)
         {

@@ -4,8 +4,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
-using AtMycelia.Amanita.VScripting;
-using System.Reflection;
+using AtMycelia.Hyphlow;
 using UnityObj = UnityEngine.Object;
 using UnityEngine.TestTools;
 
@@ -86,16 +85,13 @@ namespace VScriptingTests.VariableOperations
         [UnityTest]
         public IEnumerator VarRef_FlowchartVariable_DrawsVariableSelection()
         {
-            var intVar = _flowchart.gameObject.AddComponent<IntegerVariable>();
-            intVar.Key = "Health";
-            intVar.Value = 123;
-            intVar.ItemId = 5;
+            var varManagerComponent = _flowchart.GetComponent<VariableManagerComponent>();
+            Assert.IsNotNull(varManagerComponent, "VariableManagerComponent not found on Flowchart.");
 
-            // Use reflection to assign the var to the Flowchart's legacyVariables list
-            var legacyVarsField = typeof(Flowchart).GetField("legacyVariables", BindingFlags.NonPublic | BindingFlags.Instance);
-            var legacyVars = (List<Variable>)legacyVarsField.GetValue(_flowchart);
-            legacyVars.Add(intVar);
-            legacyVarsField.SetValue(_flowchart, legacyVars);
+            var intVar = varManagerComponent.AddNewVariableOfContentType<int>("Health", 123, VariableScope.Private);
+            Assert.IsNotNull(intVar, "Failed to create muscariable for test.");
+            Assert.Greater(intVar.ItemId, 0, "Muscariable ItemId should be assigned.");
+
             _flowchart.Refresh();
             VariableRegistryService.RebuildAll(_flowchart); // To make sure the registry knows about it
 

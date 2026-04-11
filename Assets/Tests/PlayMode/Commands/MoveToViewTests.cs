@@ -1,10 +1,10 @@
-﻿using AtMycelia.Amanita.VScripting;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.TestTools.Utils; // for equality comparers
 using AtMycelia.Amanita;
+using AtMycelia.Amanita.VScripting;
 
 namespace VScriptingTests.Commands
 {

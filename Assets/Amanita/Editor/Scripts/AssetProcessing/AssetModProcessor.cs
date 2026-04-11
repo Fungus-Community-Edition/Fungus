@@ -1,7 +1,6 @@
 using System.IO;
-using AtMycelia.Amanita.VScripting;
 
-namespace AtMycelia.Amanita.EditorUtils
+namespace AtMycelia.Hyphlow.EditorUtils
 {
     /// <summary>
     /// Prevents saving of selected blocks and commands to avoid version control conflicts.

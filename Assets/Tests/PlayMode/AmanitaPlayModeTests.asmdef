@@ -10,7 +10,10 @@
         "Amanita.Core.Editor",
         "Unity.InputSystem",
         "AtMycelia.Common",
-        "AtMycelia.Marasmius.Core"
+        "AtMycelia.Marasmius.Core",
+        "AtMycelia.Hyphlow.Core",
+        "AtMycelia.MarasmiusHyphlowInt.Core",
+        "AtMycelia.MarasmiusMyceliaudioInt.Core"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -99,7 +99,6 @@ MonoBehaviour:
   showLineNumbers: 0
   hideCommands: []
   localizationId: 
-  _luaEnvironment: {fileID: 0}
   luaBindingName: flowchart
   includeInSaves: 1
   saveBlocks: 1

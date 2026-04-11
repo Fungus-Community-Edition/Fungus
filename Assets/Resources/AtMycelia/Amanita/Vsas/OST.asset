@@ -12,10 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1983cb934fee6c4bae9941b65c8c798, type: 3}
   m_Name: OST
   m_EditorClassIdentifier: 
-  includeInSaves: 1
-  uniqueId: 0d4feeae-7e82-42a5-b48d-108dfbab7778
-  alwaysKeepGuid: 1
+  _includeInSaves: 1
+  _uniqueId: 0d4feeae-7e82-42a5-b48d-108dfbab7778
+  _alwaysKeepGuid: 1
   variables: []
+  _varManager:
+    _muscariables: []
+    _legacyVariables: []
+    _nextValidVarID: 1
+    _isInitted: 0
   _nextVarID: 11
   references:
     version: 2

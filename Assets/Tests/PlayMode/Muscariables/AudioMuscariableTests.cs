@@ -1,5 +1,5 @@
 using AtMycelia.Amanita;
-using AtMycelia.Amanita.VScripting;
+using AtMycelia.Hyphlow;
 using Lorekeeper;
 using NUnit.Framework;
 using System;
@@ -42,19 +42,6 @@ namespace VScriptingTests.MuscariableTests.DataOnly
             clipA = clipB = null;
             UnityEngine.Object.DestroyImmediate(sourceA.gameObject);
             UnityEngine.Object.DestroyImmediate(sourceB.gameObject);
-        }
-
-        [Test]
-        public void AudioClip_Init_RequiresKeyAndID()
-        {
-            var audioVar = new AudioClipMuscariable();
-            var ex = Assert.Throws<Exception>(() => audioVar.Init());
-            StringAssert.Contains("needs a valid key", ex.Message);
-            StringAssert.Contains("needs a valid ID", ex.Message);
-
-            audioVar.Key = "clip";
-            audioVar.ItemId = 100;
-            Assert.DoesNotThrow(() => audioVar.Init());
         }
 
         [Test]

@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using AtMycelia.Amanita.VScripting;
+using AtMycelia.Hyphlow;
 using AtMycelia.Amanita.DialogueSys;
-using AtMycelia.Amanita.Tweening;
+using AtMycelia.Hyphlow.Sys;
+using AtMycelia.Hyphlow.Tweening;
 
 namespace AtMycelia.Amanita.UI.Legacy
 {
@@ -192,14 +193,16 @@ namespace AtMycelia.Amanita.UI.Legacy
                 targAlpha = 1;
             }
 
-            _neoFadeTween = AmanitaManager.DefaultTweener.TweenBasic<float>(() => narrativeLogMenuGroup.alpha,
+            _neoFadeTween = DefaultTweener.TweenBasic<float>(() => narrativeLogMenuGroup.alpha,
                     (newAlpha) => narrativeLogMenuGroup.alpha = newAlpha,
                     targAlpha, duration)
                     .SetOnComplete(() => narrativeLogMenuGroup.alpha = targAlpha);
 
             narrativeLogActive = !narrativeLogActive;
         }
-    
+
+        private static DefaultTweenAdapter DefaultTweener => HyphlowRuntimeSysAssets.S.TweenAdapter;
+
         #endregion
     }
 }

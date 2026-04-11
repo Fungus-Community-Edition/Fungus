@@ -3,10 +3,8 @@ using UnityEngine.UI;
 using System.Collections;
 using UnityEngine.EventSystems;
 using System.Linq;
-using MoonSharp.Interpreter;
-using AtMycelia.Amanita.Lua;
 using System;
-using AtMycelia.Amanita.VScripting;
+using AtMycelia.Hyphlow;
 
 namespace AtMycelia.Amanita.DialogueSys
 {
@@ -22,7 +20,6 @@ namespace AtMycelia.Amanita.DialogueSys
 		{
 			GetRequiredComponents();
 			AvoidAutoDisablingButtonsInEditor();
-			EnsureEventSystemExists();
 
 			void GetRequiredComponents()
 			{
@@ -37,22 +34,6 @@ namespace AtMycelia.Amanita.DialogueSys
 				if (Application.isPlaying)
 				{
 					Clear();
-				}
-			}
-			void EnsureEventSystemExists()
-			{
-			// There must be an Event System in the scene for Say and Menu input to work.
-				EventSystem eventSystem = GameObject.FindFirstObjectByType<EventSystem>();
-				if (eventSystem == null)
-				{
-					Debug.LogWarning("No EventSystem found in the scene. Auto-spawning one from prefab.");
-					// Auto spawn an Event System from the prefab
-					GameObject prefab = Resources.Load<GameObject>(AmanitaConstants.EventSystemPrefabName);
-					if (prefab != null)
-					{
-						GameObject go = Instantiate(prefab);
-						go.name = "EventSystem";
-					}
 				}
 			}
 		}
@@ -215,19 +196,16 @@ namespace AtMycelia.Amanita.DialogueSys
 
 		private SayDialogManager SDManager => SayDialogManager.S;
 
-        protected IEnumerator CallBlock(Block block)
+		protected IEnumerator CallBlock(Block block)
 		{
 			yield return new WaitForEndOfFrame();
 			block.StartExecution();
 		}
 
-		protected IEnumerator CallLuaClosure(LuaEnvironment luaEnv, Closure callback)
+		protected IEnumerator CallAction(Action callback)
 		{
 			yield return new WaitForEndOfFrame();
-			if (callback != null)
-			{
-				luaEnv.RunLuaFunction(callback, true);
-			}
+			callback?.Invoke();
 		}
 
 		/// <summary>
@@ -263,20 +241,28 @@ namespace AtMycelia.Amanita.DialogueSys
 		}
 
 		/// <summary>
-		/// Adds the option to the list of displayed options, calls a Lua function when selected.
+		/// Adds the option to the list of displayed options, calls a callback when selected.
 		/// Will cause the Menu dialog to become visible if it is not already visible.
 		/// </summary>
 		/// <returns><c>true</c>, if the option was added successfully.</returns>
-		public virtual bool AddOption(string text, bool interactable, LuaEnvironment luaEnv, Closure callBack)
+		public virtual bool AddOption(string text, bool interactable, Action callback)
+		{
+			return AddOption(text, interactable, false, callback);
+		}
+
+		/// <summary>
+		/// Adds the option to the list of displayed options, calls a callback when selected.
+		/// Will cause the Menu dialog to become visible if it is not already visible.
+		/// </summary>
+		/// <returns><c>true</c>, if the option was added successfully.</returns>
+		public virtual bool AddOption(string text, bool interactable, bool hideOption, Action callback)
 		{
 			if (!gameObject.activeSelf)
 			{
 				gameObject.SetActive(true);
 			}
 
-			// Copy to local variables 
-			LuaEnvironment env = luaEnv;
-			Closure call = callBack;
+			Action localCallback = callback;
 			UnityEngine.Events.UnityAction action = delegate
 			{
 				StopAllCoroutines();
@@ -284,10 +270,10 @@ namespace AtMycelia.Amanita.DialogueSys
 				Clear();
 				HideSayDialog();
 				// Use a coroutine to call the callback on the next frame
-				StartCoroutine(CallLuaClosure(env, call));
+				StartCoroutine(CallAction(localCallback));
 			};
 
-			return AddOption(text, interactable, false, action);
+			return AddOption(text, interactable, hideOption, action);
 		}
 
 		/// <summary>
@@ -361,9 +347,9 @@ namespace AtMycelia.Amanita.DialogueSys
 		}
 
 		/// <summary>
-		/// Show a timer during which the player can select an option. Calls a Lua function when the timer expires.
+		/// Show a timer during which the player can select an option. Calls a callback when the timer expires.
 		/// </summary>
-		public virtual IEnumerator ShowTimer(float duration, LuaEnvironment luaEnv, Closure callBack)
+		public virtual IEnumerator ShowTimer(float duration, Action callback)
 		{
 			if (CachedSlider == null ||
 				duration <= 0f)
@@ -394,10 +380,7 @@ namespace AtMycelia.Amanita.DialogueSys
 			gameObject.SetActive(false);
 			HideSayDialog();
 
-			if (callBack != null)
-			{
-				luaEnv.RunLuaFunction(callBack, true);
-			}
+			callback?.Invoke();
 		}
 
 		/// <summary>

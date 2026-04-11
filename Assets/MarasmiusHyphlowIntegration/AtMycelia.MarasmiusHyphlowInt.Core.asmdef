@@ -1,0 +1,19 @@
+{
+    "name": "AtMycelia.MarasmiusHyphlowInt.Core",
+    "rootNamespace": "",
+    "references": [
+        "GUID:872777d7938023543a615d44e6878b30",
+        "GUID:3f6d2e24eb975e74c89b274691a961ec",
+        "GUID:3e8446a8987ac8a47ba6568ab3ce29f4",
+        "GUID:579f7dd4b62c6a74d9bdb0cf8bbc31ae"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

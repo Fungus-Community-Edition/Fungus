@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace AtMycelia.Amanita.VScripting.RuntimeTesting
+namespace AtMycelia.Hyphlow.RuntimeTesting
 {
     // Runtime (non-Editor) test support commands.
     // IMPORTANT: This file must NOT be inside an Editor folder so that these

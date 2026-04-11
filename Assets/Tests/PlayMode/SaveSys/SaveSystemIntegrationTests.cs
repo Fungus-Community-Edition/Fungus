@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AtMycelia.Amanita.VScripting;
+using AtMycelia.Hyphlow;
 using System.Reflection;
 using UnityEngine;
 using AtMycelia.SaveSys.VScripting;
@@ -571,14 +571,14 @@ namespace SaveSystemTests
             var type = typeof(ProgressMarkerCommand);
 
             // Set action
-            var actionField = type.GetField("action", flags);
+            var actionField = type.GetField("_action", flags);
             actionField.SetValue(command, action);
 
             // Replace data objects directly to avoid ambiguous reflection on Value
-            var markerIdField = type.GetField("markerID", flags);
+            var markerIdField = type.GetField("_markerID", flags);
             markerIdField.SetValue(command, new StringData(id));
 
-            var markerOrderField = type.GetField("markerOrder", flags);
+            var markerOrderField = type.GetField("_markerOrder", flags);
             markerOrderField.SetValue(command, new IntegerData(order));
 
             return command;

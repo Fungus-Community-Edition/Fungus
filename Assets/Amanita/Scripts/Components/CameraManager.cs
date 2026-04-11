@@ -1,7 +1,9 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
-using AtMycelia.Amanita.Tweening;
+using AtMycelia.Hyphlow;
+using AtMycelia.Hyphlow.Sys;
+using AtMycelia.Hyphlow.Tweening;
 
 namespace AtMycelia.Amanita
 {
@@ -265,7 +267,7 @@ namespace AtMycelia.Amanita
 		public virtual void Fade(float targetAlpha, float fadeDuration, Action onComplete,
 			IGeneralTweenAdapter<float> tweenAdapter = null)
 		{
-			tweenAdapter ??= AmanitaManager.DefaultTweener;
+			tweenAdapter ??= DefaultTweener;
 			bool finishInstantly = Mathf.Approximately(fadeDuration, 0);
 			bool alreadyAtTarget = Mathf.Approximately(fadeAlpha, targetAlpha);
 			if (finishInstantly || alreadyAtTarget)
@@ -278,6 +280,8 @@ namespace AtMycelia.Amanita
 			tweenAdapter.TweenGeneral(() => fadeAlpha, UpdateFadeAlpha, targetAlpha, fadeDuration, onComplete);
 			
 		}
+
+		private DefaultTweenAdapter DefaultTweener => HyphlowRuntimeSysAssets.S.TweenAdapter;
 
 		protected Tween<float> _neoFadeTween;
 		protected virtual void UpdateFadeAlpha(float newVal)
