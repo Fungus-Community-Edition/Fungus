@@ -98,6 +98,23 @@ namespace AtMycelia.Hyphlow
             data = toSet;
         }
 
+        public void SetFor(Type contentType)
+        {
+            if (contentType == null)
+            {
+                Debug.LogWarning("Cannot set AnyVariableData for a null content type.");
+                return;
+            }
+
+            if (data != null && contentType.Equals(data.ContentType))
+            {
+                return;
+            }
+
+            IVariableData toSet = VariableDataTypeRegistry.CreateForContentType(contentType);
+            data = toSet;
+        }
+
         public override string GetDescription() => data?.GetDescription() ?? "Null";
 
         public override IVariable VarRef
@@ -110,6 +127,7 @@ namespace AtMycelia.Hyphlow
             {
                 if (ReferenceEquals(value, null))
                 {
+                    backingVarRef.Variable = null;
                     data.VarRef = null;
                     return;
                 }
@@ -117,7 +135,7 @@ namespace AtMycelia.Hyphlow
                 // Adapt the data to the type of the var
                 SetFor(value.GetType(), value.ContentType);
 
-                data.VarRef = value;
+                data.VarRef = backingVarRef.Variable = value;
             }
         }
 

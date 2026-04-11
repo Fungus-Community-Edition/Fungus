@@ -120,7 +120,6 @@ namespace AtMycelia.Hyphlow
         }
 
 #if UNITY_EDITOR
-        [MenuItem("Tools/Atelier Mycelia/Amanita/Migrate Flowchart Variables", false, 2000)]
         private static void MigrateAllFlowchartVariables()
         {
             if (Application.isPlaying)
@@ -288,7 +287,11 @@ namespace AtMycelia.Hyphlow
                 EnsureOwner();
             }
 
-            EditorApplication.delayCall += () => SetGlobalVarsToPublic();
+            EditorApplication.delayCall += () =>
+            {
+                MigrateAllFlowchartVariables();
+                SetGlobalVarsToPublic();
+            }; 
         }
 
         void SetGlobalVarsToPublic()

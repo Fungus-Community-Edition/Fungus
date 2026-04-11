@@ -1187,18 +1187,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a717114cba7201448ae3154bfb3fb737, type: 3}
---- !u!114 &922922410 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2139898432755702161, guid: a717114cba7201448ae3154bfb3fb737,
-    type: 3}
-  m_PrefabInstance: {fileID: 922922409}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a334fe2ffb574b3583ff3b18b4792d3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1070870995
 GameObject:
   m_ObjectHideFlags: 0
@@ -1274,71 +1262,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!1 &1084635730
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1084635733}
-  - component: {fileID: 1084635732}
-  - component: {fileID: 1084635731}
-  m_Layer: 0
-  m_Name: LuaEnvironment
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1084635731
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1084635730}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c10f0b861365b42b0928858f7b086ff3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  fungusModule: 0
-  activeLanguage: en
-  stringTables: []
-  registerTypes:
-  - {fileID: 4900000, guid: 9c3ab7a98d51241bbb499643399fa761, type: 3}
-  - {fileID: 4900000, guid: 93fddea8208764a2dbb189cc238aed40, type: 3}
---- !u!114 &1084635732
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1084635730}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ba19c26c1ba7243d2b57ebc4329cc7c6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  startDebugServer: 1
-  debugServerPort: 41912
---- !u!4 &1084635733
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1084635730}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1226317641
 GameObject:
   m_ObjectHideFlags: 1
@@ -1369,7 +1292,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   selectedFlowchart: {fileID: 1755499606}
-  lastSelectedFc: {fileID: 922922410}
+  lastSelectedFc: {fileID: 1528553512}
 --- !u!4 &1226317643
 Transform:
   m_ObjectHideFlags: 1
@@ -1593,6 +1516,18 @@ Transform:
   - {fileID: 821847792}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1528553512 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4738044054644098906, guid: a717114cba7201448ae3154bfb3fb737,
+    type: 3}
+  m_PrefabInstance: {fileID: 922922409}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a334fe2ffb574b3583ff3b18b4792d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1726345438
 GameObject:
   m_ObjectHideFlags: 0
@@ -1762,7 +1697,6 @@ GameObject:
   - component: {fileID: 1755499608}
   - component: {fileID: 1755499609}
   - component: {fileID: 1755499607}
-  - component: {fileID: 1755499611}
   - component: {fileID: 1755499613}
   - component: {fileID: 1755499612}
   - component: {fileID: 1755499614}
@@ -1799,12 +1733,12 @@ MonoBehaviour:
     _selectedBlocks:
     - {fileID: 1755499608}
     _selectedCommands:
-    - {fileID: 1755499611}
+    - {fileID: 1755499607}
     _owner: {fileID: 0}
-    <ScrollPos>k__BackingField: {x: 0, y: 0}
+    <ScrollPos>k__BackingField: {x: 0, y: 5.227273}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesExpanded>k__BackingField: 0
-    <Zoom>k__BackingField: 1
+    <Zoom>k__BackingField: 1.2
     <BlockViewHeight>k__BackingField: 231
     <ScrollViewRect>k__BackingField:
       serializedVersion: 2
@@ -1820,7 +1754,6 @@ MonoBehaviour:
   showLineNumbers: 0
   hideCommands: []
   localizationId: 
-  _luaEnvironment: {fileID: 0}
   luaBindingName: flowchart
   includeInSaves: 1
   saveBlocks: 1
@@ -1831,7 +1764,7 @@ MonoBehaviour:
   - {fileID: 1755499608}
   _commands:
   - {fileID: 1755499607}
-  - {fileID: 1755499611}
+  - {fileID: 0}
   - {fileID: 1755499613}
   - {fileID: 1755499612}
   nextValidVarID: 1
@@ -1859,12 +1792,12 @@ MonoBehaviour:
       owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 'john bored left: Oh, so that''s how you use the Conversation command.
+    value: 'john bored left: Oh, so that''s how you use the Conversation Command.
 
       sherlock
-      eyeroll right nowait: Yes, well done John. {w=1.5}
+      eyeroll right nowait: Yes. Well done, John. {w=1.5}
 
-      You catch on quickly
+      You catch on quickly,
       don''t you?
 
       sherlock >>>:
@@ -1877,15 +1810,15 @@ MonoBehaviour:
 
 
       john
-      angry left nowait: Wait {w=0.6}
+      angry left nowait: Wait, {w=0.6}
 
-      middle noclear:, what!
+      middle noclear:what!?
 
       left nofade:
-      There''s no need to be rude Sherlock!
+      There''s no need to be rude, Sherlock!
 
       bored: Not like that would stop
-      you.
+      you...
 
 '
     stringRef: {fileID: 0}
@@ -1954,7 +1887,6 @@ MonoBehaviour:
   - {fileID: 1755499613}
   - {fileID: 1755499607}
   - {fileID: 1755499612}
-  - {fileID: 1755499611}
   includeInSaves: 1
   loadPriority: 0
   suppressAllAutoSelections: 0
@@ -1988,47 +1920,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1755499611
-MonoBehaviour:
-  m_ObjectHideFlags: 2
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1755499605}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 71f455683d4ba4405b8dbba457159620, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemId: 2
-  indentLevel: 0
-  luaEnvironment: {fileID: 1084635732}
-  luaFile: {fileID: 0}
-  luaScript: '-- Gobal variables can be embedded using the {$VarName} syntax.
-
-    adjective
-    = "riveting"
-
-
-    conversation [[
-
-    sherlock excited <<<: AHA! So that''s
-    how you do a conversation from Lua!
-
-    Fascinating.
-
-    john bored left: Yes,
-    {$adjective}.
-
-
-    john hide:
-
-    sherlock hide:
-
-    ]]'
-  runAsCoroutine: 1
-  waitUntilFinished: 1
-  returnVariable: {fileID: 0}
 --- !u!114 &1755499612
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -2170,4 +2061,3 @@ SceneRoots:
   - {fileID: 1438921567}
   - {fileID: 922922409}
   - {fileID: 336348227}
-  - {fileID: 1084635733}

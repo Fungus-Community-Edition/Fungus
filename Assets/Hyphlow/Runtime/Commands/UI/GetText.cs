@@ -15,7 +15,7 @@ namespace AtMycelia.Hyphlow
     public class GetText : Command 
     {
         [Tooltip("Text object to get text value from")]
-        [SerializeField] protected GameObjectData targetTextObject = new GameObjectData();
+        [SerializeField] protected GameObjectData _targetTextObject = new GameObjectData();
 
         [Tooltip("String variable to store the text value in")]
         [ContentTypeConstraint(typeof(string))]
@@ -24,7 +24,7 @@ namespace AtMycelia.Hyphlow
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            _variableDataCache.Add(targetTextObject);
+            _variableDataCache.Add(_targetTextObject);
         }
 
         #region Public members
@@ -38,7 +38,7 @@ namespace AtMycelia.Hyphlow
             }
 
             TextAdapter textAdapter = new TextAdapter();
-            textAdapter.InitFromGameObject(targetTextObject);
+            textAdapter.InitFromGameObject(_targetTextObject);
 
             if (textAdapter.HasTextObject())
             {
@@ -50,7 +50,7 @@ namespace AtMycelia.Hyphlow
         
         public override string GetSummary()
         {
-            if (targetTextObject == null || targetTextObject.Value == null)
+            if (_targetTextObject == null || _targetTextObject.Value == null)
             {
                 return "Error: No text object selected";
             }
@@ -60,7 +60,7 @@ namespace AtMycelia.Hyphlow
                 return "Error: No variable selected";
             }
 
-            return targetTextObject.Value.name + " : " + stringVariable.Variable.Key;
+            return _targetTextObject.Value.name + " : " + stringVariable.Variable.Key;
         }
         
         public override Color GetButtonColor()
@@ -79,9 +79,7 @@ namespace AtMycelia.Hyphlow
         #region Backwards compatibility
 
         // Backwards compatibility with Fungus 3.x
-        [HideInInspector]
-        [FormerlySerializedAs("targetTextObject")]
-        public GameObject _oldTargetText;
+        
         protected override void OnEnable()
         {
             base.OnEnable();
@@ -103,7 +101,8 @@ namespace AtMycelia.Hyphlow
 
             if (_oldTargetText != null)
             {
-                targetTextObject.Value = _oldTargetText;
+                _targetTextObject.Value = _oldTargetText;
+                _oldTargetText = null;
             }
 
             if (_oldStringVariable != null)
@@ -111,10 +110,13 @@ namespace AtMycelia.Hyphlow
                 stringVariable.Variable = _oldStringVariable;
                 _oldStringVariable = null;
             }
-        }   
+        }
+
+        [SerializeField] [HideInInspector] [FormerlySerializedAs("targetTextObject")]
+        public GameObject _oldTargetText;
 
 
-        [FormerlySerializedAs("stringVariable")] [SerializeField] [HideInInspector] 
+        [SerializeField] [HideInInspector] [FormerlySerializedAs("stringVariable")]  
         protected StringVariable _oldStringVariable;
 
         #endregion

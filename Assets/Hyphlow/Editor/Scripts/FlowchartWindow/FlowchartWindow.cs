@@ -162,7 +162,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
 
         private void OnSelectedFlowchartChanged(Flowchart previous, Flowchart current)
         {
-            _selectionCoordinator.HandleSelectionChanged(previous, current,
+                _selectionCoordinator.HandleSelectionChanged(previous, current,
                 ref _fcContext, _fcNameLabel,
                 _zoomAmountLabel);
         }
@@ -178,7 +178,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             }
 
             _s = this;
-
+                
             ToggleSubs(true);
         }
 
@@ -371,6 +371,17 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
         {
             _playModeCoordinator.HandlePlayModeStateChanged(state, () => ActiveFlowchart, _fcContext,
                 _fcNameLabel, _zoomAmountLabel, _graphicsRenderer);
+        }
+
+        private void OnBecameVisible()
+        {
+            if (_fcContext == null || _fcContext.Flowchart == null)
+            {
+                return;
+            }
+
+            _graphicsRenderer?.ResetVisuals();
+            Repaint();
         }
 
         #region Cleanup

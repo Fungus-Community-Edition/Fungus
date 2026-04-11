@@ -12,11 +12,11 @@ namespace AtMycelia.Hyphlow
                  "Set Text", 
                  "Sets the text property on a UI Text object and/or an Input Field object.")]
     [AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class SetText : Command
     {
         [Tooltip("Text object to set text on. Can be a UI Text, Text Field or Text Mesh object.")]
-        [SerializeField] protected GameObjectData _targetTextObjectData = new GameObjectData();
+        [SerializeField] protected GameObjectData _targetTextObject = new GameObjectData();
         
         [Tooltip("String value to assign to the text object")]
         [FormerlySerializedAs("stringData")]
@@ -29,7 +29,7 @@ namespace AtMycelia.Hyphlow
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            _variableDataCache.Add(_targetTextObjectData);
+            _variableDataCache.Add(_targetTextObject);
             _variableDataCache.Add(text);
         }
 
@@ -40,14 +40,14 @@ namespace AtMycelia.Hyphlow
             var flowchart = GetFlowchart();
             string newText = flowchart.SubstituteVariables(text.Value);
             
-            if (_targetTextObjectData == null)
+            if (_targetTextObject == null)
             {
                 Continue();
                 return;
             }
 
             TextAdapter textAdapter = new TextAdapter();
-            textAdapter.InitFromGameObject(_targetTextObjectData);
+            textAdapter.InitFromGameObject(_targetTextObject);
 
             if (textAdapter.HasTextObject())
             {
@@ -59,9 +59,9 @@ namespace AtMycelia.Hyphlow
         
         public override string GetSummary()
         {
-            if (_targetTextObjectData != null && _targetTextObjectData.Value != null)
+            if (_targetTextObject != null && _targetTextObject.Value != null)
             {
-                return _targetTextObjectData.Value.name + " : " + text.Value;
+                return _targetTextObject.Value.name + " : " + text.Value;
             }
             
             return "Error: No text object selected";
@@ -125,14 +125,13 @@ namespace AtMycelia.Hyphlow
 
             if (!ReferenceEquals(targetTextObject, null))
             {
-                _targetTextObjectData.Value = targetTextObject;
+                _targetTextObject.Value = targetTextObject;
                 targetTextObject = null;
             }
         }
 
         [SerializeField]
         [HideInInspector]
-        [FormerlySerializedAs("targetTextObject")]
         protected GameObject targetTextObject;
 
         #endregion
