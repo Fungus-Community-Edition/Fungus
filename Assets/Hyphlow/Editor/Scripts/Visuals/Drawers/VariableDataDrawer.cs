@@ -1,7 +1,8 @@
+using AtMycelia.Hyphlow.EditorUtils.FcWindow;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using AtMycelia.Hyphlow.EditorUtils.FcWindow;
 using UnityEditor;
 using UnityEngine;
 using Type = System.Type;
@@ -31,6 +32,10 @@ namespace AtMycelia.Hyphlow.EditorUtils
             }
 
             var literalValueProp = varDataProp.FindPropertyRelative("value");
+            if (literalValueProp == null) // Implying we're working with an AnyVariableData
+            {
+                literalValueProp = varDataProp.FindPropertyRelative("data.value");
+            }
             var backingVarRefProp = varDataProp.FindPropertyRelative("backingVarRef");
             if (backingVarRefProp == null)
             {
@@ -189,7 +194,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
             RegisterValidVars();
             void RegisterValidVars()
             {
-                var validVars = VarRegistry.GetVarsOfType(contentType, true);
+                IReadOnlyDictionary<string, IVariable> validVars = GetValidVariables(varDataProp, fieldInfo);
                 _labelsSeen.Clear();
                 orderedLabels.Clear();
                 orderedVars.Clear();
@@ -296,6 +301,15 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 {
                     var vOwner = chosenNow.Owner;
 
+                    AnyVariableData anyVariableData = varData as AnyVariableData;
+                    if (anyVariableData != null)
+                    {
+                        anyVariableData.SetFor(chosenNow.ContentType);
+                        anyVariableData.VarRef = chosenNow;
+                        varDataProp.boxedValue = varData;
+                        
+                    }
+
                     owningFcProp.objectReferenceValue = null;
                     owningVsaProp.objectReferenceValue = null;
                     ownerProp.objectReferenceValue = vOwner as UnityObj;
@@ -395,6 +409,70 @@ namespace AtMycelia.Hyphlow.EditorUtils
         protected static int SpaceForPopup => popupWidth + popupGap;
         protected static readonly float MinimumValueWidth = 80f;
         protected static VariableRegistry VarRegistry => VariableRegistryService.Registry;
+
+        private static IReadOnlyDictionary<string, IVariable> GetValidVariables(SerializedProperty varDataProp, 
+            FieldInfo fieldInfo)
+        {
+            IReadOnlyDictionary<string, IVariable> validVars;
+            IVariableData varData = varDataProp.boxedValue as IVariableData;
+            if (varData == null)
+            {
+                Debug.LogError($"Could not get IVariableData from property drawer for {varDataProp.propertyPath}.");
+                validVars = new Dictionary<string, IVariable>();
+                return validVars;
+            }
+
+            if (varData is AnyVariableData)
+            {
+                var allowedTypes = GetAllowedTypes(fieldInfo);
+                if (allowedTypes != null && allowedTypes.Length > 0)
+                {
+                    validVars = VarRegistry.GetVarsOfMultiTypes(allowedTypes, true);
+                }
+                else
+                {
+                    validVars = VarRegistry.GetVarsOfType(typeof(object), true);
+                }
+            }
+            else
+            {
+                Type contentType = varData.ContentType;
+                if (contentType != null)
+                {
+                    validVars = VarRegistry.GetVarsOfType(contentType, true);
+                }
+                else
+                {
+                    Debug.LogError($"ContentType was null for variable data at {varDataProp.propertyPath}. " +
+                        $"Cannot determine valid variables to show in dropdown.");
+                    validVars = new Dictionary<string, IVariable>();
+                }
+
+            }
+
+            return validVars;
+        }
+
+        protected static Type[] GetAllowedTypes(FieldInfo fieldInfo)
+        {
+            Type[] result = null;
+            var attr = fieldInfo.GetCustomAttribute<ContentTypeConstraintAttribute>();
+            if (attr == null)
+            {
+                result = Array.Empty<Type>();
+            }
+            else if (attr.AllowedTypes.Count == 0)
+            {
+                result = new Type[1] { typeof(object) };
+            }
+            else if (attr.AllowedTypes.Count > 0)
+            {
+                result = attr.AllowedTypes.ToArray();
+            }
+            return result;
+        }
+
+
     }
 
     // For the fields that can accept either a variable or a literal value
@@ -408,17 +486,37 @@ namespace AtMycelia.Hyphlow.EditorUtils
     {
         public override void OnGUI(Rect position, SerializedProperty varDataProp, GUIContent label)
         {
-            var typedUnderlyingDataProp = varDataProp.FindPropertyRelative("data");
-            if (typedUnderlyingDataProp == null)
+            AnyVariableData varData = varDataProp.boxedValue as AnyVariableData;
+            SerializedProperty varDataPropToPass;
+            ContentTypeConstraintAttribute constraintAttr = fieldInfo.GetCustomAttribute<ContentTypeConstraintAttribute>();
+            if (constraintAttr != null)
             {
-                EditorGUI.BeginProperty(position, label, varDataProp);
-                EditorGUI.HelpBox(position, $"Could not find 'data' property for AnyVariableData drawer " +
-                    $"for {varDataProp.propertyPath}.", MessageType.Warning);
-                EditorGUI.EndProperty();
-                return;
+                varDataPropToPass = varDataProp;
+            }
+            else
+            {
+                var typedUnderlyingDataProp = varDataProp.FindPropertyRelative("data");
+                if (typedUnderlyingDataProp == null)
+                {
+                    EditorGUI.BeginProperty(position, label, varDataProp);
+                    EditorGUI.HelpBox(position, $"Could not find 'data' property for AnyVariableData drawer " +
+                        $"for {varDataProp.propertyPath}.", MessageType.Warning);
+                    EditorGUI.EndProperty();
+                    return;
+                }
+
+                varDataPropToPass = typedUnderlyingDataProp;
             }
 
-            base.OnGUI(position, typedUnderlyingDataProp, label);
+            if (varData.ContentType == null)
+            {
+                varData.SetFor(constraintAttr.AllowedTypes[0]);
+                varDataProp.boxedValue = varData;
+            }
+
+            base.OnGUI(position, varDataPropToPass, label);
         }
+
+        
     }
 }

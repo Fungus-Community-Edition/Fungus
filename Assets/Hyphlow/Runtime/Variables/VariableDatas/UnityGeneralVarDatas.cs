@@ -6,7 +6,7 @@ using UnityEngine.Scripting.APIUpdating;
 namespace AtMycelia.Hyphlow
 {
     [System.Serializable]
-    [VariableData(typeof(Component), typeof(IVariable<Component>), typeof(IVariable<GameObject>))]
+    [VariableData(typeof(Component), typeof(IVariable<Component>))]
     [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class ComponentData : VariableData<Component>
     {

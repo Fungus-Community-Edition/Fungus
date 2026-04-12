@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System;
 
 namespace AtMycelia.Hyphlow
 {
@@ -12,7 +13,15 @@ namespace AtMycelia.Hyphlow
     {
         public ContentTypeConstraintAttribute(params System.Type[] types)
         {
-            AllowedTypes = types;
+            if (types == null)
+            {
+                AllowedTypes = Array.Empty<Type>();
+            }
+            else
+            {
+                AllowedTypes = types;
+            }
+            
         }
 
         public IList<System.Type> AllowedTypes { get; }

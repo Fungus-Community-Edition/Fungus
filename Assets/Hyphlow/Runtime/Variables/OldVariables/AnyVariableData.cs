@@ -98,6 +98,23 @@ namespace AtMycelia.Hyphlow
             data = toSet;
         }
 
+        public void SetFor(Type contentType)
+        {
+            if (contentType == null)
+            {
+                Debug.LogWarning("Cannot set AnyVariableData for a null content type.");
+                return;
+            }
+
+            if (data != null && contentType.Equals(data.ContentType))
+            {
+                return;
+            }
+
+            IVariableData toSet = VariableDataTypeRegistry.CreateForContentType(contentType);
+            data = toSet;
+        }
+
         public override string GetDescription() => data?.GetDescription() ?? "Null";
 
         public override IVariable VarRef

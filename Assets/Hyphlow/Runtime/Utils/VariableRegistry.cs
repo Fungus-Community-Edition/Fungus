@@ -2,10 +2,13 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using UnityEngine;
 using UnityObj = UnityEngine.Object;
 
 #if UNITY_EDITOR
 using UnityEditor;
+using AtMycelia.Hyphlow.EditorUtils;
+using UnityEditor.UI;
 #endif
 
 namespace AtMycelia.Hyphlow
@@ -32,20 +35,50 @@ namespace AtMycelia.Hyphlow
             _globalSourcesProvider = globalSourcesProvider ?? (() => emptySources);
             Rebuild();
 #if UNITY_EDITOR
-            Selection.selectionChanged += OnSelectionChanged;
+            ToggleEditorSubs(false);
+            ToggleEditorSubs(true);
 #endif
         }
 
+        private void ToggleEditorSubs(bool on)
+        {
 #if UNITY_EDITOR
+            if (on)
+            {
+                Selection.selectionChanged += OnSelectionChanged;
+                VariableSignals.PostValueChange += OnVariableValueChanged;
+            }
+            else
+            {
+                Selection.selectionChanged -= OnSelectionChanged;
+                VariableSignals.PostValueChange -= OnVariableValueChanged;
+            }
+#endif
+        }
+
+        private void OnVariableValueChanged(IVariable variable, object arg2)
+        {
+            if (Application.isPlaying)
+            {
+                return; // We only want to respond to var value changes in the editor,
+                        // since that's the only time we care about keeping the registry's
+                        // values up to date with the actual variable values in the scene.
+            }
+            OnSelectionChanged();
+        }
+
+
         private void OnSelectionChanged()
         {
+#if UNITY_EDITOR
             var selected = Selection.activeGameObject;
             if (selected != null && selected.TryGetComponent<Flowchart>(out var fc))
             {
                 Rebuild(fc);
             }
-        }
 #endif
+        }
+
 
         public void Rebuild(IVariableSource localSource = null)
         {
@@ -208,22 +241,23 @@ namespace AtMycelia.Hyphlow
         /// Returns available variables matching any of the given content types.
         /// If null/empty, returns all.
         /// </summary>
-        public IReadOnlyDictionary<string, IVariable> GetVarsOfMultiTypes(Type[] contentTypes = null)
+        public IReadOnlyDictionary<string, IVariable> GetVarsOfMultiTypes(IList<Type> contentTypes = null, 
+            bool getAllAssignableTypes = false)
         {
             IReadOnlyDictionary<string, IVariable> result;
-            bool giveThemEverything = contentTypes == null || contentTypes.Length == 0;
+            bool giveThemEverything = contentTypes == null || contentTypes.Count == 0;
             if (giveThemEverything)
             {
                 result = _vars;
             }
-            else if (contentTypes.Length == 1)
+            else if (contentTypes.Count == 1)
             {
-                return GetVarsOfType(contentTypes[0]);
+                return GetVarsOfType(contentTypes[0], getAllAssignableTypes);
             }
             else
             {
                 var merged = new Dictionary<string, IVariable>();
-                for (int i = 0; i < contentTypes.Length; i++)
+                for (int i = 0; i < contentTypes.Count; i++)
                 {
                     var type = contentTypes[i];
                     if (_varsByType.TryGetValue(type, out var dict))

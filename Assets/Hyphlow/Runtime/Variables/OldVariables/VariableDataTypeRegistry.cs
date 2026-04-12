@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
 [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public static class VariableDataTypeRegistry
     {
-        // Key is var type, value is data type
+        // Key is var type, value is content type
         private static readonly IDictionary<Type, Type> _typeMap = new Dictionary<Type, Type>();
 
         /// <summary>
@@ -51,7 +51,28 @@ namespace AtMycelia.Hyphlow
 
         public static IVariableData CreateForVar(Type variableType)
         {
-            var dataType = GetDataTypeLinkedToVarType(variableType);
+            var varDataType = GetDataTypeLinkedToVarType(variableType);
+            IVariableData result = null;
+            if (varDataType != null)
+            {
+                result = (IVariableData)Activator.CreateInstance(varDataType);
+            }
+            else
+            {
+                Debug.Log($"Couldn't make an instance for {variableType.Name}. The amount of types " +
+                    $"in the registry: {_typeMap.Count}");
+            }
+            
+            return result;
+        }
+
+        public static IVariableData CreateForContentType(Type contentType)
+        {
+            var dataType = _typeMap.Values.FirstOrDefault((dt) =>
+            {
+                VariableDataAttribute attr = dt.GetCustomAttribute<VariableDataAttribute>();
+                return attr != null && attr.ContentType.Equals(contentType);
+            });
             IVariableData result = null;
             if (dataType != null)
             {
@@ -59,7 +80,7 @@ namespace AtMycelia.Hyphlow
             }
             else
             {
-                Debug.Log($"Couldn't make an instance for {variableType.Name}. The amount of types " +
+                Debug.Log($"Couldn't find a variable data type for content type {contentType.Name}. The amount of types " +
                     $"in the registry: {_typeMap.Count}");
             }
             
