@@ -2,7 +2,6 @@ using AtMycelia.Collections;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using AtMycelia.Amanita;
 using UnityEngine;
 using Type = System.Type;
 using UnityEngine.SceneManagement;

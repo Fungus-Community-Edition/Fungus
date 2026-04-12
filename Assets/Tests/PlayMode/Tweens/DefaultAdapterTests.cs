@@ -1,5 +1,4 @@
 using AtMycelia.Amanita;
-using AtMycelia.Hyphlow;
 using AtMycelia.Hyphlow.Sys;
 using AtMycelia.Hyphlow.Tweening;
 using NUnit.Framework;

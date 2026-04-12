@@ -7,8 +7,6 @@ using UnityObj = UnityEngine.Object;
 
 #if UNITY_EDITOR
 using UnityEditor;
-using AtMycelia.Hyphlow.EditorUtils;
-using UnityEditor.UI;
 #endif
 
 namespace AtMycelia.Hyphlow
