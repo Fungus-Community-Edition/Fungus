@@ -281,7 +281,7 @@ MonoBehaviour:
     _selectedBlocks:
     - {fileID: 163283984}
     _selectedCommands:
-    - {fileID: 163283989}
+    - {fileID: 163283988}
     _owner: {fileID: 163283982}
     <ScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
@@ -400,7 +400,7 @@ MonoBehaviour:
   indentLevel: 0
   _targetGameObject:
     backingVarRef:
-      itemId: 0
+      itemId: 2
       owningSource: {fileID: 163283983}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
@@ -452,7 +452,7 @@ MonoBehaviour:
       owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: Hi {$PlayerName}, how are you today?
+    value: Hi, {$PlayerName}. How are you today?
     stringRef: {fileID: 0}
     stringVal: 
   _description:
@@ -875,7 +875,7 @@ MonoBehaviour:
   indentLevel: 0
   textObject:
     backingVarRef:
-      itemId: 0
+      itemId: 3
       owningSource: {fileID: 163283983}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
@@ -948,7 +948,7 @@ MonoBehaviour:
   indentLevel: 0
   _targetTextObject:
     backingVarRef:
-      itemId: 0
+      itemId: 2
       owningSource: {fileID: 163283983}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
@@ -1058,9 +1058,10 @@ MonoBehaviour:
   _variableManager:
     _muscariables:
     - rid: 3688519847650001611
+    - rid: 3688519855250080026
     _legacyVariables:
     - {fileID: 163283985}
-    _nextValidVarID: 3
+    _nextValidVarID: 4
     _isInitted: 1
   _cachedFlowchart: {fileID: 163283983}
   references:
@@ -1070,9 +1071,17 @@ MonoBehaviour:
       type: {class: GameObjectMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         scope: 0
-        key: someGo
+        key: canvas
         itemID: 2
         value: {fileID: 1538358643}
+        startValue: {fileID: 0}
+    - rid: 3688519855250080026
+      type: {class: GameObjectMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        scope: 0
+        key: textObj
+        itemID: 3
+        value: {fileID: 717539585}
         startValue: {fileID: 0}
 --- !u!114 &163284004
 MonoBehaviour:

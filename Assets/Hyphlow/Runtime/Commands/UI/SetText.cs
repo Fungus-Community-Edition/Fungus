@@ -123,7 +123,7 @@ namespace AtMycelia.Hyphlow
         {
             base.ApplyBackwardsCompatibility();
 
-            if (!ReferenceEquals(targetTextObject, null))
+            if (targetTextObject != null)
             {
                 _targetTextObject.Value = targetTextObject;
                 targetTextObject = null;
