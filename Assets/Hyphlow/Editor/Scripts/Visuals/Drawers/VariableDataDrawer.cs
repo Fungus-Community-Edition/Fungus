@@ -25,6 +25,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 return;
             }
             var varData = varDataObj as VariableData;
+            AnyVariableData anyVarData = varData as AnyVariableData;
             if (varData == null)
             {
                 EditorGUI.EndProperty();
@@ -32,11 +33,15 @@ namespace AtMycelia.Hyphlow.EditorUtils
             }
 
             var literalValueProp = varDataProp.FindPropertyRelative("value");
-            if (literalValueProp == null) // Implying we're working with an AnyVariableData
+            if (anyVarData != null) 
             {
                 literalValueProp = varDataProp.FindPropertyRelative("data.value");
             }
             var backingVarRefProp = varDataProp.FindPropertyRelative("backingVarRef");
+            if (anyVarData != null)
+            {
+                backingVarRefProp = varDataProp.FindPropertyRelative("data.backingVarRef");
+            }
             if (backingVarRefProp == null)
             {
                 EditorGUI.EndProperty();
@@ -300,14 +305,25 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 else
                 {
                     var vOwner = chosenNow.Owner;
+                    anyVarData = varDataProp.boxedValue as AnyVariableData;
 
-                    AnyVariableData anyVariableData = varData as AnyVariableData;
-                    if (anyVariableData != null)
+                    if (anyVarData != null)
                     {
-                        anyVariableData.SetFor(chosenNow.ContentType);
-                        anyVariableData.VarRef = chosenNow;
-                        varDataProp.boxedValue = varData;
-                        
+                        bool sameContentType = chosenNow.ContentType.Equals(anyVarData.ContentType);
+                        anyVarData.SetFor(chosenNow.ContentType);
+                        anyVarData.VarRef = chosenNow;
+                        varDataProp.boxedValue = anyVarData;
+
+                        if (!sameContentType)
+                        {
+                            // This means that the underlying VariableData changed to a whole new instance. 
+                            // Thus, we'll need to refetch the properties to point to the new instance.
+                            backingVarRefProp = varDataProp.FindPropertyRelative("data.backingVarRef");
+                            owningFcProp = backingVarRefProp.FindPropertyRelative("legacyOwningFc");
+                            owningVsaProp = backingVarRefProp.FindPropertyRelative("legacyOwningVsa");
+                            ownerProp = backingVarRefProp.FindPropertyRelative("owningSource");
+                            itemIdProp = backingVarRefProp.FindPropertyRelative("itemId");
+                        }
                     }
 
                     owningFcProp.objectReferenceValue = null;
@@ -316,9 +332,6 @@ namespace AtMycelia.Hyphlow.EditorUtils
                     itemIdProp.intValue = chosenNow.ItemId;
                 }
             }
-
-            varData = varDataProp.boxedValue as VariableData;
-            varData.Refresh();
 
             RestoreLayout();
             EditorGUI.EndProperty();

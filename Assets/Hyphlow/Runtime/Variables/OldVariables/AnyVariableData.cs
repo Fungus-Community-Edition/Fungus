@@ -127,6 +127,7 @@ namespace AtMycelia.Hyphlow
             {
                 if (ReferenceEquals(value, null))
                 {
+                    backingVarRef.Variable = null;
                     data.VarRef = null;
                     return;
                 }
@@ -134,7 +135,7 @@ namespace AtMycelia.Hyphlow
                 // Adapt the data to the type of the var
                 SetFor(value.GetType(), value.ContentType);
 
-                data.VarRef = value;
+                data.VarRef = backingVarRef.Variable = value;
             }
         }
 

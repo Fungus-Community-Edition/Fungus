@@ -34,7 +34,17 @@ namespace AtMycelia.Hyphlow
                 return;
             }
 
+            if (!ShouldRegister(varDataType))
+            {
+                return;
+            }
+
             VariableDataAttribute attr = varDataType.GetCustomAttribute<VariableDataAttribute>();
+            if (attr == null)
+            {
+                Debug.LogWarning($"VariableDataTypeRegistry: {varDataType.Name} is missing VariableDataAttribute.");
+                return;
+            }
 
             IList<Type> compatibleVarTypes = attr.VariableTypes.Where((elem) => elem != null).ToList();
 
@@ -42,6 +52,32 @@ namespace AtMycelia.Hyphlow
             {
                 _typeMap.TryAdd(varTypeEl, varDataType);
             }
+        }
+
+        private static bool ShouldRegister(Type varDataType)
+        {
+            if (!Application.isPlaying) 
+            {
+                // Only check assemblies outside of Play Mode. It's during Play Mode
+                // that unit tests might want to screw with the registry, and we
+                // don't want to prevent that.
+                string assemblyName = varDataType.Assembly.GetName().Name;
+                if (!string.IsNullOrEmpty(assemblyName) &&
+                    assemblyName.IndexOf("test", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    return false;
+                }
+
+                string fullName = varDataType.FullName;
+                if (!string.IsNullOrEmpty(fullName) &&
+                    fullName.IndexOf(".tests.", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    return false;
+                }
+
+                return true;
+            }
+            return true;
         }
 
         public static IVariableData CreateForVar<TVarType>() where TVarType: IVariable
