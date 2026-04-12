@@ -50,9 +50,9 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 return baseHeight;
             }
 
-            int lineCount = Mathf.Max(1, textAreaAttribute.MinLines);
+            int visibleLineCount = GetVisibleLineCount(varDataProp, textAreaAttribute);
             float lineHeight = EditorGUIUtility.singleLineHeight;
-            float textAreaHeight = (lineHeight * lineCount) + (EditorGUIUtility.standardVerticalSpacing * (lineCount - 1));
+            float textAreaHeight = (lineHeight * visibleLineCount) + (EditorGUIUtility.standardVerticalSpacing * (visibleLineCount - 1));
 
             if (textAreaAttribute.MinLines >= 2)
             {
@@ -395,6 +395,37 @@ namespace AtMycelia.Hyphlow.EditorUtils
             EditorGUI.EndProperty();
 
             varDataProp.serializedObject.ApplyModifiedProperties();
+        }
+
+        private static int GetVisibleLineCount(SerializedProperty varDataProp, HyphlowTextAreaAttribute textAreaAttribute)
+        {
+            int minLines = Mathf.Max(1, textAreaAttribute.MinLines);
+            int maxLines = Mathf.Max(minLines, textAreaAttribute.MaxLines);
+            SerializedProperty literalValueProp = varDataProp.FindPropertyRelative("value");
+            string currentValue = literalValueProp != null ? 
+                literalValueProp.stringValue : 
+                string.Empty;
+            int contentLines = CountLines(currentValue);
+            return Mathf.Clamp(contentLines, minLines, maxLines);
+        }
+
+        private static int CountLines(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                return 1;
+            }
+
+            int lineCount = 1;
+            for (int i = 0; i < value.Length; i++)
+            {
+                if (value[i] == '\n')
+                {
+                    lineCount++;
+                }
+            }
+
+            return lineCount;
         }
 
         private static Vector2 GetScrollPosition(string propertyPath)
