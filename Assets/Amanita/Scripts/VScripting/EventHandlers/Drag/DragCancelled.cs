@@ -6,109 +6,109 @@ using UnityEngine.Scripting.APIUpdating;
 
 namespace AtMycelia.Amanita.VScripting
 {
-    /// <summary>
-    /// The block will execute when the player drags an object and releases it without dropping it on a target object.
-    /// </summary>
-    [EventHandlerInfo("Sprite",
-                      "Drag Cancelled",
-                      "The block will execute when the player drags an object and releases it without dropping it on a target object.")]
-    [AddComponentMenu("")]
-    [MovedFrom("AtMycelia.Amanita.VScripting.EventHandlers")]
+	/// <summary>
+	/// The block will execute when the player drags an object and releases it without dropping it on a target object.
+	/// </summary>
+	[EventHandlerInfo("Sprite",
+					  "Drag Cancelled",
+					  "The block will execute when the player drags an object and releases it without dropping it on a target object.")]
+	[AddComponentMenu("")]
+	[MovedFrom("AtMycelia.Amanita.VScripting.EventHandlers")]
 	public class DragCancelled : EventHandler, ISerializationCallbackReceiver
-    {
-        public class DragCancelledEvent
-        {
-            public Draggable2D DraggableObject;
+	{
+		public class DragCancelledEvent
+		{
+			public Draggable2D DraggableObject;
 
-            public DragCancelledEvent(Draggable2D draggableObject)
-            {
-                DraggableObject = draggableObject;
-            }
-        }
+			public DragCancelledEvent(Draggable2D draggableObject)
+			{
+				DraggableObject = draggableObject;
+			}
+		}
 
-        [VariableProperty(typeof(GameObjectVariable))]
-        [SerializeField] protected GameObjectVariable draggableRef;
+		[VariableProperty(typeof(GameObjectVariable))]
+		[SerializeField] protected GameObjectVariable draggableRef;
 
-        [Tooltip("Draggable object to listen for drag events on")]
-        [SerializeField] protected List<Draggable2D> draggableObjects;
+		[Tooltip("Draggable object to listen for drag events on")]
+		[SerializeField] protected List<Draggable2D> draggableObjects;
 
-        [HideInInspector]
-        [SerializeField] protected Draggable2D draggableObject;
+		[HideInInspector]
+		[SerializeField] protected Draggable2D draggableObject;
 
-        protected override void ToggleSubs(bool on)
-        {
-            base.ToggleSubs(on);
-            if (on)
-            {
-                EventDispatcher.AddListener<DragCancelledEvent>(OnDragCancelledEvent);
-            }
-            else
-            {
-                EventDispatcher.RemoveListener<DragCancelledEvent>(OnDragCancelledEvent);
-            }
-        }
+		protected override void ToggleSubs(bool on)
+		{
+			base.ToggleSubs(on);
+			if (on)
+			{
+				EventDispatcher.AddListener<DragCancelledEvent>(OnDragCancelledEvent);
+			}
+			else
+			{
+				EventDispatcher.RemoveListener<DragCancelledEvent>(OnDragCancelledEvent);
+			}
+		}
 
-        protected virtual void OnDragCancelledEvent(DragCancelledEvent evt)
-        {
-            OnDragCancelled(evt.DraggableObject);
-        }
+		protected virtual void OnDragCancelledEvent(DragCancelledEvent evt)
+		{
+			OnDragCancelled(evt.DraggableObject);
+		}
 
-        #region Compatibility
+		#region Compatibility
 
-        void ISerializationCallbackReceiver.OnAfterDeserialize()
-        {
-            //add any dragableobject already present to list for backwards compatability
-            if (draggableObject != null)
-            {
-                if (!draggableObjects.Contains(draggableObject))
-                {
-                    draggableObjects.Add(draggableObject);
-                }
-                draggableObject = null;
-            }
-        }
+		void ISerializationCallbackReceiver.OnAfterDeserialize()
+		{
+			//add any dragableobject already present to list for backwards compatability
+			if (draggableObject != null)
+			{
+				if (!draggableObjects.Contains(draggableObject))
+				{
+					draggableObjects.Add(draggableObject);
+				}
+				draggableObject = null;
+			}
+		}
 
-        void ISerializationCallbackReceiver.OnBeforeSerialize()
-        {
-        }
+		void ISerializationCallbackReceiver.OnBeforeSerialize()
+		{
+		}
 
-        #endregion Compatibility
+		#endregion Compatibility
 
-        #region Public members
+		#region Public members
 
-        public virtual void OnDragCancelled(Draggable2D draggableObject)
-        {
-            if (draggableObjects.Contains(draggableObject))
-            {
-                if (draggableRef != null)
-                {
-                    draggableRef.Value = draggableObject.gameObject;
-                }
-                ExecuteBlock();
-            }
-        }
+		public virtual void OnDragCancelled(Draggable2D draggableObject)
+		{
+			if (draggableObjects.Contains(draggableObject))
+			{
+				if (draggableRef != null)
+				{
+					draggableRef.Value = draggableObject.gameObject;
+				}
+				ExecuteBlock();
+			}
+		}
 
-        public override string GetSummary()
-        {
-            if (draggableObjects.Count(x => x != null) == 0)
-            {
-                return "Error: no draggable objects assigned.";
-            }
+		public override string GetSummary()
+		{
+			if (draggableObjects.Count(x => x != null) == 0)
+			{
+				return "Error: no draggable objects assigned.";
+			}
 
-            string summary = "Draggable: ";
-            if (this.draggableObjects != null && this.draggableObjects.Count != 0)
-            {
-                for (int i = 0; i < this.draggableObjects.Count; i++)
-                {
-                    if (draggableObjects[i] != null)
-                    {
-                        summary += draggableObjects[i].name + ",";
-                    }
-                }
-            }
-            return summary;
-        }
+			string summary = "Draggable: ";
+			if (this.draggableObjects != null && this.draggableObjects.Count != 0)
+			{
+				for (int i = 0; i < this.draggableObjects.Count; i++)
+				{
+					if (draggableObjects[i] != null)
+					{
+						summary += draggableObjects[i].name + ",";
+					}
+				}
+			}
+			return summary;
+		}
 
-        #endregion Public members
-    }
+		#endregion Public members
+	}
 }
