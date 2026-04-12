@@ -64,8 +64,7 @@ namespace AtMycelia.Hyphlow
 
         #region Backwards compatibility
 
-        [HideInInspector] [FormerlySerializedAs("animator")] public Animator animatorOLD;
-        [HideInInspector] [FormerlySerializedAs("parameterName")] public string parameterNameOLD = "";
+        
 
         protected override void RefreshVariableDataCache()
         {
@@ -90,6 +89,9 @@ namespace AtMycelia.Hyphlow
                 parameterNameOLD = "";
             }
         }
+
+        [HideInInspector][FormerlySerializedAs("animator")] public Animator animatorOLD;
+        [HideInInspector][FormerlySerializedAs("parameterName")] public string parameterNameOLD = "";
 
         #endregion
     }
