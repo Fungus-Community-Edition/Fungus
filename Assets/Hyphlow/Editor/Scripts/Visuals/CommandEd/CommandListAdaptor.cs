@@ -42,6 +42,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
         protected Block block;
         protected ReorderableList list;
         protected static readonly int lineHeightPadding = 6;
+        private bool suppressSelectCallback;
 
         protected virtual void DrawHeader(Rect rect)
         {
@@ -108,6 +109,27 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 GUI.Label(summaryRect, command.GetSummary() ?? "", summaryStyle);
 
                 DrawExecutingIcon(iconRect, command);
+            }
+
+            HandleCommandSelection(clickRect, index, command, flowchart);
+
+            HandleScrollingToCommandOnDraw();
+            void HandleScrollingToCommandOnDraw()
+            {
+                bool commandIsSelected = false;
+                foreach (Command selectedCommand in flowchart.SelectedCommands)
+                {
+                    if (selectedCommand == command)
+                    {
+                        commandIsSelected = true;
+                        if (ScrollToCommandOnDraw)
+                        {
+                            GUI.ScrollTo(position);
+                            ScrollToCommandOnDraw = false;
+                        }
+                        break;
+                    }
+                }
             }
 
             // Reverting colors so other drawers can do their thing properly
@@ -303,13 +325,152 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
         private void SelectChanged(ReorderableList list)
         {
+            if (suppressSelectCallback)
+            {
+                suppressSelectCallback = false;
+                return;
+            }
+
+            Event currentEvent = Event.current;
+            if (currentEvent != null && currentEvent.type == EventType.MouseDown)
+            {
+                return;
+            }
+
             Command command = this[list.index].objectReferenceValue as Command;
-            var flowchart = command.GetFlowchart();
+            if (command == null)
+            {
+                return;
+            }
+
+            Flowchart flowchart = command.GetFlowchart();
+            if (flowchart == null)
+            {
+                return;
+            }
+
             BlockEditor.actionList.Add(delegate
             {
                 flowchart.ClearSelectedCommands();
                 flowchart.AddSelectedCommand(command);
             });
+        }
+
+        private void HandleCommandSelection(Rect clickRect, int index, Command command, Flowchart flowchart)
+        {
+            Event currentEvent = Event.current;
+            if (currentEvent == null ||
+                currentEvent.type != EventType.MouseDown ||
+                currentEvent.button != 0 ||
+                !clickRect.Contains(currentEvent.mousePosition))
+            {
+                return;
+            }
+
+            bool shift = currentEvent.shift;
+            bool actionKey = EditorGUI.actionKey;
+            bool alreadySelected = flowchart.SelectedCommands.Contains(command);
+
+            suppressSelectCallback = true;
+            list.index = index;
+
+            BlockEditor.actionList.Add(delegate
+            {
+                if (actionKey)
+                {
+                    IList<Command> newSelection = flowchart.SelectedCommands;
+                    if (alreadySelected)
+                    {
+                        newSelection.Remove(command);
+                    }
+                    else
+                    {
+                        newSelection.Add(command);
+                    }
+
+                    flowchart.SelectedCommands = newSelection;
+                    return;
+                }
+
+                if (shift)
+                {
+                    if (!alreadySelected)
+                    {
+                        flowchart.AddSelectedCommand(command);
+                    }
+
+                    SelectCommandRange(flowchart, index);
+                    return;
+                }
+
+                flowchart.ClearSelectedCommands();
+                flowchart.AddSelectedCommand(command);
+            });
+
+            if (shift || actionKey)
+            {
+                currentEvent.Use();
+            }
+
+            GUIUtility.keyboardControl = 0; // Fix for textarea not refreshing (change focus)
+        }
+
+        private void SelectCommandRange(Flowchart flowchart, int currentIndex)
+        {
+            if (flowchart == null || flowchart.SelectedBlock == null)
+            {
+                return;
+            }
+
+            IList<Command> selectedCommands = flowchart.SelectedCommands;
+            IList<Command> commandList = flowchart.SelectedBlock.CommandList;
+
+            int firstSelectedIndex = -1;
+            int lastSelectedIndex = -1;
+
+            for (int i = 0; i < commandList.Count; i++)
+            {
+                if (selectedCommands.Contains(commandList[i]))
+                {
+                    firstSelectedIndex = i;
+                    break;
+                }
+            }
+
+            for (int i = commandList.Count - 1; i >= 0; i--)
+            {
+                if (selectedCommands.Contains(commandList[i]))
+                {
+                    lastSelectedIndex = i;
+                    break;
+                }
+            }
+
+            if (firstSelectedIndex == -1 || lastSelectedIndex == -1)
+            {
+                firstSelectedIndex = 0;
+                lastSelectedIndex = currentIndex;
+            }
+            else
+            {
+                if (currentIndex < firstSelectedIndex)
+                {
+                    firstSelectedIndex = currentIndex;
+                }
+                if (currentIndex > lastSelectedIndex)
+                {
+                    lastSelectedIndex = currentIndex;
+                }
+            }
+
+            int start = Mathf.Min(firstSelectedIndex, lastSelectedIndex);
+            int end = Mathf.Max(firstSelectedIndex, lastSelectedIndex);
+
+            for (int i = start; i < end; i++)
+            {
+                Command selectedCommand = commandList[i];
+                flowchart.AddSelectedCommand(selectedCommand);
+            }
         }
     }
 }

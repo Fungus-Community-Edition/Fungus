@@ -78,6 +78,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
         {
             owner = window;
             initialRefreshPending = true;
+            ToggleSubs(false);
             ToggleSubs(true);
             TryRefreshAfterLayout();
         }

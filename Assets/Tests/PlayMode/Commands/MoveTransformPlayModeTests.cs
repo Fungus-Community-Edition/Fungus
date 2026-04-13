@@ -104,7 +104,7 @@ namespace AmaniTweenTests.Commands
         {
             public void SetTarget(Component component)
             {
-                _toMove.Value = component;
+                _toMove.BoxedValue = component;
             }
 
             public void SetAbsoluteDest(Vector3 value)

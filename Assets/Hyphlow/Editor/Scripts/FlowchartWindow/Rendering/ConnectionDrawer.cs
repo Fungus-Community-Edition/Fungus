@@ -25,6 +25,12 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 return;
             }
 
+            float zoom = 1f;
+            if (fcContext.Flowchart != null)
+            {
+                zoom = Mathf.Approximately(fcContext.Flowchart.Zoom, 0f) ? 1f : fcContext.Flowchart.Zoom;
+            }
+
             var connections = gatherer.GatherConnections(drawCtx);
             for (int i = 0; i < connections.Count; i++)
             {
@@ -36,7 +42,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
                 Rect fromRect = CalculateWindowRect(connection.FromBlock, fcContext.Flowchart);
                 Rect toRect = CalculateWindowRect(connection.ToBlock, fcContext.Flowchart);
-                DrawRectConnection(painter, fromRect, toRect, connection.Highlight);
+                DrawRectConnection(painter, fromRect, toRect, connection.Highlight, zoom);
             }
         }
 
@@ -58,7 +64,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
             return modelRect;
         }
 
-        private void DrawRectConnection(Painter2D painter, Rect fromRect, Rect toRect, bool highlight)
+        private void DrawRectConnection(Painter2D painter, Rect fromRect, Rect toRect, bool highlight, float zoom)
         {
             RegisterPointsOnSourceAndTargetBlocks(fromRect, toRect);
 
@@ -95,11 +101,8 @@ namespace AtMycelia.Hyphlow.EditorUtils
             Vector2 sourceControl = sourceAnchor - sourceDirection * mod * 0.67f;
             Vector2 targetControl = targetAnchor - targetDirection * mod * 0.67f;
 
-            var fChart = EditorSelectionTracker.ActiveFlowchart;
             float baseLineWidth = 3f;
-            painter.lineWidth = fChart != null ?
-                baseLineWidth * fChart.Zoom :
-                3f;
+            painter.lineWidth = baseLineWidth * zoom;
 
             painter.strokeColor = strokeColor;
             painter.fillColor = strokeColor;
@@ -111,8 +114,8 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
             DrawArrowOnCurve(painter, sourceAnchor, sourceControl, targetControl, targetAnchor);
 
-            DrawConnectionPoint(painter, sourceAnchor + sourceDirection * 4f);
-            DrawConnectionPoint(painter, targetAnchor + targetDirection * 4f);
+            DrawConnectionPoint(painter, sourceAnchor + sourceDirection * 4f, zoom);
+            DrawConnectionPoint(painter, targetAnchor + targetDirection * 4f, zoom);
         }
 
         private static void RegisterPointsOnSourceAndTargetBlocks(Rect fromRect, Rect toRect)
@@ -176,14 +179,9 @@ namespace AtMycelia.Hyphlow.EditorUtils
             painter.Fill();
         }
 
-        private static void DrawConnectionPoint(Painter2D painter, Vector2 center)
+        private static void DrawConnectionPoint(Painter2D painter, Vector2 center, float zoom)
         {
-            var fChart = EditorSelectionTracker.ActiveFlowchart;
-            float radius = ConnectionPointRadius;
-            if (fChart != null)
-            {
-                radius *= fChart.Zoom;
-            }
+            float radius = ConnectionPointRadius * zoom;
             Color prevColor = painter.fillColor;
             painter.fillColor = painter.strokeColor = Color.green;
             painter.BeginPath();

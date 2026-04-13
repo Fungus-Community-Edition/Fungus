@@ -255,17 +255,45 @@ namespace AtMycelia.Hyphlow
             else
             {
                 var merged = new Dictionary<string, IVariable>();
-                for (int i = 0; i < contentTypes.Count; i++)
+                if (getAllAssignableTypes)
                 {
-                    var type = contentTypes[i];
-                    if (_varsByType.TryGetValue(type, out var dict))
+                    foreach (var kvp in _varsByType)
                     {
-                        foreach (var kvp in dict)
+                        var type = kvp.Key;
+                        bool compatible = false;
+                        for (int i = 0; i < contentTypes.Count; i++)
                         {
-                            merged[kvp.Key] = kvp.Value;
+                            if (TypeUtils.TypesCompatible(contentTypes[i], type))
+                            {
+                                compatible = true;
+                                break;
+                            }
+                        }
+
+                        if (compatible)
+                        {
+                            foreach (var kvp2 in kvp.Value)
+                            {
+                                merged[kvp2.Key] = kvp2.Value;
+                            }
                         }
                     }
                 }
+                else
+                {
+                    for (int i = 0; i < contentTypes.Count; i++)
+                    {
+                        var type = contentTypes[i];
+                        if (_varsByType.TryGetValue(type, out var dict))
+                        {
+                            foreach (var kvp in dict)
+                            {
+                                merged[kvp.Key] = kvp.Value;
+                            }
+                        }
+                    }
+                }
+
                 result = merged;
 
             }

@@ -101,6 +101,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
         private Button _clickable;
         private UitkLabel _nameLabel;
         private UitkLabel _eventHandlerLabel;
+        private bool sizeRefreshQueued;
 
         private void Validate(Button clickable, UitkLabel nameLabel, UitkLabel eventHandlerLabel)
         {
@@ -228,6 +229,12 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
                 return;
             }
 
+            if (panel == null)
+            {
+                QueueSizeRefresh();
+                return;
+            }
+
             Vector2 unrestrictedSize = _nameLabel.MeasureTextSize(
                 _nameLabel.text,
                 float.NaN,
@@ -235,15 +242,9 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
                 float.NaN,
                 MeasureMode.Undefined);
 
-            // Initial sizing might be invalid. If we continue with an invalid size, that can lead
-            // to NaN bounds in ConnectionGatherer. That would then cause the connections to not render
-            // until the user does some input such as panning the screen.
-            // That's why here, to prevent that state-poisoning, we guard against applying an invalid size.
-            // This guard probably procs for the first frame or two after a block is created or
-            // after the FlowchartWindow opens. But after that, the size should be valid and we can
-            // apply it and render the connections correctly.
             if (IsInvalidSize(unrestrictedSize))
             {
+                QueueSizeRefresh();
                 return;
             }
 
@@ -251,11 +252,12 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             float unclampedWidth = Mathf.Clamp(unrestrictedSize.x + totalPaddingX, MinWidth, MaxWidth);
             float textWidthConstraint = Mathf.Max(unclampedWidth - totalPaddingX, minTextWidth);
 
-            Vector2 wrappedSize = _nameLabel.MeasureTextSize(_nameLabel.text, textWidthConstraint, MeasureMode.AtMost, 
+            Vector2 wrappedSize = _nameLabel.MeasureTextSize(_nameLabel.text, textWidthConstraint, MeasureMode.AtMost,
                 float.NaN, MeasureMode.Undefined);
 
             if (IsInvalidSize(wrappedSize))
             {
+                QueueSizeRefresh();
                 return;
             }
 
@@ -264,6 +266,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
 
             if (IsInvalidNumber(width) || IsInvalidNumber(height))
             {
+                QueueSizeRefresh();
                 return;
             }
 
@@ -273,6 +276,26 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             newNodeRect.width = width;
             newNodeRect.height = height;
             _block._NodeRect = newNodeRect;
+        }
+
+        private void QueueSizeRefresh()
+        {
+            if (sizeRefreshQueued || _block == null)
+            {
+                return;
+            }
+
+            sizeRefreshQueued = true;
+            schedule.Execute(() =>
+            {
+                if (_block == null)
+                {
+                    return;
+                }
+
+                sizeRefreshQueued = false;
+                UpdateSize();
+            }).ExecuteLater(1);
         }
 
         private static bool IsInvalidSize(Vector2 size)
