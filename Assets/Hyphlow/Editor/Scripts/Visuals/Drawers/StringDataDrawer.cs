@@ -397,35 +397,74 @@ namespace AtMycelia.Hyphlow.EditorUtils
             varDataProp.serializedObject.ApplyModifiedProperties();
         }
 
-        private static int GetVisibleLineCount(SerializedProperty varDataProp, HyphlowTextAreaAttribute textAreaAttribute)
+        private int GetVisibleLineCount(SerializedProperty varDataProp, HyphlowTextAreaAttribute textAreaAttribute)
         {
             int minLines = Mathf.Max(1, textAreaAttribute.MinLines);
             int maxLines = Mathf.Max(minLines, textAreaAttribute.MaxLines);
+            float valueWidth = GetEstimatedValueWidth(varDataProp, textAreaAttribute);
+            if (valueWidth <= 0f)
+            {
+                return minLines;
+            }
+
             SerializedProperty literalValueProp = varDataProp.FindPropertyRelative("value");
-            string currentValue = literalValueProp != null ? 
-                literalValueProp.stringValue : 
-                string.Empty;
-            int contentLines = CountLines(currentValue);
-            return Mathf.Clamp(contentLines, minLines, maxLines);
+            string currentValue = literalValueProp != null ? literalValueProp.stringValue : string.Empty;
+
+            GUIStyle textAreaStyle = new GUIStyle(EditorStyles.textArea)
+            {
+                wordWrap = ShouldWordWrapTextArea()
+            };
+
+            GUIContent valueContent = new GUIContent(currentValue);
+            float contentHeight = textAreaStyle.CalcHeight(valueContent, valueWidth);
+            int contentLineCount = GetLineCountFromHeight(contentHeight);
+
+            return Mathf.Clamp(contentLineCount, minLines, maxLines);
         }
 
-        private static int CountLines(string value)
+        private float GetEstimatedValueWidth(SerializedProperty varDataProp, HyphlowTextAreaAttribute textAreaAttribute)
         {
-            if (string.IsNullOrEmpty(value))
+            float viewWidth = EditorGUIUtility.currentViewWidth;
+            if (viewWidth <= 0f)
+            {
+                return 0f;
+            }
+
+            float labelOffset = EditorGUI.indentLevel * 15f;
+            float labelWidth = EditorGUIUtility.labelWidth;
+            var varData = varDataProp.boxedValue as VariableData;
+            bool useMultilineLabel = ShouldDrawLiteral(varDataProp) &&
+                ShouldUseTextArea(varData) &&
+                textAreaAttribute != null &&
+                textAreaAttribute.MinLines >= 2;
+
+            float fieldWidth;
+            if (useMultilineLabel)
+            {
+                fieldWidth = viewWidth - labelOffset;
+            }
+            else
+            {
+                fieldWidth = viewWidth - labelWidth;
+                if (fieldWidth < MinimumValueWidth + SpaceForPopup)
+                {
+                    fieldWidth = viewWidth - labelOffset;
+                }
+            }
+
+            return Mathf.Max(0f, fieldWidth - SpaceForPopup);
+        }
+
+        private static int GetLineCountFromHeight(float contentHeight)
+        {
+            float lineHeight = EditorGUIUtility.singleLineHeight;
+            if (lineHeight <= 0f)
             {
                 return 1;
             }
 
-            int lineCount = 1;
-            for (int i = 0; i < value.Length; i++)
-            {
-                if (value[i] == '\n')
-                {
-                    lineCount++;
-                }
-            }
-
-            return lineCount;
+            int lineCount = Mathf.CeilToInt(contentHeight / lineHeight);
+            return Mathf.Max(1, lineCount);
         }
 
         private static Vector2 GetScrollPosition(string propertyPath)

@@ -1,6 +1,6 @@
 using UnityEngine;
-
 using UnityEngine.Scripting.APIUpdating;
+using UnityEngine.Serialization;
 
 namespace AtMycelia.Hyphlow
 {
@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
 				 "Transform",
 				 "Get or Set a property of a Transform component")]
 	[AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+	[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
 	public class TransformProperty : BaseVariableProperty
 	{
 		//generated property
@@ -38,7 +38,6 @@ namespace AtMycelia.Hyphlow
 			LocalToWorldMatrix, 
 		}
 
-		
 		[SerializeField]
 		protected Property property = Property.Position;
 
@@ -46,18 +45,21 @@ namespace AtMycelia.Hyphlow
 		protected TransformData transformData;
 
 		[SerializeField]
-		[VariableProperty(typeof(Vector3Variable),
-						  typeof(TransformVariable),
-						  typeof(IntegerVariable),
-						  typeof(BooleanVariable))]
-		protected Variable inOutVar;
+		[ContentTypeConstraint(typeof(Vector3), typeof(Transform), typeof(int), typeof(bool))]
+		protected VariableReference _inOutVar;
+
+		protected override void RefreshVariableDataCache()
+		{
+			base.RefreshVariableDataCache();
+			_variableDataCache.Add(transformData);
+		}
 
 		public override void OnEnter()
 		{
-			var iov = inOutVar as Vector3Variable;
-			var iot = inOutVar as TransformVariable;
-			var ioi = inOutVar as IntegerVariable;
-			var iob = inOutVar as BooleanVariable;
+			var iov = _inOutVar.Variable as IVariable<Vector3>;
+			var iot = _inOutVar.Variable as IVariable<Transform>;
+			var ioi = _inOutVar.Variable as IVariable<int>;
+			var iob = _inOutVar.Variable as IVariable<bool>;
 
 			var target = transformData.Value;
 
@@ -170,14 +172,26 @@ namespace AtMycelia.Hyphlow
 			{
 				return "Error: no transform set";
 			}
-			if (inOutVar == null)
+			if (_inOutVar == null)
 			{
 				return "Error: no variable set to push or pull data to or from";
 			}
 
 			//We could do further checks here, eg, you have selected childcount but set a vec3variable
-
-			return getOrSet.ToString() + " " + property.ToString();
+			string result = getOrSet.ToString() + " " + property.ToString();
+			if (_inOutVar.Variable != null)
+			{
+				if (getOrSet == GetSet.Get)
+				{
+					result += $" from {transformData.Value.name} & put into ";
+				}
+				else
+				{
+					result += " to ";
+				}
+				result +=  _inOutVar.Variable.Key;
+			}
+			return result;
 		}
 
 		public override Color GetButtonColor()
@@ -187,11 +201,28 @@ namespace AtMycelia.Hyphlow
 
 		public override bool HasReference(Variable variable)
 		{
-			if (ReferenceEquals(transformData.VarRef, variable) || inOutVar == variable)
+			if (ReferenceEquals(transformData.VarRef, variable) || 
+				ReferenceEquals(_inOutVar.Variable, variable))
 				return true;
 
 			return false;
 		}
+
+		public override void ApplyBackwardsCompatibility()
+		{
+			base.ApplyBackwardsCompatibility();
+
+			if (inOutVarOld != null)
+			{
+				_inOutVar.Variable = inOutVarOld;
+				inOutVarOld = null;
+			}
+		}
+
+		[SerializeField]
+		[HideInInspector]
+		[FormerlySerializedAs("inOutVar")]
+		protected Variable inOutVarOld;
 
 	}
 }

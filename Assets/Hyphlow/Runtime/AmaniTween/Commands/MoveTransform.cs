@@ -1,14 +1,16 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace AtMycelia.Hyphlow.Tweening.VScripting
 {
-    [CommandInfo("Animation", 
+    [CommandInfo("BI Tween", 
         "Move", 
         "Moves a component's transform to a target position over time.")]
     public class MoveTransform : BaseTweenCommand
     {
-        [Tooltip("The Component with the transform to move.")]
-        [SerializeField] protected ComponentData _toMove = new ComponentData();
+        [Tooltip("The Component or GameObject with the Transform to move.")]
+        [ContentTypeConstraint(typeof(Component), typeof(GameObject))]
+        [SerializeField] protected AnyVariableData _toMove = new AnyVariableData();
         [Tooltip("The target position to move to. Only applies if Tween Relativity is set to Absolute.")]
         [SerializeField] protected Vector3Data _absoluteDest = new Vector3Data();
         [Tooltip("The amount to move by. Only applies if Tween Relativity is set to Relative.")]
@@ -16,9 +18,39 @@ namespace AtMycelia.Hyphlow.Tweening.VScripting
         [Tooltip("The position the tween will start at. Only applies if ToFrom is set to From.")]
         [SerializeField] protected Vector3Data _moveFromPosition = new Vector3Data();
 
+        public override void OnEnter()
+        {
+            _targetTransform = GetTargetTransform();
+            base.OnEnter();
+        }
+
+        private Transform _targetTransform;
+
+        private Transform GetTargetTransform()
+        {
+            Transform result = null;
+            // Need some defenses against fake Unity nulls here, so...
+            if (_toMove.BoxedValue is Component comp && comp != null)
+            {
+                result = comp.transform;
+            }
+            else if (_toMove.BoxedValue is GameObject go && go != null)
+            {
+                result = go.transform;
+            }
+            return result;
+        }
+
         protected override bool AreTargetsValid()
         {
-            bool result = _toMove != null && _toMove.BoxedValue != null;
+            bool result = _targetTransform != null;
+            
+            if (!result)
+            {
+                string errorMessage = $"MoveTransform on Flowchart {name}, Block {ParentBlock.BlockName} " +
+                    $"at index {CommandIndex} is missing a target transform.";
+                Debug.LogError(errorMessage);
+            }
             return result;
         }
 
@@ -27,10 +59,9 @@ namespace AtMycelia.Hyphlow.Tweening.VScripting
             _ourTween?.Kill();
             Vector3 startPos = DecideStartPosition();
             Vector3 endPos = DecideTargetPosition(startPos);
-            Transform tForm = _toMove.Value.transform;
-            tForm.position = startPos;
+            _targetTransform.position = startPos;
 
-            _ourTween = _tweener.MoveTo(tForm, endPos, _duration);
+            _ourTween = _tweener.MoveTo(_targetTransform, endPos, _duration);
             return _ourTween;
         }
 
@@ -44,11 +75,13 @@ namespace AtMycelia.Hyphlow.Tweening.VScripting
             }
             else
             {
-                startPos = _toMove.Value.transform.position;
+                startPos = _targetTransform.position;
             }
 
             return startPos;
         }
+
+        
 
         /// <summary>
         /// Determines the target position for the tween based on the Tween Relativity 
@@ -74,13 +107,13 @@ namespace AtMycelia.Hyphlow.Tweening.VScripting
 
         protected override void StopAllTweens()
         {
-            if (_toMove == null || _toMove.Value == null)
+            if (_toMove == null || _targetTransform == null)
             {
                 return;
             }
 
             var manager = TweenManager.S;
-            manager.KillAllOn(_toMove.Value);
+            manager.KillAllOn(_targetTransform);
         }
 
         protected override void ValidateTweener()
@@ -105,7 +138,8 @@ namespace AtMycelia.Hyphlow.Tweening.VScripting
 
         public override string GetSummary()
         {
-            bool weHaveTarget = _toMove != null && _toMove.Value != null;
+            _targetTransform = GetTargetTransform();
+            bool weHaveTarget = _targetTransform != null;
             if (!weHaveTarget)
             {
                 return "Need a target.";
@@ -118,7 +152,7 @@ namespace AtMycelia.Hyphlow.Tweening.VScripting
             }
             else
             {
-                targetStr = $"{_toMove.Value.name}";
+                targetStr = $"{_targetTransform.name}";
             }
 
             string toFromStr = _startMode.ToString();
@@ -175,6 +209,27 @@ namespace AtMycelia.Hyphlow.Tweening.VScripting
             string result = $"{targetStr} {toFromStr} {targDestStr} over {durationStr} seconds.";
             return result;
         }
+
+        public override void ApplyBackwardsCompatibility()
+        {
+            base.ApplyBackwardsCompatibility();
+            if (_toMoveOld != null && _toMoveOld.Value != null)
+            {
+                if (_toMoveOld.RepresentingVar)
+                {
+                    _toMove.VarRef = _toMoveOld.VarRef;
+                }
+                else
+                {
+                    _toMove.BoxedValue = _toMoveOld.Value;
+                }
+
+                _toMoveOld = null;
+            }
+        }
+
+        [FormerlySerializedAs("_toMove")]
+        [SerializeField][HideInInspector] protected ComponentData _toMoveOld = new ComponentData();
     }
 
 }

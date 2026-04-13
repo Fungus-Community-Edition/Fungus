@@ -116,6 +116,12 @@ namespace AtMycelia.Hyphlow
                 _oldVariable = null;
             }
 
+            if (_oldAnyVar != null && _oldAnyVar.LhsVariable != null)
+            {
+                _anyVar.LhsVariable = _oldAnyVar.LhsVariable;
+                _oldAnyVar = null;
+            }
+
             _anyVar.Refresh();
         }
 
@@ -123,6 +129,10 @@ namespace AtMycelia.Hyphlow
         [VariableProperty]
         [FormerlySerializedAs("variable")]
         [SerializeField] protected Variable _oldVariable;
+
+        [FormerlySerializedAs("anyVar")]
+        [HideInInspector]
+        [SerializeField] protected AnyVariableAndDataPair _oldAnyVar;
 
         protected override void OnEnable()
         {
