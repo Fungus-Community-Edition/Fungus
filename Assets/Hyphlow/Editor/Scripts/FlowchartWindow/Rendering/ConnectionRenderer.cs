@@ -169,7 +169,8 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             RequestRepaint();
         }
 
-        #region Just request a repaint for all of these events, since any of them could change the connections that need to be drawn.
+        #region Just request a repaint for all of these events
+        // Since any of them could change the connections that need to be drawn.
         public void OnFlowchartChanged(Flowchart previous, Flowchart next) => RequestRepaint();
         public void OnWindowPanned() => RequestRepaint();
         public void OnScrollWheelMoved() => RequestRepaint();

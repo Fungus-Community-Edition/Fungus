@@ -42,6 +42,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
         protected Block block;
         protected ReorderableList list;
         protected static readonly int lineHeightPadding = 6;
+        private bool suppressSelectCallback;
 
         protected virtual void DrawHeader(Rect rect)
         {
@@ -324,6 +325,12 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
         private void SelectChanged(ReorderableList list)
         {
+            if (suppressSelectCallback)
+            {
+                suppressSelectCallback = false;
+                return;
+            }
+
             Event currentEvent = Event.current;
             if (currentEvent != null && currentEvent.type == EventType.MouseDown)
             {
@@ -364,42 +371,47 @@ namespace AtMycelia.Hyphlow.EditorUtils
             bool actionKey = EditorGUI.actionKey;
             bool alreadySelected = flowchart.SelectedCommands.Contains(command);
 
+            suppressSelectCallback = true;
+            list.index = index;
+
             BlockEditor.actionList.Add(delegate
             {
-                if (alreadySelected)
+                if (actionKey)
                 {
-                    if (!actionKey && !shift)
+                    IList<Command> newSelection = flowchart.SelectedCommands;
+                    if (alreadySelected)
                     {
-                        flowchart.ClearSelectedCommands();
-                        return;
-                    }
-
-                    if (actionKey)
-                    {
-                        IList<Command> newSelection = flowchart.SelectedCommands;
                         newSelection.Remove(command);
-                        flowchart.SelectedCommands = newSelection;
-                        return;
                     }
+                    else
+                    {
+                        newSelection.Add(command);
+                    }
+
+                    flowchart.SelectedCommands = newSelection;
+                    return;
                 }
-                else
+
+                if (shift)
                 {
-                    if (!shift && !actionKey)
+                    if (!alreadySelected)
                     {
-                        flowchart.ClearSelectedCommands();
-                        list.index = index;
+                        flowchart.AddSelectedCommand(command);
                     }
 
-                    flowchart.AddSelectedCommand(command);
-
-                    if (shift)
-                    {
-                        SelectCommandRange(flowchart, index);
-                    }
+                    SelectCommandRange(flowchart, index);
+                    return;
                 }
+
+                flowchart.ClearSelectedCommands();
+                flowchart.AddSelectedCommand(command);
             });
 
-            currentEvent.Use();
+            if (shift || actionKey)
+            {
+                currentEvent.Use();
+            }
+
             GUIUtility.keyboardControl = 0; // Fix for textarea not refreshing (change focus)
         }
 
