@@ -99,10 +99,6 @@ namespace AtMycelia.Hyphlow
         [FormerlySerializedAs("localizationId")]
         [SerializeField] protected string localizationId = "";
 
-        [Tooltip("The ExecuteLua command adds a global Lua variable with this name bound to the flowchart prior to executing.")]
-        [FormerlySerializedAs("_luaBindingName")]
-        [SerializeField] protected string luaBindingName = "flowchart";
-
         #region Save Sys Involvement
         [Tooltip("Whether or not the save system should save (and when appropriate, load) this Flowchart's variables.")]
         [SerializeField] protected bool includeInSaves = true;
@@ -836,11 +832,6 @@ namespace AtMycelia.Hyphlow
         /// Unique identifier for identifying this flowchart in localized string keys.
         /// </summary>
         public virtual string LocalizationId { get { return localizationId; } }
-
-        /// <summary>
-        /// The ExecuteLua command adds a global Lua variable with this name bound to the flowchart prior to executing.
-        /// </summary>
-        public virtual string LuaBindingName { get { return luaBindingName; } }
 
         /// <summary>
         /// Position in the center of all blocks in the flowchart.

@@ -9,6 +9,7 @@ namespace AtMycelia.Hyphlow.Tweening
         ITweenHandle MoveTo(Transform target, Vector3 position, float duration);
         ITweenHandle ScaleTo(Transform target, Vector3 scale, float duration);
         ITweenHandle RotateTo(Transform target, Quaternion rotation, float duration);
+        ITweenHandle RotateLocalTo(Transform target, Quaternion rotation, float duration);
     }
 
     public interface IGraphicTweenAdapter

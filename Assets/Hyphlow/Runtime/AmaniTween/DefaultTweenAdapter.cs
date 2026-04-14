@@ -32,6 +32,12 @@ namespace AtMycelia.Hyphlow.Tweening
             return DefaultTweenHandle.From(tweenRot);
         }
 
+        public ITweenHandle RotateLocalTo(Transform target, Quaternion rotation, float duration)
+        {
+            var tweenRot = TweenLocalRotation(target, target.localRotation, rotation, duration);
+            return DefaultTweenHandle.From(tweenRot);
+        }
+
         protected virtual string GenIDFor(UnityObj unityObj, string aspectName)
         {
             string typeName = unityObj.GetType().Name;
@@ -282,6 +288,20 @@ namespace AtMycelia.Hyphlow.Tweening
             void UpdateRot(Quaternion newRot)
             {
                 toRotate.rotation = newRot;
+            }
+            Tween<Quaternion> result = new Tween<Quaternion>(toRotate, id, startRot,
+                endRot, duration, UpdateRot);
+
+            return result;
+        }
+
+        public Tween<Quaternion> TweenLocalRotation(Transform toRotate, Quaternion startRot,
+            Quaternion endRot, float duration)
+        {
+            string id = GenIDFor(toRotate, "LocalRotation");
+            void UpdateRot(Quaternion newRot)
+            {
+                toRotate.localRotation = newRot;
             }
             Tween<Quaternion> result = new Tween<Quaternion>(toRotate, id, startRot,
                 endRot, duration, UpdateRot);

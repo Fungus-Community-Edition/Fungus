@@ -330,7 +330,6 @@ MonoBehaviour:
   showLineNumbers: 0
   hideCommands: []
   localizationId: 
-  luaBindingName: flowchart
   includeInSaves: 1
   saveBlocks: 1
   saveVariables: 1
@@ -488,6 +487,8 @@ GameObject:
   - component: {fileID: 868139051}
   - component: {fileID: 868139050}
   - component: {fileID: 868139049}
+  - component: {fileID: 868139055}
+  - component: {fileID: 868139054}
   m_Layer: 0
   m_Name: Flowchart
   m_TagString: Untagged
@@ -528,8 +529,10 @@ MonoBehaviour:
   - {fileID: 868139044}
   - {fileID: 868139042}
   - {fileID: 868139049}
-  - {fileID: 868139039}
   - {fileID: 868139025}
+  - {fileID: 868139054}
+  - {fileID: 868139055}
+  - {fileID: 868139039}
   includeInSaves: 1
   loadPriority: 0
   suppressAllAutoSelections: 0
@@ -562,12 +565,12 @@ MonoBehaviour:
     _selectedBlocks:
     - {fileID: 868138992}
     _selectedCommands:
-    - {fileID: 868139025}
+    - {fileID: 868139054}
     _owner: {fileID: 868138990}
-    <ScrollPos>k__BackingField: {x: 0, y: 9.677822}
+    <ScrollPos>k__BackingField: {x: 0, y: -15.857147}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesExpanded>k__BackingField: 0
-    <Zoom>k__BackingField: 1.4000001
+    <Zoom>k__BackingField: 1.0000001
     <BlockViewHeight>k__BackingField: 231
     <ScrollViewRect>k__BackingField:
       serializedVersion: 2
@@ -583,7 +586,6 @@ MonoBehaviour:
   showLineNumbers: 0
   hideCommands: []
   localizationId: 
-  luaBindingName: flowchart
   includeInSaves: 1
   saveBlocks: 1
   saveVariables: 1
@@ -619,6 +621,8 @@ MonoBehaviour:
   - {fileID: 868139051}
   - {fileID: 868139050}
   - {fileID: 868139049}
+  - {fileID: 868139055}
+  - {fileID: 868139054}
   nextValidVarID: 10
   uniqueId: 47ba348e-5739-4f62-a704-de58c158ef58
   references:
@@ -2184,6 +2188,120 @@ MonoBehaviour:
   includeInSaves: 1
   loadPriority: 0
   suppressAllAutoSelections: 1
+--- !u!114 &868139054
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 868138990}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fb064de1b711a449845627f19b7f7b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 64
+  indentLevel: 0
+  getOrSet: 0
+  property: 11
+  transformData:
+    backingVarRef:
+      itemId: 5
+      owningSource: {fileID: 868138993}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 0}
+    transformRef: {fileID: 0}
+    transformVal: {fileID: 0}
+  _inOutVar:
+    itemId: 4
+    owningSource: {fileID: 868138993}
+    legacyOwningFc: {fileID: 0}
+    legacyOwningVsa: {fileID: 0}
+  inOutVarOld: {fileID: 0}
+--- !u!114 &868139055
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 868138990}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac8c9a88d08a42f41a746689dd5cc4c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 63
+  indentLevel: 0
+  _duration:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 868138993}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 1
+    floatRef: {fileID: 0}
+    floatVal: 0
+  _tweenerSO: {fileID: 11400000, guid: 2456e8060d1222e4cac681fb832cd207, type: 2}
+  _stopPreviousTweens:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 868138993}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _waitUntilFinished:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 868138993}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 1
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _toMove:
+    backingVarRef:
+      itemId: 5
+      owningSource: {fileID: 868138993}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    data:
+      rid: 3688519899278213213
+  _targetPosition:
+    backingVarRef:
+      itemId: 4
+      owningSource: {fileID: 868138993}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {x: 0, y: 0, z: 0}
+    vector3Ref: {fileID: 0}
+    vector3Val: {x: 0, y: 0, z: 0}
+  _positionFromValue:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {x: 0, y: 1, z: 0}
+    vector3Ref: {fileID: 0}
+    vector3Val: {x: 0, y: 0, z: 0}
+  _toFrom: 2
+  references:
+    version: 2
+    RefIds:
+    - rid: 3688519899278213213
+      type: {class: TransformData, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        backingVarRef:
+          itemId: 5
+          owningSource: {fileID: 868138993}
+          legacyOwningFc: {fileID: 0}
+          legacyOwningVsa: {fileID: 0}
+        value: {fileID: 0}
+        transformRef: {fileID: 0}
+        transformVal: {fileID: 0}
 --- !u!1 &1090256565
 GameObject:
   m_ObjectHideFlags: 0
