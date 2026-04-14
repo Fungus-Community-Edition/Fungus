@@ -1,0 +1,41 @@
+using UnityEngine;
+
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
+{
+    /// <summary>
+    /// The block will execute when the specified message is received from a Send Message command.
+    /// </summary>
+    [EventHandlerInfo("Scene",
+                      "Message Received",
+                      "The block will execute when the specified message is received from a Send Message command.")]
+    [AddComponentMenu("")]
+    [MovedFrom("AtMycelia.Amanita.VScripting.EventHandlers")]
+    public class MessageReceived : EventHandler 
+    {
+        [Tooltip("Fungus message to listen for")]
+        [SerializeField] protected string message = "";
+
+        #region Public members
+
+        /// <summary>
+        /// Called from Flowchart when a message is sent.
+        /// </summary>
+        /// <param name="message">Message.</param>
+        public void OnSendFungusMessage(string message)
+        {
+            if (this.message == message)
+            {
+                ExecuteBlock();
+            }
+        }
+
+        public override string GetSummary()
+        {
+            return message;
+        }
+
+        #endregion
+    }
+}

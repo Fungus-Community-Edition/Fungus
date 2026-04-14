@@ -329,7 +329,6 @@ MonoBehaviour:
     gameObjectVal: {fileID: 0}
   _characterCached: {fileID: 0}
   oldSetSayDialog: {fileID: 0}
-  _migrated: 0
   _oldStoryText: 
   _oldDescription: 
   _oldCharacter: {fileID: 0}
@@ -354,7 +353,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d02d9822eec54c98afe95bb497211b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scope: 2
+  scope: 1
   key: hasKey
   itemID: 1
   oldItemID: 0
@@ -395,7 +394,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 3688519650149400641
-      type: {class: BooleanData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      type: {class: BooleanData, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         backingVarRef:
           itemId: 0
@@ -497,7 +496,6 @@ MonoBehaviour:
   showLineNumbers: 0
   hideCommands: []
   localizationId: 
-  _luaEnvironment: {fileID: 0}
   luaBindingName: flowchart
   includeInSaves: 1
   saveBlocks: 1
@@ -583,7 +581,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 3688519646466015316
-      type: {class: GameObjectMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      type: {class: GameObjectMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         scope: 0
         key: thisKey

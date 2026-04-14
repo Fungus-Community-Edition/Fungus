@@ -1,6 +1,6 @@
 using UnityEngine;
-using AtMycelia.Amanita.VScripting;
-using AtMycelia.Amanita.Tweening;
+using AtMycelia.Hyphlow;
+using AtMycelia.Hyphlow.Tweening;
 
 namespace AtMycelia.Amanita.Myceliaudio.VScripting
 {
@@ -23,8 +23,8 @@ namespace AtMycelia.Amanita.Myceliaudio.VScripting
         {
             if (fadeTween == null)
             {
-                fadeTween = AmanitaManager.DefaultTweener;
-                doFade = AmanitaManager.DefaultTweener;
+                fadeTween = MA_DefaultTweener;
+                doFade = MA_DefaultTweener;
                 return;
             }
 
@@ -33,7 +33,7 @@ namespace AtMycelia.Amanita.Myceliaudio.VScripting
             {
                 Debug.Log($"Fade tweener assigned to MA_FadeVolume is not valid. It needs to implement " +
                     $"IMyceliaudioTweenAdapter. Going back to default.");
-                doFade = AmanitaManager.DefaultTweener;
+                doFade = MA_DefaultTweener;
             }
         }
 

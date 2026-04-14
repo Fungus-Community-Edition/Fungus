@@ -1,7 +1,8 @@
 using UnityEngine;
-using AtMycelia.Amanita.Tweening;
+using AtMycelia.Hyphlow.Tweening;
 using System.Collections.Generic;
 using System.Linq;
+using AtMycelia.Hyphlow.Sys;
 
 namespace AtMycelia.Amanita
 {
@@ -143,9 +144,11 @@ namespace AtMycelia.Amanita
                     audioSourceMusic.Play();
                 };
 
-                AmanitaManager.DefaultTweener.TweenAudioSourceVolume(fadeMusicVolume);
+                DefaultTweener.TweenAudioSourceVolume(fadeMusicVolume);
             }
         }
+
+        private DefaultTweenAdapter DefaultTweener => HyphlowRuntimeSysAssets.S.TweenAdapter;
 
         /// <summary>
         /// Plays a sound effect once, at the specified volume.
@@ -199,8 +202,8 @@ namespace AtMycelia.Amanita
             // ^ Best assign this to just one of the args; we don't want onComplete to execute twice
             // through just one call of this func
 
-            AmanitaManager.DefaultTweener.ShiftPitchTo(fadeMusicPitch);
-            AmanitaManager.DefaultTweener.ShiftPitchTo(fadeAmbiancePitch);
+            DefaultTweener.ShiftPitchTo(fadeMusicPitch);
+            DefaultTweener.ShiftPitchTo(fadeAmbiancePitch);
         }
 
         /// <summary>
@@ -228,8 +231,8 @@ namespace AtMycelia.Amanita
             // ^ Best assign this to just one of the args; we don't want onComplete to execute twice
             // through just one call of this func
 
-            AmanitaManager.DefaultTweener.TweenAudioSourceVolume(fadeMusicVolume);
-            AmanitaManager.DefaultTweener.TweenAudioSourceVolume(fadeAmbianceVolume);
+            DefaultTweener.TweenAudioSourceVolume(fadeMusicVolume);
+            DefaultTweener.TweenAudioSourceVolume(fadeAmbianceVolume);
         }
 
         /// <summary>

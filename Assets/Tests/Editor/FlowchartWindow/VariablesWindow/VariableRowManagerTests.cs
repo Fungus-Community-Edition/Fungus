@@ -1,18 +1,15 @@
-﻿using AtMycelia.Amanita.VScripting;
-using AtMycelia.Amanita.VScripting.EditorUtils;
+﻿using AtMycelia.Hyphlow;
+using AtMycelia.Hyphlow.EditorUtils;
 using NUnit.Framework;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.UIElements;
 using UITKLabel = UnityEngine.UIElements.Label;
 using UnityObject = UnityEngine.Object;
-using AtMycelia.Amanita.EditorUtils;
-using AtMycelia.Amanita;
 
 namespace VScriptingTests.VariableOperations
 {
@@ -50,7 +47,7 @@ namespace VScriptingTests.VariableOperations
             PrepRowManager();
             void PrepRowManager()
             {
-                string pathToUxml = AmanitaConstants.PathToAmanitaVariableDisplayEditorUxml;
+                string pathToUxml = HyphlowConstants.PathToAmanitaVariableDisplayEditorUxml;
                 _rootTemplate = Resources.Load<VisualTreeAsset>(pathToUxml);
                 _root = _rootTemplate.CloneTree();
                 _holdsManager = new VisualElement();

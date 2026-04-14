@@ -1348,6 +1348,18 @@ MonoBehaviour:
   m_EffectColor: {r: 0, g: 0, b: 0, a: 1}
   m_EffectDistance: {x: 1, y: -1}
   m_UseGraphicAlpha: 1
+--- !u!114 &380071466 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4738044054644098906, guid: a717114cba7201448ae3154bfb3fb737,
+    type: 3}
+  m_PrefabInstance: {fileID: 864036001}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a334fe2ffb574b3583ff3b18b4792d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &418058501
 GameObject:
   m_ObjectHideFlags: 1
@@ -1377,7 +1389,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61dddfdc5e0e44ca298d8f46f7f5a915, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  selectedFlowchart: {fileID: 864036002}
+  selectedFlowchart: {fileID: 380071466}
   lastSelectedFc: {fileID: 1283924777}
 --- !u!4 &418058503
 Transform:
@@ -3351,18 +3363,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a717114cba7201448ae3154bfb3fb737, type: 3}
---- !u!114 &864036002 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2139898432755702161, guid: a717114cba7201448ae3154bfb3fb737,
-    type: 3}
-  m_PrefabInstance: {fileID: 864036001}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a334fe2ffb574b3583ff3b18b4792d3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &920147306
 GameObject:
   m_ObjectHideFlags: 0
@@ -4356,11 +4356,11 @@ MonoBehaviour:
     serializedVersion: 2
     x: 66
     y: 71
-    width: 147
+    width: 151
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 0
+  itemId: 1
   blockName: TestNarrativeLog
   description: 
   eventHandler: {fileID: 1283924775}
@@ -4402,8 +4402,10 @@ MonoBehaviour:
   _oldMuscariables: []
   description: 
   uiModel:
-    _selectedBlocks: []
-    _selectedCommands: []
+    _selectedBlocks:
+    - {fileID: 1283924776}
+    _selectedCommands:
+    - {fileID: 1283924779}
     _owner: {fileID: 0}
     <ScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
@@ -4424,15 +4426,26 @@ MonoBehaviour:
   showLineNumbers: 0
   hideCommands: []
   localizationId: 
-  _luaEnvironment: {fileID: 0}
   luaBindingName: flowchart
   includeInSaves: 1
   saveBlocks: 1
   saveVariables: 1
   loadPriority: 0
   alwaysKeepGuid: 1
-  _blockListCache: []
-  _commands: []
+  _blockListCache:
+  - {fileID: 1283924776}
+  _commands:
+  - {fileID: 1283924779}
+  - {fileID: 1283924783}
+  - {fileID: 1283924784}
+  - {fileID: 1283924780}
+  - {fileID: 1283924782}
+  - {fileID: 1283924786}
+  - {fileID: 1283924788}
+  - {fileID: 1283924791}
+  - {fileID: 1283924790}
+  - {fileID: 1283924792}
+  - {fileID: 1283924785}
   nextValidVarID: 1
   uniqueId: 
   references:
@@ -4585,7 +4598,6 @@ MonoBehaviour:
     gameObjectVal: {fileID: 0}
   _characterCached: {fileID: 2072580810}
   oldSetSayDialog: {fileID: 0}
-  _migrated: 0
   _oldStoryText: 
   _oldDescription: 
   _oldCharacter: {fileID: 0}
@@ -4810,7 +4822,6 @@ MonoBehaviour:
     gameObjectVal: {fileID: 0}
   _characterCached: {fileID: 2072580810}
   oldSetSayDialog: {fileID: 0}
-  _migrated: 0
   _oldStoryText: 
   _oldDescription: 
   _oldCharacter: {fileID: 0}
@@ -4847,7 +4858,7 @@ MonoBehaviour:
 
       Saevam iram, iram et dolorem
 
-      
+
 
       Sephiroth,
       Sephiroth'
@@ -4962,7 +4973,6 @@ MonoBehaviour:
     gameObjectVal: {fileID: 0}
   _characterCached: {fileID: 2072580810}
   oldSetSayDialog: {fileID: 0}
-  _migrated: 0
   _oldStoryText: 
   _oldDescription: 
   _oldCharacter: {fileID: 0}
@@ -5003,7 +5013,7 @@ MonoBehaviour:
       Saevam iram, iram
       et dolorem
 
-      
+
 
       Sephiroth, Sephiroth'
     stringRef: {fileID: 0}
@@ -5117,7 +5127,6 @@ MonoBehaviour:
     gameObjectVal: {fileID: 0}
   _characterCached: {fileID: 2072580810}
   oldSetSayDialog: {fileID: 0}
-  _migrated: 0
   _oldStoryText: 
   _oldDescription: 
   _oldCharacter: {fileID: 0}
@@ -5366,7 +5375,6 @@ MonoBehaviour:
     gameObjectVal: {fileID: 0}
   _characterCached: {fileID: 2072580810}
   oldSetSayDialog: {fileID: 0}
-  _migrated: 0
   _oldStoryText: 
   _oldDescription: 
   _oldCharacter: {fileID: 0}
@@ -5591,7 +5599,6 @@ MonoBehaviour:
     gameObjectVal: {fileID: 0}
   _characterCached: {fileID: 2072580810}
   oldSetSayDialog: {fileID: 0}
-  _migrated: 0
   _oldStoryText: 
   _oldDescription: 
   _oldCharacter: {fileID: 0}
@@ -5737,7 +5744,6 @@ MonoBehaviour:
     gameObjectVal: {fileID: 0}
   _characterCached: {fileID: 2072580810}
   oldSetSayDialog: {fileID: 0}
-  _migrated: 0
   _oldStoryText: 
   _oldDescription: 
   _oldCharacter: {fileID: 0}
@@ -6539,7 +6545,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1701254141}
   - component: {fileID: 1701254143}
-  - component: {fileID: 1701254142}
+  - component: {fileID: 1701254144}
   m_Layer: 0
   m_Name: EventSystem
   m_TagString: Untagged
@@ -6562,26 +6568,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1173972559}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1701254142
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1701254140}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f231c4fb786f3946a6b90b886c48677, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SendPointerHoverToParent: 1
-  m_HorizontalAxis: Horizontal
-  m_VerticalAxis: Vertical
-  m_SubmitButton: Submit
-  m_CancelButton: Cancel
-  m_InputActionsPerSecond: 10
-  m_RepeatDelay: 0.5
-  m_ForceModuleActive: 0
 --- !u!114 &1701254143
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6597,6 +6583,48 @@ MonoBehaviour:
   m_FirstSelected: {fileID: 0}
   m_sendNavigationEvents: 1
   m_DragThreshold: 10
+--- !u!114 &1701254144
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1701254140}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01614664b831546d2ae94a42149d80ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SendPointerHoverToParent: 1
+  m_MoveRepeatDelay: 0.5
+  m_MoveRepeatRate: 0.1
+  m_XRTrackingOrigin: {fileID: 0}
+  m_ActionsAsset: {fileID: -944628639613478452, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_PointAction: {fileID: 1054132383583890850, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_MoveAction: {fileID: 3710738434707379630, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_SubmitAction: {fileID: 2064916234097673511, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_CancelAction: {fileID: -1967631576421560919, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_LeftClickAction: {fileID: 8056856818456041789, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_MiddleClickAction: {fileID: 3279352641294131588, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_RightClickAction: {fileID: 3837173908680883260, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_ScrollWheelAction: {fileID: 4502412055082496612, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_TrackedDevicePositionAction: {fileID: 4754684134866288074, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_TrackedDeviceOrientationAction: {fileID: 1025543830046995696, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_DeselectOnBackgroundClick: 1
+  m_PointerBehavior: 0
+  m_CursorLockBehavior: 0
+  m_ScrollDeltaPerTick: 6
 --- !u!1 &1757148442
 GameObject:
   m_ObjectHideFlags: 0
@@ -7474,6 +7502,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3892339028978780123, guid: bffd475e4bfb82f49810ceafe8d17b78,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 66
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 3892339028774243847, guid: bffd475e4bfb82f49810ceafe8d17b78, type: 3}

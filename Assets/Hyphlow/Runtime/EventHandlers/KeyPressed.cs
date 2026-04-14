@@ -1,0 +1,61 @@
+using UnityEngine;
+
+using UnityEngine.Scripting.APIUpdating;
+
+namespace AtMycelia.Hyphlow
+{
+    /// <summary>
+    /// Key press modes supported by Key Pressed event handler.
+    /// </summary>
+    public enum KeyPressType
+    {
+        /// <summary> Execute once when the key is pressed down. </summary>
+        KeyDown,
+        /// <summary> Execute once when the key is released </summary>
+        KeyUp,
+        /// <summary> Execute once per frame when key is held down. </summary>
+        KeyRepeat
+    }
+
+    /// <summary>
+    /// The block will execute when a key press event occurs.
+    /// </summary>
+    [EventHandlerInfo("Input",
+                      "Key Pressed",
+                      "The block will execute when a key press event occurs.")]
+    [AddComponentMenu("")]
+    [MovedFrom("AtMycelia.Amanita.VScripting.EventHandlers")]
+    public class KeyPressed : EventHandler
+    {
+        [Tooltip("The type of keypress to activate on")]
+        [SerializeField] protected KeyPressType keyPressType;
+
+        [Tooltip("Keycode of the key to activate on")]
+        [SerializeField] protected KeyCode keyCode;
+
+        protected virtual void Update()
+        {
+            switch (keyPressType)
+            {
+            case KeyPressType.KeyDown:
+                if (Input.GetKeyDown(keyCode))
+                {
+                    ExecuteBlock();
+                }
+                break;
+            case KeyPressType.KeyUp:
+                if (Input.GetKeyUp(keyCode))
+                {
+                    ExecuteBlock();
+                }
+                break;
+            case KeyPressType.KeyRepeat:
+                if (Input.GetKey(keyCode))
+                {
+                    ExecuteBlock();
+                }
+                break;
+            }
+        }
+    }
+}

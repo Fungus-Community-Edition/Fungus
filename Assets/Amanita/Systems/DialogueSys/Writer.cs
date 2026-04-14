@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Globalization;
-using AtMycelia.Amanita.Tweening;
+using AtMycelia.Hyphlow.Tweening;
+using AtMycelia.Hyphlow.Sys;
 
 namespace AtMycelia.Amanita.DialogueSys
 {
@@ -124,6 +125,10 @@ namespace AtMycelia.Amanita.DialogueSys
 
         protected virtual void Awake()
         {
+            if (shakerSO == null)
+            {
+                shakerSO = HyphlowRuntimeSysAssets.S.TweenAdapter;
+            }
             posShaker = shakerSO as IPositionShaker;
             if (posShaker == null)
             {

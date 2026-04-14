@@ -2,10 +2,9 @@
 using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
-using AtMycelia.Amanita.VScripting;
-using AtMycelia.Amanita.VScripting.EditorUtils;
-using AtMycelia.Amanita.EditorUtils;
-using AtMycelia.Amanita.VScripting.EditorUtils.FcWindow;
+using AtMycelia.Hyphlow;
+using AtMycelia.Hyphlow.EditorUtils;
+using AtMycelia.Hyphlow.EditorUtils.FcWindow;
 using UnityEngine.UIElements;
 
 namespace VScriptingTests.FCWindowOperations
@@ -22,7 +21,7 @@ namespace VScriptingTests.FCWindowOperations
 
             public FakeDrawer()
             {
-                FlowchartWindowConfig config = AmanitaEditorResources.FcwConfig;
+                FlowchartWindowConfig config = HyphlowEditorSysAssets.FcwConfig;
                 blockTemplate = config.BlockUxml;
                 baseStyleSheet = config.BlockStyleSheet;
                 selectedStyleSheet = config.SelectedBlockStyleSheet;

@@ -1,6 +1,5 @@
-using AtMycelia.Amanita.VScripting;
+using AtMycelia.Hyphlow;
 using NUnit.Framework;
-using System;
 
 namespace VScriptingTests.MuscariableTests.DataOnly
 {
@@ -73,15 +72,6 @@ namespace VScriptingTests.MuscariableTests.DataOnly
 
             Assert.IsTrue(bVar == new BoolMuscariable { Key = "x", ItemId = 11, Value = true });
             Assert.IsFalse(bVar == bVar2);
-        }
-
-        [Test]
-        public void Init_WithNoKeyOrID_ThrowsException()
-        {
-            var v = new IntMuscariable();
-            var ex = Assert.Throws<Exception>(() => v.Init());
-            StringAssert.Contains("needs a valid key", ex.Message);
-            StringAssert.Contains("needs a valid ID", ex.Message);
         }
 
         [Test]

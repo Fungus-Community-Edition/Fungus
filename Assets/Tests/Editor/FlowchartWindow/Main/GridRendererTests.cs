@@ -2,9 +2,9 @@
 using System.Reflection;
 using NUnit.Framework;
 using UnityEngine;
-using AtMycelia.Amanita.VScripting.EditorUtils;
-using Block = AtMycelia.Amanita.VScripting.Block;
-using AtMycelia.Amanita.VScripting.EditorUtils.FcWindow;
+using AtMycelia.Hyphlow.EditorUtils;
+using Block = AtMycelia.Hyphlow.Block;
+using AtMycelia.Hyphlow.EditorUtils.FcWindow;
 
 namespace VScriptingTests.FCWindowOperations
 {

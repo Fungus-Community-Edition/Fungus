@@ -1,17 +1,16 @@
-using AtMycelia.Amanita.VScripting;
-using AtMycelia.Amanita.VScripting.EditorUtils;
+using AtMycelia.Hyphlow;
+using AtMycelia.Hyphlow.EditorUtils;
 using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UITKLabel = UnityEngine.UIElements.Label;
-using AtMycelia.Amanita.EditorUtils;
 using UnityEditor;
 using System.Reflection;
 using System;
 using UnityObj = UnityEngine.Object;
 using System.Linq;
-using AtMycelia.Amanita;
+using AtMycelia;
 
 namespace VScriptingTests.VariableOperations
 {
@@ -147,7 +146,7 @@ namespace VScriptingTests.VariableOperations
         protected UITKLabel _countLabel;
         protected VariableListView _listView;
         protected VariableRowManager manager;
-        protected readonly string pathToUxml = AmanitaConstants.PathToAmanitaVariableDisplayEditorUxml;
+        protected readonly string pathToUxml = HyphlowConstants.PathToAmanitaVariableDisplayEditorUxml;
         protected VisualTreeAsset uxml;
 
         protected readonly List<UnityObj> _toDestroy = new();
@@ -245,11 +244,21 @@ namespace VScriptingTests.VariableOperations
             void SimulateCorruptionByInjectingNull()
             {
                 BindingFlags flags = BindingFlags.Instance | BindingFlags.NonPublic;
-                Type sourceType = typeof(VariableSourceAsset);
-                var varsInfo = sourceType.GetField("variables", flags);
-                Assert.IsNotNull(varsInfo, "Could not find private 'variables' field via reflection.");
-                var vars = varsInfo.GetValue(_source) as IList<Muscariable>;
+
+                var sourceType = typeof(VariableSourceAsset);
+                var varManagerInfo = sourceType.GetField("_varManager", flags);
+                Assert.IsNotNull(varManagerInfo, "Could not find private '_varManager' field via reflection.");
+
+                var varManager = varManagerInfo.GetValue(_source) as VariableManager;
+                Assert.IsNotNull(varManager, "Could not read VariableManager from VariableSourceAsset.");
+
+                var managerType = typeof(VariableManager);
+                var muscariInfo = managerType.GetField("_muscariables", flags);
+                Assert.IsNotNull(muscariInfo, "Could not find private '_muscariables' field via reflection.");
+
+                var vars = muscariInfo.GetValue(varManager) as IList<Muscariable>;
                 Assert.IsNotNull(vars);
+
                 // set the first element to null (simulate external corruption)
                 vars[0] = null;
                 expectedRowCount--;

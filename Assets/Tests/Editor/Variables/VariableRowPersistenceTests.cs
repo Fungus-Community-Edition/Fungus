@@ -5,8 +5,8 @@ using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
-using AtMycelia.Amanita.VScripting;
-using AtMycelia.Amanita.VScripting.EditorUtils;
+using AtMycelia.Hyphlow;
+using AtMycelia.Hyphlow.EditorUtils;
 using UnityObject = UnityEngine.Object;
 using AtMycelia.Amanita;
 using UitkLabel = UnityEngine.UIElements.Label;
@@ -16,7 +16,6 @@ using UnityEngine.Audio;
 using Lorekeeper;
 using System.Linq;
 using UnityEditor.SceneManagement;
-using UnityEngine.SceneManagement;
 
 namespace VScriptingTests.VariableRows
 {

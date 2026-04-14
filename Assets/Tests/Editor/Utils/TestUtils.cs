@@ -1,9 +1,8 @@
 ﻿using UnityEngine.Assertions;
-using AtMycelia.Amanita.VScripting;
-using AtMycelia.Amanita.VScripting.EditorUtils.FcWindow;
+using AtMycelia.Hyphlow.EditorUtils.FcWindow;
 using System.Reflection;
 
-namespace AtMycelia.Amanita.EditorUtils
+namespace AtMycelia.Hyphlow.EditorUtils
 {
     static public class TestUtils
     {

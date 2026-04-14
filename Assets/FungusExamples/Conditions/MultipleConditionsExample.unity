@@ -488,7 +488,7 @@ MonoBehaviour:
     - rid: -2
       type: {class: , ns: , asm: }
     - rid: 6177420819874447779
-      type: {class: BooleanData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      type: {class: BooleanData, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         backingVarRef:
           itemId: 2
@@ -499,7 +499,7 @@ MonoBehaviour:
         booleanRef: {fileID: 0}
         booleanVal: 0
     - rid: 6177420819874447980
-      type: {class: IntegerData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      type: {class: IntegerData, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         backingVarRef:
           itemId: 4
@@ -605,7 +605,6 @@ MonoBehaviour:
   showLineNumbers: 0
   hideCommands: []
   localizationId: 
-  _luaEnvironment: {fileID: 0}
   luaBindingName: flowchart
   includeInSaves: 1
   saveBlocks: 1
@@ -626,8 +625,8 @@ MonoBehaviour:
   - {fileID: 1292574185}
   - {fileID: 1292574184}
   - {fileID: 1292574183}
-  - {fileID: 0}
   - {fileID: 1292574181}
+  - {fileID: 1292574187}
   nextValidVarID: 8
   uniqueId: b29d9e24-9872-4229-9d93-9c9a8aac0e72
   references:
@@ -780,7 +779,6 @@ MonoBehaviour:
     gameObjectVal: {fileID: 0}
   _characterCached: {fileID: 0}
   oldSetSayDialog: {fileID: 0}
-  _migrated: 0
   _oldStoryText: 
   _oldDescription: 
   _oldCharacter: {fileID: 0}
@@ -925,7 +923,6 @@ MonoBehaviour:
     gameObjectVal: {fileID: 0}
   _characterCached: {fileID: 0}
   oldSetSayDialog: {fileID: 0}
-  _migrated: 0
   _oldStoryText: 
   _oldDescription: 
   _oldCharacter: {fileID: 0}
@@ -1070,7 +1067,6 @@ MonoBehaviour:
     gameObjectVal: {fileID: 0}
   _characterCached: {fileID: 0}
   oldSetSayDialog: {fileID: 0}
-  _migrated: 0
   _oldStoryText: 
   _oldDescription: 
   _oldCharacter: {fileID: 0}
@@ -1350,7 +1346,7 @@ MonoBehaviour:
     - rid: -2
       type: {class: , ns: , asm: }
     - rid: 6177420826070220866
-      type: {class: StringData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      type: {class: StringData, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         backingVarRef:
           itemId: 7
@@ -1361,7 +1357,7 @@ MonoBehaviour:
         stringRef: {fileID: 0}
         stringVal: 
     - rid: 6177420826070220867
-      type: {class: IntegerData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      type: {class: IntegerData, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         backingVarRef:
           itemId: 4
@@ -1372,7 +1368,7 @@ MonoBehaviour:
         integerRef: {fileID: 0}
         integerVal: 0
     - rid: 6177420826070220868
-      type: {class: IntegerData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      type: {class: IntegerData, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         backingVarRef:
           itemId: 5
@@ -1636,7 +1632,6 @@ MonoBehaviour:
     gameObjectVal: {fileID: 0}
   _characterCached: {fileID: 0}
   oldSetSayDialog: {fileID: 0}
-  _migrated: 0
   _oldStoryText: 
   _oldDescription: 
   _oldCharacter: {fileID: 0}
@@ -1854,7 +1849,7 @@ MonoBehaviour:
     - rid: -2
       type: {class: , ns: , asm: }
     - rid: 6177420819874447438
-      type: {class: IntegerData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      type: {class: IntegerData, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         backingVarRef:
           itemId: 0
@@ -1865,7 +1860,7 @@ MonoBehaviour:
         integerRef: {fileID: 0}
         integerVal: 0
     - rid: 6177420819874447541
-      type: {class: BooleanData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      type: {class: BooleanData, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         backingVarRef:
           itemId: 2
@@ -1946,7 +1941,7 @@ MonoBehaviour:
   suppressAllAutoSelections: 0
 --- !u!114 &1292574187
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -1979,7 +1974,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 6177420826070221573
-      type: {class: IntegerData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      type: {class: IntegerData, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         backingVarRef:
           itemId: 0
@@ -2794,21 +2789,41 @@ PrefabInstance:
     - target: {fileID: 8741691010097801699, guid: a717114cba7201448ae3154bfb3fb737,
         type: 3}
       propertyPath: _oldDuration
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8741691010097801699, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: _duration.value
       value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 8741691010097801699, guid: a717114cba7201448ae3154bfb3fb737,
         type: 3}
       propertyPath: _oldFadeColor.a
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8741691010097801699, guid: a717114cba7201448ae3154bfb3fb737,
         type: 3}
       propertyPath: _oldTargetAlpha
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8741691010097801699, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: _fadeColor.value.a
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8741691010097801699, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: _targetAlpha.value
       value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 8741691010097801699, guid: a717114cba7201448ae3154bfb3fb737,
         type: 3}
       propertyPath: _oldWaitUntilFinished
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8741691010097801699, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: _waitUntilFinished.value
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8741691010097801699, guid: a717114cba7201448ae3154bfb3fb737,
@@ -2824,6 +2839,11 @@ PrefabInstance:
     - target: {fileID: 8741691010097801699, guid: a717114cba7201448ae3154bfb3fb737,
         type: 3}
       propertyPath: targetAlpha.backingVarRef.owningSource
+      value: 
+      objectReference: {fileID: 1743950272}
+    - target: {fileID: 8741691010097801699, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: _fadeTexture.backingVarRef.owningSource
       value: 
       objectReference: {fileID: 1743950272}
     - target: {fileID: 8741691010097801699, guid: a717114cba7201448ae3154bfb3fb737,

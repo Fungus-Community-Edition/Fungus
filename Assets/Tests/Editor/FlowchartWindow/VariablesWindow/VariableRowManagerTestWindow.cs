@@ -7,13 +7,13 @@ using UnityEngine.UIElements;
 using UnityObj = UnityEngine.Object;
 using UITKLabel = UnityEngine.UIElements.Label;
 using UnityRandom = UnityEngine.Random;
-using AtMycelia.Amanita.VScripting;
+using AtMycelia.Hyphlow;
 
 // Optional: avoid pulling conflicting types into the global scope
-using AtMycelia.Amanita.EditorUtils;
 using AtMycelia.Collections;
-using AtMycelia.Amanita.VScripting.EditorUtils;
-using AtMycelia.Amanita; // if you keep helpers here
+using AtMycelia.Hyphlow.EditorUtils;
+
+// if you keep helpers here
 
 namespace VScriptingTests.VariableOperations
 {
@@ -228,7 +228,7 @@ namespace VScriptingTests.VariableOperations
             _vRowManager = null;
 
             // Load UXML
-            const string pathToUxml = AmanitaConstants.PathToAmanitaVariableDisplayEditorUxml;
+            const string pathToUxml = HyphlowConstants.PathToAmanitaVariableDisplayEditorUxml;
             if (_variableTemplate == null)
             {
                 _variableTemplate = Resources.Load<VisualTreeAsset>(pathToUxml);

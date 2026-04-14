@@ -3,7 +3,7 @@ using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
-using AtMycelia.Amanita.Tweening;
+using AtMycelia.Hyphlow.Tweening;
 
 namespace TweeningTests.BuiltinCompat
 {

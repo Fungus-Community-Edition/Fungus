@@ -2,8 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 using System.Collections;
-using AtMycelia.Amanita.Lua;
-using AtMycelia.Amanita.Tweening;
+using AtMycelia.Hyphlow.Tweening;
 
 namespace AtMycelia.Amanita.DialogueSys
 {

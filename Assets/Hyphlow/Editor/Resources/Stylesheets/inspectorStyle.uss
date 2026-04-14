@@ -1,0 +1,93 @@
+:root
+{
+	--main-font: resource('Fonts/Exo2/Exo2-Regular SDF-UITK');
+	--dark-mode-text-color: rgb(230, 230, 230);
+	--dark-mode-text-bg-color: rgb(26, 26, 26);
+	--text-field-font-size: 14px;
+	--text-field-border-radius: 5px;
+}
+
+#InspectorRoot
+{
+	padding: 5px;
+	color: var(--dark-mode-text-color);
+	font-size: var(--text-field-font-size);
+	-unity-font-definition: var(--main-font);
+}
+
+#LocalizationIDField
+{
+	height: 30px;
+	-unity-text-align: middle-left;
+	margin: 3px 0px 3px 0px;
+	
+}
+
+#LocalizationIDField > Label
+{
+	margin: 0px;
+	padding: 0px;
+	height: 100%;
+
+}
+
+#LocalizationIDField > #unity-text-input
+{
+	color: var(--dark-mode-text-color);
+	background-color: var(--dark-mode-text-bg-color);
+	border-radius: var(--text-field-border-radius);
+	padding: 5px;
+	
+}
+
+#DescField
+{
+	-unity-font-definition: var(--main-font);
+	flex-direction: column;
+	color: var(--dark-mode-text-color);
+}
+
+
+#DescField > #unity-text-input
+{
+	flex-grow: 1;
+	width: 100%;
+	height: 100px;
+	padding: 5px;
+	background-color: var(--dark-mode-text-bg-color);
+	color: var(--dark-mode-text-color);
+	border-radius: var(--text-field-border-radius);
+}
+
+#OpenFlowchartWindow
+{
+	margin-top: 10px;
+	margin-bottom: 10px;
+	height: 40px;
+	padding: 0px;
+	font-size: 16px;
+}
+
+#MigrateVars
+{
+	margin-top: 10px;
+	margin-bottom: 10px;
+	height: 40px;
+	padding: 0px;
+	font-size: 16px;
+}
+
+#EditorOnly
+{
+	margin: 0px 0px 3px 0px;
+}
+
+#LuaSupport
+{
+	margin: 0px 0px 3px 0px;
+}
+
+#SaveSysInvolvement
+{
+	margin: 0px 0px 3px 0px;
+}

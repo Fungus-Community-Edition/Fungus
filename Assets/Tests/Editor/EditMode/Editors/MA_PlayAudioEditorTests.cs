@@ -5,10 +5,10 @@ using System.Reflection;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
-using AtMycelia.Amanita.VScripting;
+using AtMycelia.Hyphlow;
 using AtMycelia.Amanita.Myceliaudio.VScripting;
 using UnityObj = UnityEngine.Object;
-using AtMycelia.Amanita.EditorUtils;
+using AtMycelia.Hyphlow.EditorUtils;
 
 namespace VScriptingTests.CommandEditorOperations
 {

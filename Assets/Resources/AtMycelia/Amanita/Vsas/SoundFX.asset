@@ -30,7 +30,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 6177420756002537546
-      type: {class: AudioClipMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      type: {class: AudioClipMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         scope: 0
         key: guitar
@@ -38,7 +38,7 @@ MonoBehaviour:
         value: {fileID: 8300000, guid: 5467a02549657ce418b3aeab5b1dfc18, type: 3}
         startValue: {fileID: 0}
     - rid: 6177420756002537547
-      type: {class: AudioClipMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      type: {class: AudioClipMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         scope: 0
         key: uiConfirm
@@ -46,7 +46,7 @@ MonoBehaviour:
         value: {fileID: 8300000, guid: fe7bcb8696a130d46a6977c0737c8d13, type: 3}
         startValue: {fileID: 0}
     - rid: 6177420756002537548
-      type: {class: AudioClipMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      type: {class: AudioClipMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         scope: 0
         key: uiError
@@ -54,7 +54,7 @@ MonoBehaviour:
         value: {fileID: 8300000, guid: 5a02bfd612d1d2e489218a3a4eed7a2a, type: 3}
         startValue: {fileID: 0}
     - rid: 6177420756002537549
-      type: {class: AudioClipMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      type: {class: AudioClipMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         scope: 0
         key: uiHover

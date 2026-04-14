@@ -2,8 +2,7 @@ using System.Collections;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
-using AtMycelia.Amanita.Tweening;
-using AtMycelia.Amanita.Tweening.VScripting;
+using AtMycelia.Hyphlow.Tweening.VScripting;
 using UnityObj = UnityEngine.Object;
 
 namespace AmaniTweenTests.Commands
@@ -105,7 +104,7 @@ namespace AmaniTweenTests.Commands
         {
             public void SetTarget(Component component)
             {
-                _toMove.Value = component;
+                _toMove.BoxedValue = component;
             }
 
             public void SetAbsoluteDest(Vector3 value)

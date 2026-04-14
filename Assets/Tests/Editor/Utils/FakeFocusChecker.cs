@@ -1,6 +1,4 @@
-using AtMycelia.Amanita.VScripting.EditorUtils;
-
-namespace AtMycelia.Amanita.EditorUtils
+namespace AtMycelia.Hyphlow.EditorUtils
 {
     // Fake focus checker you use in all tests
     public class FakeFocusChecker : IFocusChecker

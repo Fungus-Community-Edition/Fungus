@@ -1,5 +1,6 @@
 using UnityEngine;
-using AtMycelia.Amanita.VScripting;
+using AtMycelia.Hyphlow;
+using AtMycelia.Hyphlow.Tweening;
 
 namespace AtMycelia.Amanita.Myceliaudio.VScripting
 {
@@ -10,6 +11,8 @@ namespace AtMycelia.Amanita.Myceliaudio.VScripting
         {
             return CommandColors.Audio;
         }
+
+        protected static MyceliaudioTweenAdapter MA_DefaultTweener => DefaultAmanitaAssets.MyceliaudioTweener;
     }
 
 }

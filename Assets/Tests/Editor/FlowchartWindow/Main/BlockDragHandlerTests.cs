@@ -1,14 +1,12 @@
-using AtMycelia.Amanita.EditorUtils;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityObject = UnityEngine.Object;
-using AtMycelia.Amanita.VScripting;
-using AtMycelia.Amanita.VScripting.EditorUtils;
-using AtMycelia.Amanita.VScripting.EditorUtils.FcWindow;
-using AtMycelia.Graphics;
+using AtMycelia.Hyphlow;
+using AtMycelia.Hyphlow.EditorUtils;
+using AtMycelia.Hyphlow.EditorUtils.FcWindow;
 
 namespace VScriptingTests.FCWindowOperations
 {
@@ -129,7 +127,7 @@ namespace VScriptingTests.FCWindowOperations
 
         protected virtual void SetGridSnap(bool val)
         {
-            AmanitaEditorPreferences.useGridSnap = val;
+            HyphlowEditorPreferences.useGridSnap = val;
         }
 
         protected readonly bool initGridSnap = false;

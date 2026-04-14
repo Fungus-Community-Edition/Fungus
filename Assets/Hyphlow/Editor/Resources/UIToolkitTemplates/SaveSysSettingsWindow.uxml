@@ -1,0 +1,10 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <Style src="project://database/Assets/Amanita/Editor/Resources/Stylesheets/saveSysSettingsWindowStyle.uss?fileID=7433441132597879392&amp;guid=16b5f91ec91c1eb4280cc20ae0b17452&amp;type=3#saveSysSettingsWindowStyle" />
+    <ui:Label text="Save Sys Settings" name="TopLabel" />
+    <ui:DropdownField label="Save Reader" name="SaveReaderDropdown" class="dropdown" />
+    <ui:DropdownField label="Save Writer" name="SaveWriterDropdown" class="dropdown" />
+    <ui:ListView name="MainCodecs" reorderable="true" show-foldout-header="true" show-add-remove-footer="true" header-title="Main Codecs" virtualization-method="FixedHeight" horizontal-scrolling="false" fixed-item-height="30" reorder-mode="Animated" class="save-list-view" />
+    <ui:ListView name="MainAppliers" reorderable="true" show-foldout-header="true" show-add-remove-footer="true" header-title="Main Appliers" virtualization-method="FixedHeight" horizontal-scrolling="false" fixed-item-height="30" reorder-mode="Animated" class="save-list-view" />
+    <uie:ObjectField label="Storage Settings" name="StorageSettings" type="AtMycelia.SaveSys.SaveStorageSettings, AtMycelia.Marasmius.Core" />
+    <ui:Button text="Refresh" name="RefreshButton" />
+</ui:UXML>

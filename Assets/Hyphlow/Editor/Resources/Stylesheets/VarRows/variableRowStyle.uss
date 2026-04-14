@@ -1,0 +1,131 @@
+:root
+{
+	/* --main-font: resource('Fonts/Amaranth/Amaranth-Regular SDF-UITK'); */
+	--main-font: resource('Fonts/Exo2/Exo2-Regular SDF-UITK');
+	--dark-mode-text-color: var(--dark-mode-text-color);
+	--dark-mode-text-bg-color: #1A1A1A;
+	--text-field-font-size: 18px;
+	--text-field-border-radius: 5px;
+	--normal-row-height: 30px;
+	--rainbow-tex: resource("Textures/rainbowTex");
+	--slight-left-padding-only: 0px 0px 0px 5px;
+	--slight-bottom-margin-only: 0px 0px 3px 0px;
+	--slightly-rounded: 3px;
+	--default-row-width: 435px;
+	--key-field-bg-color: rgb(26, 26, 26);
+}
+
+#VarRowRoot 
+{
+	flex-direction: row;
+	height: 30px;
+	margin-bottom: 3px; /* Space between rows */
+	border-radius: var(--slightly-rounded);
+	width: var(--default-row-width);
+}
+
+.removeButton 
+{
+	width: 30px;
+	border-radius: var(--slightly-rounded);
+	padding: 0px;
+	margin: 0px 0px 0px 2px;
+	flex-grow: 0;
+	flex-shrink: 0;
+}
+
+.varRowTypeLabel
+{
+	-unity-font-definition: var(--main-font);
+	color: var(--dark-mode-text-color);
+	-unity-text-align: middle-left;
+	width: 75px;
+	padding: var(--slight-left-padding-only);
+	margin: 0px;
+	font-size: 14px;
+	border-radius: var(--slightly-rounded);
+}
+
+.keyInput
+{
+	-unity-font-definition: var(--main-font);
+	background-color: var(--key-field-bg-color);
+	color: var(--dark-mode-text-color);
+	border-radius: var(--slightly-rounded);
+	padding: 0 2px 0 2px;
+	width: 130px;
+	margin: 0 2px 0 1px;
+	flex-grow: 0;
+	flex-shrink: 0;
+}
+
+.keyInput > #unity-text-input
+{
+	-unity-font-definition: var(--main-font);
+	background-color: rgb(26, 26, 26);
+	color: var(--dark-mode-text-color);
+	border-radius: var(--slightly-rounded);
+	padding: 2px;
+	width: 150px;
+	margin: 0;
+	font-size: 16px;
+}
+
+#ValueFieldHolder
+{
+	width: 120px;
+	padding: 0;
+	-unity-text-align: middle-left;
+	border-radius: var(--slightly-rounded);
+	border-color: white;
+	font-size: 18px;
+	margin: 0px 3px 0px 0px;
+}
+
+#ValueField
+{
+	height: 100%;
+}
+
+.scopeRoot 
+{
+	-unity-font-definition: var(--main-font);
+	width: 75px;
+	display: flex;
+	flex-direction: row;
+	height: 100%;
+	padding: 0px;
+	margin: 0px 2px 0px 0px;
+	font-size: 18px;
+	flex-grow: 0;
+	flex-shrink: 0;
+}
+
+.scopeRoot > VisualElement 
+{
+	height: 100%;
+	padding: 0px;
+	margin: 0;
+	border-radius: var(--slightly-rounded);
+}
+
+.scopeRoot > VisualElement > VisualElement 
+{
+	width: 20%;
+	height: 50%;
+	flex-shrink: 1;
+}
+
+.scopeRoot > VisualElement > TextElement 
+{
+	height: 100%;
+	flex-shrink: 0;
+	margin: 0;
+	padding-left: 3px;
+	font-size: 14px;
+}
+
+#KeyInput > #unity-text-input
+{
+	font-size: 14px;
+}

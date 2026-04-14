@@ -2,8 +2,10 @@
 using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
 using System.Collections.Generic;
-using AtMycelia.Amanita.VScripting.EventHandlers;
+using AtMycelia.Hyphlow;
 using AtMycelia.Amanita.VScripting;
+using AtMycelia.Hyphlow.Sys;
+using AtMycelia.Hyphlow.Tweening;
 
 namespace AtMycelia.Amanita
 {
@@ -173,20 +175,22 @@ namespace AtMycelia.Amanita
 
                 if (returnOnCancelled)
                 {
-                    AmanitaManager.DefaultTweener.TweenPosition(gameObject.transform, gameObject.transform.position,
+                    Tweener.TweenPosition(gameObject.transform, gameObject.transform.position,
                     startingPosition, returnDuration);
                     //LeanTween.move(gameObject, startingPosition, returnDuration).setEase(LeanTweenType.easeOutExpo);
                 }
             }
             else if (returnOnCompleted)
             {
-                AmanitaManager.DefaultTweener.TweenPosition(gameObject.transform, gameObject.transform.position,
+                Tweener.TweenPosition(gameObject.transform, gameObject.transform.position,
                     startingPosition, returnDuration);
                 //LeanTween.move(gameObject, startingPosition, returnDuration).setEase(LeanTweenType.easeOutExpo);
             }
 
             beingDragged = false;
         }
+
+        private DefaultTweenAdapter Tweener => HyphlowRuntimeSysAssets.S.TweenAdapter;
 
         protected virtual void DoPointerEnter()
         {

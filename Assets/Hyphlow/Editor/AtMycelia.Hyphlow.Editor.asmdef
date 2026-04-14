@@ -1,0 +1,21 @@
+{
+    "name": "AtMycelia.Hyphlow.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:3f6d2e24eb975e74c89b274691a961ec",
+        "GUID:3e8446a8987ac8a47ba6568ab3ce29f4",
+        "GUID:343deaaf83e0cee4ca978e7df0b80d21",
+        "GUID:6b9bef592926cd84491b0b24167b4fed"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

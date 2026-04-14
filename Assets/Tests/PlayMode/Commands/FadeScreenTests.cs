@@ -1,9 +1,10 @@
-using AtMycelia.Amanita.VScripting;
+using AtMycelia.Amanita;
+using AtMycelia.Hyphlow;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
-using AtMycelia.Amanita;
+using AtMycelia.Amanita.VScripting;
 
 namespace VScriptingTests.Commands
 {
@@ -17,13 +18,16 @@ namespace VScriptingTests.Commands
             cameraManager = AmanitaManager.S.CameraManager;
             cameraManager.ScreenFadeTexture = null;
 
-            // Assign private fields via reflection
-            cmdType.GetField("duration", flags)
-                .SetValue(cmd, Duration);
-            cmdType.GetField("targetAlpha", flags)
-                .SetValue(cmd, 0.75f);
-            cmdType.GetField("waitUntilFinished", flags)
-                .SetValue(cmd, true);
+            // Assign variable-backed fields via reflection
+            var durationData = (FloatData)cmdType.GetField("_duration", flags).GetValue(cmd);
+            durationData.Value = Duration;
+
+            var targetAlphaData = (FloatData)cmdType.GetField("_targetAlpha", flags).GetValue(cmd);
+            targetAlphaData.Value = 0.75f;
+
+            var waitUntilFinishedData = (BooleanData)cmdType.GetField("_waitUntilFinished", flags).GetValue(cmd);
+            waitUntilFinishedData.Value = true;
+
             cmdType.GetField("fadeTweener", flags)
                 .SetValue(cmd, null); // triggers default adapter
         }
@@ -43,8 +47,8 @@ namespace VScriptingTests.Commands
         [UnityTest]
         public IEnumerator NoWait_ContinuesImmediately_AndFadesScreen()
         {
-            cmdType.GetField("waitUntilFinished", flags)
-                .SetValue(command, false);
+            var waitUntilFinishedData = (BooleanData)cmdType.GetField("_waitUntilFinished", flags).GetValue(command);
+            waitUntilFinishedData.Value = false;
 
             bool continued = false;
             command.StartedContinue += _ => continued = true;

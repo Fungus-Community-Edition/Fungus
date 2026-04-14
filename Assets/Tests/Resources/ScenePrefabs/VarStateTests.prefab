@@ -100,24 +100,19 @@ MonoBehaviour:
     _nextValidVarID: 1
     _isInitted: 0
   version: 1
-  _legacyVariables:
-  - {fileID: 108686680755132427}
-  - {fileID: 2677308742917868254}
-  - {fileID: 5708265625975436602}
-  - {fileID: 5717713915927640460}
-  - {fileID: 2894303634136426304}
-  - {fileID: 1975970902030707167}
-  - {fileID: 5244056966308270914}
+  _legacyVariables: []
   _oldMuscariables: []
   description: 
   uiModel:
-    _selectedBlocks: []
-    _selectedCommands: []
+    _selectedBlocks:
+    - {fileID: 3080362346236546621}
+    _selectedCommands:
+    - {fileID: 3920365560750978494}
     _owner: {fileID: 0}
-    <ScrollPos>k__BackingField: {x: 0, y: 0}
+    <ScrollPos>k__BackingField: {x: 98.333435, y: -115.69241}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesExpanded>k__BackingField: 0
-    <Zoom>k__BackingField: 1
+    <Zoom>k__BackingField: 1.2
     <BlockViewHeight>k__BackingField: 400
     <ScrollViewRect>k__BackingField:
       serializedVersion: 2
@@ -125,7 +120,7 @@ MonoBehaviour:
       y: 0
       width: 0
       height: 0
-    <SelectedCommandsStale>k__BackingField: 0
+    <SelectedCommandsStale>k__BackingField: 1
   stepPause: 0
   colorCommands: 1
   hideComponents: 1
@@ -133,15 +128,20 @@ MonoBehaviour:
   showLineNumbers: 0
   hideCommands: []
   localizationId: 
-  _luaEnvironment: {fileID: 0}
   luaBindingName: flowchart
   includeInSaves: 1
   saveBlocks: 1
   saveVariables: 1
   loadPriority: 0
   alwaysKeepGuid: 0
-  _blockListCache: []
-  _commands: []
+  _blockListCache:
+  - {fileID: 3080362346236546621}
+  - {fileID: 2182094343406819994}
+  - {fileID: 2267836562425437019}
+  _commands:
+  - {fileID: 3920365560750978494}
+  - {fileID: 1752780474336798940}
+  - {fileID: 1749631385722854176}
   nextValidVarID: 8
   uniqueId: 05b08fbe-bc51-47c3-bab0-20deaac90bc0
   references:
@@ -162,7 +162,7 @@ MonoBehaviour:
   scope: 0
   key: name
   itemID: 1
-  oldItemID: 1
+  oldItemID: 0
   _owner: {fileID: 5559651170823982952}
   value: Alice
 --- !u!114 &2677308742917868254
@@ -180,7 +180,7 @@ MonoBehaviour:
   scope: 0
   key: score
   itemID: 2
-  oldItemID: 2
+  oldItemID: 0
   _owner: {fileID: 5559651170823982952}
   value: 132
 --- !u!114 &5708265625975436602
@@ -198,7 +198,7 @@ MonoBehaviour:
   scope: 0
   key: newPlayer
   itemID: 3
-  oldItemID: 3
+  oldItemID: 0
   _owner: {fileID: 5559651170823982952}
   value: 1
 --- !u!114 &5717713915927640460
@@ -216,7 +216,7 @@ MonoBehaviour:
   scope: 0
   key: fastestTimeInSeconds
   itemID: 4
-  oldItemID: 4
+  oldItemID: 0
   _owner: {fileID: 5559651170823982952}
   value: 12.348
 --- !u!114 &2894303634136426304
@@ -234,7 +234,7 @@ MonoBehaviour:
   scope: 0
   key: twoDPos
   itemID: 5
-  oldItemID: 5
+  oldItemID: 0
   _owner: {fileID: 5559651170823982952}
   value: {x: 12, y: 34}
 --- !u!114 &1975970902030707167
@@ -252,7 +252,7 @@ MonoBehaviour:
   scope: 0
   key: threeDPos
   itemID: 6
-  oldItemID: 6
+  oldItemID: 0
   _owner: {fileID: 5559651170823982952}
   value: {x: 23, y: 45, z: 78}
 --- !u!114 &5244056966308270914
@@ -270,7 +270,7 @@ MonoBehaviour:
   scope: 0
   key: someTrans
   itemID: 7
-  oldItemID: 7
+  oldItemID: 0
   _owner: {fileID: 5559651170823982952}
   value: {fileID: 2288069364643417435}
 --- !u!114 &3080362346236546621
@@ -289,7 +289,7 @@ MonoBehaviour:
     serializedVersion: 2
     x: 296
     y: 482
-    width: 106.369995
+    width: 100
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
@@ -323,7 +323,7 @@ MonoBehaviour:
       owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 
+    value: This here is some text for unit testing
     stringRef: {fileID: 0}
     stringVal: 
   _description:
@@ -367,7 +367,7 @@ MonoBehaviour:
       owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
   _showCount:
@@ -376,7 +376,7 @@ MonoBehaviour:
       owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    value: 1
     integerRef: {fileID: 0}
     integerVal: 0
   _extendPrevious:
@@ -403,7 +403,7 @@ MonoBehaviour:
       owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
   _stopVoiceover:
@@ -435,7 +435,6 @@ MonoBehaviour:
     gameObjectVal: {fileID: 0}
   _characterCached: {fileID: 0}
   oldSetSayDialog: {fileID: 0}
-  _migrated: 0
   _oldStoryText: 
   _oldDescription: 
   _oldCharacter: {fileID: 0}
@@ -479,7 +478,7 @@ MonoBehaviour:
     serializedVersion: 2
     x: 484
     y: 277
-    width: 240
+    width: 280
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
@@ -507,7 +506,7 @@ MonoBehaviour:
     serializedVersion: 2
     x: 621
     y: 488
-    width: 240
+    width: 260
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
@@ -537,10 +536,10 @@ MonoBehaviour:
   _duration:
     backingVarRef:
       itemId: 0
-      owningSource: {fileID: 0}
+      owningSource: {fileID: 5559651170823982952}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    value: 3
     floatRef: {fileID: 0}
     floatVal: 0
   durationOLD: 0
@@ -563,7 +562,7 @@ MonoBehaviour:
   startLabel:
     backingVarRef:
       itemId: 0
-      owningSource: {fileID: 0}
+      owningSource: {fileID: 5559651170823982952}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
     value: 
@@ -572,7 +571,7 @@ MonoBehaviour:
   startIndex:
     backingVarRef:
       itemId: 0
-      owningSource: {fileID: 0}
+      owningSource: {fileID: 5559651170823982952}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
     value: 0
@@ -580,7 +579,7 @@ MonoBehaviour:
     integerVal: 0
   callMode: 1
   targetBlockId: 3
-  _oldStartIndex: 0
+  _oldStartIndex: -1
 --- !u!114 &6444787969915162841
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -596,10 +595,17 @@ MonoBehaviour:
   _unityObjOwner: {fileID: 5559651170823982952}
   _variableManager:
     _muscariables: []
-    _legacyVariables: []
+    _legacyVariables:
+    - {fileID: 108686680755132427}
+    - {fileID: 2677308742917868254}
+    - {fileID: 5708265625975436602}
+    - {fileID: 5717713915927640460}
+    - {fileID: 2894303634136426304}
+    - {fileID: 1975970902030707167}
+    - {fileID: 5244056966308270914}
     _nextValidVarID: 1
-    _isInitted: 0
-  _cachedFlowchart: {fileID: 0}
+    _isInitted: 1
+  _cachedFlowchart: {fileID: 5559651170823982952}
   references:
     version: 2
     RefIds: []

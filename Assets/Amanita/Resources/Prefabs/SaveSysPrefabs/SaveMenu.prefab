@@ -20,6 +20,7 @@ GameObject:
   - component: {fileID: 9024458977027463532}
   - component: {fileID: 2556774069806022284}
   - component: {fileID: 5625088615775117596}
+  - component: {fileID: 3048891292373600861}
   m_Layer: 5
   m_Name: SaveAudio
   m_TagString: Untagged
@@ -58,17 +59,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a334fe2ffb574b3583ff3b18b4792d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  variableManager:
-    muscariables:
-    - rid: 6177420641262632960
-    - rid: 6177420641262632961
-    - rid: 6177420641262632962
-    - rid: 6177420641262632963
-    legacyVariables: []
-    nextValidVarID: 5
-    isInitted: 1
+  _varManager: {fileID: 3048891292373600861}
+  legacyVariableManager:
+    _muscariables: []
+    _legacyVariables: []
+    _nextValidVarID: 5
+    _isInitted: 1
   version: 1
-  legacyVariables: []
+  _legacyVariables: []
   _oldMuscariables: []
   description: 
   uiModel:
@@ -94,7 +92,6 @@ MonoBehaviour:
   showLineNumbers: 0
   hideCommands: []
   localizationId: 
-  _luaEnvironment: {fileID: 0}
   luaBindingName: flowchart
   includeInSaves: 1
   saveBlocks: 1
@@ -114,39 +111,7 @@ MonoBehaviour:
   uniqueId: 4b9bbe20-fad7-48e7-9f19-eeb0e6f07a24
   references:
     version: 2
-    RefIds:
-    - rid: 6177420641262632960
-      type: {class: AudioClipMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
-      data:
-        scope: 0
-        key: loadSfx
-        itemID: 1
-        value: {fileID: 8300000, guid: 5467a02549657ce418b3aeab5b1dfc18, type: 3}
-        startValue: {fileID: 0}
-    - rid: 6177420641262632961
-      type: {class: AudioClipMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
-      data:
-        scope: 0
-        key: buttonClickSfx
-        itemID: 2
-        value: {fileID: 8300000, guid: c18ae2c530c264a6880266d5e0a71337, type: 3}
-        startValue: {fileID: 0}
-    - rid: 6177420641262632962
-      type: {class: AudioClipMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
-      data:
-        scope: 0
-        key: startSaveSfx
-        itemID: 3
-        value: {fileID: 8300000, guid: fe7bcb8696a130d46a6977c0737c8d13, type: 3}
-        startValue: {fileID: 0}
-    - rid: 6177420641262632963
-      type: {class: AudioClipMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
-      data:
-        scope: 0
-        key: saveDoneSfx
-        itemID: 4
-        value: {fileID: 8300000, guid: fe7bcb8696a130d46a6977c0737c8d13, type: 3}
-        startValue: {fileID: 0}
+    RefIds: []
 --- !u!114 &7775790903546417938
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -218,6 +183,7 @@ MonoBehaviour:
         legacyOwningVsa: {fileID: 0}
       value: 0
       integerRef: {fileID: 0}
+      integerVal: 0
     introClip:
       backingVarRef:
         itemId: 0
@@ -251,6 +217,7 @@ MonoBehaviour:
         legacyOwningVsa: {fileID: 0}
       value: 0
       floatRef: {fileID: 0}
+      floatVal: 0
     loopEndPoint:
       backingVarRef:
         itemId: 0
@@ -259,6 +226,7 @@ MonoBehaviour:
         legacyOwningVsa: {fileID: 0}
       value: 0
       floatRef: {fileID: 0}
+      floatVal: 0
     oneShot:
       backingVarRef:
         itemId: 0
@@ -310,6 +278,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: Responding to save emnu button click
     stringRef: {fileID: 0}
+    stringVal: 
 --- !u!114 &5756673907950157102
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -384,6 +353,7 @@ MonoBehaviour:
         legacyOwningVsa: {fileID: 0}
       value: 0
       integerRef: {fileID: 0}
+      integerVal: 0
     introClip:
       backingVarRef:
         itemId: 0
@@ -417,6 +387,7 @@ MonoBehaviour:
         legacyOwningVsa: {fileID: 0}
       value: 0
       floatRef: {fileID: 0}
+      floatVal: 0
     loopEndPoint:
       backingVarRef:
         itemId: 0
@@ -425,6 +396,7 @@ MonoBehaviour:
         legacyOwningVsa: {fileID: 0}
       value: 0
       floatRef: {fileID: 0}
+      floatVal: 0
     oneShot:
       backingVarRef:
         itemId: 0
@@ -507,6 +479,7 @@ MonoBehaviour:
         legacyOwningVsa: {fileID: 0}
       value: 1
       integerRef: {fileID: 0}
+      integerVal: 0
     introClip:
       backingVarRef:
         itemId: 0
@@ -540,6 +513,7 @@ MonoBehaviour:
         legacyOwningVsa: {fileID: 0}
       value: 0
       floatRef: {fileID: 0}
+      floatVal: 0
     loopEndPoint:
       backingVarRef:
         itemId: 0
@@ -548,6 +522,7 @@ MonoBehaviour:
         legacyOwningVsa: {fileID: 0}
       value: 0
       floatRef: {fileID: 0}
+      floatVal: 0
     oneShot:
       backingVarRef:
         itemId: 0
@@ -596,6 +571,64 @@ MonoBehaviour:
     owningSource: {fileID: 0}
     legacyOwningFc: {fileID: 0}
     legacyOwningVsa: {fileID: 0}
+--- !u!114 &3048891292373600861
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 234453616329698692}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3326e6921119d6f4fb53c4243fb91015, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _unityObjOwner: {fileID: 5231096925602405738}
+  _variableManager:
+    _muscariables:
+    - rid: 3688519710080499791
+    - rid: 3688519710080499792
+    - rid: 3688519710080499793
+    - rid: 3688519710080499794
+    _legacyVariables: []
+    _nextValidVarID: 1
+    _isInitted: 1
+  _cachedFlowchart: {fileID: 5231096925602405738}
+  references:
+    version: 2
+    RefIds:
+    - rid: 3688519710080499791
+      type: {class: AudioClipMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        scope: 0
+        key: loadSfx
+        itemID: 1
+        value: {fileID: 8300000, guid: 5467a02549657ce418b3aeab5b1dfc18, type: 3}
+        startValue: {fileID: 0}
+    - rid: 3688519710080499792
+      type: {class: AudioClipMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        scope: 0
+        key: buttonClickSfx
+        itemID: 2
+        value: {fileID: 8300000, guid: c18ae2c530c264a6880266d5e0a71337, type: 3}
+        startValue: {fileID: 0}
+    - rid: 3688519710080499793
+      type: {class: AudioClipMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        scope: 0
+        key: startSaveSfx
+        itemID: 3
+        value: {fileID: 8300000, guid: fe7bcb8696a130d46a6977c0737c8d13, type: 3}
+        startValue: {fileID: 0}
+    - rid: 3688519710080499794
+      type: {class: AudioClipMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        scope: 0
+        key: saveDoneSfx
+        itemID: 4
+        value: {fileID: 8300000, guid: fe7bcb8696a130d46a6977c0737c8d13, type: 3}
+        startValue: {fileID: 0}
 --- !u!1 &267139196374095512
 GameObject:
   m_ObjectHideFlags: 0
@@ -1887,6 +1920,7 @@ GameObject:
   - component: {fileID: 2114998604253343111}
   - component: {fileID: 6680143018317981727}
   - component: {fileID: 8488521281207093642}
+  - component: {fileID: 61835812667275657}
   m_Layer: 0
   m_Name: UIActionHandler
   m_TagString: Untagged
@@ -1921,15 +1955,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a334fe2ffb574b3583ff3b18b4792d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  variableManager:
-    muscariables:
-    - rid: 7903257890697773170
-    - rid: 4605209293432029257
-    legacyVariables: []
-    nextValidVarID: 1
-    isInitted: 1
+  _varManager: {fileID: 61835812667275657}
+  legacyVariableManager:
+    _muscariables: []
+    _legacyVariables: []
+    _nextValidVarID: 1
+    _isInitted: 1
   version: 1
-  legacyVariables: []
+  _legacyVariables: []
   _oldMuscariables: []
   description: 
   uiModel:
@@ -1955,7 +1988,6 @@ MonoBehaviour:
   showLineNumbers: 0
   hideCommands: []
   localizationId: 
-  _luaEnvironment: {fileID: 0}
   luaBindingName: flowchart
   includeInSaves: 0
   saveBlocks: 1
@@ -1983,23 +2015,7 @@ MonoBehaviour:
   uniqueId: ddc5552f-57d9-4abd-9de8-db704265f780
   references:
     version: 2
-    RefIds:
-    - rid: 4605209293432029257
-      type: {class: AudioClipMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
-      data:
-        scope: 0
-        key: loadSfx
-        itemID: 2
-        value: {fileID: 8300000, guid: 5467a02549657ce418b3aeab5b1dfc18, type: 3}
-        startValue: {fileID: 0}
-    - rid: 7903257890697773170
-      type: {class: IntMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
-      data:
-        scope: 0
-        key: lastSlotIndex
-        itemID: 1
-        value: -5
-        startValue: 0
+    RefIds: []
 --- !u!114 &8425603792361900093
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2106,7 +2122,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 9
   indentLevel: 0
-  slotIndex:
+  _slotIndex:
     backingVarRef:
       itemId: 1
       owningSource: {fileID: 1507031660960170913}
@@ -2114,7 +2130,8 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: 1
     integerRef: {fileID: 0}
-  saveToSelected:
+    integerVal: 0
+  _saveToSelected:
     backingVarRef:
       itemId: 0
       owningSource: {fileID: 1507031660960170913}
@@ -2123,7 +2140,7 @@ MonoBehaviour:
     value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
-  waitUntilFinished:
+  _waitUntilFinished:
     backingVarRef:
       itemId: 0
       owningSource: {fileID: 1507031660960170913}
@@ -2132,7 +2149,7 @@ MonoBehaviour:
     value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
-  delayBeforeSave:
+  _delayBeforeSave:
     backingVarRef:
       itemId: 0
       owningSource: {fileID: 1507031660960170913}
@@ -2140,6 +2157,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: 0
     floatRef: {fileID: 0}
+    floatVal: 0
 --- !u!114 &8806205604095629028
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2163,6 +2181,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: 'Responding to save slot selected. New index: {$lastSlotIndex}'
     stringRef: {fileID: 0}
+    stringVal: 
 --- !u!114 &1752029211725043856
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2259,6 +2278,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: 0
     integerRef: {fileID: 0}
+    integerVal: 0
   integerEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -2270,6 +2290,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: 0
     floatRef: {fileID: 0}
+    floatVal: 0
   floatEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -2281,6 +2302,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
+    stringVal: 
   stringEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -2347,7 +2369,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 23
   indentLevel: 1
-  slotIndex:
+  _slotIndex:
     backingVarRef:
       itemId: 1
       owningSource: {fileID: 1507031660960170913}
@@ -2355,7 +2377,8 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: 1
     integerRef: {fileID: 0}
-  loadFromSelected:
+    integerVal: 0
+  _loadFromSelected:
     backingVarRef:
       itemId: 0
       owningSource: {fileID: 1507031660960170913}
@@ -2364,7 +2387,7 @@ MonoBehaviour:
     value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
-  loadScene:
+  _loadScene:
     backingVarRef:
       itemId: 0
       owningSource: {fileID: 1507031660960170913}
@@ -2373,7 +2396,7 @@ MonoBehaviour:
     value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
-  waitUntilFinished:
+  _waitUntilFinished:
     backingVarRef:
       itemId: 0
       owningSource: {fileID: 1507031660960170913}
@@ -2382,7 +2405,7 @@ MonoBehaviour:
     value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
-  delayBeforeLoad:
+  _delayBeforeLoad:
     backingVarRef:
       itemId: 0
       owningSource: {fileID: 1507031660960170913}
@@ -2390,6 +2413,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: 0
     floatRef: {fileID: 0}
+    floatVal: 0
 --- !u!114 &5552533710245989651
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2421,6 +2445,7 @@ MonoBehaviour:
           legacyOwningVsa: {fileID: 0}
         data:
           rid: 4605209097948364930
+      variable: {fileID: 0}
   compareOperator: 0
   anyVar:
     varRef:
@@ -2436,6 +2461,7 @@ MonoBehaviour:
         legacyOwningVsa: {fileID: 0}
       data:
         rid: -2
+    variable: {fileID: 0}
   variable: {fileID: 0}
   booleanData:
     backingVarRef:
@@ -2454,6 +2480,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: 0
     integerRef: {fileID: 0}
+    integerVal: 0
   floatData:
     backingVarRef:
       itemId: 0
@@ -2462,6 +2489,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: 0
     floatRef: {fileID: 0}
+    floatVal: 0
   stringData:
     backingVarRef:
       itemId: 0
@@ -2470,6 +2498,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
+    stringVal: 
   animatorData:
     backingVarRef:
       itemId: 0
@@ -2478,6 +2507,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     animatorRef: {fileID: 0}
+    animatorVal: {fileID: 0}
   audioSourceData:
     backingVarRef:
       itemId: 0
@@ -2494,6 +2524,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {r: 0, g: 0, b: 0, a: 0}
     colorRef: {fileID: 0}
+    colorVal: {r: 0, g: 0, b: 0, a: 0}
   gameObjectData:
     backingVarRef:
       itemId: 0
@@ -2502,6 +2533,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     gameObjectRef: {fileID: 0}
+    gameObjectVal: {fileID: 0}
   materialData:
     backingVarRef:
       itemId: 0
@@ -2510,6 +2542,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     materialRef: {fileID: 0}
+    materialVal: {fileID: 0}
   objectData:
     backingVarRef:
       itemId: 0
@@ -2518,6 +2551,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     objectRef: {fileID: 0}
+    objectVal: {fileID: 0}
   spriteData:
     backingVarRef:
       itemId: 0
@@ -2526,6 +2560,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     spriteRef: {fileID: 0}
+    spriteVal: {fileID: 0}
   textureData:
     backingVarRef:
       itemId: 0
@@ -2534,6 +2569,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     textureRef: {fileID: 0}
+    textureVal: {fileID: 0}
   transformData:
     backingVarRef:
       itemId: 0
@@ -2542,6 +2578,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     transformRef: {fileID: 0}
+    transformVal: {fileID: 0}
   vector2Data:
     backingVarRef:
       itemId: 0
@@ -2550,6 +2587,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {x: 0, y: 0}
     vector2Ref: {fileID: 0}
+    vector2Val: {x: 0, y: 0}
   vector3Data:
     backingVarRef:
       itemId: 0
@@ -2558,13 +2596,14 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {x: 0, y: 0, z: 0}
     vector3Ref: {fileID: 0}
+    vector3Val: {x: 0, y: 0, z: 0}
   references:
     version: 2
     RefIds:
     - rid: -2
       type: {class: , ns: , asm: }
     - rid: 4605209097948364930
-      type: {class: IntegerData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      type: {class: IntegerData, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         backingVarRef:
           itemId: 0
@@ -2573,6 +2612,7 @@ MonoBehaviour:
           legacyOwningVsa: {fileID: 0}
         value: 0
         integerRef: {fileID: 0}
+        integerVal: 0
 --- !u!114 &3522029998774049069
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2601,12 +2641,49 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 26
   indentLevel: 1
-  duration: 1
-  targetAlpha: 1
-  waitUntilFinished: 1
-  fadeColor: {r: 0, g: 0, b: 0, a: 1}
-  fadeTexture: {fileID: 0}
+  _duration:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 1507031660960170913}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 1
+    floatRef: {fileID: 0}
+    floatVal: 0
+  _targetAlpha:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 1507031660960170913}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 1
+    floatRef: {fileID: 0}
+    floatVal: 0
+  _waitUntilFinished:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 1507031660960170913}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 1
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _fadeColor:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 1507031660960170913}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {r: 0, g: 0, b: 0, a: 1}
+    colorRef: {fileID: 0}
+    colorVal: {r: 0, g: 0, b: 0, a: 0}
+  _fadeTexture: {fileID: 0}
   fadeTweener: {fileID: 0}
+  _oldDuration: -1
+  _oldTargetAlpha: -1
+  _oldWaitUntilFinished: 0
+  _oldFadeColor: {r: 0, g: 0, b: 0, a: 0}
+  _migrated: 1
 --- !u!114 &2378518837195172376
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2647,6 +2724,7 @@ MonoBehaviour:
         legacyOwningVsa: {fileID: 0}
       value: 7
       integerRef: {fileID: 0}
+      integerVal: 0
     introClip:
       backingVarRef:
         itemId: 0
@@ -2680,6 +2758,7 @@ MonoBehaviour:
         legacyOwningVsa: {fileID: 0}
       value: 0
       floatRef: {fileID: 0}
+      floatVal: 0
     loopEndPoint:
       backingVarRef:
         itemId: 0
@@ -2688,6 +2767,7 @@ MonoBehaviour:
         legacyOwningVsa: {fileID: 0}
       value: 0
       floatRef: {fileID: 0}
+      floatVal: 0
     oneShot:
       backingVarRef:
         itemId: 0
@@ -2767,6 +2847,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: 1
     integerRef: {fileID: 0}
+    integerVal: 0
 --- !u!114 &8488521281207093642
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2782,6 +2863,46 @@ MonoBehaviour:
   parentBlock: {fileID: 2114998604253343111}
   suppressBlockAutoSelect: 0
   targetButton: {fileID: 65038133872781658}
+--- !u!114 &61835812667275657
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5491679531932821053}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3326e6921119d6f4fb53c4243fb91015, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _unityObjOwner: {fileID: 1507031660960170913}
+  _variableManager:
+    _muscariables:
+    - rid: 3688519710080499789
+    - rid: 3688519710080499790
+    _legacyVariables: []
+    _nextValidVarID: 1
+    _isInitted: 1
+  _cachedFlowchart: {fileID: 1507031660960170913}
+  references:
+    version: 2
+    RefIds:
+    - rid: 3688519710080499789
+      type: {class: IntMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        scope: 0
+        key: lastSlotIndex
+        itemID: 1
+        value: -5
+        startValue: 0
+    - rid: 3688519710080499790
+      type: {class: AudioClipMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        scope: 0
+        key: loadSfx
+        itemID: 2
+        value: {fileID: 8300000, guid: 5467a02549657ce418b3aeab5b1dfc18, type: 3}
+        startValue: {fileID: 0}
 --- !u!1 &5681273892318264295
 GameObject:
   m_ObjectHideFlags: 0
