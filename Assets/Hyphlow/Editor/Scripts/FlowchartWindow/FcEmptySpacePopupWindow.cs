@@ -64,7 +64,6 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
         private void OnAddButtonClicked()
         {
-            Debug.Log("Add button clicked! Implement block creation logic here.");
             AddButtonClicked.Invoke();
         }
 
@@ -72,7 +71,6 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
         private void OnPasteButtonClicked()
         {
-            Debug.Log("Paste button clicked! Implement paste logic here.");
             PasteButtonClicked.Invoke();
         }
 
