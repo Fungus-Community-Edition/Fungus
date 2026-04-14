@@ -116,12 +116,15 @@ namespace AtMycelia.Hyphlow.EditorUtils
             HandleScrollingToCommandOnDraw();
             void HandleScrollingToCommandOnDraw()
             {
-                bool commandIsSelected = false;
+                if (Event.current.type != EventType.Repaint)
+                {
+                    return;
+                }
+
                 foreach (Command selectedCommand in flowchart.SelectedCommands)
                 {
-                    if (selectedCommand == command)
+                    if (selectedCommand.ItemId == command.ItemId)
                     {
-                        commandIsSelected = true;
                         if (ScrollToCommandOnDraw)
                         {
                             GUI.ScrollTo(position);
@@ -253,6 +256,12 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 .FirstOrDefault()
                 ?? cmd.name;
 
+            int lastSlashIndex = baseName.LastIndexOf("/");
+            bool needTrim = lastSlashIndex != -1;
+            if (needTrim)
+            {
+                baseName = baseName.Substring(lastSlashIndex + 1);
+            }
             return f.ShowLineNumbers
                 ? $"{cmd.CommandIndex}: {baseName}"
                 : baseName;

@@ -89,24 +89,29 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 }
                 return ReferenceEquals(varEl.Owner as UnityObj, storedOwner);
             }
+            EditorGUI.BeginChangeCheck();
             int newIndex = EditorGUI.Popup(position, label.text, currentIndex, options);
             // ^This is what lets the user choose a variable from the dropdown, and it returns the index of the chosen option
 
-            bool choseToSetNullVar = newIndex == 0;
-            if (choseToSetNullVar)
+            if (EditorGUI.EndChangeCheck())
             {
-                itemIdProp.intValue = Muscariable.InvalidID;
-                owningSourceProp.objectReferenceValue = null;
-            }
-            else
-            {
-                IVariable chosen = candidates[newIndex - 1];
-                // ^Need the -1 because of the <None> option at index 0
-                itemIdProp.intValue = chosen.ItemId;
-                owningSourceProp.objectReferenceValue = chosen.Owner as UnityObj;
+                bool choseToSetNullVar = newIndex == 0;
+                if (choseToSetNullVar)
+                {
+                    itemIdProp.intValue = Muscariable.InvalidID;
+                    owningSourceProp.objectReferenceValue = null;
+                }
+                else
+                {
+                    IVariable chosen = candidates[newIndex - 1];
+                    // ^Need the -1 because of the <None> option at index 0
+                    itemIdProp.intValue = chosen.ItemId;
+                    owningSourceProp.objectReferenceValue = chosen.Owner as UnityObj;
+                }
+
+                property.serializedObject.ApplyModifiedProperties();
             }
 
-            property.serializedObject.ApplyModifiedProperties();
             EditorGUI.EndProperty();
         }
 

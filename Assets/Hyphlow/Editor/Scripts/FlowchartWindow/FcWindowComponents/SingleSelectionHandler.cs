@@ -65,12 +65,11 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
                 return;
             }
 
-            if (block.IsSelected)
+            if (!block.IsSelected)
             {
-                return;
+                Flowchart.ClearSelectedCommands();
             }
 
-            Flowchart.ClearSelectedCommands();
             Flowchart.SelectedBlock = block;
         }
 

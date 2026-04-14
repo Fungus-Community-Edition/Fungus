@@ -3,7 +3,7 @@ using UnityEngine;
 namespace AtMycelia.Hyphlow.Tweening.VScripting
 {
     [CommandInfo("BI Tween",
-        "Scale Set",
+        "Simple/Scale Set",
         "Scales a component's transform to a target scale over time.")]
     public class ScaleSet : BaseSimpleTweenCommand
     {

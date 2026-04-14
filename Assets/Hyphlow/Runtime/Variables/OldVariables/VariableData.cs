@@ -92,7 +92,7 @@ namespace AtMycelia.Hyphlow
             }
         }
 
-        private bool CanHoldAsVar(IVariable variable)
+        protected virtual bool CanHoldAsVar(IVariable variable)
         {
             bool result;
             if (variable == null)
