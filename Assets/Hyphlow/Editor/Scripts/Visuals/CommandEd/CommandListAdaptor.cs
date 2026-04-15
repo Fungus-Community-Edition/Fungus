@@ -256,6 +256,12 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 .FirstOrDefault()
                 ?? cmd.name;
 
+            int lastSlashIndex = baseName.LastIndexOf("/");
+            bool needTrim = lastSlashIndex != -1;
+            if (needTrim)
+            {
+                baseName = baseName.Substring(lastSlashIndex + 1);
+            }
             return f.ShowLineNumbers
                 ? $"{cmd.CommandIndex}: {baseName}"
                 : baseName;

@@ -3,7 +3,7 @@ using UnityEngine;
 namespace AtMycelia.Hyphlow.Tweening.VScripting
 {
     [CommandInfo("BI Tween",
-        "Position Set",
+        "Simple/Position Set",
         "Moves a component's transform to a target position over time.")]
     public class PositionSet : BaseSimpleTweenCommand
     {

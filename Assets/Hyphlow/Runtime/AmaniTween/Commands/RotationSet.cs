@@ -3,7 +3,7 @@ using UnityEngine;
 namespace AtMycelia.Hyphlow.Tweening.VScripting
 {
     [CommandInfo("BI Tween",
-        "Rotation Set",
+        "Simple/Rotation Set",
         "Rotates a component's transform to a target rotation over time.")]
     public class RotationSet : BaseSimpleTweenCommand
     {
