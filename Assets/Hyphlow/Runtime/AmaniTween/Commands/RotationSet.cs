@@ -18,7 +18,7 @@ namespace AtMycelia.Hyphlow.Tweening.VScripting
             "FROM destination to its current")]
         [SerializeField] protected StartFromMode _toFrom = StartFromMode.Current;
         [Tooltip("Whether to apply rotation in local space instead of world space.")]
-        [SerializeField] protected BooleanData _isLocal = new BooleanData(false);
+        [SerializeField] protected BooleanData _isLocal = new BooleanData(true);
 
         public override void OnEnter()
         {

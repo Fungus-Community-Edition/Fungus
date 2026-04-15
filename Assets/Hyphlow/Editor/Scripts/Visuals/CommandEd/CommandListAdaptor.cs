@@ -116,12 +116,15 @@ namespace AtMycelia.Hyphlow.EditorUtils
             HandleScrollingToCommandOnDraw();
             void HandleScrollingToCommandOnDraw()
             {
-                bool commandIsSelected = false;
+                if (Event.current.type != EventType.Repaint)
+                {
+                    return;
+                }
+
                 foreach (Command selectedCommand in flowchart.SelectedCommands)
                 {
-                    if (selectedCommand == command)
+                    if (selectedCommand.ItemId == command.ItemId)
                     {
-                        commandIsSelected = true;
                         if (ScrollToCommandOnDraw)
                         {
                             GUI.ScrollTo(position);
