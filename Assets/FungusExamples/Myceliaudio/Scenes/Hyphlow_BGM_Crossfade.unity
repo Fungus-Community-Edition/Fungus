@@ -1012,11 +1012,9 @@ MonoBehaviour:
   _oldMuscariables: []
   description: 
   uiModel:
-    _selectedBlocks:
-    - {fileID: 549323087}
-    _selectedCommands:
-    - {fileID: 549323109}
-    _owner: {fileID: 0}
+    _selectedBlocks: []
+    _selectedCommands: []
+    _owner: {fileID: 549323050}
     <ScrollPos>k__BackingField: {x: 107.77781, y: 50.186535}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesExpanded>k__BackingField: 0
@@ -1093,7 +1091,7 @@ MonoBehaviour:
   - {fileID: 549323126}
   - {fileID: 549323125}
   - {fileID: 549323124}
-  nextValidVarID: 17
+  nextValidVarID: 19
   uniqueId: 8bd9f872-5623-4e0f-82e5-41a2094bbb78
   references:
     version: 2
@@ -4354,7 +4352,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 991290405}
-  - component: {fileID: 991290404}
   m_Layer: 0
   m_Name: _FungusState
   m_TagString: Untagged
@@ -4362,20 +4359,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &991290404
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 991290403}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 61dddfdc5e0e44ca298d8f46f7f5a915, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  selectedFlowchart: {fileID: 549323062}
-  lastSelectedFc: {fileID: 0}
 --- !u!4 &991290405
 Transform:
   m_ObjectHideFlags: 1

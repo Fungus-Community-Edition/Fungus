@@ -103,10 +103,10 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
         private static void DestroyLegacyStateInstances()
         {
-            AmanitaState[] legacyStates = UnityObj.FindObjectsByType<AmanitaState>(FindObjectsInactive.Include,
+            LegacyFungusState[] legacyStates = UnityObj.FindObjectsByType<LegacyFungusState>(FindObjectsInactive.Include,
                 FindObjectsSortMode.None);
 
-            foreach (AmanitaState state in legacyStates)
+            foreach (LegacyFungusState state in legacyStates)
             {
                 if (state == null)
                 {

@@ -461,6 +461,7 @@ MonoBehaviour:
   - {fileID: 139298, guid: c356764ac08ce4af2806a601a4f1e6e9, type: 3}
   - {fileID: 167328, guid: 48405e3dbda9a4a7694c21c9a2e712e1, type: 3}
   - {fileID: 1622593729639094513, guid: a0908ce4741681b4dbbe491e63299fdf, type: 3}
+  - {fileID: 8084347946544193000, guid: e9c9411e5495e7a488d286b206bb550f, type: 3}
   _fonts:
   - {fileID: 12800000, guid: 64bd3e45f7a714f16b3c213f55f17fea, type: 3}
   - {fileID: 12800000, guid: 30083fe2d35a6490b8f1e57e0d830527, type: 3}

@@ -6,9 +6,6 @@ namespace AtMycelia.Hyphlow.Tweening
 {
     public class TweenManager : MonoBehaviour
     {
-        [SerializeField] private int orderIndex = 0;
-        public int OrderIndex => orderIndex;
-        protected static TweenManager _s;
         public static TweenManager S
         {
             get
@@ -20,27 +17,16 @@ namespace AtMycelia.Hyphlow.Tweening
                 _s = value;
             }
         }
+        protected static TweenManager _s;
 
         protected Dictionary<string, ITween> _activeTweens = new();
-
-        //public virtual void Init()
-        //{
-        //    if (IsFullyInitted)
-        //    {
-        //        return;
-        //    }
-        //    Awake();
-        //    IsFullyInitted = true;
-        //}
-
-        //public virtual bool IsFullyInitted { get; protected set; } = false;
 
         protected virtual void Awake()
         {
             if (_s != null && _s != this)
             {
                 Debug.LogWarning("Multiple TweenManagers detected. Destroying the new one.");
-                Destroy(this);
+                Destroy(this.gameObject);
                 return;
             }
 
