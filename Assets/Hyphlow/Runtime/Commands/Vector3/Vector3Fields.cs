@@ -1,6 +1,7 @@
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
+using UnityEngine.Serialization;
 
 namespace AtMycelia.Hyphlow
 {
@@ -11,7 +12,7 @@ namespace AtMycelia.Hyphlow
                  "Fields",
                  "Get or Set the x,y,z fields of a vector3 via floatvars")]
     [AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class Vector3Fields : Command
     {
         public enum GetSet
@@ -19,37 +20,57 @@ namespace AtMycelia.Hyphlow
             Get,
             Set,
         }
-        public GetSet getOrSet = GetSet.Get;
 
         [SerializeField]
-        protected Vector3Data vec3;
+        [FormerlySerializedAs("getOrSet")]
+        private GetSet _getOrSet = GetSet.Get;
+
+        public GetSet GetOrSet
+        {
+            get => _getOrSet;
+            set => _getOrSet = value;
+        }
 
         [SerializeField]
-        protected FloatData x, y, z;
+        [ContentTypeConstraint(typeof(Vector3), typeof(Vector2))]
+        protected VariableReference _vec3;
+
+        [SerializeField]
+        [FormerlySerializedAs("x")]
+        protected FloatData _x;
+
+        [SerializeField]
+        [FormerlySerializedAs("y")]
+        protected FloatData _y;
+
+        [SerializeField]
+        [FormerlySerializedAs("z")]
+        protected FloatData _z;
 
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            _variableDataCache.Add(vec3);
-            _variableDataCache.Add(x);
-            _variableDataCache.Add(y);
-            _variableDataCache.Add(z);
+            _variableDataCache.Add(_x);
+            _variableDataCache.Add(_y);
+            _variableDataCache.Add(_z);
         }
 
         public override void OnEnter()
         {
-            switch (getOrSet)
+            switch (_getOrSet)
             {
                 case GetSet.Get:
 
-                    var v = vec3.Value;
+                    var v = _vec3.GetValue<Vector3>();
 
-                    x.Value = v.x;
-                    y.Value = v.y;
-                    z.Value = v.z;
+                    _x.Value = v.x;
+                    _y.Value = v.y;
+                    _z.Value = v.z;
                     break;
                 case GetSet.Set:
-                    vec3.Value = new Vector3(x.Value, y.Value, z.Value);
+                    Vector3 prevVal = _vec3.GetValue<Vector3>();
+                    Vector3 newVal = prevVal + new Vector3(_x.Value, _y.Value, _z.Value);
+                    _vec3.SetValue(newVal);
                     break;
                 default:
                     break;
@@ -60,12 +81,12 @@ namespace AtMycelia.Hyphlow
 
         public override string GetSummary()
         {
-            if (vec3.vector3Ref == null)
+            if (_vec3.Variable == null)
             {
                 return "Error: vec3 not set";
             }
 
-            return getOrSet.ToString() + " (" + vec3.vector3Ref.Key + ")";
+            return _getOrSet.ToString() + " (" + _vec3.Variable.Key + ")";
         }
 
         public override Color GetButtonColor()
@@ -75,13 +96,32 @@ namespace AtMycelia.Hyphlow
 
         public override bool HasReference(Variable variable)
         {
-            if (ReferenceEquals(vec3.VarRef, variable) || 
-                ReferenceEquals(x.VarRef, variable) || 
-                ReferenceEquals(y.VarRef, variable) || 
-                ReferenceEquals(z.VarRef, variable))
+            if (ReferenceEquals(_vec3.Variable, variable) || 
+                ReferenceEquals(_x.VarRef, variable) || 
+                ReferenceEquals(_y.VarRef, variable) || 
+                ReferenceEquals(_z.VarRef, variable))
                 return true;
 
             return false;
         }
+
+        public override void ApplyBackwardsCompatibility()
+        {
+            base.ApplyBackwardsCompatibility();
+            if (vec3 != null)
+            {
+                if (vec3.RepresentingVar)
+                {
+                    _vec3.Variable = vec3.VarRef;
+                }
+
+                vec3 = null;
+            }
+        }
+
+        [SerializeField]
+        [FormerlySerializedAs("vec3")]
+        [HideInInspector]
+        protected Vector3Data vec3;
     }
 }

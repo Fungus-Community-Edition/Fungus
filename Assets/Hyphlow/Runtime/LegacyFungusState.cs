@@ -12,7 +12,7 @@ namespace AtMycelia.Hyphlow
     /// </summary>
     [AddComponentMenu("")]
     [ExecuteInEditMode]
-    public class AmanitaState : MonoBehaviour
+    public class LegacyFungusState : MonoBehaviour
     {
         [SerializeField] protected Flowchart selectedFlowchart;
         [SerializeField] protected Flowchart lastSelectedFc;

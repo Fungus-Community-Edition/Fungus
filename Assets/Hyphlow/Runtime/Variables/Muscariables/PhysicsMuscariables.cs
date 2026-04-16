@@ -198,127 +198,127 @@ namespace AtMycelia.Hyphlow
 
     }
 
-    //[Serializable]
-    //[VariableInfo("Physics/ThreeD", "RigidbodyThreeD", typeof(Rigidbody))]
-    //public class RigidbodyThreeDMuscariable : Muscariable<Rigidbody>
-    //{
-    //    [SerializeField] protected Rigidbody rigidbodyRef;
-    //    [SerializeField] protected GameObject hostGO;
-    //    public RigidbodyThreeDMuscariable() { }
-    //    public override Rigidbody Value
-    //    {
-    //        get => rigidbodyRef;
-    //        set
-    //        {
-    //            base.Value = rigidbodyRef = value;
-    //            if (value != null)
-    //            {
-    //                hostGO = value.gameObject;
-    //            }
-    //            else
-    //            {
-    //                hostGO = null;
-    //            }
-    //        }
-    //    }
-    //    public void RefreshReferenceIfNeeded()
-    //    {
-    //        if (rigidbodyRef == null && hostGO != null)
-    //            rigidbodyRef = hostGO.GetComponent<Rigidbody>();
-    //    }
-    //    public override void OnReset()
-    //    {
-    //        base.OnReset();
-    //        rigidbodyRef = null;
-    //        hostGO = null;
-    //    }
-    //    public override void Apply(SetOperator setOperator, Rigidbody toApply)
-    //    {
-    //        switch (setOperator)
-    //        {
-    //            case SetOperator.Assign:
-    //                Value = toApply;
-    //                break;
-    //            default:
-    //                Debug.LogError($"SetOperator {setOperator} not valid for {ContentType.Name}");
-    //                break;
-    //        }
-    //    }
-    //    public override bool Evaluate(CompareOperator op, Rigidbody toCompareTo)
-    //    {
-    //        switch (op)
-    //        {
-    //            case CompareOperator.Equals:
-    //                return Value == toCompareTo;
-    //            case CompareOperator.NotEquals:
-    //                return Value != toCompareTo;
-    //            default:
-    //                Debug.LogError($"CompareOperator {op} not supported for {ContentType.Name}");
-    //                return false;
-    //        }
-    //    }
-    //}
+    [Serializable]
+    [VariableInfo("Physics/ThreeD", "RigidbodyThreeD", typeof(Rigidbody))]
+    public class RigidbodyThreeDMuscariable : Muscariable<Rigidbody>
+    {
+        [SerializeField] protected Rigidbody rigidbodyRef;
+        [SerializeField] protected GameObject hostGO;
+        public RigidbodyThreeDMuscariable() { }
+        public override Rigidbody Value
+        {
+            get => rigidbodyRef;
+            set
+            {
+                base.Value = rigidbodyRef = value;
+                if (value != null)
+                {
+                    hostGO = value.gameObject;
+                }
+                else
+                {
+                    hostGO = null;
+                }
+            }
+        }
+        public void RefreshReferenceIfNeeded()
+        {
+            if (rigidbodyRef == null && hostGO != null)
+                rigidbodyRef = hostGO.GetComponent<Rigidbody>();
+        }
+        public override void OnReset()
+        {
+            base.OnReset();
+            rigidbodyRef = null;
+            hostGO = null;
+        }
+        public override void Apply(SetOperator setOperator, Rigidbody toApply)
+        {
+            switch (setOperator)
+            {
+                case SetOperator.Assign:
+                    Value = toApply;
+                    break;
+                default:
+                    Debug.LogError($"SetOperator {setOperator} not valid for {ContentType.Name}");
+                    break;
+            }
+        }
+        public override bool Evaluate(CompareOperator op, Rigidbody toCompareTo)
+        {
+            switch (op)
+            {
+                case CompareOperator.Equals:
+                    return Value == toCompareTo;
+                case CompareOperator.NotEquals:
+                    return Value != toCompareTo;
+                default:
+                    Debug.LogError($"CompareOperator {op} not supported for {ContentType.Name}");
+                    return false;
+            }
+        }
+    }
 
-    //[Serializable]
-    //[VariableInfo("Physics/TwoD", "RigidbodyTwoD", typeof(Rigidbody2D))]
-    //public class RigidbodyTwoDMuscariable : Muscariable<Rigidbody2D>
-    //{
-    //    [SerializeField] protected Rigidbody2D rigidbodyRef;
-    //    [SerializeField] protected GameObject hostGO;
-    //    public RigidbodyTwoDMuscariable() { }
-    //    public override Rigidbody2D Value
-    //    {
-    //        get => rigidbodyRef;
-    //        set
-    //        {
-    //            base.Value = rigidbodyRef = value;
-    //            if (value != null)
-    //            {
-    //                hostGO = value.gameObject;
-    //            }
-    //            else
-    //            {
-    //                hostGO = null;
-    //            }
-    //        }
-    //    }
-    //    public void RefreshReferenceIfNeeded()
-    //    {
-    //        if (rigidbodyRef == null && hostGO != null)
-    //            rigidbodyRef = hostGO.GetComponent<Rigidbody2D>();
-    //    }
-    //    public override void OnReset()
-    //    {
-    //        base.OnReset();
-    //        rigidbodyRef = null;
-    //        hostGO = null;
-    //    }
-    //    public override void Apply(SetOperator setOperator, Rigidbody2D toApply)
-    //    {
-    //        switch (setOperator)
-    //        {
-    //            case SetOperator.Assign:
-    //                Value = toApply;
-    //                break;
-    //            default:
-    //                Debug.LogError($"SetOperator {setOperator} not valid for {ContentType.Name}");
-    //                break;
-    //        }
-    //    }
-    //    public override bool Evaluate(CompareOperator op, Rigidbody2D toCompareTo)
-    //    {
-    //        switch (op)
-    //        {
-    //            case CompareOperator.Equals:
-    //                return Value == toCompareTo;
-    //            case CompareOperator.NotEquals:
-    //                return Value != toCompareTo;
-    //            default:
-    //                Debug.LogError($"CompareOperator {op} not supported for {ContentType.Name}");
-    //                return false;
-    //        }
-    //    }
-    //}
+    [Serializable]
+    [VariableInfo("Physics/TwoD", "RigidbodyTwoD", typeof(Rigidbody2D))]
+    public class RigidbodyTwoDMuscariable : Muscariable<Rigidbody2D>
+    {
+        [SerializeField] protected Rigidbody2D rigidbodyRef;
+        [SerializeField] protected GameObject hostGO;
+        public RigidbodyTwoDMuscariable() { }
+        public override Rigidbody2D Value
+        {
+            get => rigidbodyRef;
+            set
+            {
+                base.Value = rigidbodyRef = value;
+                if (value != null)
+                {
+                    hostGO = value.gameObject;
+                }
+                else
+                {
+                    hostGO = null;
+                }
+            }
+        }
+        public void RefreshReferenceIfNeeded()
+        {
+            if (rigidbodyRef == null && hostGO != null)
+                rigidbodyRef = hostGO.GetComponent<Rigidbody2D>();
+        }
+        public override void OnReset()
+        {
+            base.OnReset();
+            rigidbodyRef = null;
+            hostGO = null;
+        }
+        public override void Apply(SetOperator setOperator, Rigidbody2D toApply)
+        {
+            switch (setOperator)
+            {
+                case SetOperator.Assign:
+                    Value = toApply;
+                    break;
+                default:
+                    Debug.LogError($"SetOperator {setOperator} not valid for {ContentType.Name}");
+                    break;
+            }
+        }
+        public override bool Evaluate(CompareOperator op, Rigidbody2D toCompareTo)
+        {
+            switch (op)
+            {
+                case CompareOperator.Equals:
+                    return Value == toCompareTo;
+                case CompareOperator.NotEquals:
+                    return Value != toCompareTo;
+                default:
+                    Debug.LogError($"CompareOperator {op} not supported for {ContentType.Name}");
+                    return false;
+            }
+        }
+    }
 
 
 }

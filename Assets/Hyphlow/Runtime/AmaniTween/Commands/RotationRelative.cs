@@ -3,9 +3,9 @@ using UnityEngine;
 namespace AtMycelia.Hyphlow.Tweening.VScripting
 {
     [CommandInfo("BI Tween",
-        "Simple/Rotation Set",
-        "Rotates a component's transform to a target rotation over time.")]
-    public class RotationSet : BaseSimpleTweenCommand
+        "Simple/Rotate Relative",
+        "Rotates a component's transform to a target rotation over time (relative to some other rotation).")]
+    public class RotationRelative : BaseSimpleTweenCommand
     {
         [Tooltip("The Component or GameObject with the transform to rotate.")]
         [ContentTypeConstraint(typeof(Component), typeof(GameObject))]
@@ -76,7 +76,9 @@ namespace AtMycelia.Hyphlow.Tweening.VScripting
             }
             else
             {
-                startRot = _isLocal.Value ? _targetTransform.localRotation : _targetTransform.rotation;
+                startRot = _isLocal.Value ? 
+                    _targetTransform.localRotation : 
+                    _targetTransform.rotation;
             }
 
             return startRot;
