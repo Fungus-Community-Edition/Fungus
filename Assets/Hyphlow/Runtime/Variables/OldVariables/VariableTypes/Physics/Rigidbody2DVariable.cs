@@ -12,18 +12,4 @@ namespace AtMycelia.Hyphlow
     {
     }
 
-    /// <summary>
-    /// Container for a Rigidbody2D variable reference or constant value.
-    /// </summary>
-    [System.Serializable]
-    [VariableData(typeof(Rigidbody2D), typeof(Rigidbody2DVariable))]
-    public class Rigidbody2DData : VariableData<Rigidbody2D>
-    {
-        public Rigidbody2DData() : base(default) { }
-
-        public Rigidbody2DData(Rigidbody2D startVal) : base(startVal)
-        {
-        }
-
-    }
 }

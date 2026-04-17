@@ -3,9 +3,9 @@ using UnityEngine;
 namespace AtMycelia.Hyphlow.Tweening.VScripting
 {
     [CommandInfo("BI Tween",
-        "Simple/Position Set",
-        "Moves a component's transform to a target position over time.")]
-    public class PositionSet : BaseSimpleTweenCommand
+        "Simple/Position Relative",
+        "Moves a component's transform to a target position over time (relative to some other position).")]
+    public class PositionRelative : BaseSimpleTweenCommand
     {
         [Tooltip("The Component or GameObject with the transform to move.")]
         [ContentTypeConstraint(typeof(Component), typeof(GameObject))]

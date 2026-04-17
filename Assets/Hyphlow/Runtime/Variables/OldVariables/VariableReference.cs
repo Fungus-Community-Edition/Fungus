@@ -26,7 +26,26 @@ namespace AtMycelia.Hyphlow
         [FormerlySerializedAs("owningVsa")]
         [SerializeField] [HideInInspector] private VariableSourceAsset legacyOwningVsa;
 
-        public virtual byte VarItemId
+        /// <summary>
+        /// The key of the variable this is referencing. This is just for display purposes,
+        /// and is not used for lookups or serialization.
+        /// </summary>
+        public virtual string VarKey
+        {
+            get
+            {
+                IVariable var = Variable;
+                return var != null ? 
+                    var.Key : 
+                    "";
+            }
+        }
+
+        /// <summary>
+        /// Itemid assigned to the variable this is referencing (or at least meant to reference). This is what is 
+        /// serialized, and is used to look up the variable on the owner.
+        /// </summary>
+        public virtual byte ItemId
         {
             get { return itemId; }
         }

@@ -56,6 +56,23 @@ namespace AtMycelia.Hyphlow
 
         private void OnVariableValueChanged(IVariable variable, object arg2)
         {
+#if UNITY_EDITOR
+            EditorApplication.delayCall += () =>
+             {
+                 if (variable == null)
+                 {
+                     return;
+                 }
+                 if (Application.isPlaying)
+                 {
+                     return; // We only want to respond to var value changes in the editor,
+                             // since that's the only time we care about keeping the registry's
+                             // values up to date with the actual variable values in the scene.
+                 }
+                 OnSelectionChanged();
+             };
+             return;
+#endif
             if (Application.isPlaying)
             {
                 return; // We only want to respond to var value changes in the editor,

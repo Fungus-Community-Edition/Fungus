@@ -13,7 +13,7 @@ namespace AtMycelia.Hyphlow
                  "Move execution to a specific Label command in the same block")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class Jump : Command
     {
         [Tooltip("Name of a label in this block to jump to")]
@@ -54,12 +54,18 @@ namespace AtMycelia.Hyphlow
 
         public override string GetSummary()
         {
+            string result = "To " + _targetLabel.Value;
             if (_targetLabel.Value == "")
             {
                 return "Error: No label selected";
             }
 
-            return _targetLabel.Value;
+            if (_targetLabel.RepresentingVar)
+            {
+                result += $" ({_targetLabel.VarRef.Key})";
+            }
+
+            return result;
         }
 
         public override Color GetButtonColor()
