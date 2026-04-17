@@ -31,7 +31,7 @@ namespace AtMycelia.Hyphlow
             }
 
             _s = this;
-
+            DontDestroyOnLoad(this.gameObject);
             ResetAnchors();
             EnsureTweenAnchorHolder();
             EventDispatcher = this.gameObject.GetOrAddComponent<EventDispatcher>();

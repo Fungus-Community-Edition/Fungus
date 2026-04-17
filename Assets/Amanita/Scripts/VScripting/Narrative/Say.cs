@@ -258,7 +258,7 @@ namespace AtMycelia.Amanita.DialogueSys.VScripting
         public virtual string GetStringId()
         {
             // String id for Say commands is SAY.<Localization Id>.<Command id>.[Character Name]
-            string stringId = "SAY." + GetFlowchartLocalizationId() + "." + itemId + ".";
+            string stringId = "SAY." + "." + itemId + ".";
             if (_characterCached != null)
             {
                 stringId += _characterCached.NameText;

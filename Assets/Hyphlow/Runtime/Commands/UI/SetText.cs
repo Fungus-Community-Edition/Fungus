@@ -131,7 +131,7 @@ namespace AtMycelia.Hyphlow
         public virtual string GetStringId()
         {
             // String id for Set Text commands is SETTEXT.<Localization Id>.<Command id>
-            return "SETTEXT." + GetFlowchartLocalizationId() + "." + itemId;
+            return "SETTEXT." + "." + itemId;
         }
 
         #endregion

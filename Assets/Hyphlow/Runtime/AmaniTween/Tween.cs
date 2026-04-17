@@ -254,7 +254,7 @@ namespace AtMycelia.Hyphlow.Tweening
 
         public virtual bool IsTargetDestroyed()
         {
-            bool whetherItIs = (Target is MonoBehaviour mono && mono == null) ||
+            bool whetherItIs = (Target is Component comp && comp == null) ||
                 (Target is GameObject go && go == null) ||
                 (Target is Delegate del && del.Target == null);
 

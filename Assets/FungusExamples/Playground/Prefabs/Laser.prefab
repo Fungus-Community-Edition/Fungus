@@ -173,6 +173,7 @@ GameObject:
   - component: {fileID: 4278132626369988641}
   - component: {fileID: 958645331840734462}
   - component: {fileID: 4484725498435143672}
+  - component: {fileID: -8952826472531823386}
   m_Layer: 0
   m_Name: Laser
   m_TagString: Laser
@@ -405,7 +406,7 @@ MonoBehaviour:
     _selectedBlocks:
     - {fileID: 114182131449558960}
     _selectedCommands:
-    - {fileID: 4484725498435143672}
+    - {fileID: -8952826472531823386}
     _owner: {fileID: 1942691996823588}
     <ScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
@@ -438,6 +439,8 @@ MonoBehaviour:
   - {fileID: 114751314740007556}
   - {fileID: 114299940920854140}
   - {fileID: 4278132626369988641}
+  - {fileID: 4484725498435143672}
+  - {fileID: -8952826472531823386}
   nextValidVarID: 3
   uniqueId: db274a64-69a9-4f64-8ed7-a518474d93a2
   references:
@@ -502,7 +505,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: spawnForce
-  itemID: 0
+  itemID: 4
   oldItemID: 0
   _owner: {fileID: 114526636883379746}
   value: {x: 0, y: 10}
@@ -553,7 +556,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: destroyDelay
-  itemID: 0
+  itemID: 5
   oldItemID: 0
   _owner: {fileID: 114526636883379746}
   value: 3
@@ -584,6 +587,7 @@ MonoBehaviour:
   commandList:
   - {fileID: 4484725498435143672}
   - {fileID: 114299940920854140}
+  - {fileID: -8952826472531823386}
   includeInSaves: 1
   loadPriority: 0
   suppressAllAutoSelections: 0
@@ -746,9 +750,11 @@ MonoBehaviour:
     - rid: 3688519968672710724
     - rid: 3688519968672710725
     - rid: 3688519968672710728
-    _legacyVariables: []
-    _nextValidVarID: 4
-    _isInitted: 0
+    _legacyVariables:
+    - {fileID: 114979932131573080}
+    - {fileID: 114455382144078078}
+    _nextValidVarID: 6
+    _isInitted: 1
   _cachedFlowchart: {fileID: 114526636883379746}
   references:
     version: 2
@@ -894,3 +900,36 @@ MonoBehaviour:
     value: Laser hit enemy!
     stringRef: {fileID: 0}
     stringVal: 
+--- !u!114 &-8952826472531823386
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1942691996823588}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d81be3d7e84da460788dccea95a3313a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 7
+  indentLevel: 0
+  _targetGameObject:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 114526636883379746}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 1942691996823588}
+    gameObjectRef: {fileID: 0}
+    gameObjectVal: {fileID: 0}
+  _destroyInXSeconds:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 114526636883379746}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 0.001
+    floatRef: {fileID: 0}
+    floatVal: 0
+  targetGameObjectOLD: {fileID: 0}

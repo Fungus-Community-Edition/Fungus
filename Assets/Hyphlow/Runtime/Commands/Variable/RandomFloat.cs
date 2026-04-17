@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                  "Random Float", 
                  "Sets an float or double variable to a random value in the defined range.")]
     [AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class RandomFloat : Command 
     {
         [Tooltip("The variable that will get its value set. Can be a float or a double.")]
@@ -37,9 +37,10 @@ namespace AtMycelia.Hyphlow
 
         public override void OnEnter()
         {
-            if (variable != null)
+            if (_variable != null)
             {
-                variable.Value = Random.Range(_minValue.Value, _maxValue.Value);
+                float val = Random.Range(_minValue.Value, _maxValue.Value);
+                _variable.SetValue(val);
             }
 
             Continue();
@@ -58,7 +59,7 @@ namespace AtMycelia.Hyphlow
 
         public override bool HasReference(Variable variable)
         {
-            return (variable == this.variable) || 
+            return (variable == this._oldVariable) || 
                 ReferenceEquals(_minValue.VarRef, variable) || 
                 ReferenceEquals(_maxValue.VarRef, variable);
         }
@@ -73,15 +74,16 @@ namespace AtMycelia.Hyphlow
         public override void ApplyBackwardsCompatibility()
         {
             base.ApplyBackwardsCompatibility();
-            if (variable != null)
+            if (_oldVariable != null)
             {
-                _variable.Variable = variable;
-                variable = null;
+                _variable.Variable = _oldVariable;
+                _oldVariable = null;
             }
         }
 
         [VariableProperty(typeof(FloatVariable))]
+        [FormerlySerializedAs("variable")]
         [HideInInspector]
-        [SerializeField] protected FloatVariable variable;
+        [SerializeField] protected FloatVariable _oldVariable;
     }
 }

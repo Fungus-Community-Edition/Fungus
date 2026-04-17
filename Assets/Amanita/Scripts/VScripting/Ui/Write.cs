@@ -166,7 +166,7 @@ namespace AtMycelia.Amanita.DialogueSys.VScripting
         public virtual string GetStringId()
         {
             // String id for Write commands is WRITE.<Localization Id>.<Command id>
-            return "WRITE." + GetFlowchartLocalizationId() + "." + itemId;
+            return "WRITE." + "." + itemId;
         }
 
         public override bool HasReference(Variable variable)

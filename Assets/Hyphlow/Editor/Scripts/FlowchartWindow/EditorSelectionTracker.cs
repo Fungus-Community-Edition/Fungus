@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
 
@@ -265,6 +266,9 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 FlowchartWindowSignals.EmptySpaceLeftClicked += OnEmptySpaceClicked;
 
                 EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+                EditorApplication.hierarchyChanged += OnHierarchyChanged;
+                PrefabStage.prefabStageOpened += OnPrefabStageOpened;
+                PrefabStage.prefabStageClosing += OnPrefabStageClosing;
                 AssemblyReloadEvents.beforeAssemblyReload += OnBeforeAssemblyReload;
                 EditorApplication.quitting += Cleanup;
             }
@@ -275,6 +279,9 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 FlowchartWindowSignals.EmptySpaceLeftClicked -= OnEmptySpaceClicked;
 
                 EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
+                EditorApplication.hierarchyChanged -= OnHierarchyChanged;
+                PrefabStage.prefabStageOpened -= OnPrefabStageOpened;
+                PrefabStage.prefabStageClosing -= OnPrefabStageClosing;
                 AssemblyReloadEvents.beforeAssemblyReload -= OnBeforeAssemblyReload;
                 EditorApplication.quitting -= Cleanup;
             }
@@ -375,6 +382,29 @@ namespace AtMycelia.Hyphlow.EditorUtils
             if (state == PlayModeStateChange.EnteredPlayMode)
             {
                 SelectFlowchartBasedOnCache();
+            }
+        }
+
+        private static void OnHierarchyChanged()
+        {
+            ClearActiveFlowchartIfNull();
+        }
+
+        private static void OnPrefabStageOpened(PrefabStage _)
+        {
+            ClearActiveFlowchartIfNull();
+        }
+
+        private static void OnPrefabStageClosing(PrefabStage _)
+        {
+            ClearActiveFlowchartIfNull();
+        }
+
+        private static void ClearActiveFlowchartIfNull()
+        {
+            if (activeFlowchart == null)
+            {
+                SetActiveFlowchart(null);
             }
         }
 

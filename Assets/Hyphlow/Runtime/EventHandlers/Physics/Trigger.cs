@@ -73,7 +73,7 @@ namespace AtMycelia.Hyphlow
 
 		protected override void OnTriggerExitTwoDResponse(Collider2D col)
 		{
-			ProcessCollider(PhysicsMessageType.Enter, col);
+			ProcessCollider(PhysicsMessageType.Exit, col);
 		}
 
 		protected override void OnTriggerStayTwoDResponse(Collider2D col)
