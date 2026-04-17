@@ -1,5 +1,4 @@
 using UnityEngine;
-
 using UnityEngine.Scripting.APIUpdating;
 
 namespace AtMycelia.Hyphlow
@@ -10,7 +9,7 @@ namespace AtMycelia.Hyphlow
     [System.Serializable]
     [VariableData(typeof(Collider), typeof(ColliderVariable))]
     [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
-    public class ColliderData : VariableData<Collider>
+    public class ColliderThreeDData : VariableData<Collider>
     {
         [SerializeField]
         public ColliderVariable colliderRef;
@@ -31,9 +30,9 @@ namespace AtMycelia.Hyphlow
             set => colliderVal = value;
         }
 
-        public ColliderData() : base(default) { }
+        public ColliderThreeDData() : base(default) { }
 
-        public ColliderData(Collider startVal) : base(startVal)
+        public ColliderThreeDData(Collider startVal) : base(startVal)
         {
         }
 
@@ -45,7 +44,7 @@ namespace AtMycelia.Hyphlow
     [System.Serializable]
     [VariableData(typeof(Collider2D), typeof(Collider2DVariable))]
     [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
-    public class Collider2DData : VariableData<Collider2D>
+    public class ColliderTwoDData : VariableData<Collider2D>
     {
         [SerializeField]
         public ColliderVariable collider2DRef;
@@ -54,9 +53,9 @@ namespace AtMycelia.Hyphlow
         [HideInInspector]
         public Collider2D collider2DVal;
 
-        public Collider2DData() : base(default) { }
+        public ColliderTwoDData() : base(default) { }
 
-        public Collider2DData(Collider2D startVal) : base(startVal)
+        public ColliderTwoDData(Collider2D startVal) : base(startVal)
         {
         }
 
@@ -72,4 +71,76 @@ namespace AtMycelia.Hyphlow
         }
 
     }
+
+    /// <summary>
+    /// Container for a Rigidbody variable reference or constant value.
+    /// </summary>
+    [System.Serializable]
+    [VariableData(typeof(Rigidbody), typeof(RigidbodyVariable))]
+    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    public class RigidbodyThreeDData : VariableData<Rigidbody>
+    {
+        [SerializeField]
+        public RigidbodyVariable rigidbodyRef;
+
+        [SerializeField]
+        [HideInInspector]
+        public Rigidbody rigidbodyVal;
+
+        protected override Variable LegacyVarRef
+        {
+            get => rigidbodyRef;
+            set => rigidbodyRef = value as RigidbodyVariable;
+        }
+
+        public override Rigidbody LiteralValue
+        {
+            get => rigidbodyVal;
+            set => rigidbodyVal = value;
+        }
+
+        public RigidbodyThreeDData() : base(default) { }
+
+        public RigidbodyThreeDData(Rigidbody startVal) : base(startVal)
+        {
+        }
+
+    }
+
+    /// <summary>
+    /// Container for a Rigidbody2D variable reference or constant value.
+    /// </summary>
+    [System.Serializable]
+    [VariableData(typeof(Rigidbody2D), typeof(Rigidbody2DVariable))]
+    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    public class RigidbodyTwoDData : VariableData<Rigidbody2D>
+    {
+        [SerializeField]
+        public Rigidbody2DVariable rigidbody2DRef;
+
+        [SerializeField]
+        [HideInInspector]
+        public Rigidbody2D rigidbody2DVal;
+
+        public RigidbodyTwoDData() : base(default) { }
+
+        public RigidbodyTwoDData(Rigidbody2D startVal) : base(startVal)
+        {
+        }
+
+        protected override Variable LegacyVarRef
+        {
+            get => rigidbody2DRef;
+            set => rigidbody2DRef = value as Rigidbody2DVariable;
+        }
+
+        public override Rigidbody2D LiteralValue
+        {
+            get => rigidbody2DVal;
+            set => rigidbody2DVal = value;
+        }
+
+    }
+
+
 }
