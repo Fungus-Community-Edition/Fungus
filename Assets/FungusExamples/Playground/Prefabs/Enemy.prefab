@@ -25,7 +25,6 @@ GameObject:
   - component: {fileID: 114899146109398040}
   - component: {fileID: 114687815841025766}
   - component: {fileID: 114360394860159334}
-  - component: {fileID: 114419747174779602}
   - component: {fileID: 114612287158334692}
   - component: {fileID: 114478123438267686}
   - component: {fileID: 4809656640325019554}
@@ -207,7 +206,7 @@ MonoBehaviour:
     _selectedBlocks:
     - {fileID: 114685860866778978}
     _selectedCommands:
-    - {fileID: 114434000303693764}
+    - {fileID: 0}
     _owner: {fileID: 1292638556747252}
     <ScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
@@ -243,7 +242,7 @@ MonoBehaviour:
   - {fileID: 114321934423954670}
   - {fileID: 114434000303693764}
   - {fileID: 114899146109398040}
-  - {fileID: 114419747174779602}
+  - {fileID: 0}
   - {fileID: 114612287158334692}
   - {fileID: 114478123438267686}
   - {fileID: 3610333224879006114}
@@ -417,8 +416,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeRect:
     serializedVersion: 2
-    x: 150
-    y: 165
+    x: 135
+    y: 246
     width: 106
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
@@ -459,7 +458,7 @@ MonoBehaviour:
   commandList:
   - {fileID: 114478123438267686}
   - {fileID: 114612287158334692}
-  - {fileID: 114419747174779602}
+  - {fileID: 0}
   - {fileID: 114434000303693764}
   includeInSaves: 1
   loadPriority: 0
@@ -570,39 +569,6 @@ MonoBehaviour:
   oldItemID: 0
   _owner: {fileID: 114619489782507194}
   value: {x: 0, y: 0, z: 0}
---- !u!114 &114419747174779602
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1292638556747252}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d81be3d7e84da460788dccea95a3313a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemId: 16
-  indentLevel: 0
-  _targetGameObject:
-    backingVarRef:
-      itemId: 7
-      owningSource: {fileID: 114619489782507194}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
-    gameObjectRef: {fileID: 0}
-    gameObjectVal: {fileID: 0}
-  _destroyInXSeconds:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 114619489782507194}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
-    value: 2
-    floatRef: {fileID: 0}
-    floatVal: 0
-  targetGameObjectOLD: {fileID: 0}
 --- !u!114 &114612287158334692
 MonoBehaviour:
   m_ObjectHideFlags: 0

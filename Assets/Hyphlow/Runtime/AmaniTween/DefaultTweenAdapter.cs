@@ -580,11 +580,6 @@ namespace AtMycelia.Hyphlow.Tweening
 
         public ITweenHandle ShakePosition(Transform target, Vector3 axis, Vector3 force, float duration, bool isLocalSpace)
         {
-            if (target == null)
-            {
-                return null;
-            }
-
             Vector3 startPos = isLocalSpace ? 
                 target.localPosition : 
                 target.position;
@@ -595,11 +590,6 @@ namespace AtMycelia.Hyphlow.Tweening
             
             void OnTweenUpdate(float progress)
             {
-                if (target == null)
-                {
-                    return;
-                }
-
                 Vector3 randomOffset = UnityRandom.insideUnitSphere;
                 randomOffset = Vector3.Scale(randomOffset, force);
                 randomOffset = Vector3.Scale(randomOffset, axisMask);
@@ -621,11 +611,6 @@ namespace AtMycelia.Hyphlow.Tweening
             tween = tween.SetOnComplete(OnTweenComplete);
             void OnTweenComplete()
             {
-                if (target == null)
-                {
-                    return;
-                }
-
                 if (isLocalSpace)
                 {
                     target.localPosition = startPos;

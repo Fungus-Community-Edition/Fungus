@@ -46,26 +46,28 @@ namespace AtMycelia.Hyphlow
 
         public override void OnEnter()
         {
-            Vector3 tmp;
+            Vector3 valToSet;
             switch (_operation)
             {
                 case Operation.Add:
-                    _outputVar.SetValue(_lhs.Value + _rhs.Value);
+                    valToSet = _lhs.Value + _rhs.Value;
+                    _outputVar.SetValue(valToSet);
                     break;
                 case Operation.Sub:
-                    _outputVar.SetValue(_lhs.Value - _rhs.Value);
+                    valToSet = _lhs.Value - _rhs.Value;
+                    _outputVar.SetValue(valToSet);
                     break;
                 case Operation.Mul:
-                    tmp = _lhs.Value;
-                    tmp.Scale(_rhs.Value);
-                    _outputVar.SetValue(tmp);
+                    valToSet = _lhs.Value;
+                    valToSet.Scale(_rhs.Value);
+                    _outputVar.SetValue(valToSet);
                     break;
                 case Operation.Div:
-                    tmp = _lhs.Value;
-                    tmp.Scale(new Vector3(1.0f / _rhs.Value.x,
+                    valToSet = _lhs.Value;
+                    valToSet.Scale(new Vector3(1.0f / _rhs.Value.x,
                         1.0f / _rhs.Value.y,
                         1.0f / _rhs.Value.z));
-                    _outputVar.SetValue(tmp);
+                    _outputVar.SetValue(valToSet);
                     break;
                 default:
                     break;
@@ -80,7 +82,8 @@ namespace AtMycelia.Hyphlow
                 return "Error: no output set";
             }
 
-            string result = $"{_operation} {GetSummaryString(_lhs)} and {GetSummaryString(_rhs)}, put into {_outputVar.Variable.Key}";
+            string result = $"{_operation} {GetSummaryString(_lhs)} and {GetSummaryString(_rhs)}, " +
+                $"put into {_outputVar.Variable.Key}";
             return result;
         }
 

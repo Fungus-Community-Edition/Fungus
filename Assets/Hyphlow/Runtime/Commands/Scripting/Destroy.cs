@@ -13,7 +13,7 @@ namespace AtMycelia.Hyphlow
                  "Destroys a specified game object in the scene.")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class Destroy : Command, ISerializationCallbackReceiver
     {
         [Tooltip("Reference to game object to destroy")]
@@ -38,9 +38,13 @@ namespace AtMycelia.Hyphlow
             if (_targetGameObject.Value != null)
             {
                 if (_destroyInXSeconds.Value != 0)
+                {
                     Destroy(_targetGameObject, _destroyInXSeconds.Value);
+                }
                 else
+                {
                     Destroy(_targetGameObject.Value);
+                }
             }
 
             Continue();
@@ -80,11 +84,17 @@ namespace AtMycelia.Hyphlow
             return false;
         }
 
+        protected virtual void OnDestroy()
+        {
+            CancelInvoke();
+            StopAllCoroutines();
+        }
+
         #endregion
 
         #region Backwards compatibility
 
-        
+
         public override void ApplyBackwardsCompatibility()
         {
             base.ApplyBackwardsCompatibility();

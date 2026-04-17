@@ -33,7 +33,7 @@ namespace AtMycelia.Hyphlow
 
         [SerializeField]
         [ContentTypeConstraint(typeof(Vector3), typeof(Vector2))]
-        protected VariableReference _vec3;
+        protected VariableReference _vec3Var;
 
         [SerializeField]
         [FormerlySerializedAs("x")]
@@ -61,16 +61,15 @@ namespace AtMycelia.Hyphlow
             {
                 case GetSet.Get:
 
-                    var v = _vec3.GetValue<Vector3>();
+                    var v = _vec3Var.GetValue<Vector3>();
 
                     _x.Value = v.x;
                     _y.Value = v.y;
                     _z.Value = v.z;
                     break;
                 case GetSet.Set:
-                    Vector3 prevVal = _vec3.GetValue<Vector3>();
-                    Vector3 newVal = prevVal + new Vector3(_x.Value, _y.Value, _z.Value);
-                    _vec3.SetValue(newVal);
+                    Vector3 newVal = new Vector3(_x.Value, _y.Value, _z.Value);
+                    _vec3Var.SetValue(newVal);
                     break;
                 default:
                     break;
@@ -81,12 +80,12 @@ namespace AtMycelia.Hyphlow
 
         public override string GetSummary()
         {
-            if (_vec3.Variable == null)
+            if (_vec3Var.Variable == null)
             {
                 return "Error: vec3 not set";
             }
 
-            return _getOrSet.ToString() + " (" + _vec3.Variable.Key + ")";
+            return _getOrSet.ToString() + " (" + _vec3Var.Variable.Key + ")";
         }
 
         public override Color GetButtonColor()
@@ -96,7 +95,7 @@ namespace AtMycelia.Hyphlow
 
         public override bool HasReference(Variable variable)
         {
-            if (ReferenceEquals(_vec3.Variable, variable) || 
+            if (ReferenceEquals(_vec3Var.Variable, variable) || 
                 ReferenceEquals(_x.VarRef, variable) || 
                 ReferenceEquals(_y.VarRef, variable) || 
                 ReferenceEquals(_z.VarRef, variable))
@@ -112,7 +111,7 @@ namespace AtMycelia.Hyphlow
             {
                 if (vec3.RepresentingVar)
                 {
-                    _vec3.Variable = vec3.VarRef;
+                    _vec3Var.Variable = vec3.VarRef;
                 }
 
                 vec3 = null;

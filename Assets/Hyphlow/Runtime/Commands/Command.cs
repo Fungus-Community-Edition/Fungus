@@ -449,27 +449,6 @@ namespace AtMycelia.Hyphlow
             return false;
         }
 
-        /// <summary>
-        /// Returns the localization id for the Flowchart that contains this command.
-        /// </summary>
-        public virtual string GetFlowchartLocalizationId()
-        {
-            // If no localization id has been set then use the Flowchart name
-            var flowchart = GetFlowchart();
-            if (flowchart == null)
-            {
-                return "";
-            }
-
-            string localizationId = GetFlowchart().LocalizationId;
-            if (localizationId.Length == 0)
-            {
-                localizationId = flowchart.name;
-            }
-
-            return localizationId;
-        }
-
         public bool HasReference(IVariable variable)
         {
             return false;
