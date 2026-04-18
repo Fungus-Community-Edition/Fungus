@@ -5,7 +5,7 @@ namespace AtMycelia.Hyphlow.Tweening.VScripting
     [CommandInfo("BI Tween",
         "Simple/Rotate Relative",
         "Rotates a component's transform to a target rotation over time (relative to some other rotation).")]
-    public class RotationRelative : BaseSimpleTweenCommand
+    public class RotateRelative : BaseSimpleTweenCommand
     {
         [Tooltip("The Component or GameObject with the transform to rotate.")]
         [ContentTypeConstraint(typeof(Component), typeof(GameObject))]
@@ -59,7 +59,8 @@ namespace AtMycelia.Hyphlow.Tweening.VScripting
         {
             _ourTween?.Kill();
             Quaternion startRot = DecideStartRotation();
-            Quaternion endRot = Quaternion.Euler(_targetRotation.Value);
+            Vector3 endRotVec = startRot.eulerAngles + _targetRotation.Value;
+            Quaternion endRot = Quaternion.Euler(endRotVec);
             ApplyStartRotation(startRot);
 
             _ourTween = CreateRotationTween(startRot, endRot);
@@ -169,5 +170,6 @@ namespace AtMycelia.Hyphlow.Tweening.VScripting
             string result = $"{targetStr} {toFromStr} {targetRotationStr} ({spaceStr}) over {durationStr} seconds.";
             return result;
         }
+    
     }
 }

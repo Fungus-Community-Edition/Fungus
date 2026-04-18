@@ -75,6 +75,9 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 9b3be2062b59848a2bd178f5748b386d, type: 3}
   - {fileID: 8300000, guid: 23e52ab29f28743309c85b6d7bdc8ad6, type: 3}
   - {fileID: 8300000, guid: d51030c566c134c038723aab62eeb832, type: 3}
+  - {fileID: 8300000, guid: ea9cfd17eb785574e80afa71e95c4087, type: 3}
+  - {fileID: 8300000, guid: 4e731185c337f974aabfa2e18721f501, type: 3}
+  - {fileID: 8300000, guid: 35d69fe4f9e4c7845b7525429840e784, type: 3}
   _audioMixers: []
   _sprites:
   - {fileID: 21300000, guid: 78bc8db714c3749cc8bd8c0b7e525b85, type: 3}
@@ -679,6 +682,7 @@ MonoBehaviour:
   - {fileID: 4900000, guid: 3e7cf66d38b799045a72ff2bfeda9f02, type: 3}
   - {fileID: 4900000, guid: 1dba0a5587a9bf14aa4d6a0d6aa4bd36, type: 3}
   - {fileID: 4900000, guid: 7b753670f06bf004cae6edc7eb1ee445, type: 3}
+  - {fileID: 4900000, guid: db61a1ef4b086ff4d88a2b572aed5c8e, type: 3}
   _physicsMaterials: []
   _physicsMaterials2D:
   - {fileID: 6200000, guid: 5a05bfcb10e8c0e4da63ebcc23179ef4, type: 2}

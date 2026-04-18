@@ -38,6 +38,20 @@ namespace AtMycelia.Hyphlow.Tweening
             return DefaultTweenHandle.From(tweenRot);
         }
 
+        public Tween<Quaternion> TweenLocalRotation(Transform toRotate, Quaternion startRot,
+            Quaternion endRot, float duration)
+        {
+            string id = GenIDFor(toRotate, "LocalRotation");
+            void UpdateRot(Quaternion newRot)
+            {
+                toRotate.localRotation = newRot;
+            }
+            Tween<Quaternion> result = new Tween<Quaternion>(toRotate, id, startRot,
+                endRot, duration, UpdateRot);
+
+            return result;
+        }
+
         protected virtual string GenIDFor(UnityObj unityObj, string aspectName)
         {
             string typeName = unityObj.GetType().Name;
@@ -295,21 +309,6 @@ namespace AtMycelia.Hyphlow.Tweening
             return result;
         }
 
-        public Tween<Quaternion> TweenLocalRotation(Transform toRotate, Quaternion startRot,
-            Quaternion endRot, float duration)
-        {
-            string id = GenIDFor(toRotate, "LocalRotation");
-            void UpdateRot(Quaternion newRot)
-            {
-                toRotate.localRotation = newRot;
-            }
-            Tween<Quaternion> result = new Tween<Quaternion>(toRotate, id, startRot,
-                endRot, duration, UpdateRot);
-
-            return result;
-        }
-
-        
         public ITweenHandle FadeBackgroundColor(Camera target, Color targetVal, float duration)
         {
             var tween = TweenCameraBGColor(target, target.backgroundColor, targetVal, duration);
