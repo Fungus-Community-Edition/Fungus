@@ -40,7 +40,6 @@ namespace AtMycelia.Hyphlow
             if (_variable != null)
             {
                 float val = Random.Range(_minValue.Value, _maxValue.Value);
-                Debug.Log($"Random val chosen in RandomFloat command: {val}");
                 _variable.SetValue(val);
             }
 
