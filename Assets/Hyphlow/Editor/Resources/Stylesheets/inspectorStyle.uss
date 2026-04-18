@@ -52,7 +52,7 @@
 {
 	flex-grow: 1;
 	width: 100%;
-	height: 70px;
+	height: 100px;
 	padding: 5px;
 	background-color: var(--dark-mode-text-bg-color);
 	color: var(--dark-mode-text-color);

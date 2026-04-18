@@ -3,7 +3,7 @@ using UnityEngine;
 namespace AtMycelia.Hyphlow.Tweening.VScripting
 {
     [CommandInfo("BI Tween",
-        "Shake Position",
+        "Simple/Shake Position",
         "Randomly shakes a component's position by a diminishing amount over time.")]
     public class ShakePosition : BaseSimpleTweenCommand
     {

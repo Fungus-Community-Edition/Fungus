@@ -19,13 +19,7 @@ namespace AtMycelia.Hyphlow
         {
             get
             {
-                string valStr = "none";
-                if (data != null)
-                {
-                    valStr = data.BoxedValue != null ? data.BoxedValue.ToString() : "null";
-                }
-
-                if (ReferenceEquals(data, null))
+                if (data == null)
                 {
                     return null;
                 }
@@ -33,12 +27,12 @@ namespace AtMycelia.Hyphlow
             }
             set
             {
-                if (ReferenceEquals(data, null))
+                if (data == null)
                 {
                     return;
                 }
 
-                if (ReferenceEquals(value, null))
+                if (value == null)
                 {
                     data.BoxedValue = null;
                     return;
@@ -52,7 +46,7 @@ namespace AtMycelia.Hyphlow
                 else
                 {
                     string errorMessage = $"AnyVariableData cannot accept a {valueType.Name}.";
-                    throw new System.InvalidCastException(errorMessage);
+                    throw new InvalidCastException(errorMessage);
                 }
 
             }
@@ -98,6 +92,23 @@ namespace AtMycelia.Hyphlow
             data = toSet;
         }
 
+        public void SetFor(Type contentType)
+        {
+            if (contentType == null)
+            {
+                Debug.LogWarning("Cannot set AnyVariableData for a null content type.");
+                return;
+            }
+
+            if (data != null && contentType.Equals(data.ContentType))
+            {
+                return;
+            }
+
+            IVariableData toSet = VariableDataTypeRegistry.CreateForContentType(contentType);
+            data = toSet;
+        }
+
         public override string GetDescription() => data?.GetDescription() ?? "Null";
 
         public override IVariable VarRef
@@ -110,6 +121,7 @@ namespace AtMycelia.Hyphlow
             {
                 if (ReferenceEquals(value, null))
                 {
+                    backingVarRef.Variable = null;
                     data.VarRef = null;
                     return;
                 }
@@ -117,7 +129,7 @@ namespace AtMycelia.Hyphlow
                 // Adapt the data to the type of the var
                 SetFor(value.GetType(), value.ContentType);
 
-                data.VarRef = value;
+                data.VarRef = backingVarRef.Variable = value;
             }
         }
 
@@ -133,6 +145,26 @@ namespace AtMycelia.Hyphlow
             return result;
         }
 
+        public T GetValue<T>()
+        {
+            Type tType = typeof(T);
+            if (data is null)
+            {
+                string logMessage = $"Cannot get value of type {tType.Name} from AnyVariableData " +
+                    $"because it has no data.";
+                Debug.LogError(logMessage);
+                return default;
+            }
+            if (!tType.IsAssignableFrom(data.ContentType))
+            {
+                string logMessage = $"Cannot get value of type {tType.Name} from AnyVariableData " +
+                    $"because it holds data of type {data.ContentType.Name}.";
+                Debug.LogError(logMessage);
+                return default;
+            }
+
+            return (T)data.BoxedValue;
+        }
     }
 
 }

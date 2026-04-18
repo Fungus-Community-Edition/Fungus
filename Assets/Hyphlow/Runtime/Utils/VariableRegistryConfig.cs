@@ -30,7 +30,8 @@ namespace AtMycelia.Hyphlow
 
             if (sources == null)
             {
-                string errorMessage = $"Attempted to set global sources list to null on {name} ({GetInstanceID()}). This is not allowed. The list will be cleared instead.";
+                string errorMessage = $"Attempted to set global sources list to null on {name} " +
+                    $"({GetInstanceID()}). This is not allowed. The list will be cleared instead.";
                 Debug.LogError(errorMessage, this);
 
                 return;

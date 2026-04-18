@@ -44,6 +44,12 @@ namespace AtMycelia.Hyphlow
         [FormerlySerializedAs("muscariables")]
         [SerializeReference] protected List<Muscariable> _oldMuscariables = new List<Muscariable>();
 
+        [Tooltip("ScriptableObjects that contain settings that should apply to this Flowchart. " +
+            "For example, how this Flowchart should handle Lua compatibility.")]
+        [SerializeField] protected ScriptableObject[] _otherSettings = new ScriptableObject[0]; 
+
+        public IReadOnlyList<ScriptableObject> OtherSettings => _otherSettings;
+
         /// <summary>
         /// Force reset the unique identifier for this Flowchart. Use with caution!
         /// </summary>
@@ -95,14 +101,6 @@ namespace AtMycelia.Hyphlow
         [SerializeField] protected List<string> hideCommands = new List<string>();
 #endif
 
-        [Tooltip("Unique identifier for this flowchart in localized string keys. If no id is specified then the name of the Flowchart object will be used.")]
-        [FormerlySerializedAs("localizationId")]
-        [SerializeField] protected string localizationId = "";
-
-        [Tooltip("The ExecuteLua command adds a global Lua variable with this name bound to the flowchart prior to executing.")]
-        [FormerlySerializedAs("_luaBindingName")]
-        [SerializeField] protected string luaBindingName = "flowchart";
-
         #region Save Sys Involvement
         [Tooltip("Whether or not the save system should save (and when appropriate, load) this Flowchart's variables.")]
         [SerializeField] protected bool includeInSaves = true;
@@ -117,7 +115,8 @@ namespace AtMycelia.Hyphlow
         [SerializeField] protected int loadPriority = 0;
         #endregion
 
-        [SerializeField] private bool alwaysKeepGuid = true;
+        [FormerlySerializedAs("alwaysKeepGuid")]
+        [SerializeField] private bool _alwaysKeepGuid = true;
 
         public virtual bool IncludeInSaves
         {
@@ -833,16 +832,6 @@ namespace AtMycelia.Hyphlow
         public virtual string Description { get { return description; } }
 
         /// <summary>
-        /// Unique identifier for identifying this flowchart in localized string keys.
-        /// </summary>
-        public virtual string LocalizationId { get { return localizationId; } }
-
-        /// <summary>
-        /// The ExecuteLua command adds a global Lua variable with this name bound to the flowchart prior to executing.
-        /// </summary>
-        public virtual string LuaBindingName { get { return luaBindingName; } }
-
-        /// <summary>
         /// Position in the center of all blocks in the flowchart.
         /// </summary>
         public virtual Vector2 CenterPosition { set; get; }
@@ -1471,11 +1460,11 @@ namespace AtMycelia.Hyphlow
         {
             get
             {
-                return alwaysKeepGuid;
+                return _alwaysKeepGuid;
             }
             set
             {
-                alwaysKeepGuid = value;
+                _alwaysKeepGuid = value;
             }
         }
 

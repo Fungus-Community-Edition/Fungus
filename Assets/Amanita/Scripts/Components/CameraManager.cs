@@ -1,7 +1,6 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
-using AtMycelia.Hyphlow;
 using AtMycelia.Hyphlow.Sys;
 using AtMycelia.Hyphlow.Tweening;
 
@@ -296,8 +295,6 @@ namespace AtMycelia.Amanita
 			IGeneralTweenAdapter<float> fadeTweener = null, ICameraTweenAdapter sizeTweener = null,
 			ITransformTweenAdapter posTweener = null, ITransformTweenAdapter rotTweener = null)
 		{
-			Debug.LogWarning("LeanTweenType arguments in CameraManager FadeToView func are being ignored.");
-
 			swipePanActive = false;
 			fadeAlpha = 0f;
 

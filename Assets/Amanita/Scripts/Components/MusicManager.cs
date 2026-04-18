@@ -2,7 +2,6 @@ using UnityEngine;
 using AtMycelia.Hyphlow.Tweening;
 using System.Collections.Generic;
 using System.Linq;
-using AtMycelia.Hyphlow;
 using AtMycelia.Hyphlow.Sys;
 
 namespace AtMycelia.Amanita

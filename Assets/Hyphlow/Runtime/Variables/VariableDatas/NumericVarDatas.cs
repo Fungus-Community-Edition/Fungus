@@ -145,6 +145,11 @@ namespace AtMycelia.Hyphlow
             get => vector2Val;
             set => vector2Val = value;
         }
+
+        protected override bool CanHoldAsValue(object obj)
+        {
+            return obj is Vector2 || obj is Vector3;
+        }
     }
 
     /// <summary>
@@ -176,5 +181,12 @@ namespace AtMycelia.Hyphlow
             get => vector3Val;
             set => vector3Val = value;
         }
+
+        protected override bool CanHoldAsValue(object obj)
+        {
+            return obj is Vector2 || obj is Vector3;
+        }
+
+
     }
 }

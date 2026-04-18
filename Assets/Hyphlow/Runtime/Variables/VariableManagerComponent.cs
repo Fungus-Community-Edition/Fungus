@@ -120,7 +120,6 @@ namespace AtMycelia.Hyphlow
         }
 
 #if UNITY_EDITOR
-        [MenuItem("Tools/Atelier Mycelia/Amanita/Migrate Flowchart Variables", false, 2000)]
         private static void MigrateAllFlowchartVariables()
         {
             if (Application.isPlaying)
@@ -151,16 +150,21 @@ namespace AtMycelia.Hyphlow
                     component = Undo.AddComponent<VariableManagerComponent>(flowchart.gameObject);
                 }
 
-                component.MigrateFromFlowchart();
+                bool success;
+                component.MigrateFromFlowchart(out success);
                 component.SetGlobalVarsToPublic();
-                migratedCount++;
+                if (success)
+                {
+                    migratedCount++;
+                }
             }
 
             Debug.Log($"VariableManagerComponent: Migrated variables for {migratedCount} Flowchart(s).");
         }
 
-        public void MigrateFromFlowchart()
+        public void MigrateFromFlowchart(out bool success)
         {
+            success = false;
             EnsureOwner();
             _cachedFlowchart = _unityObjOwner as Flowchart;
             if (_cachedFlowchart == null)
@@ -204,6 +208,7 @@ namespace AtMycelia.Hyphlow
 
             EditorUtility.SetDirty(this);
             EditorUtility.SetDirty(_cachedFlowchart);
+            success = true;
         }
 
         public IVariable AddVariable(IVariable toAdd)
@@ -288,7 +293,11 @@ namespace AtMycelia.Hyphlow
                 EnsureOwner();
             }
 
-            EditorApplication.delayCall += () => SetGlobalVarsToPublic();
+            EditorApplication.delayCall += () =>
+            {
+                MigrateAllFlowchartVariables();
+                SetGlobalVarsToPublic();
+            }; 
         }
 
         void SetGlobalVarsToPublic()

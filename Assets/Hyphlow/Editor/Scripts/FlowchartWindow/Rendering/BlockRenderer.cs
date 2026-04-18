@@ -78,6 +78,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
         {
             owner = window;
             initialRefreshPending = true;
+            ToggleSubs(false);
             ToggleSubs(true);
             TryRefreshAfterLayout();
         }
@@ -542,7 +543,9 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
 
         private void UnregisterInputForwarders(BlockButton button)
         {
-            VisualElement inputTarget = button != null ? button.InputTarget : null;
+            VisualElement inputTarget = button != null ? 
+                button.InputTarget : 
+                null;
             if (inputTarget == null)
             {
                 return;
@@ -566,7 +569,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
 
         private void OnBlockPointerUp(PointerUpEvent evt)
         {
-            Debug.Log("BlockRendererUitk received pointer up event, forwarding to InputSignals.");
+            //Debug.Log("BlockRendererUitk received pointer up event, forwarding to InputSignals.");
             //InputSignals?.OnPointerUp(evt);
         }
 

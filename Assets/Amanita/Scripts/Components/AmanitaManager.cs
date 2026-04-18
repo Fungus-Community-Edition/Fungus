@@ -137,15 +137,13 @@ namespace AtMycelia.Amanita
 
         public void Init()
         {
-            if (IsFullyInitted || 
+            if (IsFullyInitted ||
                 this.gameObject.scene == default ||
                 this.gameObject.scene.name == this.name) // <- This can happen when we're in prefab mode
             {
                 return;
             }
 
-            // We do this in both inits since not all scenes will necessarily have a Flowchart that
-            // will ensure an instance of this exists.
             bool thisIsDuplicate = S != this && S != null;
             if (thisIsDuplicate)
             {
@@ -153,36 +151,11 @@ namespace AtMycelia.Amanita
                 Destroy(this.gameObject);
                 return;
             }
+
             _s = this;
 
             EnsureShadowDbAvailable();
 
-            ResetAnchors();
-            void ResetAnchors()
-            {
-                // Destroy any existing anchors managed by this instance (defensive cleanup).
-                if (_adapterAnchors != null)
-                {
-                    foreach (var kv in _adapterAnchors)
-                    {
-                        var anchorFound = kv.Value;
-                        if (anchorFound == null) continue;
-
-                        if (!Application.isPlaying)
-                        {
-                            DestroyImmediate(anchorFound);
-                        }
-                        else
-                        {
-                            Destroy(anchorFound);
-                        }
-                    }
-                    _adapterAnchors.Clear();
-                }
-            }
-
-            // So GetOrCreateAnchorFor can parent anchors.
-            EnsureTweenAnchorHolder();
             PrepSubmodules();
         }
 
@@ -312,25 +285,6 @@ namespace AtMycelia.Amanita
             {
                 _s = null;
                 TweenManager.S = null;
-
-                // Clean up anchors we created
-                if (_adapterAnchors != null)
-                {
-                    foreach (var kv in _adapterAnchors)
-                    {
-                        var go = kv.Value;
-                        if (go == null) continue;
-#if UNITY_EDITOR
-                        if (Application.isPlaying)
-                            Destroy(go);
-                        else
-                            DestroyImmediate(go);
-#else
-                        Destroy(go);
-#endif
-                    }
-                    _adapterAnchors.Clear();
-                }
             }
         }
 

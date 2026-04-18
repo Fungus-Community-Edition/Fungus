@@ -11,18 +11,18 @@ namespace AtMycelia.Hyphlow
                  "Label", 
                  "Marks a position in the command list for execution to jump to.")]
     [AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class Label : Command
     {
         [Tooltip("Display name for the label")]
-        [SerializeField] protected string key = "";
+        [SerializeField] protected StringData _key = new StringData("");
 
         #region Public members
 
         /// <summary>
         /// Display name for the label
         /// </summary>
-        public virtual string Key { get { return key; } }
+        public virtual string Key { get { return _key; } }
 
         public override void OnEnter()
         {
@@ -31,7 +31,12 @@ namespace AtMycelia.Hyphlow
 
         public override string GetSummary()
         {
-            return key;
+            string result = _key.Value;
+            if (_key.RepresentingVar)
+            {
+                result = $"{_key.VarRef.Key} ({_key.Value})";
+            }
+            return result;
         }
 
         public override Color GetButtonColor()
@@ -40,5 +45,18 @@ namespace AtMycelia.Hyphlow
         }
 
         #endregion
+
+        public override void ApplyBackwardsCompatibility()
+        {
+            base.ApplyBackwardsCompatibility();
+            if (!string.IsNullOrEmpty(key))
+            {
+                _key.Value = key;
+                key = "";
+            }
+        }
+
+        [HideInInspector]
+        [SerializeField] protected string key = "";
     }
 }

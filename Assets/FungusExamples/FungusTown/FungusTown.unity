@@ -198,6 +198,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   selectedFlowchart: {fileID: 1815667976}
+  lastSelectedFc: {fileID: 0}
 --- !u!4 &268549225
 Transform:
   m_ObjectHideFlags: 1
@@ -5401,6 +5402,96 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1355339492
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1355339495}
+  - component: {fileID: 1355339494}
+  - component: {fileID: 1355339493}
+  m_Layer: 0
+  m_Name: EventSystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1355339493
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1355339492}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01614664b831546d2ae94a42149d80ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SendPointerHoverToParent: 1
+  m_MoveRepeatDelay: 0.5
+  m_MoveRepeatRate: 0.1
+  m_XRTrackingOrigin: {fileID: 0}
+  m_ActionsAsset: {fileID: -944628639613478452, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_PointAction: {fileID: 1054132383583890850, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_MoveAction: {fileID: 3710738434707379630, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_SubmitAction: {fileID: 2064916234097673511, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_CancelAction: {fileID: -1967631576421560919, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_LeftClickAction: {fileID: 8056856818456041789, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_MiddleClickAction: {fileID: 3279352641294131588, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_RightClickAction: {fileID: 3837173908680883260, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_ScrollWheelAction: {fileID: 4502412055082496612, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_TrackedDevicePositionAction: {fileID: 4754684134866288074, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_TrackedDeviceOrientationAction: {fileID: 1025543830046995696, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_DeselectOnBackgroundClick: 1
+  m_PointerBehavior: 0
+  m_CursorLockBehavior: 0
+  m_ScrollDeltaPerTick: 6
+--- !u!114 &1355339494
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1355339492}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76c392e42b5098c458856cdf6ecaaaa1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_FirstSelected: {fileID: 0}
+  m_sendNavigationEvents: 1
+  m_DragThreshold: 10
+--- !u!4 &1355339495
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1355339492}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1385197491
 GameObject:
   m_ObjectHideFlags: 0
@@ -10371,6 +10462,7 @@ GameObject:
   - component: {fileID: 1815667997}
   - component: {fileID: 1815667996}
   - component: {fileID: 1815667995}
+  - component: {fileID: 1815667998}
   m_Layer: 0
   m_Name: Flowchart
   m_TagString: Untagged
@@ -10409,7 +10501,7 @@ MonoBehaviour:
     serializedVersion: 2
     x: 366.58322
     y: 63.927116
-    width: 76.19
+    width: 69
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
@@ -10420,7 +10512,6 @@ MonoBehaviour:
   commandList:
   - {fileID: 1815667993}
   - {fileID: 1815667994}
-  - {fileID: 0}
   - {fileID: 1815667995}
   - {fileID: 1815667981}
   - {fileID: 1815667979}
@@ -10451,9 +10542,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a334fe2ffb574b3583ff3b18b4792d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _varManager: {fileID: 1815667998}
+  legacyVariableManager:
+    _muscariables: []
+    _legacyVariables: []
+    _nextValidVarID: 1
+    _isInitted: 0
+  version: 1
+  _legacyVariables: []
+  _oldMuscariables: []
+  description: 'This scene shows how to create simple parallax scrolling effects
+
+    using
+    Sprites and moving the camera using Views'
   uiModel:
-    _selectedBlocks: []
-    _selectedCommands: []
+    _selectedBlocks:
+    - {fileID: 1815667974}
+    _selectedCommands:
+    - {fileID: 1815667990}
+    _owner: {fileID: 0}
     <ScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesExpanded>k__BackingField: 0
@@ -10465,30 +10572,40 @@ MonoBehaviour:
       y: 0
       width: 0
       height: 0
-    <SelectedCommandsStale>k__BackingField: 0
-  version: 1
-  legacyVariables:
-  - {fileID: 1815667997}
-  - {fileID: 1815667996}
-  muscariables: []
-  description: 'This scene shows how to create simple parallax scrolling effects
-
-    using
-    Sprites and moving the camera using Views'
+    <SelectedCommandsStale>k__BackingField: 1
   stepPause: 0
   colorCommands: 1
   hideComponents: 1
   saveSelection: 1
-  localizationId: 
   showLineNumbers: 0
   hideCommands: []
-  _luaEnvironment: {fileID: 0}
+  localizationId: 
   luaBindingName: flowchart
   includeInSaves: 1
   saveBlocks: 1
   saveVariables: 1
   loadPriority: 0
   alwaysKeepGuid: 1
+  _blockListCache:
+  - {fileID: 1815667974}
+  _commands:
+  - {fileID: 1815667979}
+  - {fileID: 1815667978}
+  - {fileID: 1815667981}
+  - {fileID: 1815667980}
+  - {fileID: 1815667982}
+  - {fileID: 1815667984}
+  - {fileID: 1815667983}
+  - {fileID: 1815667985}
+  - {fileID: 1815667990}
+  - {fileID: 1815667992}
+  - {fileID: 1815667991}
+  - {fileID: 1815667987}
+  - {fileID: 1815667988}
+  - {fileID: 1815667989}
+  - {fileID: 1815667993}
+  - {fileID: 1815667994}
+  - {fileID: 1815667995}
   nextValidVarID: 3
   uniqueId: ec6a1a70-35bd-4ce8-b475-38a0dea64e3d
   references:
@@ -10503,7 +10620,7 @@ Transform:
   m_GameObject: {fileID: 1815667972}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.5248328, y: 0, z: 0}
+  m_LocalPosition: {x: 1, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -10526,10 +10643,10 @@ MonoBehaviour:
   duration: 6.5
   targetView: {fileID: 199039254}
   waitUntilFinished: 0
-  targetCamera: {fileID: 0}
-  orthoSizeTweener: {fileID: 11400000, guid: fcf129880fc6aed48bf2f219ea84a4d7, type: 2}
-  posTweener: {fileID: 11400000, guid: fcf129880fc6aed48bf2f219ea84a4d7, type: 2}
-  rotTweener: {fileID: 11400000, guid: fcf129880fc6aed48bf2f219ea84a4d7, type: 2}
+  targetCamera: {fileID: 1535246064}
+  orthoSizeTweener: {fileID: 11400000, guid: 2456e8060d1222e4cac681fb832cd207, type: 2}
+  posTweener: {fileID: 11400000, guid: 2456e8060d1222e4cac681fb832cd207, type: 2}
+  rotTweener: {fileID: 11400000, guid: 2456e8060d1222e4cac681fb832cd207, type: 2}
 --- !u!114 &1815667979
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -10550,11 +10667,11 @@ MonoBehaviour:
   waitUntilFinished: 1
   fadeColor: {r: 0, g: 0, b: 0, a: 1}
   fadeTexture: {fileID: 0}
-  targetCamera: {fileID: 0}
-  fadeTweener: {fileID: 11400000, guid: fcf129880fc6aed48bf2f219ea84a4d7, type: 2}
-  orthoSizeTweener: {fileID: 11400000, guid: fcf129880fc6aed48bf2f219ea84a4d7, type: 2}
-  posTweener: {fileID: 11400000, guid: fcf129880fc6aed48bf2f219ea84a4d7, type: 2}
-  rotTweener: {fileID: 11400000, guid: fcf129880fc6aed48bf2f219ea84a4d7, type: 2}
+  targetCamera: {fileID: 1535246064}
+  fadeTweener: {fileID: 11400000, guid: 2456e8060d1222e4cac681fb832cd207, type: 2}
+  orthoSizeTweener: {fileID: 11400000, guid: 2456e8060d1222e4cac681fb832cd207, type: 2}
+  posTweener: {fileID: 11400000, guid: 2456e8060d1222e4cac681fb832cd207, type: 2}
+  rotTweener: {fileID: 11400000, guid: 2456e8060d1222e4cac681fb832cd207, type: 2}
 --- !u!114 &1815667980
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -10573,26 +10690,31 @@ MonoBehaviour:
   duration:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 1815667976}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 1815667976}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: 1
     floatRef: {fileID: 0}
+    floatVal: 0
   targetColor:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 1815667976}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 1815667976}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: {r: 1, g: 1, b: 1, a: 1}
     colorRef: {fileID: 0}
+    colorVal: {r: 0, g: 0, b: 0, a: 0}
   waitUntilFinished:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 1815667976}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 1815667976}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
-  fadeTweener: {fileID: 11400000, guid: fcf129880fc6aed48bf2f219ea84a4d7, type: 2}
+  fadeTweener: {fileID: 11400000, guid: 2456e8060d1222e4cac681fb832cd207, type: 2}
   durationOLD: 0
   targetColorOLD: {r: 0, g: 0, b: 0, a: 0}
   waitUntilFinishedOLD: 0
@@ -10614,16 +10736,18 @@ MonoBehaviour:
   _visible:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 1815667976}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 1815667976}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
   _affectChildren:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 1815667976}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 1815667976}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
@@ -10645,10 +10769,12 @@ MonoBehaviour:
   _duration:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 1815667976}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 1815667976}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: 1
     floatRef: {fileID: 0}
+    floatVal: 0
   durationOLD: 0
 --- !u!114 &1815667983
 MonoBehaviour:
@@ -10664,12 +10790,57 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 8
   indentLevel: 0
-  duration: 0.3
-  targetAlpha: 0
-  waitUntilFinished: 1
-  fadeColor: {r: 1, g: 1, b: 1, a: 1}
-  fadeTexture: {fileID: 0}
+  _duration:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 1815667976}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 0.3
+    floatRef: {fileID: 0}
+    floatVal: 0
+  _targetAlpha:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 1815667976}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 0
+    floatRef: {fileID: 0}
+    floatVal: 0
+  _waitUntilFinished:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 1815667976}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 1
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _fadeColor:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 1815667976}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {r: 1, g: 1, b: 1, a: 1}
+    colorRef: {fileID: 0}
+    colorVal: {r: 0, g: 0, b: 0, a: 0}
+  _fadeTexture:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 1815667976}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 0}
+    textureRef: {fileID: 0}
+    textureVal: {fileID: 0}
   fadeTweener: {fileID: 0}
+  _oldDuration: 1
+  _oldTargetAlpha: 1
+  _oldWaitUntilFinished: 1
+  _oldFadeColor: {r: 0, g: 0, b: 0, a: 1}
+  _oldFadeTexture: {fileID: 0}
 --- !u!114 &1815667984
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -10684,12 +10855,57 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 7
   indentLevel: 0
-  duration: 0.5
-  targetAlpha: 0.8
-  waitUntilFinished: 0
-  fadeColor: {r: 1, g: 1, b: 1, a: 1}
-  fadeTexture: {fileID: 0}
+  _duration:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 1815667976}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 0.5
+    floatRef: {fileID: 0}
+    floatVal: 0
+  _targetAlpha:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 1815667976}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 1
+    floatRef: {fileID: 0}
+    floatVal: 0
+  _waitUntilFinished:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 1815667976}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _fadeColor:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 1815667976}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {r: 1, g: 1, b: 1, a: 1}
+    colorRef: {fileID: 0}
+    colorVal: {r: 0, g: 0, b: 0, a: 0}
+  _fadeTexture:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 1815667976}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 0}
+    textureRef: {fileID: 0}
+    textureVal: {fileID: 0}
   fadeTweener: {fileID: 0}
+  _oldDuration: 1
+  _oldTargetAlpha: 1
+  _oldWaitUntilFinished: 1
+  _oldFadeColor: {r: 0, g: 0, b: 0, a: 1}
+  _oldFadeTexture: {fileID: 0}
 --- !u!114 &1815667985
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -10707,10 +10923,12 @@ MonoBehaviour:
   _duration:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 1815667976}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 1815667976}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: 1
     floatRef: {fileID: 0}
+    floatVal: 0
   durationOLD: 0
 --- !u!114 &1815667987
 MonoBehaviour:
@@ -10726,26 +10944,136 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 18
   indentLevel: 0
-  storyText: Welcome to Fungus Town!
-  description: 
-  character: {fileID: 0}
-  portrait: {fileID: 0}
-  voiceOverClip: {fileID: 0}
-  showAlways: 1
-  showCount: 1
-  extendPrevious: 0
-  fadeWhenDone: 1
-  waitForClick: 1
-  stopVoiceover: 1
-  waitForVO: 0
-  setSayDialog:
+  _storyText:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 0}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: Welcome to Fungus Town!
+    stringRef: {fileID: 0}
+    stringVal: 
+  _description:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 
+    stringRef: {fileID: 0}
+    stringVal: 
+  _character:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     gameObjectRef: {fileID: 0}
+    gameObjectVal: {fileID: 0}
+  _portrait:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 0}
+    spriteRef: {fileID: 0}
+    spriteVal: {fileID: 0}
+  _voiceOverClip:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 0}
+    audioClipRef: {fileID: 0}
+  _showAlways:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 1
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _showCount:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 1
+    integerRef: {fileID: 0}
+    integerVal: 0
+  _extendPrevious:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _fadeWhenDone:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 1
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _waitForClick:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 1
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _stopVoiceover:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 1
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _waitForVO:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+    gameObjectVal: {fileID: 0}
+  _characterCached: {fileID: 0}
   oldSetSayDialog: {fileID: 0}
+  _oldStoryText: 
+  _oldDescription: 
+  _oldCharacter: {fileID: 0}
+  _oldPortrait: {fileID: 0}
+  _oldVoiceOverClip: {fileID: 0}
+  _oldShowAlways: 1
+  _oldShowCount: 1
+  _oldExtendPrevious: 0
+  _oldFadeWhenDone: 1
+  _oldWaitForClick: 1
+  _oldStopVoiceover: 1
+  _oldWaitForVO: 0
 --- !u!114 &1815667988
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -10767,17 +11095,19 @@ MonoBehaviour:
   interactable:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 0}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: 1
     booleanRef: {fileID: 0}
-    booleanVal: 1
+    booleanVal: 0
   setMenuDialog: {fileID: 0}
   hideThisOption:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 0}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
@@ -10798,10 +11128,12 @@ MonoBehaviour:
   _duration:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 1815667976}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 1815667976}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: 1
     floatRef: {fileID: 0}
+    floatVal: 0
   durationOLD: 0
 --- !u!114 &1815667990
 MonoBehaviour:
@@ -10820,10 +11152,10 @@ MonoBehaviour:
   duration: 30
   targetView: {fileID: 1304529666}
   waitUntilFinished: 0
-  targetCamera: {fileID: 0}
-  orthoSizeTweener: {fileID: 11400000, guid: fcf129880fc6aed48bf2f219ea84a4d7, type: 2}
-  posTweener: {fileID: 11400000, guid: fcf129880fc6aed48bf2f219ea84a4d7, type: 2}
-  rotTweener: {fileID: 11400000, guid: fcf129880fc6aed48bf2f219ea84a4d7, type: 2}
+  targetCamera: {fileID: 1535246064}
+  orthoSizeTweener: {fileID: 11400000, guid: 2456e8060d1222e4cac681fb832cd207, type: 2}
+  posTweener: {fileID: 11400000, guid: 2456e8060d1222e4cac681fb832cd207, type: 2}
+  rotTweener: {fileID: 11400000, guid: 2456e8060d1222e4cac681fb832cd207, type: 2}
 --- !u!114 &1815667991
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -10842,26 +11174,31 @@ MonoBehaviour:
   duration:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 1815667976}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 1815667976}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: 1
     floatRef: {fileID: 0}
+    floatVal: 0
   targetColor:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 1815667976}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 1815667976}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: {r: 1, g: 1, b: 1, a: 1}
     colorRef: {fileID: 0}
+    colorVal: {r: 0, g: 0, b: 0, a: 0}
   waitUntilFinished:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 1815667976}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 1815667976}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
-  fadeTweener: {fileID: 11400000, guid: fcf129880fc6aed48bf2f219ea84a4d7, type: 2}
+  fadeTweener: {fileID: 11400000, guid: 2456e8060d1222e4cac681fb832cd207, type: 2}
   durationOLD: 0
   targetColorOLD: {r: 0, g: 0, b: 0, a: 0}
   waitUntilFinishedOLD: 0
@@ -10882,10 +11219,12 @@ MonoBehaviour:
   _duration:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 1815667976}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 1815667976}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: 1
     floatRef: {fileID: 0}
+    floatVal: 0
   durationOLD: 0
 --- !u!114 &1815667993
 MonoBehaviour:
@@ -10901,12 +11240,57 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 21
   indentLevel: 0
-  duration: 0
-  targetAlpha: 1
-  waitUntilFinished: 1
-  fadeColor: {r: 0, g: 0, b: 0, a: 1}
-  fadeTexture: {fileID: 0}
+  _duration:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 1815667976}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 0
+    floatRef: {fileID: 0}
+    floatVal: 0
+  _targetAlpha:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 1815667976}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 1
+    floatRef: {fileID: 0}
+    floatVal: 0
+  _waitUntilFinished:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 1815667976}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 1
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _fadeColor:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 1815667976}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {r: 0, g: 0, b: 0, a: 1}
+    colorRef: {fileID: 0}
+    colorVal: {r: 0, g: 0, b: 0, a: 0}
+  _fadeTexture:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 1815667976}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 0}
+    textureRef: {fileID: 0}
+    textureVal: {fileID: 0}
   fadeTweener: {fileID: 0}
+  _oldDuration: 1
+  _oldTargetAlpha: 1
+  _oldWaitUntilFinished: 1
+  _oldFadeColor: {r: 0, g: 0, b: 0, a: 1}
+  _oldFadeTexture: {fileID: 0}
 --- !u!114 &1815667994
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -10924,10 +11308,12 @@ MonoBehaviour:
   _duration:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 1815667976}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 1815667976}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: 1
     floatRef: {fileID: 0}
+    floatVal: 0
   durationOLD: 0
 --- !u!114 &1815667995
 MonoBehaviour:
@@ -10948,68 +11334,80 @@ MonoBehaviour:
     trackGroup: 2
     track:
       backingVarRef:
-        itemId: 0
-        owningFc: {fileID: 0}
-        owningVsa: {fileID: 0}
+        itemId: 2
+        owningSource: {fileID: 1815667976}
+        legacyOwningFc: {fileID: 0}
+        legacyOwningVsa: {fileID: 0}
       value: 0
-      integerRef: {fileID: 1815667996}
+      integerRef: {fileID: 0}
+      integerVal: 0
     introClip:
       backingVarRef:
         itemId: 0
-        owningFc: {fileID: 0}
-        owningVsa: {fileID: 0}
+        owningSource: {fileID: 0}
+        legacyOwningFc: {fileID: 0}
+        legacyOwningVsa: {fileID: 0}
       value: {fileID: 0}
       audioClipRef: {fileID: 0}
     mainClip:
       backingVarRef:
-        itemId: 0
-        owningFc: {fileID: 0}
-        owningVsa: {fileID: 0}
+        itemId: 1
+        owningSource: {fileID: 1815667976}
+        legacyOwningFc: {fileID: 0}
+        legacyOwningVsa: {fileID: 0}
       value: {fileID: 0}
-      audioClipRef: {fileID: 1815667997}
+      audioClipRef: {fileID: 0}
     loop:
       backingVarRef:
         itemId: 0
-        owningFc: {fileID: 0}
-        owningVsa: {fileID: 0}
-      value: 0
+        owningSource: {fileID: 0}
+        legacyOwningFc: {fileID: 0}
+        legacyOwningVsa: {fileID: 0}
+      value: 1
       booleanRef: {fileID: 0}
-      booleanVal: 1
+      booleanVal: 0
     loopStartPoint:
       backingVarRef:
         itemId: 0
-        owningFc: {fileID: 0}
-        owningVsa: {fileID: 0}
+        owningSource: {fileID: 0}
+        legacyOwningFc: {fileID: 0}
+        legacyOwningVsa: {fileID: 0}
       value: 0
       floatRef: {fileID: 0}
+      floatVal: 0
     loopEndPoint:
       backingVarRef:
         itemId: 0
-        owningFc: {fileID: 0}
-        owningVsa: {fileID: 0}
+        owningSource: {fileID: 0}
+        legacyOwningFc: {fileID: 0}
+        legacyOwningVsa: {fileID: 0}
       value: 0
       floatRef: {fileID: 0}
+      floatVal: 0
     oneShot:
       backingVarRef:
         itemId: 0
-        owningFc: {fileID: 0}
-        owningVsa: {fileID: 0}
+        owningSource: {fileID: 0}
+        legacyOwningFc: {fileID: 0}
+        legacyOwningVsa: {fileID: 0}
       value: 0
       booleanRef: {fileID: 0}
       booleanVal: 0
   skipIfAlreadyPlaying:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 0}
-      owningVsa: {fileID: 0}
-    value: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 1
     booleanRef: {fileID: 0}
-    booleanVal: 1
+    booleanVal: 0
   useConfigSO:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 0}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
@@ -11030,6 +11428,7 @@ MonoBehaviour:
   key: bgmTrack
   itemID: 2
   oldItemID: 0
+  _owner: {fileID: 1815667976}
   value: 0
 --- !u!114 &1815667997
 MonoBehaviour:
@@ -11047,7 +11446,32 @@ MonoBehaviour:
   key: bgm
   itemID: 1
   oldItemID: 0
+  _owner: {fileID: 1815667976}
   value: {fileID: 8300000, guid: 8597ca609ff938443a409bcfa81d55c5, type: 3}
+--- !u!114 &1815667998
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1815667972}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3326e6921119d6f4fb53c4243fb91015, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _unityObjOwner: {fileID: 1815667976}
+  _variableManager:
+    _muscariables: []
+    _legacyVariables:
+    - {fileID: 1815667997}
+    - {fileID: 1815667996}
+    _nextValidVarID: 1
+    _isInitted: 1
+  _cachedFlowchart: {fileID: 1815667976}
+  references:
+    version: 2
+    RefIds: []
 --- !u!4 &1832829438
 Transform:
   m_ObjectHideFlags: 0
@@ -11074,3 +11498,4 @@ SceneRoots:
   - {fileID: 1112900353}
   - {fileID: 1535246065}
   - {fileID: 1009440725}
+  - {fileID: 1355339495}

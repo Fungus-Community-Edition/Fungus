@@ -2,13 +2,14 @@ using UnityEngine;
 
 namespace AtMycelia.Hyphlow.Tweening.VScripting
 {
-    [CommandInfo("Animation",
+    [CommandInfo("BI Tween",
         "Scale",
         "Scales a component's transform to a target scale over time.")]
     public class ScaleTransform : BaseTweenCommand
     {
         [Tooltip("The Component with the transform to scale.")]
-        [SerializeField] protected ComponentData _toScale = new ComponentData();
+        [ContentTypeConstraint(typeof(Component), typeof(GameObject))]
+        [SerializeField] protected AnyVariableData _toScale = new AnyVariableData();
         [Tooltip("The target scale to use. Only applies if Tween Relativity is set to Absolute.")]
         [SerializeField] protected Vector3Data _absoluteScale = new Vector3Data();
         [Tooltip("The amount to scale by. Only applies if Tween Relativity is set to Relative.")]
@@ -16,9 +17,31 @@ namespace AtMycelia.Hyphlow.Tweening.VScripting
         [Tooltip("The scale the tween will start at. Only applies if ToFrom is set to From.")]
         [SerializeField] protected Vector3Data _scaleFromValue = new Vector3Data();
 
+        public override void OnEnter()
+        {
+            _targetTransform = GetTargetTransform();
+            base.OnEnter();
+        }
+
+        private Transform _targetTransform;
+
+        private Transform GetTargetTransform()
+        {
+            Transform result = null;
+            if (_toScale.BoxedValue is Component comp && comp != null)
+            {
+                result = comp.transform;
+            }
+            else if (_toScale.BoxedValue is GameObject go && go != null)
+            {
+                result = go.transform;
+            }
+            return result;
+        }
+
         protected override bool AreTargetsValid()
         {
-            bool result = _toScale != null && _toScale.BoxedValue != null;
+            bool result = _targetTransform != null;
             return result;
         }
 
@@ -27,12 +50,13 @@ namespace AtMycelia.Hyphlow.Tweening.VScripting
             _ourTween?.Kill();
             Vector3 startScale = DecideStartScale();
             Vector3 endScale = DecideTargetScale(startScale);
-            Transform tForm = _toScale.Value.transform;
-            tForm.localScale = startScale;
+            _targetTransform.localScale = startScale;
 
-            _ourTween = _tweener.ScaleTo(tForm, endScale, _duration);
+            _ourTween = _tweener.ScaleTo(_targetTransform, endScale, _duration);
             return _ourTween;
         }
+
+        private ITransformTweenAdapter _tweener;
 
         protected virtual Vector3 DecideStartScale()
         {
@@ -44,7 +68,7 @@ namespace AtMycelia.Hyphlow.Tweening.VScripting
             }
             else
             {
-                startScale = _toScale.Value.transform.localScale;
+                startScale = _targetTransform.localScale;
             }
 
             return startScale;
@@ -74,13 +98,13 @@ namespace AtMycelia.Hyphlow.Tweening.VScripting
 
         protected override void StopAllTweens()
         {
-            if (_toScale == null || _toScale.Value == null)
+            if (_toScale == null || _targetTransform == null)
             {
                 return;
             }
 
             var manager = TweenManager.S;
-            manager.KillAllOn(_toScale.Value);
+            manager.KillAllOn(_targetTransform);
         }
 
         protected override void ValidateTweener()
@@ -96,8 +120,6 @@ namespace AtMycelia.Hyphlow.Tweening.VScripting
             _tweener = _tweenerSO as ITransformTweenAdapter;
         }
 
-        private ITransformTweenAdapter _tweener;
-
         public override Color GetButtonColor()
         {
             return CommandColors.Animation;
@@ -105,7 +127,8 @@ namespace AtMycelia.Hyphlow.Tweening.VScripting
 
         public override string GetSummary()
         {
-            bool weHaveTarget = _toScale != null && _toScale.Value != null;
+            _targetTransform = GetTargetTransform();
+            bool weHaveTarget = _targetTransform != null;
             if (!weHaveTarget)
             {
                 return "Need a target.";
@@ -118,7 +141,7 @@ namespace AtMycelia.Hyphlow.Tweening.VScripting
             }
             else
             {
-                targetStr = $"{_toScale.Value.name}";
+                targetStr = $"{_targetTransform.name}";
             }
 
             string toFromStr = _startMode.ToString();

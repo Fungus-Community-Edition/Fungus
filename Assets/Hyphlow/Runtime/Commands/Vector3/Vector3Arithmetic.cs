@@ -1,6 +1,7 @@
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
+using UnityEngine.Serialization;
 
 namespace AtMycelia.Hyphlow
 {
@@ -11,11 +12,18 @@ namespace AtMycelia.Hyphlow
                  "Arithmetic",
                  "Vector3 add, sub, mul, div arithmetic")]
     [AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class Vector3Arithmetic : Command
     {
         [SerializeField]
-        protected Vector3Data lhs, rhs, output;
+        [FormerlySerializedAs("lhs")]
+        protected Vector3Data _lhs;
+        [SerializeField]
+        [FormerlySerializedAs("rhs")]
+        protected Vector3Data _rhs;
+        [SerializeField]
+        [ContentTypeConstraint(typeof(Vector3))]
+        protected VariableReference _outputVar;
 
         public enum Operation
         {
@@ -26,38 +34,40 @@ namespace AtMycelia.Hyphlow
         }
 
         [SerializeField]
-        protected Operation operation = Operation.Add;
+        [FormerlySerializedAs("operation")]
+        protected Operation _operation = Operation.Add;
 
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            _variableDataCache.Add(lhs);
-            _variableDataCache.Add(rhs);
-            _variableDataCache.Add(output);
+            _variableDataCache.Add(_lhs);
+            _variableDataCache.Add(_rhs);
         }
 
         public override void OnEnter()
         {
-            Vector3 tmp;
-            switch (operation)
+            Vector3 valToSet;
+            switch (_operation)
             {
                 case Operation.Add:
-                    output.Value = lhs.Value + rhs.Value;
+                    valToSet = _lhs.Value + _rhs.Value;
+                    _outputVar.SetValue(valToSet);
                     break;
                 case Operation.Sub:
-                    output.Value = lhs.Value - rhs.Value;
+                    valToSet = _lhs.Value - _rhs.Value;
+                    _outputVar.SetValue(valToSet);
                     break;
                 case Operation.Mul:
-                    tmp = lhs.Value;
-                    tmp.Scale(rhs.Value);
-                    output.Value = tmp;
+                    valToSet = _lhs.Value;
+                    valToSet.Scale(_rhs.Value);
+                    _outputVar.SetValue(valToSet);
                     break;
                 case Operation.Div:
-                    tmp = lhs.Value;
-                    tmp.Scale(new Vector3(1.0f / rhs.Value.x,
-                        1.0f / rhs.Value.y,
-                        1.0f / rhs.Value.z));
-                    output.Value = tmp;
+                    valToSet = _lhs.Value;
+                    valToSet.Scale(new Vector3(1.0f / _rhs.Value.x,
+                        1.0f / _rhs.Value.y,
+                        1.0f / _rhs.Value.z));
+                    _outputVar.SetValue(valToSet);
                     break;
                 default:
                     break;
@@ -67,14 +77,22 @@ namespace AtMycelia.Hyphlow
 
         public override string GetSummary()
         {
-            if (output.vector3Ref == null)
+            if (_outputVar.Variable == null)
             {
                 return "Error: no output set";
             }
 
-            return operation.ToString() + ": stored in " + output.vector3Ref.Key;
+            string result = $"{_operation} {GetSummaryString(_lhs)} and {GetSummaryString(_rhs)}, " +
+                $"put into {_outputVar.Variable.Key}";
+            return result;
         }
 
+        private static string GetSummaryString(Vector3Data var3Data)
+        {
+            return var3Data.VarRef != null ? 
+                var3Data.VarRef.Key : 
+                var3Data.Value.ToString();
+        }
         public override Color GetButtonColor()
         {
             return CommandColors.Flow;
@@ -82,12 +100,29 @@ namespace AtMycelia.Hyphlow
 
         public override bool HasReference(Variable variable)
         {
-            if (ReferenceEquals(lhs.VarRef, variable) || 
-                ReferenceEquals(rhs.VarRef, variable) || 
-                ReferenceEquals(output.VarRef, variable))
+            if (ReferenceEquals(_lhs.VarRef, variable) || 
+                ReferenceEquals(_rhs.VarRef, variable) || 
+                ReferenceEquals(_outputVar.Variable, variable))
                 return true;
 
             return false;
         }
+
+        public override void ApplyBackwardsCompatibility()
+        {
+            base.ApplyBackwardsCompatibility();
+            if (output != null)
+            {
+                if (output.RepresentingVar)
+                {
+                    _outputVar.Variable = output.VarRef;
+                }
+                output = null;
+            }
+        }
+
+        [SerializeField]
+        [HideInInspector]
+        protected Vector3Data output;
     }
 }

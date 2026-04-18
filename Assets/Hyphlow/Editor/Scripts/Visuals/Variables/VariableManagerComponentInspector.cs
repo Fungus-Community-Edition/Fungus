@@ -111,7 +111,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
         private void OnMigrateClicked()
         {
             VariableManagerComponent component = (VariableManagerComponent)target;
-            component.MigrateFromFlowchart();
+            component.MigrateFromFlowchart(out _);
         }
 
         protected void AddRefreshButton(VisualElement rootElem)

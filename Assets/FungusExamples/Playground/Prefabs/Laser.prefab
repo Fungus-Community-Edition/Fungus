@@ -169,6 +169,11 @@ GameObject:
   - component: {fileID: 114182131449558960}
   - component: {fileID: 114299940920854140}
   - component: {fileID: 96390674517467256}
+  - component: {fileID: 5931047070783665450}
+  - component: {fileID: 4278132626369988641}
+  - component: {fileID: 958645331840734462}
+  - component: {fileID: 4484725498435143672}
+  - component: {fileID: -8952826472531823386}
   m_Layer: 0
   m_Name: Laser
   m_TagString: Laser
@@ -387,19 +392,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a334fe2ffb574b3583ff3b18b4792d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  variableManager:
-    muscariables: []
-    legacyVariables: []
-    nextValidVarID: 1
-    isInitted: 1
+  _varManager: {fileID: 5931047070783665450}
+  legacyVariableManager:
+    _muscariables: []
+    _legacyVariables: []
+    _nextValidVarID: 1
+    _isInitted: 1
   version: 1
-  legacyVariables: []
+  _legacyVariables: []
   _oldMuscariables: []
   description: 
   uiModel:
-    _selectedBlocks: []
-    _selectedCommands: []
-    _owner: {fileID: 0}
+    _selectedBlocks:
+    - {fileID: 114182131449558960}
+    _selectedCommands:
+    - {fileID: -8952826472531823386}
+    _owner: {fileID: 1942691996823588}
     <ScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesExpanded>k__BackingField: 0
@@ -411,7 +419,7 @@ MonoBehaviour:
       y: 0
       width: 0
       height: 0
-    <SelectedCommandsStale>k__BackingField: 0
+    <SelectedCommandsStale>k__BackingField: 1
   stepPause: 0
   colorCommands: 1
   hideComponents: 1
@@ -419,17 +427,22 @@ MonoBehaviour:
   showLineNumbers: 0
   hideCommands: []
   localizationId: 
-  _luaEnvironment: {fileID: 0}
-  luaBindingName: flowchart
   includeInSaves: 1
   saveBlocks: 1
   saveVariables: 1
   loadPriority: 0
   alwaysKeepGuid: 1
-  _blockListCache: []
-  _commands: []
-  nextValidVarID: 1
-  uniqueId: 
+  _blockListCache:
+  - {fileID: 114593477394275294}
+  - {fileID: 114182131449558960}
+  _commands:
+  - {fileID: 114751314740007556}
+  - {fileID: 114299940920854140}
+  - {fileID: 4278132626369988641}
+  - {fileID: 4484725498435143672}
+  - {fileID: -8952826472531823386}
+  nextValidVarID: 3
+  uniqueId: db274a64-69a9-4f64-8ed7-a518474d93a2
   references:
     version: 2
     RefIds: []
@@ -449,16 +462,16 @@ MonoBehaviour:
     serializedVersion: 2
     x: 178
     y: 115
-    width: 120
+    width: 107
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 0
+  itemId: 1
   blockName: New Block
   description: 
   eventHandler: {fileID: 114602407226986924}
   commandList:
-  - {fileID: 0}
+  - {fileID: 4278132626369988641}
   - {fileID: 114751314740007556}
   includeInSaves: 1
   loadPriority: 0
@@ -492,8 +505,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: spawnForce
-  itemID: 0
+  itemID: 4
   oldItemID: 0
+  _owner: {fileID: 114526636883379746}
   value: {x: 0, y: 10}
 --- !u!114 &114751314740007556
 MonoBehaviour:
@@ -512,17 +526,21 @@ MonoBehaviour:
   _targetGameObject:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 0}
-      owningVsa: {fileID: 0}
-    value: {fileID: 0}
+      owningSource: {fileID: 114526636883379746}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 1942691996823588}
     gameObjectRef: {fileID: 0}
-  destroyInXSeconds:
+    gameObjectVal: {fileID: 0}
+  _destroyInXSeconds:
     backingVarRef:
-      itemId: 0
-      owningFc: {fileID: 0}
-      owningVsa: {fileID: 0}
+      itemId: 2
+      owningSource: {fileID: 114526636883379746}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: 0
-    floatRef: {fileID: 114455382144078078}
+    floatRef: {fileID: 0}
+    floatVal: 0
   targetGameObjectOLD: {fileID: 0}
 --- !u!114 &114455382144078078
 MonoBehaviour:
@@ -538,8 +556,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: destroyDelay
-  itemID: 0
+  itemID: 5
   oldItemID: 0
+  _owner: {fileID: 114526636883379746}
   value: 3
 --- !u!114 &114182131449558960
 MonoBehaviour:
@@ -557,16 +576,18 @@ MonoBehaviour:
     serializedVersion: 2
     x: 181
     y: 189
-    width: 120
+    width: 103
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
   itemId: 3
   blockName: HitEnemy
   description: 
-  eventHandler: {fileID: 0}
+  eventHandler: {fileID: 958645331840734462}
   commandList:
+  - {fileID: 4484725498435143672}
   - {fileID: 114299940920854140}
+  - {fileID: -8952826472531823386}
   includeInSaves: 1
   loadPriority: 0
   suppressAllAutoSelections: 0
@@ -587,11 +608,13 @@ MonoBehaviour:
   messageTarget: 1
   _message:
     backingVarRef:
-      itemId: 0
-      owningFc: {fileID: 0}
-      owningVsa: {fileID: 0}
-    value: 
+      itemId: 3
+      owningSource: {fileID: 114526636883379746}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: EnemyShot
     stringRef: {fileID: 0}
+    stringVal: 
   messageOLD: 
 --- !u!96 &96390674517467256
 TrailRenderer:
@@ -709,3 +732,204 @@ TrailRenderer:
   m_Autodestruct: 0
   m_Emitting: 1
   m_ApplyActiveColorSpace: 0
+--- !u!114 &5931047070783665450
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1942691996823588}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3326e6921119d6f4fb53c4243fb91015, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _unityObjOwner: {fileID: 114526636883379746}
+  _variableManager:
+    _muscariables:
+    - rid: 3688519968672710724
+    - rid: 3688519968672710725
+    - rid: 3688519968672710728
+    _legacyVariables:
+    - {fileID: 114979932131573080}
+    - {fileID: 114455382144078078}
+    _nextValidVarID: 6
+    _isInitted: 1
+  _cachedFlowchart: {fileID: 114526636883379746}
+  references:
+    version: 2
+    RefIds:
+    - rid: 3688519968672710724
+      type: {class: VectorTwoMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        scope: 0
+        key: spawnForce
+        itemID: 1
+        value: {x: 0, y: 10}
+        startValue: {x: 0, y: 0}
+    - rid: 3688519968672710725
+      type: {class: FloatMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        scope: 0
+        key: destroyDelay
+        itemID: 2
+        value: 3
+        startValue: 0
+    - rid: 3688519968672710728
+      type: {class: StringMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        scope: 0
+        key: hitMessage
+        itemID: 3
+        value: EnemyShot
+        startValue: 
+--- !u!114 &4278132626369988641
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1942691996823588}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fdffa55cff4eb6e4583b03e4d1cc1a22, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 5
+  indentLevel: 0
+  _rb:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 114526636883379746}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 50266752063846120}
+    rigidbody2DRef: {fileID: 0}
+    rigidbody2DVal: {fileID: 0}
+  _forceMode: 1
+  _forceFunction: 2
+  _force:
+    backingVarRef:
+      itemId: 1
+      owningSource: {fileID: 114526636883379746}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {x: 0, y: 0}
+    vector2Ref: {fileID: 0}
+    vector2Val: {x: 0, y: 0}
+  _forceScaleFactor:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 114526636883379746}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 1
+    floatRef: {fileID: 0}
+    floatVal: 0
+  _atPosition:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 114526636883379746}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {x: 0, y: 0}
+    vector2Ref: {fileID: 0}
+    vector2Val: {x: 0, y: 0}
+--- !u!114 &958645331840734462
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1942691996823588}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75662d9886485a9478179361e82eb7bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  parentBlock: {fileID: 114182131449558960}
+  suppressBlockAutoSelect: 0
+  _tagFilter:
+    _tagFilter:
+    - backingVarRef:
+        itemId: 0
+        owningSource: {fileID: 0}
+        legacyOwningFc: {fileID: 0}
+        legacyOwningVsa: {fileID: 0}
+      value: Enemy
+      stringRef: {fileID: 0}
+      stringVal: 
+  _toWatch:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 1942691996823588}
+    gameObjectRef: {fileID: 0}
+    gameObjectVal: {fileID: 0}
+  FireOn: 1
+  tagFilter: []
+  _colliderVar:
+    itemId: 0
+    owningSource: {fileID: 0}
+    legacyOwningFc: {fileID: 0}
+    legacyOwningVsa: {fileID: 0}
+  colliderVar: {fileID: 0}
+--- !u!114 &4484725498435143672
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1942691996823588}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fab8abf0343545abbfebd9a7b7b34bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 6
+  indentLevel: 0
+  logType: 0
+  logMessage:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: Laser hit enemy!
+    stringRef: {fileID: 0}
+    stringVal: 
+--- !u!114 &-8952826472531823386
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1942691996823588}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d81be3d7e84da460788dccea95a3313a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 7
+  indentLevel: 0
+  _targetGameObject:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 114526636883379746}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 1942691996823588}
+    gameObjectRef: {fileID: 0}
+    gameObjectVal: {fileID: 0}
+  _destroyInXSeconds:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 114526636883379746}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 0.001
+    floatRef: {fileID: 0}
+    floatVal: 0
+  targetGameObjectOLD: {fileID: 0}

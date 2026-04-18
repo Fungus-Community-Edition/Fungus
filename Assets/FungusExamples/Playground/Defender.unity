@@ -120,6 +120,336 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &44481355
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 44481361}
+  - component: {fileID: 44481360}
+  - component: {fileID: 44481359}
+  - component: {fileID: 44481358}
+  - component: {fileID: 44481357}
+  - component: {fileID: 44481356}
+  - component: {fileID: 44481364}
+  - component: {fileID: 44481363}
+  - component: {fileID: 44481362}
+  m_Layer: 0
+  m_Name: StageAudioHandling
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &44481356
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 44481355}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0a9a0bab5f969b4787bdd171860cabf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 4
+  indentLevel: 0
+  _audioSource:
+    backingVarRef:
+      itemId: 1
+      owningSource: {fileID: 44481359}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 0}
+    audioSourceRef: {fileID: 0}
+  _audioClip:
+    backingVarRef:
+      itemId: 2
+      owningSource: {fileID: 44481359}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 0}
+    audioClipRef: {fileID: 0}
+  _delay:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 0
+    floatRef: {fileID: 0}
+    floatVal: 0
+  _modifySourceLooping: 0
+  _loop: 1
+  _waitUntilFinished: 0
+--- !u!114 &44481357
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 44481355}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2f6487d21a03404cb21b245f0242e79, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  parentBlock: {fileID: 44481358}
+  suppressBlockAutoSelect: 0
+  waitForFrames: 1
+--- !u!114 &44481358
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 44481355}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d3d73aef2cfc4f51abf34ac00241f60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nodeRect:
+    serializedVersion: 2
+    x: 484
+    y: 153
+    width: 60
+    height: 40
+  tint: {r: 1, g: 1, b: 1, a: 1}
+  useCustomTint: 0
+  itemId: 1
+  blockName: Init
+  description: 
+  eventHandler: {fileID: 44481357}
+  commandList:
+  - {fileID: 44481356}
+  includeInSaves: 1
+  loadPriority: 0
+  suppressAllAutoSelections: 1
+--- !u!114 &44481359
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 44481355}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a334fe2ffb574b3583ff3b18b4792d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _varManager: {fileID: 44481360}
+  legacyVariableManager:
+    _muscariables: []
+    _legacyVariables: []
+    _nextValidVarID: 1
+    _isInitted: 0
+  version: 1
+  _legacyVariables: []
+  _oldMuscariables: []
+  _otherSettings: []
+  description: 
+  uiModel:
+    _selectedBlocks: []
+    _selectedCommands: []
+    _owner: {fileID: 44481355}
+    <ScrollPos>k__BackingField: {x: -352, y: 1.6666665}
+    <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
+    <VariablesExpanded>k__BackingField: 0
+    <Zoom>k__BackingField: 0.9
+    <BlockViewHeight>k__BackingField: 231
+    <ScrollViewRect>k__BackingField:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 0
+      height: 0
+    <SelectedCommandsStale>k__BackingField: 1
+  stepPause: 0
+  colorCommands: 1
+  hideComponents: 1
+  saveSelection: 1
+  showLineNumbers: 0
+  hideCommands: []
+  includeInSaves: 1
+  saveBlocks: 1
+  saveVariables: 1
+  loadPriority: 0
+  _alwaysKeepGuid: 1
+  _blockListCache:
+  - {fileID: 44481358}
+  - {fileID: 44481364}
+  _commands:
+  - {fileID: 44481356}
+  - {fileID: 44481362}
+  nextValidVarID: 5
+  uniqueId: d371b404-17d9-47b1-bd30-05ed15579e68
+  references:
+    version: 2
+    RefIds: []
+--- !u!114 &44481360
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 44481355}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3326e6921119d6f4fb53c4243fb91015, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _unityObjOwner: {fileID: 44481359}
+  _variableManager:
+    _muscariables:
+    - rid: 3688519990058680412
+    - rid: 3688519990058680414
+    - rid: 3688519990058680420
+    - rid: 3688519990058680421
+    _legacyVariables: []
+    _nextValidVarID: 5
+    _isInitted: 0
+  _cachedFlowchart: {fileID: 44481359}
+  references:
+    version: 2
+    RefIds:
+    - rid: 3688519990058680412
+      type: {class: AudioSourceMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        scope: 0
+        key: bgmSource
+        itemID: 1
+        value: {fileID: 729111842}
+        startValue: {fileID: 0}
+    - rid: 3688519990058680414
+      type: {class: AudioClipMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        scope: 0
+        key: bgm
+        itemID: 2
+        value: {fileID: 8300000, guid: ea9cfd17eb785574e80afa71e95c4087, type: 3}
+        startValue: {fileID: 0}
+    - rid: 3688519990058680420
+      type: {class: AudioClipMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        scope: 0
+        key: enemyDestructSfx
+        itemID: 3
+        value: {fileID: 8300000, guid: 4e731185c337f974aabfa2e18721f501, type: 3}
+        startValue: {fileID: 0}
+    - rid: 3688519990058680421
+      type: {class: AudioSourceMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        scope: 0
+        key: sfxSource
+        itemID: 4
+        value: {fileID: 939747142}
+        startValue: {fileID: 0}
+--- !u!4 &44481361
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 44481355}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 729111843}
+  - {fileID: 939747143}
+  m_Father: {fileID: 1719210592}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &44481362
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 44481355}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df80133ea3a5f49419fc95b13d2eae7f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 3
+  indentLevel: 0
+  _audioSource:
+    backingVarRef:
+      itemId: 4
+      owningSource: {fileID: 44481359}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 0}
+    audioSourceRef: {fileID: 0}
+  _audioClip:
+    backingVarRef:
+      itemId: 3
+      owningSource: {fileID: 44481359}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 0}
+    audioClipRef: {fileID: 0}
+  _volumeScale:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 0.5
+    floatRef: {fileID: 0}
+    floatVal: 0
+  _waitUntilFinished: 0
+--- !u!114 &44481363
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 44481355}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d7d417659cd54a6787f70f763950c34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  parentBlock: {fileID: 44481364}
+  suppressBlockAutoSelect: 0
+  message: EnemyDestroyed
+--- !u!114 &44481364
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 44481355}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d3d73aef2cfc4f51abf34ac00241f60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nodeRect:
+    serializedVersion: 2
+    x: 474
+    y: 237
+    width: 170
+    height: 40
+  tint: {r: 1, g: 1, b: 1, a: 1}
+  useCustomTint: 0
+  itemId: 2
+  blockName: OnEnemyDestroyed
+  description: 
+  eventHandler: {fileID: 44481363}
+  commandList:
+  - {fileID: 44481362}
+  includeInSaves: 1
+  loadPriority: 0
+  suppressAllAutoSelections: 1
 --- !u!1 &69847124
 GameObject:
   m_ObjectHideFlags: 0
@@ -214,12 +544,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 69847124}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1719210592}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &119136498
 GameObject:
@@ -322,19 +652,19 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 0}
+    m_TransformParent: {fileID: 789507305}
     m_Modifications:
-    - target: {fileID: 4839343606506310, guid: 5192b1b391d8cd54f84d39d06a4a3dc8, type: 3}
-      propertyPath: m_RootOrder
-      value: 1
+    - target: {fileID: 1643320542487702, guid: 5192b1b391d8cd54f84d39d06a4a3dc8, type: 3}
+      propertyPath: m_Name
+      value: Spawner
       objectReference: {fileID: 0}
     - target: {fileID: 4839343606506310, guid: 5192b1b391d8cd54f84d39d06a4a3dc8, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.02
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4839343606506310, guid: 5192b1b391d8cd54f84d39d06a4a3dc8, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 6.4
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4839343606506310, guid: 5192b1b391d8cd54f84d39d06a4a3dc8, type: 3}
       propertyPath: m_LocalPosition.z
@@ -346,85 +676,135 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4839343606506310, guid: 5192b1b391d8cd54f84d39d06a4a3dc8, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 4839343606506310, guid: 5192b1b391d8cd54f84d39d06a4a3dc8, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 4839343606506310, guid: 5192b1b391d8cd54f84d39d06a4a3dc8, type: 3}
       propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4839343606506310, guid: 5192b1b391d8cd54f84d39d06a4a3dc8, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4839343606506310, guid: 5192b1b391d8cd54f84d39d06a4a3dc8, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4839343606506310, guid: 5192b1b391d8cd54f84d39d06a4a3dc8, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114094183539183980, guid: 5192b1b391d8cd54f84d39d06a4a3dc8,
         type: 3}
-      propertyPath: selectedBlocks.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 114094183539183980, guid: 5192b1b391d8cd54f84d39d06a4a3dc8,
-        type: 3}
-      propertyPath: selectedCommands.Array.size
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114094183539183980, guid: 5192b1b391d8cd54f84d39d06a4a3dc8,
-        type: 3}
-      propertyPath: 'selectedBlocks.Array.data[0]'
+      propertyPath: 'uiModel._selectedCommands.Array.data[0]'
       value: 
-      objectReference: {fileID: 1124881222}
-    - target: {fileID: 114094183539183980, guid: 5192b1b391d8cd54f84d39d06a4a3dc8,
-        type: 3}
-      propertyPath: 'selectedCommands.Array.data[0]'
-      value: 
-      objectReference: {fileID: 1398202838}
-    - target: {fileID: 114158188752211888, guid: 5192b1b391d8cd54f84d39d06a4a3dc8,
-        type: 3}
-      propertyPath: nodeRect.x
-      value: 211
-      objectReference: {fileID: 0}
-    - target: {fileID: 114158188752211888, guid: 5192b1b391d8cd54f84d39d06a4a3dc8,
-        type: 3}
-      propertyPath: nodeRect.y
-      value: 137
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1398202850}
     - target: {fileID: 114158188752211888, guid: 5192b1b391d8cd54f84d39d06a4a3dc8,
         type: 3}
       propertyPath: commandList.Array.size
-      value: 8
+      value: 10
       objectReference: {fileID: 0}
+    - target: {fileID: 114158188752211888, guid: 5192b1b391d8cd54f84d39d06a4a3dc8,
+        type: 3}
+      propertyPath: 'commandList.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1398202851}
+    - target: {fileID: 114158188752211888, guid: 5192b1b391d8cd54f84d39d06a4a3dc8,
+        type: 3}
+      propertyPath: 'commandList.Array.data[2]'
+      value: 
+      objectReference: {fileID: 1398202844}
+    - target: {fileID: 114158188752211888, guid: 5192b1b391d8cd54f84d39d06a4a3dc8,
+        type: 3}
+      propertyPath: 'commandList.Array.data[3]'
+      value: 
+      objectReference: {fileID: 1398202841}
     - target: {fileID: 114158188752211888, guid: 5192b1b391d8cd54f84d39d06a4a3dc8,
         type: 3}
       propertyPath: 'commandList.Array.data[4]'
       value: 
-      objectReference: {fileID: 1398202838}
+      objectReference: {fileID: 1398202840}
     - target: {fileID: 114158188752211888, guid: 5192b1b391d8cd54f84d39d06a4a3dc8,
         type: 3}
       propertyPath: 'commandList.Array.data[5]'
       value: 
-      objectReference: {fileID: 1398202840}
+      objectReference: {fileID: 1398202833}
     - target: {fileID: 114158188752211888, guid: 5192b1b391d8cd54f84d39d06a4a3dc8,
         type: 3}
       propertyPath: 'commandList.Array.data[6]'
       value: 
-      objectReference: {fileID: 1124881218}
+      objectReference: {fileID: 1398202835}
     - target: {fileID: 114158188752211888, guid: 5192b1b391d8cd54f84d39d06a4a3dc8,
         type: 3}
       propertyPath: 'commandList.Array.data[7]'
       value: 
-      objectReference: {fileID: 1398202839}
+      objectReference: {fileID: 1398202843}
     - target: {fileID: 114158188752211888, guid: 5192b1b391d8cd54f84d39d06a4a3dc8,
         type: 3}
       propertyPath: 'commandList.Array.data[8]'
       value: 
-      objectReference: {fileID: 1398202839}
-    m_RemovedComponents:
-    - {fileID: 114170397803954806, guid: 5192b1b391d8cd54f84d39d06a4a3dc8, type: 3}
+      objectReference: {fileID: 1398202842}
+    - target: {fileID: 114158188752211888, guid: 5192b1b391d8cd54f84d39d06a4a3dc8,
+        type: 3}
+      propertyPath: 'commandList.Array.data[9]'
+      value: 
+      objectReference: {fileID: 1398202850}
+    - target: {fileID: 114186534075702092, guid: 5192b1b391d8cd54f84d39d06a4a3dc8,
+        type: 3}
+      propertyPath: indentLevel
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114197543733484370, guid: 5192b1b391d8cd54f84d39d06a4a3dc8,
+        type: 3}
+      propertyPath: indentLevel
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114222629582179790, guid: 5192b1b391d8cd54f84d39d06a4a3dc8,
+        type: 3}
+      propertyPath: indentLevel
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114533871774847328, guid: 5192b1b391d8cd54f84d39d06a4a3dc8,
+        type: 3}
+      propertyPath: indentLevel
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114536672983551206, guid: 5192b1b391d8cd54f84d39d06a4a3dc8,
+        type: 3}
+      propertyPath: indentLevel
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114845356377412462, guid: 5192b1b391d8cd54f84d39d06a4a3dc8,
+        type: 3}
+      propertyPath: indentLevel
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3169451157478701340, guid: 5192b1b391d8cd54f84d39d06a4a3dc8,
+        type: 3}
+      propertyPath: indentLevel
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5482640307690825514, guid: 5192b1b391d8cd54f84d39d06a4a3dc8,
+        type: 3}
+      propertyPath: managedReferences[3688519964252438532].value.y
+      value: 12
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 1643320542487702, guid: 5192b1b391d8cd54f84d39d06a4a3dc8,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1398202838}
+      addedObject: {fileID: 1398202851}
+    - targetCorrespondingSourceObject: {fileID: 1643320542487702, guid: 5192b1b391d8cd54f84d39d06a4a3dc8,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1398202850}
   m_SourcePrefab: {fileID: 100100000, guid: 5192b1b391d8cd54f84d39d06a4a3dc8, type: 3}
 --- !u!1 &435850186
 GameObject:
@@ -527,11 +907,11 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 0}
+    m_TransformParent: {fileID: 789507305}
     m_Modifications:
-    - target: {fileID: 4038790522185248, guid: 5db9b59ebaddb664eac17f8dd52f454a, type: 3}
-      propertyPath: m_RootOrder
-      value: 4
+    - target: {fileID: 1380797001910276, guid: 5db9b59ebaddb664eac17f8dd52f454a, type: 3}
+      propertyPath: m_Name
+      value: Cannon
       objectReference: {fileID: 0}
     - target: {fileID: 4038790522185248, guid: 5db9b59ebaddb664eac17f8dd52f454a, type: 3}
       propertyPath: m_LocalPosition.x
@@ -551,117 +931,233 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4038790522185248, guid: 5db9b59ebaddb664eac17f8dd52f454a, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 4038790522185248, guid: 5db9b59ebaddb664eac17f8dd52f454a, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 4038790522185248, guid: 5db9b59ebaddb664eac17f8dd52f454a, type: 3}
       propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4038790522185248, guid: 5db9b59ebaddb664eac17f8dd52f454a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4038790522185248, guid: 5db9b59ebaddb664eac17f8dd52f454a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4038790522185248, guid: 5db9b59ebaddb664eac17f8dd52f454a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114116014992790474, guid: 5db9b59ebaddb664eac17f8dd52f454a,
         type: 3}
-      propertyPath: selectedBlocks.Array.size
+      propertyPath: _commands.Array.size
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 114116014992790474, guid: 5db9b59ebaddb664eac17f8dd52f454a,
+        type: 3}
+      propertyPath: '_commands.Array.data[14]'
+      value: 
+      objectReference: {fileID: 1624045305}
+    - target: {fileID: 5874667703830646828, guid: 5db9b59ebaddb664eac17f8dd52f454a,
+        type: 3}
+      propertyPath: nextValidVarID
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5874667703830646828, guid: 5db9b59ebaddb664eac17f8dd52f454a,
+        type: 3}
+      propertyPath: _commands.Array.size
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 114116014992790474, guid: 5db9b59ebaddb664eac17f8dd52f454a,
+    - target: {fileID: 5874667703830646828, guid: 5db9b59ebaddb664eac17f8dd52f454a,
         type: 3}
-      propertyPath: selectedCommands.Array.size
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114116014992790474, guid: 5db9b59ebaddb664eac17f8dd52f454a,
-        type: 3}
-      propertyPath: 'selectedBlocks.Array.data[0]'
+      propertyPath: '_commands.Array.data[0]'
       value: 
-      objectReference: {fileID: 1624045260}
-    - target: {fileID: 114116014992790474, guid: 5db9b59ebaddb664eac17f8dd52f454a,
-        type: 3}
-      propertyPath: 'selectedCommands.Array.data[0]'
-      value: 
-      objectReference: {fileID: 1624045238}
-    - target: {fileID: 114499702294427518, guid: 5db9b59ebaddb664eac17f8dd52f454a,
-        type: 3}
-      propertyPath: value
-      value: 0.4
-      objectReference: {fileID: 0}
-    - target: {fileID: 114567745504451066, guid: 5db9b59ebaddb664eac17f8dd52f454a,
-        type: 3}
-      propertyPath: nodeRect.x
-      value: 277
-      objectReference: {fileID: 0}
-    - target: {fileID: 114567745504451066, guid: 5db9b59ebaddb664eac17f8dd52f454a,
-        type: 3}
-      propertyPath: nodeRect.y
-      value: 210
-      objectReference: {fileID: 0}
-    - target: {fileID: 114980758164341790, guid: 5db9b59ebaddb664eac17f8dd52f454a,
-        type: 3}
-      propertyPath: commandList.Array.size
-      value: 8
-      objectReference: {fileID: 0}
-    - target: {fileID: 114980758164341790, guid: 5db9b59ebaddb664eac17f8dd52f454a,
-        type: 3}
-      propertyPath: 'commandList.Array.data[2]'
-      value: 
-      objectReference: {fileID: 1624045237}
-    - target: {fileID: 114980758164341790, guid: 5db9b59ebaddb664eac17f8dd52f454a,
-        type: 3}
-      propertyPath: 'commandList.Array.data[3]'
-      value: 
-      objectReference: {fileID: 1624045238}
-    - target: {fileID: 114980758164341790, guid: 5db9b59ebaddb664eac17f8dd52f454a,
-        type: 3}
-      propertyPath: 'commandList.Array.data[4]'
-      value: 
-      objectReference: {fileID: 1624045258}
-    - target: {fileID: 114980758164341790, guid: 5db9b59ebaddb664eac17f8dd52f454a,
-        type: 3}
-      propertyPath: 'commandList.Array.data[5]'
-      value: 
-      objectReference: {fileID: 1624045252}
-    - target: {fileID: 114980758164341790, guid: 5db9b59ebaddb664eac17f8dd52f454a,
-        type: 3}
-      propertyPath: 'commandList.Array.data[6]'
-      value: 
-      objectReference: {fileID: 1624045250}
-    - target: {fileID: 114980758164341790, guid: 5db9b59ebaddb664eac17f8dd52f454a,
-        type: 3}
-      propertyPath: 'commandList.Array.data[7]'
-      value: 
-      objectReference: {fileID: 1624045253}
-    - target: {fileID: 114980758164341790, guid: 5db9b59ebaddb664eac17f8dd52f454a,
-        type: 3}
-      propertyPath: 'commandList.Array.data[8]'
-      value: 
-      objectReference: {fileID: 1624045253}
-    - target: {fileID: 114980758164341790, guid: 5db9b59ebaddb664eac17f8dd52f454a,
-        type: 3}
-      propertyPath: 'commandList.Array.data[9]'
-      value: 
-      objectReference: {fileID: 1624045253}
-    - target: {fileID: 114987963891140428, guid: 5db9b59ebaddb664eac17f8dd52f454a,
-        type: 3}
-      propertyPath: value
-      value: 25
-      objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 114797075761082608, guid: 5db9b59ebaddb664eac17f8dd52f454a, type: 3}
-    - {fileID: 114611752584720384, guid: 5db9b59ebaddb664eac17f8dd52f454a, type: 3}
-    - {fileID: 114588250137994584, guid: 5db9b59ebaddb664eac17f8dd52f454a, type: 3}
+      objectReference: {fileID: 849423539}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1380797001910276, guid: 5db9b59ebaddb664eac17f8dd52f454a,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1624045237}
-    - targetCorrespondingSourceObject: {fileID: 1380797001910276, guid: 5db9b59ebaddb664eac17f8dd52f454a,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1624045238}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5db9b59ebaddb664eac17f8dd52f454a, type: 3}
+--- !u!1 &729111841
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 729111843}
+  - component: {fileID: 729111842}
+  m_Layer: 0
+  m_Name: BgmPlayer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!82 &729111842
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 729111841}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 8300000, guid: ea9cfd17eb785574e80afa71e95c4087, type: 3}
+  m_PlayOnAwake: 0
+  m_Volume: 0.5
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!4 &729111843
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 729111841}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 44481361}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &789507304
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 789507305}
+  m_Layer: 0
+  m_Name: Actors
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &789507305
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 789507304}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1398202861}
+  - {fileID: 1624045273}
+  - {fileID: 1598276107}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &849423539 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6129903370379657775, guid: 5db9b59ebaddb664eac17f8dd52f454a,
+    type: 3}
+  m_PrefabInstance: {fileID: 545255773}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df80133ea3a5f49419fc95b13d2eae7f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &884575236
 GameObject:
   m_ObjectHideFlags: 0
@@ -675,7 +1171,7 @@ GameObject:
   - component: {fileID: 884575239}
   - component: {fileID: 884575238}
   m_Layer: 5
-  m_Name: Canvas
+  m_Name: Ui
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -766,30 +1262,135 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
---- !u!114 &1124881218 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 114533871774847328, guid: 5192b1b391d8cd54f84d39d06a4a3dc8,
-    type: 3}
-  m_PrefabInstance: {fileID: 370424553}
+--- !u!1 &939747141
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1398202832}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bb3e86f556e074b84af1cc7eb8f8e5e7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1124881222 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 114158188752211888, guid: 5192b1b391d8cd54f84d39d06a4a3dc8,
-    type: 3}
-  m_PrefabInstance: {fileID: 370424553}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 939747143}
+  - component: {fileID: 939747142}
+  m_Layer: 0
+  m_Name: SfxPlayer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!82 &939747142
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1398202832}
+  m_GameObject: {fileID: 939747141}
   m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3d3d73aef2cfc4f51abf34ac00241f60, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 0.5
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!4 &939747143
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 939747141}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 44481361}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1234006340
 GameObject:
   m_ObjectHideFlags: 0
@@ -910,7 +1511,6 @@ GameObject:
   - component: {fileID: 1267026881}
   - component: {fileID: 1267026867}
   - component: {fileID: 1267026866}
-  - component: {fileID: 1267026865}
   - component: {fileID: 1267026887}
   - component: {fileID: 1267026886}
   - component: {fileID: 1267026885}
@@ -921,10 +1521,16 @@ GameObject:
   - component: {fileID: 1267026876}
   - component: {fileID: 1267026879}
   - component: {fileID: 1267026877}
-  - component: {fileID: 1267026893}
   - component: {fileID: 1267026892}
-  - component: {fileID: 1267026895}
   - component: {fileID: 1267026894}
+  - component: {fileID: 1267026896}
+  - component: {fileID: 1267026898}
+  - component: {fileID: 1267026902}
+  - component: {fileID: 1267026901}
+  - component: {fileID: 1267026900}
+  - component: {fileID: 1267026899}
+  - component: {fileID: 1267026903}
+  - component: {fileID: 1267026904}
   m_Layer: 5
   m_Name: GameRules
   m_TagString: Untagged
@@ -940,29 +1546,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1267026863}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1719210592}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1267026865
-MonoBehaviour:
-  m_ObjectHideFlags: 2
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1267026863}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea6e8f632db87477eb750446b28d73a3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemId: 12
-  indentLevel: 1
-  commenterName: 
-  commentText: game over it, show ui, pause and t
 --- !u!114 &1267026866
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -976,7 +1566,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemId: 11
-  indentLevel: 0
+  indentLevel: 1
 --- !u!114 &1267026867
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -991,146 +1581,218 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 10
   indentLevel: 0
-  anyOrAllConditions: 0
+  anyOrAllConditions: 1
   conditions:
-  - compareOperator: 0
+  - compareOperator: 3
     anyVar:
       varRef:
-        itemId: 0
-        owningFc: {fileID: 0}
-        owningVsa: {fileID: 0}
+        itemId: 4
+        owningSource: {fileID: 1267026880}
+        legacyOwningFc: {fileID: 0}
+        legacyOwningVsa: {fileID: 0}
       data:
         backingVarRef:
           itemId: 0
-          owningFc: {fileID: 0}
-          owningVsa: {fileID: 0}
+          owningSource: {fileID: 0}
+          legacyOwningFc: {fileID: 0}
+          legacyOwningVsa: {fileID: 0}
         data:
-          rid: -2
+          rid: 3688519988602208426
+      variable: {fileID: 0}
+  - compareOperator: 0
+    anyVar:
+      varRef:
+        itemId: 13
+        owningSource: {fileID: 1267026880}
+        legacyOwningFc: {fileID: 0}
+        legacyOwningVsa: {fileID: 0}
+      data:
+        backingVarRef:
+          itemId: 0
+          owningSource: {fileID: 0}
+          legacyOwningFc: {fileID: 0}
+          legacyOwningVsa: {fileID: 0}
+        data:
+          rid: 3688519988949025647
+      variable: {fileID: 0}
   compareOperator: 0
   anyVar:
     varRef:
       itemId: 0
-      owningFc: {fileID: 1267026880}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     data:
       backingVarRef:
         itemId: 0
-        owningFc: {fileID: 0}
-        owningVsa: {fileID: 0}
+        owningSource: {fileID: 0}
+        legacyOwningFc: {fileID: 0}
+        legacyOwningVsa: {fileID: 0}
       data:
         rid: -2
-  variable: {fileID: 1267026869}
+    variable: {fileID: 0}
+  variable: {fileID: 0}
   booleanData:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 0}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
   integerData:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 0}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: 0
     integerRef: {fileID: 0}
+    integerVal: 0
   floatData:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 0}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: 0
     floatRef: {fileID: 0}
+    floatVal: 0
   stringData:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 0}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
+    stringVal: 
   animatorData:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 0}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     animatorRef: {fileID: 0}
+    animatorVal: {fileID: 0}
   audioSourceData:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 0}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     audioSourceRef: {fileID: 0}
   colorData:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 0}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: {r: 0, g: 0, b: 0, a: 0}
     colorRef: {fileID: 0}
+    colorVal: {r: 0, g: 0, b: 0, a: 0}
   gameObjectData:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 0}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     gameObjectRef: {fileID: 0}
+    gameObjectVal: {fileID: 0}
   materialData:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 0}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     materialRef: {fileID: 0}
+    materialVal: {fileID: 0}
   objectData:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 0}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     objectRef: {fileID: 0}
+    objectVal: {fileID: 0}
   spriteData:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 0}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     spriteRef: {fileID: 0}
+    spriteVal: {fileID: 0}
   textureData:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 0}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     textureRef: {fileID: 0}
+    textureVal: {fileID: 0}
   transformData:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 0}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     transformRef: {fileID: 0}
+    transformVal: {fileID: 0}
   vector2Data:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 0}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: {x: 0, y: 0}
     vector2Ref: {fileID: 0}
+    vector2Val: {x: 0, y: 0}
   vector3Data:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 0}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: {x: 0, y: 0, z: 0}
     vector3Ref: {fileID: 0}
+    vector3Val: {x: 0, y: 0, z: 0}
   references:
     version: 2
     RefIds:
     - rid: -2
       type: {class: , ns: , asm: }
+    - rid: 3688519988602208426
+      type: {class: IntegerData, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        backingVarRef:
+          itemId: 0
+          owningSource: {fileID: 0}
+          legacyOwningFc: {fileID: 0}
+          legacyOwningVsa: {fileID: 0}
+        value: 0
+        integerRef: {fileID: 0}
+        integerVal: 0
+    - rid: 3688519988949025647
+      type: {class: BooleanData, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        backingVarRef:
+          itemId: 0
+          owningSource: {fileID: 0}
+          legacyOwningFc: {fileID: 0}
+          legacyOwningVsa: {fileID: 0}
+        value: 0
+        booleanRef: {fileID: 0}
+        booleanVal: 0
 --- !u!114 &1267026868
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1145,29 +1807,54 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 6
   indentLevel: 0
-  varToSet:
-    itemId: 0
-    owningFc: {fileID: 0}
-    owningVsa: {fileID: 0}
-  setOperator: 0
-  anyVar:
+  _setOperator: 0
+  _anyVar:
     varRef:
-      itemId: 0
-      owningFc: {fileID: 1267026880}
-      owningVsa: {fileID: 0}
+      itemId: 2
+      owningSource: {fileID: 1267026880}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     data:
       backingVarRef:
         itemId: 0
-        owningFc: {fileID: 1267026880}
-        owningVsa: {fileID: 0}
+        owningSource: {fileID: 1267026880}
+        legacyOwningFc: {fileID: 0}
+        legacyOwningVsa: {fileID: 0}
+      data:
+        rid: 3688519963393917792
+    variable: {fileID: 0}
+  _oldVariable: {fileID: 0}
+  _oldAnyVar:
+    varRef:
+      itemId: 0
+      owningSource: {fileID: 1267026880}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    data:
+      backingVarRef:
+        itemId: 0
+        owningSource: {fileID: 0}
+        legacyOwningFc: {fileID: 1267026880}
+        legacyOwningVsa: {fileID: 0}
       data:
         rid: -2
-  variable: {fileID: 0}
+    variable: {fileID: 0}
   references:
     version: 2
     RefIds:
     - rid: -2
       type: {class: , ns: , asm: }
+    - rid: 3688519963393917792
+      type: {class: StringData, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        backingVarRef:
+          itemId: 0
+          owningSource: {fileID: 0}
+          legacyOwningFc: {fileID: 0}
+          legacyOwningVsa: {fileID: 0}
+        value: 'Score: {$score}'
+        stringRef: {fileID: 0}
+        stringVal: 
 --- !u!114 &1267026869
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1184,6 +1871,7 @@ MonoBehaviour:
   key: hp
   itemID: 4
   oldItemID: 0
+  _owner: {fileID: 1267026880}
   value: 3
 --- !u!114 &1267026870
 MonoBehaviour:
@@ -1201,6 +1889,7 @@ MonoBehaviour:
   key: score
   itemID: 3
   oldItemID: 0
+  _owner: {fileID: 1267026880}
   value: 0
 --- !u!114 &1267026871
 MonoBehaviour:
@@ -1216,29 +1905,54 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 5
   indentLevel: 0
-  varToSet:
-    itemId: 0
-    owningFc: {fileID: 0}
-    owningVsa: {fileID: 0}
-  setOperator: 0
-  anyVar:
+  _setOperator: 0
+  _anyVar:
     varRef:
-      itemId: 0
-      owningFc: {fileID: 1267026880}
-      owningVsa: {fileID: 0}
+      itemId: 1
+      owningSource: {fileID: 1267026880}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     data:
       backingVarRef:
         itemId: 0
-        owningFc: {fileID: 1267026880}
-        owningVsa: {fileID: 0}
+        owningSource: {fileID: 1267026880}
+        legacyOwningFc: {fileID: 0}
+        legacyOwningVsa: {fileID: 0}
+      data:
+        rid: 3688519963393917791
+    variable: {fileID: 0}
+  _oldVariable: {fileID: 0}
+  _oldAnyVar:
+    varRef:
+      itemId: 0
+      owningSource: {fileID: 1267026880}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    data:
+      backingVarRef:
+        itemId: 0
+        owningSource: {fileID: 0}
+        legacyOwningFc: {fileID: 1267026880}
+        legacyOwningVsa: {fileID: 0}
       data:
         rid: -2
-  variable: {fileID: 0}
+    variable: {fileID: 0}
   references:
     version: 2
     RefIds:
     - rid: -2
       type: {class: , ns: , asm: }
+    - rid: 3688519963393917791
+      type: {class: StringData, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        backingVarRef:
+          itemId: 0
+          owningSource: {fileID: 0}
+          legacyOwningFc: {fileID: 0}
+          legacyOwningVsa: {fileID: 0}
+        value: 'Health: {$hp}'
+        stringRef: {fileID: 0}
+        stringVal: 
 --- !u!114 &1267026872
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1255,6 +1969,7 @@ MonoBehaviour:
   key: scoreString
   itemID: 2
   oldItemID: 0
+  _owner: {fileID: 1267026880}
   value: 
 --- !u!114 &1267026873
 MonoBehaviour:
@@ -1270,22 +1985,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 4
   indentLevel: 0
-  targetTextObject:
+  _targetTextObject:
     backingVarRef:
-      itemId: 0
-      owningFc: {fileID: 1267026880}
-      owningVsa: {fileID: 0}
+      itemId: 9
+      owningSource: {fileID: 1267026880}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     gameObjectRef: {fileID: 0}
+    gameObjectVal: {fileID: 0}
   text:
     backingVarRef:
-      itemId: 0
-      owningFc: {fileID: 1267026880}
-      owningVsa: {fileID: 0}
+      itemId: 2
+      owningSource: {fileID: 1267026880}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: 
-    stringRef: {fileID: 1267026872}
+    stringRef: {fileID: 0}
+    stringVal: 
   description: 
-  _textObjectObsolete: {fileID: 0}
+  targetTextObject: {fileID: 0}
 --- !u!114 &1267026874
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1302,6 +2021,7 @@ MonoBehaviour:
   key: healthString
   itemID: 1
   oldItemID: 0
+  _owner: {fileID: 1267026880}
   value: 
 --- !u!114 &1267026875
 MonoBehaviour:
@@ -1317,22 +2037,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 3
   indentLevel: 0
-  targetTextObject:
+  _targetTextObject:
     backingVarRef:
-      itemId: 0
-      owningFc: {fileID: 1267026880}
-      owningVsa: {fileID: 0}
+      itemId: 8
+      owningSource: {fileID: 1267026880}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     gameObjectRef: {fileID: 0}
+    gameObjectVal: {fileID: 0}
   text:
     backingVarRef:
-      itemId: 0
-      owningFc: {fileID: 1267026880}
-      owningVsa: {fileID: 0}
+      itemId: 1
+      owningSource: {fileID: 1267026880}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: 
-    stringRef: {fileID: 1267026874}
+    stringRef: {fileID: 0}
+    stringVal: 
   description: 
-  _textObjectObsolete: {fileID: 0}
+  targetTextObject: {fileID: 0}
 --- !u!114 &1267026876
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1364,6 +2088,7 @@ MonoBehaviour:
   key: gameOverString
   itemID: 5
   oldItemID: 0
+  _owner: {fileID: 1267026880}
   value: 
 --- !u!114 &1267026878
 MonoBehaviour:
@@ -1379,9 +2104,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeRect:
     serializedVersion: 2
-    x: 263
-    y: 186
-    width: 126
+    x: 372
+    y: 183
+    width: 128
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
@@ -1412,22 +2137,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 19
   indentLevel: 0
-  targetTextObject:
+  _targetTextObject:
     backingVarRef:
-      itemId: 0
-      owningFc: {fileID: 1267026880}
-      owningVsa: {fileID: 0}
+      itemId: 10
+      owningSource: {fileID: 1267026880}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     gameObjectRef: {fileID: 0}
+    gameObjectVal: {fileID: 0}
   text:
     backingVarRef:
-      itemId: 0
-      owningFc: {fileID: 1267026880}
-      owningVsa: {fileID: 0}
+      itemId: 5
+      owningSource: {fileID: 1267026880}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: 
-    stringRef: {fileID: 1267026877}
+    stringRef: {fileID: 0}
+    stringVal: 
   description: 
-  _textObjectObsolete: {fileID: 0}
+  targetTextObject: {fileID: 0}
 --- !u!114 &1267026880
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1440,45 +2169,73 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a334fe2ffb574b3583ff3b18b4792d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _varManager: {fileID: 1267026896}
+  legacyVariableManager:
+    _muscariables: []
+    _legacyVariables: []
+    _nextValidVarID: 1
+    _isInitted: 0
+  version: 1
+  _legacyVariables: []
+  _oldMuscariables: []
+  _otherSettings: []
+  description: 
   uiModel:
     _selectedBlocks: []
     _selectedCommands: []
-    <ScrollPos>k__BackingField: {x: 0, y: 0}
+    _owner: {fileID: 1267026863}
+    <ScrollPos>k__BackingField: {x: 0, y: -16.558445}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesExpanded>k__BackingField: 0
-    <Zoom>k__BackingField: 1
-    <BlockViewHeight>k__BackingField: 400
+    <Zoom>k__BackingField: 1.0000001
+    <BlockViewHeight>k__BackingField: 231
     <ScrollViewRect>k__BackingField:
       serializedVersion: 2
       x: 0
       y: 0
       width: 0
       height: 0
-    <SelectedCommandsStale>k__BackingField: 0
-  version: 1
-  legacyVariables:
-  - {fileID: 1267026874}
-  - {fileID: 1267026872}
-  - {fileID: 1267026870}
-  - {fileID: 1267026869}
-  - {fileID: 1267026877}
-  muscariables: []
-  description: 
+    <SelectedCommandsStale>k__BackingField: 1
   stepPause: 0
   colorCommands: 1
   hideComponents: 1
   saveSelection: 1
-  localizationId: 
   showLineNumbers: 0
   hideCommands: []
-  _luaEnvironment: {fileID: 0}
-  luaBindingName: flowchart
   includeInSaves: 1
   saveBlocks: 1
   saveVariables: 1
   loadPriority: 0
-  alwaysKeepGuid: 1
-  nextValidVarID: 6
+  _alwaysKeepGuid: 1
+  _blockListCache:
+  - {fileID: 1267026878}
+  - {fileID: 1267026884}
+  - {fileID: 1267026887}
+  - {fileID: 1267026898}
+  _commands:
+  - {fileID: 1267026875}
+  - {fileID: 1267026873}
+  - {fileID: 1267026871}
+  - {fileID: 1267026868}
+  - {fileID: 1267026882}
+  - {fileID: 1267026881}
+  - {fileID: 1267026867}
+  - {fileID: 1267026866}
+  - {fileID: 1267026885}
+  - {fileID: 1267026888}
+  - {fileID: 1267026891}
+  - {fileID: 1267026890}
+  - {fileID: 1267026889}
+  - {fileID: 1267026879}
+  - {fileID: 1267026892}
+  - {fileID: 1267026894}
+  - {fileID: 1267026902}
+  - {fileID: 1267026901}
+  - {fileID: 1267026900}
+  - {fileID: 1267026899}
+  - {fileID: 1267026903}
+  - {fileID: 1267026904}
+  nextValidVarID: 13
   uniqueId: 39ec7136-d49d-4a28-b4c6-fce44eeac914
   references:
     version: 2
@@ -1496,18 +2253,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemId: 9
-  indentLevel: 0
+  indentLevel: 1
   targetFlowchart: {fileID: 0}
   targetBlock: {fileID: 1267026878}
   startLabel:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 0}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 1267026880}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
-  startIndex: 0
+    stringVal: 
+  startIndex:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 1267026880}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 0
+    integerRef: {fileID: 0}
+    integerVal: 0
   callMode: 1
+  targetBlockId: 1
+  _oldStartIndex: -1
 --- !u!114 &1267026882
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1521,30 +2290,55 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemId: 8
-  indentLevel: 0
-  varToSet:
-    itemId: 0
-    owningFc: {fileID: 0}
-    owningVsa: {fileID: 0}
-  setOperator: 3
-  anyVar:
+  indentLevel: 1
+  _setOperator: 3
+  _anyVar:
     varRef:
       itemId: 4
-      owningFc: {fileID: 1267026880}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 1267026880}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     data:
       backingVarRef:
         itemId: 0
-        owningFc: {fileID: 1267026880}
-        owningVsa: {fileID: 0}
+        owningSource: {fileID: 1267026880}
+        legacyOwningFc: {fileID: 0}
+        legacyOwningVsa: {fileID: 0}
+      data:
+        rid: 3688519963393917096
+    variable: {fileID: 0}
+  _oldVariable: {fileID: 0}
+  _oldAnyVar:
+    varRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    data:
+      backingVarRef:
+        itemId: 0
+        owningSource: {fileID: 0}
+        legacyOwningFc: {fileID: 0}
+        legacyOwningVsa: {fileID: 0}
       data:
         rid: -2
-  variable: {fileID: 0}
+    variable: {fileID: 0}
   references:
     version: 2
     RefIds:
     - rid: -2
       type: {class: , ns: , asm: }
+    - rid: 3688519963393917096
+      type: {class: IntegerData, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        backingVarRef:
+          itemId: 0
+          owningSource: {fileID: 0}
+          legacyOwningFc: {fileID: 0}
+          legacyOwningVsa: {fileID: 0}
+        value: 1
+        integerRef: {fileID: 0}
+        integerVal: 0
 --- !u!114 &1267026883
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1575,8 +2369,8 @@ MonoBehaviour:
   nodeRect:
     serializedVersion: 2
     x: 47
-    y: 157
-    width: 162
+    y: 117
+    width: 171
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
@@ -1585,13 +2379,13 @@ MonoBehaviour:
   description: 
   eventHandler: {fileID: 1267026883}
   commandList:
-  - {fileID: 1267026882}
   - {fileID: 1267026867}
-  - {fileID: 1267026865}
-  - {fileID: 1267026893}
-  - {fileID: 1267026895}
+  - {fileID: 1267026882}
+  - {fileID: 1267026903}
+  - {fileID: 1267026899}
   - {fileID: 1267026866}
   - {fileID: 1267026881}
+  - {fileID: 1267026904}
   includeInSaves: 1
   loadPriority: 0
   suppressAllAutoSelections: 0
@@ -1609,29 +2403,54 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 14
   indentLevel: 0
-  varToSet:
-    itemId: 0
-    owningFc: {fileID: 0}
-    owningVsa: {fileID: 0}
-  setOperator: 2
-  anyVar:
+  _setOperator: 2
+  _anyVar:
     varRef:
       itemId: 3
-      owningFc: {fileID: 1267026880}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 1267026880}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     data:
       backingVarRef:
         itemId: 0
-        owningFc: {fileID: 1267026880}
-        owningVsa: {fileID: 0}
+        owningSource: {fileID: 1267026880}
+        legacyOwningFc: {fileID: 0}
+        legacyOwningVsa: {fileID: 0}
+      data:
+        rid: 3688519963393917180
+    variable: {fileID: 0}
+  _oldVariable: {fileID: 0}
+  _oldAnyVar:
+    varRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    data:
+      backingVarRef:
+        itemId: 0
+        owningSource: {fileID: 0}
+        legacyOwningFc: {fileID: 0}
+        legacyOwningVsa: {fileID: 0}
       data:
         rid: -2
-  variable: {fileID: 0}
+    variable: {fileID: 0}
   references:
     version: 2
     RefIds:
     - rid: -2
       type: {class: , ns: , asm: }
+    - rid: 3688519963393917180
+      type: {class: IntegerData, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        backingVarRef:
+          itemId: 11
+          owningSource: {fileID: 1267026880}
+          legacyOwningFc: {fileID: 0}
+          legacyOwningVsa: {fileID: 0}
+        value: 1
+        integerRef: {fileID: 0}
+        integerVal: 0
 --- !u!114 &1267026886
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1661,9 +2480,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeRect:
     serializedVersion: 2
-    x: 64
-    y: 222
-    width: 131
+    x: 63
+    y: 264
+    width: 133
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
@@ -1701,12 +2520,24 @@ MonoBehaviour:
   startLabel:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 0}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 1267026880}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
-  startIndex: 0
+    stringVal: 
+  startIndex:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 1267026880}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 0
+    integerRef: {fileID: 0}
+    integerVal: 0
   callMode: 1
+  targetBlockId: 1
+  _oldStartIndex: -1
 --- !u!114 &1267026889
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1753,157 +2584,189 @@ MonoBehaviour:
   indentLevel: 0
   anyOrAllConditions: 0
   conditions:
-  - compareOperator: 0
-    anyVar:
-      varRef:
-        itemId: 0
-        owningFc: {fileID: 0}
-        owningVsa: {fileID: 0}
-      data:
-        backingVarRef:
-          itemId: 0
-          owningFc: {fileID: 0}
-          owningVsa: {fileID: 0}
-        data:
-          rid: -2
   - compareOperator: 5
     anyVar:
       varRef:
         itemId: 3
-        owningFc: {fileID: 1267026880}
-        owningVsa: {fileID: 0}
+        owningSource: {fileID: 1267026880}
+        legacyOwningFc: {fileID: 0}
+        legacyOwningVsa: {fileID: 0}
       data:
         backingVarRef:
           itemId: 0
-          owningFc: {fileID: 0}
-          owningVsa: {fileID: 0}
+          owningSource: {fileID: 0}
+          legacyOwningFc: {fileID: 0}
+          legacyOwningVsa: {fileID: 0}
         data:
-          rid: -2
+          rid: 3688519963393917219
+      variable: {fileID: 0}
   compareOperator: 5
   anyVar:
     varRef:
       itemId: 0
-      owningFc: {fileID: 0}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     data:
       backingVarRef:
         itemId: 0
-        owningFc: {fileID: 0}
-        owningVsa: {fileID: 0}
+        owningSource: {fileID: 0}
+        legacyOwningFc: {fileID: 0}
+        legacyOwningVsa: {fileID: 0}
       data:
         rid: -2
+    variable: {fileID: 0}
   variable: {fileID: 0}
   booleanData:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 0}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
   integerData:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 0}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: 0
     integerRef: {fileID: 0}
+    integerVal: 0
   floatData:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 0}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: 0
     floatRef: {fileID: 0}
+    floatVal: 0
   stringData:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 0}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
+    stringVal: 
   animatorData:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 0}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     animatorRef: {fileID: 0}
+    animatorVal: {fileID: 0}
   audioSourceData:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 0}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     audioSourceRef: {fileID: 0}
   colorData:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 0}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: {r: 0, g: 0, b: 0, a: 0}
     colorRef: {fileID: 0}
+    colorVal: {r: 0, g: 0, b: 0, a: 0}
   gameObjectData:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 0}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     gameObjectRef: {fileID: 0}
+    gameObjectVal: {fileID: 0}
   materialData:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 0}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     materialRef: {fileID: 0}
+    materialVal: {fileID: 0}
   objectData:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 0}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     objectRef: {fileID: 0}
+    objectVal: {fileID: 0}
   spriteData:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 0}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     spriteRef: {fileID: 0}
+    spriteVal: {fileID: 0}
   textureData:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 0}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     textureRef: {fileID: 0}
+    textureVal: {fileID: 0}
   transformData:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 0}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     transformRef: {fileID: 0}
+    transformVal: {fileID: 0}
   vector2Data:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 0}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: {x: 0, y: 0}
     vector2Ref: {fileID: 0}
+    vector2Val: {x: 0, y: 0}
   vector3Data:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 0}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: {x: 0, y: 0, z: 0}
     vector3Ref: {fileID: 0}
+    vector3Val: {x: 0, y: 0, z: 0}
   references:
     version: 2
     RefIds:
     - rid: -2
       type: {class: , ns: , asm: }
+    - rid: 3688519963393917219
+      type: {class: IntegerData, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        backingVarRef:
+          itemId: 12
+          owningSource: {fileID: 1267026880}
+          legacyOwningFc: {fileID: 0}
+          legacyOwningVsa: {fileID: 0}
+        value: 5
+        integerRef: {fileID: 0}
+        integerVal: 0
 --- !u!114 &1267026892
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1918,66 +2781,54 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 21
   indentLevel: 1
-  varToSet:
-    itemId: 0
-    owningFc: {fileID: 0}
-    owningVsa: {fileID: 0}
-  setOperator: 0
-  anyVar:
+  _setOperator: 0
+  _anyVar:
     varRef:
       itemId: 5
-      owningFc: {fileID: 1267026880}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 1267026880}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     data:
       backingVarRef:
         itemId: 0
-        owningFc: {fileID: 1267026880}
-        owningVsa: {fileID: 0}
+        owningSource: {fileID: 1267026880}
+        legacyOwningFc: {fileID: 0}
+        legacyOwningVsa: {fileID: 0}
+      data:
+        rid: 3688519963393917789
+    variable: {fileID: 0}
+  _oldVariable: {fileID: 0}
+  _oldAnyVar:
+    varRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    data:
+      backingVarRef:
+        itemId: 0
+        owningSource: {fileID: 0}
+        legacyOwningFc: {fileID: 0}
+        legacyOwningVsa: {fileID: 0}
       data:
         rid: -2
-  variable: {fileID: 0}
+    variable: {fileID: 0}
   references:
     version: 2
     RefIds:
     - rid: -2
       type: {class: , ns: , asm: }
---- !u!114 &1267026893
-MonoBehaviour:
-  m_ObjectHideFlags: 2
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1267026863}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fb77d0ce495044f6e9feb91b31798e8c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemId: 20
-  indentLevel: 1
-  varToSet:
-    itemId: 0
-    owningFc: {fileID: 0}
-    owningVsa: {fileID: 0}
-  setOperator: 0
-  anyVar:
-    varRef:
-      itemId: 5
-      owningFc: {fileID: 1267026880}
-      owningVsa: {fileID: 0}
-    data:
-      backingVarRef:
-        itemId: 0
-        owningFc: {fileID: 1267026880}
-        owningVsa: {fileID: 0}
+    - rid: 3688519963393917789
+      type: {class: StringData, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
-        rid: -2
-  variable: {fileID: 0}
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
+        backingVarRef:
+          itemId: 0
+          owningSource: {fileID: 0}
+          legacyOwningFc: {fileID: 0}
+          legacyOwningVsa: {fileID: 0}
+        value: You win!
+        stringRef: {fileID: 0}
+        stringVal: 
 --- !u!114 &1267026894
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1994,21 +2845,199 @@ MonoBehaviour:
   indentLevel: 1
   _targetGameObject:
     backingVarRef:
-      itemId: 0
-      owningFc: {fileID: 1267026880}
-      owningVsa: {fileID: 0}
+      itemId: 7
+      owningSource: {fileID: 1267026880}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     gameObjectRef: {fileID: 0}
-  activeState:
+    gameObjectVal: {fileID: 0}
+  _activeState:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 1267026880}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 1267026880}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
   targetGameObjectOLD: {fileID: 0}
---- !u!114 &1267026895
+--- !u!114 &1267026896
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1267026863}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3326e6921119d6f4fb53c4243fb91015, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _unityObjOwner: {fileID: 1267026880}
+  _variableManager:
+    _muscariables:
+    - rid: 3688519963393917179
+    - rid: 3688519963393917790
+    - rid: 3688519963393917793
+    - rid: 3688519963393917794
+    - rid: 3688519963393917795
+    - rid: 3688519963393917799
+    - rid: 3688519963393917839
+    - rid: 3688519988602208545
+    _legacyVariables:
+    - {fileID: 1267026874}
+    - {fileID: 1267026872}
+    - {fileID: 1267026870}
+    - {fileID: 1267026869}
+    - {fileID: 1267026877}
+    _nextValidVarID: 14
+    _isInitted: 1
+  _cachedFlowchart: {fileID: 1267026880}
+  references:
+    version: 2
+    RefIds:
+    - rid: 3688519963393917179
+      type: {class: GameObjectMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        scope: 0
+        key: cannonGameObj
+        itemID: 6
+        value: {fileID: 1624045236}
+        startValue: {fileID: 0}
+    - rid: 3688519963393917790
+      type: {class: GameObjectMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        scope: 0
+        key: spawnerGameObject
+        itemID: 7
+        value: {fileID: 1398202832}
+        startValue: {fileID: 0}
+    - rid: 3688519963393917793
+      type: {class: GameObjectMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        scope: 0
+        key: healthText
+        itemID: 8
+        value: {fileID: 1234006340}
+        startValue: {fileID: 0}
+    - rid: 3688519963393917794
+      type: {class: GameObjectMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        scope: 0
+        key: scoreText
+        itemID: 9
+        value: {fileID: 435850186}
+        startValue: {fileID: 0}
+    - rid: 3688519963393917795
+      type: {class: GameObjectMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        scope: 0
+        key: gameOverText
+        itemID: 10
+        value: {fileID: 119136498}
+        startValue: {fileID: 0}
+    - rid: 3688519963393917799
+      type: {class: HookedIntMuscariable, ns: VScriptingTests.VariableOperations,
+        asm: AmanitaEditorTests}
+      data:
+        scope: 0
+        key: pointsPerKill
+        itemID: 11
+        value: 1
+        startValue: 0
+        LastGenericPrev: 0
+        BaseSetCount: 0
+        GenericSetCount: 0
+    - rid: 3688519963393917839
+      type: {class: HookedIntMuscariable, ns: VScriptingTests.VariableOperations,
+        asm: AmanitaEditorTests}
+      data:
+        scope: 0
+        key: victoryScoreThresh
+        itemID: 12
+        value: 5
+        startValue: 0
+        LastGenericPrev: 0
+        BaseSetCount: 0
+        GenericSetCount: 0
+    - rid: 3688519988602208545
+      type: {class: BoolMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        scope: 1
+        key: gameIsOver
+        itemID: 13
+        value: 0
+        startValue: 0
+--- !u!114 &1267026898
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1267026863}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d3d73aef2cfc4f51abf34ac00241f60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nodeRect:
+    serializedVersion: 2
+    x: 351
+    y: 46
+    width: 127
+    height: 40
+  tint: {r: 1, g: 1, b: 1, a: 1}
+  useCustomTint: 0
+  itemId: 24
+  blockName: OnGameOver
+  description: 
+  eventHandler: {fileID: 0}
+  commandList:
+  - {fileID: 1267026902}
+  - {fileID: 1267026901}
+  - {fileID: 1267026900}
+  includeInSaves: 1
+  loadPriority: 0
+  suppressAllAutoSelections: 1
+--- !u!114 &1267026899
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1267026863}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 050fb9e6e72f442b3b883da8a965bdeb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 28
+  indentLevel: 2
+  targetFlowchart: {fileID: 0}
+  targetBlock: {fileID: 1267026898}
+  startLabel:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 1267026880}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 
+    stringRef: {fileID: 0}
+    stringVal: 
+  startIndex:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 1267026880}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 0
+    integerRef: {fileID: 0}
+    integerVal: 0
+  callMode: 1
+  targetBlockId: 24
+  _oldStartIndex: -1
+--- !u!114 &1267026900
 MonoBehaviour:
   m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2020,71 +3049,375 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbd8c931f22994b9d90e2037fffaa770, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemId: 22
-  indentLevel: 1
+  itemId: 27
+  indentLevel: 0
   _targetGameObject:
     backingVarRef:
-      itemId: 0
-      owningFc: {fileID: 1267026880}
-      owningVsa: {fileID: 0}
+      itemId: 6
+      owningSource: {fileID: 1267026880}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     gameObjectRef: {fileID: 0}
-  activeState:
+    gameObjectVal: {fileID: 0}
+  _activeState:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 1267026880}
-      owningVsa: {fileID: 0}
+      owningSource: {fileID: 1267026880}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
     value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
   targetGameObjectOLD: {fileID: 0}
+--- !u!114 &1267026901
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1267026863}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb77d0ce495044f6e9feb91b31798e8c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 26
+  indentLevel: 0
+  _setOperator: 0
+  _anyVar:
+    varRef:
+      itemId: 13
+      owningSource: {fileID: 1267026880}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    data:
+      backingVarRef:
+        itemId: 0
+        owningSource: {fileID: 1267026880}
+        legacyOwningFc: {fileID: 0}
+        legacyOwningVsa: {fileID: 0}
+      data:
+        rid: 3688519988602209249
+    variable: {fileID: 0}
+  _oldVariable: {fileID: 0}
+  _oldAnyVar:
+    varRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    data:
+      backingVarRef:
+        itemId: 0
+        owningSource: {fileID: 0}
+        legacyOwningFc: {fileID: 0}
+        legacyOwningVsa: {fileID: 0}
+      data:
+        rid: -2
+    variable: {fileID: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 3688519988602209249
+      type: {class: BooleanData, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        backingVarRef:
+          itemId: 0
+          owningSource: {fileID: 0}
+          legacyOwningFc: {fileID: 0}
+          legacyOwningVsa: {fileID: 0}
+        value: 1
+        booleanRef: {fileID: 0}
+        booleanVal: 0
+--- !u!114 &1267026902
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1267026863}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb77d0ce495044f6e9feb91b31798e8c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 25
+  indentLevel: 0
+  _setOperator: 0
+  _anyVar:
+    varRef:
+      itemId: 5
+      owningSource: {fileID: 1267026880}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    data:
+      backingVarRef:
+        itemId: 0
+        owningSource: {fileID: 1267026880}
+        legacyOwningFc: {fileID: 0}
+        legacyOwningVsa: {fileID: 0}
+      data:
+        rid: 3688519988602209248
+    variable: {fileID: 0}
+  _oldVariable: {fileID: 0}
+  _oldAnyVar:
+    varRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    data:
+      backingVarRef:
+        itemId: 0
+        owningSource: {fileID: 0}
+        legacyOwningFc: {fileID: 0}
+        legacyOwningVsa: {fileID: 0}
+      data:
+        rid: -2
+    variable: {fileID: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 3688519988602209248
+      type: {class: StringData, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        backingVarRef:
+          itemId: 0
+          owningSource: {fileID: 0}
+          legacyOwningFc: {fileID: 0}
+          legacyOwningVsa: {fileID: 0}
+        value: Game Over
+        stringRef: {fileID: 0}
+        stringVal: 
+--- !u!114 &1267026903
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1267026863}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5622b8a80845c980954170295f292, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 29
+  indentLevel: 1
+  anyOrAllConditions: 1
+  conditions:
+  - compareOperator: 4
+    anyVar:
+      varRef:
+        itemId: 4
+        owningSource: {fileID: 1267026880}
+        legacyOwningFc: {fileID: 0}
+        legacyOwningVsa: {fileID: 0}
+      data:
+        backingVarRef:
+          itemId: 0
+          owningSource: {fileID: 0}
+          legacyOwningFc: {fileID: 0}
+          legacyOwningVsa: {fileID: 0}
+        data:
+          rid: 3688519988949024989
+      variable: {fileID: 0}
+  compareOperator: 0
+  anyVar:
+    varRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    data:
+      backingVarRef:
+        itemId: 0
+        owningSource: {fileID: 0}
+        legacyOwningFc: {fileID: 0}
+        legacyOwningVsa: {fileID: 0}
+      data:
+        rid: -2
+    variable: {fileID: 0}
+  variable: {fileID: 0}
+  booleanData:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  integerData:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 0
+    integerRef: {fileID: 0}
+    integerVal: 0
+  floatData:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 0
+    floatRef: {fileID: 0}
+    floatVal: 0
+  stringData:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 
+    stringRef: {fileID: 0}
+    stringVal: 
+  animatorData:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 0}
+    animatorRef: {fileID: 0}
+    animatorVal: {fileID: 0}
+  audioSourceData:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 0}
+    audioSourceRef: {fileID: 0}
+  colorData:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {r: 0, g: 0, b: 0, a: 0}
+    colorRef: {fileID: 0}
+    colorVal: {r: 0, g: 0, b: 0, a: 0}
+  gameObjectData:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+    gameObjectVal: {fileID: 0}
+  materialData:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 0}
+    materialRef: {fileID: 0}
+    materialVal: {fileID: 0}
+  objectData:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 0}
+    objectRef: {fileID: 0}
+    objectVal: {fileID: 0}
+  spriteData:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 0}
+    spriteRef: {fileID: 0}
+    spriteVal: {fileID: 0}
+  textureData:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 0}
+    textureRef: {fileID: 0}
+    textureVal: {fileID: 0}
+  transformData:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 0}
+    transformRef: {fileID: 0}
+    transformVal: {fileID: 0}
+  vector2Data:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {x: 0, y: 0}
+    vector2Ref: {fileID: 0}
+    vector2Val: {x: 0, y: 0}
+  vector3Data:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {x: 0, y: 0, z: 0}
+    vector3Ref: {fileID: 0}
+    vector3Val: {x: 0, y: 0, z: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 3688519988949024989
+      type: {class: IntegerData, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        backingVarRef:
+          itemId: 0
+          owningSource: {fileID: 0}
+          legacyOwningFc: {fileID: 0}
+          legacyOwningVsa: {fileID: 0}
+        value: 0
+        integerRef: {fileID: 0}
+        integerVal: 0
+--- !u!114 &1267026904
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1267026863}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93cb9773f2ca04e2bbf7a68ccfc23267, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 30
+  indentLevel: 0
 --- !u!1 &1398202832 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1643320542487702, guid: 5192b1b391d8cd54f84d39d06a4a3dc8,
     type: 3}
   m_PrefabInstance: {fileID: 370424553}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1398202835 stripped
+--- !u!114 &1398202833 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 114158483713016934, guid: 5192b1b391d8cd54f84d39d06a4a3dc8,
+  m_CorrespondingSourceObject: {fileID: 3169451157478701340, guid: 5192b1b391d8cd54f84d39d06a4a3dc8,
     type: 3}
   m_PrefabInstance: {fileID: 370424553}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1398202832}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d769ea3513ad47aabf805db5252341d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1398202836 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 114451434740700826, guid: 5192b1b391d8cd54f84d39d06a4a3dc8,
-    type: 3}
-  m_PrefabInstance: {fileID: 370424553}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1398202832}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 705fa1ac97df74e3a84ff952ffd923f1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1398202837 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 114205508981943572, guid: 5192b1b391d8cd54f84d39d06a4a3dc8,
-    type: 3}
-  m_PrefabInstance: {fileID: 370424553}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1398202832}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 705fa1ac97df74e3a84ff952ffd923f1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1398202838
-MonoBehaviour:
-  m_ObjectHideFlags: 2
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1398202832}
   m_Enabled: 1
@@ -2092,50 +3425,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96fb07b07bec30544a6c3c01df5345ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemId: 9
-  indentLevel: 0
-  getOrSet: 1
-  vec3:
-    backingVarRef:
-      itemId: 0
-      owningFc: {fileID: 0}
-      owningVsa: {fileID: 0}
-    value: {x: 0, y: 0, z: 0}
-    vector3Ref: {fileID: 1398202835}
-  x:
-    backingVarRef:
-      itemId: 0
-      owningFc: {fileID: 0}
-      owningVsa: {fileID: 0}
-    value: 0
-    floatRef: {fileID: 1398202837}
-  y:
-    backingVarRef:
-      itemId: 0
-      owningFc: {fileID: 0}
-      owningVsa: {fileID: 0}
-    value: 0
-    floatRef: {fileID: 1398202836}
-  z:
-    backingVarRef:
-      itemId: 0
-      owningFc: {fileID: 0}
-      owningVsa: {fileID: 0}
-    value: 0
-    floatRef: {fileID: 0}
---- !u!114 &1398202839 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 114197543733484370, guid: 5192b1b391d8cd54f84d39d06a4a3dc8,
-    type: 3}
-  m_PrefabInstance: {fileID: 370424553}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1398202832}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ae9ac2fcbd1d542619ab0bc7549fb264, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1398202840 stripped
+--- !u!114 &1398202835 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 114536672983551206, guid: 5192b1b391d8cd54f84d39d06a4a3dc8,
     type: 3}
@@ -2147,6 +3437,285 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dfc8e8d5ce363ec43815496d321b4d55, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1398202840 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 114845356377412462, guid: 5192b1b391d8cd54f84d39d06a4a3dc8,
+    type: 3}
+  m_PrefabInstance: {fileID: 370424553}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1398202832}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ce1a662ad70c46f4b2de306ed2627a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1398202841 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 114186534075702092, guid: 5192b1b391d8cd54f84d39d06a4a3dc8,
+    type: 3}
+  m_PrefabInstance: {fileID: 370424553}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1398202832}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ce1a662ad70c46f4b2de306ed2627a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1398202842 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 114197543733484370, guid: 5192b1b391d8cd54f84d39d06a4a3dc8,
+    type: 3}
+  m_PrefabInstance: {fileID: 370424553}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1398202832}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae9ac2fcbd1d542619ab0bc7549fb264, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1398202843 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 114533871774847328, guid: 5192b1b391d8cd54f84d39d06a4a3dc8,
+    type: 3}
+  m_PrefabInstance: {fileID: 370424553}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1398202832}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb3e86f556e074b84af1cc7eb8f8e5e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1398202844 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 114222629582179790, guid: 5192b1b391d8cd54f84d39d06a4a3dc8,
+    type: 3}
+  m_PrefabInstance: {fileID: 370424553}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1398202832}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3315ad2ebb85443909a1203d56d9344e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1398202850
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1398202832}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93cb9773f2ca04e2bbf7a68ccfc23267, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 12
+  indentLevel: 0
+--- !u!114 &1398202851
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1398202832}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5622b8a80845c980954170295f292, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 11
+  indentLevel: 0
+  anyOrAllConditions: 0
+  conditions:
+  - compareOperator: 0
+    anyVar:
+      varRef:
+        itemId: 13
+        owningSource: {fileID: 1267026880}
+        legacyOwningFc: {fileID: 0}
+        legacyOwningVsa: {fileID: 0}
+      data:
+        backingVarRef:
+          itemId: 0
+          owningSource: {fileID: 0}
+          legacyOwningFc: {fileID: 0}
+          legacyOwningVsa: {fileID: 0}
+        data:
+          rid: 3688519988602209251
+      variable: {fileID: 0}
+  compareOperator: 0
+  anyVar:
+    varRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    data:
+      backingVarRef:
+        itemId: 0
+        owningSource: {fileID: 0}
+        legacyOwningFc: {fileID: 0}
+        legacyOwningVsa: {fileID: 0}
+      data:
+        rid: -2
+    variable: {fileID: 0}
+  variable: {fileID: 0}
+  booleanData:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  integerData:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 0
+    integerRef: {fileID: 0}
+    integerVal: 0
+  floatData:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 0
+    floatRef: {fileID: 0}
+    floatVal: 0
+  stringData:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 
+    stringRef: {fileID: 0}
+    stringVal: 
+  animatorData:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 0}
+    animatorRef: {fileID: 0}
+    animatorVal: {fileID: 0}
+  audioSourceData:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 0}
+    audioSourceRef: {fileID: 0}
+  colorData:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {r: 0, g: 0, b: 0, a: 0}
+    colorRef: {fileID: 0}
+    colorVal: {r: 0, g: 0, b: 0, a: 0}
+  gameObjectData:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+    gameObjectVal: {fileID: 0}
+  materialData:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 0}
+    materialRef: {fileID: 0}
+    materialVal: {fileID: 0}
+  objectData:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 0}
+    objectRef: {fileID: 0}
+    objectVal: {fileID: 0}
+  spriteData:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 0}
+    spriteRef: {fileID: 0}
+    spriteVal: {fileID: 0}
+  textureData:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 0}
+    textureRef: {fileID: 0}
+    textureVal: {fileID: 0}
+  transformData:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 0}
+    transformRef: {fileID: 0}
+    transformVal: {fileID: 0}
+  vector2Data:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {x: 0, y: 0}
+    vector2Ref: {fileID: 0}
+    vector2Val: {x: 0, y: 0}
+  vector3Data:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {x: 0, y: 0, z: 0}
+    vector3Ref: {fileID: 0}
+    vector3Val: {x: 0, y: 0, z: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 3688519988602209251
+      type: {class: BooleanData, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        backingVarRef:
+          itemId: 0
+          owningSource: {fileID: 0}
+          legacyOwningFc: {fileID: 0}
+          legacyOwningVsa: {fileID: 0}
+        value: 0
+        booleanRef: {fileID: 0}
+        booleanVal: 0
+--- !u!4 &1398202861 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4839343606506310, guid: 5192b1b391d8cd54f84d39d06a4a3dc8,
+    type: 3}
+  m_PrefabInstance: {fileID: 370424553}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1569219819
 GameObject:
   m_ObjectHideFlags: 1
@@ -2176,8 +3745,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61dddfdc5e0e44ca298d8f46f7f5a915, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  selectedFlowchart: {fileID: 114526636883379746, guid: a63bb7c0f4cb0df429c8364816dc7b20,
-    type: 3}
 --- !u!4 &1569219821
 Transform:
   m_ObjectHideFlags: 1
@@ -2193,6 +3760,24 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &1598276107 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4729075542556854, guid: cf9a0515785714a49b2d12090c78828f,
+    type: 3}
+  m_PrefabInstance: {fileID: 1645332903}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1598276108 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8624816554427381928, guid: cf9a0515785714a49b2d12090c78828f,
+    type: 3}
+  m_PrefabInstance: {fileID: 1645332903}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c43743931d28f43f89eced820d907351, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1617824580
 GameObject:
   m_ObjectHideFlags: 0
@@ -2207,6 +3792,9 @@ GameObject:
   - component: {fileID: 1617824583}
   - component: {fileID: 1617824581}
   - component: {fileID: 1617824587}
+  - component: {fileID: 1617824588}
+  - component: {fileID: 1617824589}
+  - component: {fileID: 1617824590}
   m_Layer: 0
   m_Name: Ground
   m_TagString: Ground
@@ -2232,10 +3820,12 @@ MonoBehaviour:
   _message:
     backingVarRef:
       itemId: 0
-      owningFc: {fileID: 1617824584}
-      owningVsa: {fileID: 0}
-    value: 
+      owningSource: {fileID: 1617824584}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: EnemyHitGround
     stringRef: {fileID: 0}
+    stringVal: 
   messageOLD: 
 --- !u!114 &1617824583
 MonoBehaviour:
@@ -2253,15 +3843,16 @@ MonoBehaviour:
     serializedVersion: 2
     x: 95
     y: 134
-    width: 120
+    width: 140
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
   itemId: 2
-  blockName: New Block
+  blockName: OnHitByEnemy
   description: 
-  eventHandler: {fileID: 0}
+  eventHandler: {fileID: 1617824589}
   commandList:
+  - {fileID: 1617824590}
   - {fileID: 1617824581}
   includeInSaves: 1
   loadPriority: 0
@@ -2278,9 +3869,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a334fe2ffb574b3583ff3b18b4792d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _varManager: {fileID: 1617824588}
+  legacyVariableManager:
+    _muscariables: []
+    _legacyVariables: []
+    _nextValidVarID: 1
+    _isInitted: 0
+  version: 1
+  _legacyVariables: []
+  _oldMuscariables: []
+  _otherSettings: []
+  description: 
   uiModel:
     _selectedBlocks: []
     _selectedCommands: []
+    _owner: {fileID: 1617824580}
     <ScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesExpanded>k__BackingField: 0
@@ -2292,25 +3895,23 @@ MonoBehaviour:
       y: 0
       width: 0
       height: 0
-    <SelectedCommandsStale>k__BackingField: 0
-  version: 1
-  legacyVariables: []
-  muscariables: []
-  description: 
+    <SelectedCommandsStale>k__BackingField: 1
   stepPause: 0
   colorCommands: 1
   hideComponents: 1
   saveSelection: 1
-  localizationId: 
   showLineNumbers: 0
   hideCommands: []
-  _luaEnvironment: {fileID: 0}
-  luaBindingName: flowchart
   includeInSaves: 1
   saveBlocks: 1
   saveVariables: 1
   loadPriority: 0
-  alwaysKeepGuid: 1
+  _alwaysKeepGuid: 1
+  _blockListCache:
+  - {fileID: 1617824583}
+  _commands:
+  - {fileID: 1617824581}
+  - {fileID: 1617824590}
   nextValidVarID: 1
   uniqueId: 4a9ccdf5-eeb8-425a-9cbf-b2cea760f5a9
   references:
@@ -2379,12 +3980,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1617824580}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.021000564, y: -4.38, z: 0}
   m_LocalScale: {x: 22.5, y: 1.712501, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 2147302043}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!61 &1617824587
 BoxCollider2D:
@@ -2432,144 +4033,188 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &1617824588
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1617824580}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3326e6921119d6f4fb53c4243fb91015, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _unityObjOwner: {fileID: 1617824584}
+  _variableManager:
+    _muscariables: []
+    _legacyVariables: []
+    _nextValidVarID: 1
+    _isInitted: 0
+  _cachedFlowchart: {fileID: 1617824584}
+  references:
+    version: 2
+    RefIds: []
+--- !u!114 &1617824589
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1617824580}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75662d9886485a9478179361e82eb7bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  parentBlock: {fileID: 1617824583}
+  suppressBlockAutoSelect: 0
+  _tagFilter:
+    _tagFilter:
+    - backingVarRef:
+        itemId: 0
+        owningSource: {fileID: 0}
+        legacyOwningFc: {fileID: 0}
+        legacyOwningVsa: {fileID: 0}
+      value: Enemy
+      stringRef: {fileID: 0}
+      stringVal: 
+  _toWatch:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 1617824580}
+    gameObjectRef: {fileID: 0}
+    gameObjectVal: {fileID: 0}
+  FireOn: 1
+  tagFilter: []
+  _colliderVar:
+    itemId: 0
+    owningSource: {fileID: 0}
+    legacyOwningFc: {fileID: 0}
+    legacyOwningVsa: {fileID: 0}
+  colliderVar: {fileID: 0}
+--- !u!114 &1617824590
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1617824580}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fab8abf0343545abbfebd9a7b7b34bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 3
+  indentLevel: 0
+  logType: 0
+  logMessage:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: Hit by Enemy!
+    stringRef: {fileID: 0}
+    stringVal: 
 --- !u!1 &1624045236 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1380797001910276, guid: 5db9b59ebaddb664eac17f8dd52f454a,
     type: 3}
   m_PrefabInstance: {fileID: 545255773}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1624045237
-MonoBehaviour:
-  m_ObjectHideFlags: 2
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
+--- !u!4 &1624045273 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4038790522185248, guid: 5db9b59ebaddb664eac17f8dd52f454a,
+    type: 3}
+  m_PrefabInstance: {fileID: 545255773}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1624045236}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2fb064de1b711a449845627f19b7f7b1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemId: 16
-  indentLevel: 1
-  getOrSet: 0
-  property: 1
-  transformData:
-    backingVarRef:
-      itemId: 0
-      owningFc: {fileID: 0}
-      owningVsa: {fileID: 0}
-    value: {fileID: 0}
-    transformRef: {fileID: 0}
-  inOutVar: {fileID: 1624045256}
---- !u!114 &1624045238
+--- !u!114 &1624045305 stripped
 MonoBehaviour:
-  m_ObjectHideFlags: 2
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1624045236}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2fb064de1b711a449845627f19b7f7b1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemId: 15
-  indentLevel: 1
-  getOrSet: 0
-  property: 11
-  transformData:
-    backingVarRef:
-      itemId: 0
-      owningFc: {fileID: 0}
-      owningVsa: {fileID: 0}
-    value: {fileID: 0}
-    transformRef: {fileID: 0}
-  inOutVar: {fileID: 1624045257}
---- !u!114 &1624045250 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 114093757454897032, guid: 5db9b59ebaddb664eac17f8dd52f454a,
+  m_CorrespondingSourceObject: {fileID: 296722996658657712, guid: 5db9b59ebaddb664eac17f8dd52f454a,
     type: 3}
   m_PrefabInstance: {fileID: 545255773}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1624045236}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fb77d0ce495044f6e9feb91b31798e8c, type: 3}
+  m_Script: {fileID: 11500000, guid: c43743931d28f43f89eced820d907351, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1624045252 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 114948797197275504, guid: 5db9b59ebaddb664eac17f8dd52f454a,
-    type: 3}
-  m_PrefabInstance: {fileID: 545255773}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1624045236}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3315ad2ebb85443909a1203d56d9344e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1624045253 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 114904554220365688, guid: 5db9b59ebaddb664eac17f8dd52f454a,
-    type: 3}
-  m_PrefabInstance: {fileID: 545255773}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1624045236}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 93cb9773f2ca04e2bbf7a68ccfc23267, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1624045256 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 114310288066248142, guid: 5db9b59ebaddb664eac17f8dd52f454a,
-    type: 3}
-  m_PrefabInstance: {fileID: 545255773}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1624045236}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d769ea3513ad47aabf805db5252341d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1624045257 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 114476154734915750, guid: 5db9b59ebaddb664eac17f8dd52f454a,
-    type: 3}
-  m_PrefabInstance: {fileID: 545255773}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1624045236}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d769ea3513ad47aabf805db5252341d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1624045258 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 114920461919457924, guid: 5db9b59ebaddb664eac17f8dd52f454a,
-    type: 3}
-  m_PrefabInstance: {fileID: 545255773}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1624045236}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bb3e86f556e074b84af1cc7eb8f8e5e7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1624045260 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 114980758164341790, guid: 5db9b59ebaddb664eac17f8dd52f454a,
-    type: 3}
-  m_PrefabInstance: {fileID: 545255773}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1624045236}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3d3d73aef2cfc4f51abf34ac00241f60, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+--- !u!1001 &1645332903
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 789507305}
+    m_Modifications:
+    - target: {fileID: 1292638556747252, guid: cf9a0515785714a49b2d12090c78828f, type: 3}
+      propertyPath: m_Name
+      value: Enemy
+      objectReference: {fileID: 0}
+    - target: {fileID: 1292638556747252, guid: cf9a0515785714a49b2d12090c78828f, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4729075542556854, guid: cf9a0515785714a49b2d12090c78828f, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -3.1467144
+      objectReference: {fileID: 0}
+    - target: {fileID: 4729075542556854, guid: cf9a0515785714a49b2d12090c78828f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.1481941
+      objectReference: {fileID: 0}
+    - target: {fileID: 4729075542556854, guid: cf9a0515785714a49b2d12090c78828f, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4729075542556854, guid: cf9a0515785714a49b2d12090c78828f, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4729075542556854, guid: cf9a0515785714a49b2d12090c78828f, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4729075542556854, guid: cf9a0515785714a49b2d12090c78828f, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4729075542556854, guid: cf9a0515785714a49b2d12090c78828f, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4729075542556854, guid: cf9a0515785714a49b2d12090c78828f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4729075542556854, guid: cf9a0515785714a49b2d12090c78828f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4729075542556854, guid: cf9a0515785714a49b2d12090c78828f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114619489782507194, guid: cf9a0515785714a49b2d12090c78828f,
+        type: 3}
+      propertyPath: _commands.Array.size
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 114619489782507194, guid: cf9a0515785714a49b2d12090c78828f,
+        type: 3}
+      propertyPath: '_commands.Array.data[8]'
+      value: 
+      objectReference: {fileID: 1598276108}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: cf9a0515785714a49b2d12090c78828f, type: 3}
 --- !u!1 &1683342971
 GameObject:
   m_ObjectHideFlags: 0
@@ -2580,8 +4225,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1683342975}
   - component: {fileID: 1683342974}
-  - component: {fileID: 1683342973}
   - component: {fileID: 1683342972}
+  - component: {fileID: 1683342976}
   m_Layer: 0
   m_Name: EventSystem
   m_TagString: Untagged
@@ -2602,26 +4247,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_SendPointerHoverToParent: 1
-  m_ForceModuleActive: 0
---- !u!114 &1683342973
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1683342971}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f231c4fb786f3946a6b90b886c48677, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SendPointerHoverToParent: 1
-  m_HorizontalAxis: Horizontal
-  m_VerticalAxis: Vertical
-  m_SubmitButton: Submit
-  m_CancelButton: Cancel
-  m_InputActionsPerSecond: 10
-  m_RepeatDelay: 0.5
   m_ForceModuleActive: 0
 --- !u!114 &1683342974
 MonoBehaviour:
@@ -2646,22 +4271,128 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1683342971}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
+  m_Father: {fileID: 1719210592}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1683342976
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1683342971}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01614664b831546d2ae94a42149d80ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SendPointerHoverToParent: 1
+  m_MoveRepeatDelay: 0.5
+  m_MoveRepeatRate: 0.1
+  m_XRTrackingOrigin: {fileID: 0}
+  m_ActionsAsset: {fileID: -944628639613478452, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_PointAction: {fileID: 1054132383583890850, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_MoveAction: {fileID: 3710738434707379630, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_SubmitAction: {fileID: 2064916234097673511, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_CancelAction: {fileID: -1967631576421560919, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_LeftClickAction: {fileID: 8056856818456041789, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_MiddleClickAction: {fileID: 3279352641294131588, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_RightClickAction: {fileID: 3837173908680883260, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_ScrollWheelAction: {fileID: 4502412055082496612, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_TrackedDevicePositionAction: {fileID: 4754684134866288074, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_TrackedDeviceOrientationAction: {fileID: 1025543830046995696, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_DeselectOnBackgroundClick: 1
+  m_PointerBehavior: 0
+  m_CursorLockBehavior: 0
+  m_ScrollDeltaPerTick: 6
+--- !u!1 &1719210591
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1719210592}
+  m_Layer: 0
+  m_Name: Sys
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1719210592
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1719210591}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 69847129}
+  - {fileID: 1683342975}
+  - {fileID: 1267026864}
+  - {fileID: 44481361}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2147302042
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2147302043}
+  m_Layer: 0
+  m_Name: Environment
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2147302043
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2147302042}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1617824586}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 1267026864}
-  - {fileID: 370424553}
-  - {fileID: 69847129}
-  - {fileID: 1569219821}
-  - {fileID: 545255773}
-  - {fileID: 1683342975}
   - {fileID: 884575237}
-  - {fileID: 1617824586}
+  - {fileID: 1569219821}
+  - {fileID: 1719210592}
+  - {fileID: 2147302043}
+  - {fileID: 789507305}

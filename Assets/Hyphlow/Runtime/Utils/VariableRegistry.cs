@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using UnityEngine;
 using UnityObj = UnityEngine.Object;
 
 #if UNITY_EDITOR
@@ -32,20 +33,67 @@ namespace AtMycelia.Hyphlow
             _globalSourcesProvider = globalSourcesProvider ?? (() => emptySources);
             Rebuild();
 #if UNITY_EDITOR
-            Selection.selectionChanged += OnSelectionChanged;
+            ToggleEditorSubs(false);
+            ToggleEditorSubs(true);
 #endif
         }
 
+        private void ToggleEditorSubs(bool on)
+        {
 #if UNITY_EDITOR
+            if (on)
+            {
+                Selection.selectionChanged += OnSelectionChanged;
+                VariableSignals.PostValueChange += OnVariableValueChanged;
+            }
+            else
+            {
+                Selection.selectionChanged -= OnSelectionChanged;
+                VariableSignals.PostValueChange -= OnVariableValueChanged;
+            }
+#endif
+        }
+
+        private void OnVariableValueChanged(IVariable variable, object arg2)
+        {
+#if UNITY_EDITOR
+            EditorApplication.delayCall += () =>
+             {
+                 if (variable == null)
+                 {
+                     return;
+                 }
+                 if (Application.isPlaying)
+                 {
+                     return; // We only want to respond to var value changes in the editor,
+                             // since that's the only time we care about keeping the registry's
+                             // values up to date with the actual variable values in the scene.
+                 }
+                 OnSelectionChanged();
+             };
+             return;
+#endif
+            if (Application.isPlaying)
+            {
+                return; // We only want to respond to var value changes in the editor,
+                        // since that's the only time we care about keeping the registry's
+                        // values up to date with the actual variable values in the scene.
+            }
+            OnSelectionChanged();
+        }
+
+
         private void OnSelectionChanged()
         {
+#if UNITY_EDITOR
             var selected = Selection.activeGameObject;
             if (selected != null && selected.TryGetComponent<Flowchart>(out var fc))
             {
                 Rebuild(fc);
             }
-        }
 #endif
+        }
+
 
         public void Rebuild(IVariableSource localSource = null)
         {
@@ -208,32 +256,61 @@ namespace AtMycelia.Hyphlow
         /// Returns available variables matching any of the given content types.
         /// If null/empty, returns all.
         /// </summary>
-        public IReadOnlyDictionary<string, IVariable> GetVarsOfMultiTypes(Type[] contentTypes = null)
+        public IReadOnlyDictionary<string, IVariable> GetVarsOfMultiTypes(IList<Type> contentTypes = null, 
+            bool getAllAssignableTypes = false)
         {
             IReadOnlyDictionary<string, IVariable> result;
-            bool giveThemEverything = contentTypes == null || contentTypes.Length == 0;
+            bool giveThemEverything = contentTypes == null || contentTypes.Count == 0;
             if (giveThemEverything)
             {
                 result = _vars;
             }
-            else if (contentTypes.Length == 1)
+            else if (contentTypes.Count == 1)
             {
-                return GetVarsOfType(contentTypes[0]);
+                return GetVarsOfType(contentTypes[0], getAllAssignableTypes);
             }
             else
             {
                 var merged = new Dictionary<string, IVariable>();
-                for (int i = 0; i < contentTypes.Length; i++)
+                if (getAllAssignableTypes)
                 {
-                    var type = contentTypes[i];
-                    if (_varsByType.TryGetValue(type, out var dict))
+                    foreach (var kvp in _varsByType)
                     {
-                        foreach (var kvp in dict)
+                        var type = kvp.Key;
+                        bool compatible = false;
+                        for (int i = 0; i < contentTypes.Count; i++)
                         {
-                            merged[kvp.Key] = kvp.Value;
+                            if (TypeUtils.TypesCompatible(contentTypes[i], type))
+                            {
+                                compatible = true;
+                                break;
+                            }
+                        }
+
+                        if (compatible)
+                        {
+                            foreach (var kvp2 in kvp.Value)
+                            {
+                                merged[kvp2.Key] = kvp2.Value;
+                            }
                         }
                     }
                 }
+                else
+                {
+                    for (int i = 0; i < contentTypes.Count; i++)
+                    {
+                        var type = contentTypes[i];
+                        if (_varsByType.TryGetValue(type, out var dict))
+                        {
+                            foreach (var kvp in dict)
+                            {
+                                merged[kvp.Key] = kvp.Value;
+                            }
+                        }
+                    }
+                }
+
                 result = merged;
 
             }

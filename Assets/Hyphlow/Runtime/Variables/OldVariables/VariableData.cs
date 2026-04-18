@@ -1,5 +1,4 @@
 using System;
-using AtMycelia.Amanita;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -93,7 +92,7 @@ namespace AtMycelia.Hyphlow
             }
         }
 
-        private bool CanHoldAsVar(IVariable variable)
+        protected virtual bool CanHoldAsVar(IVariable variable)
         {
             bool result;
             if (variable == null)

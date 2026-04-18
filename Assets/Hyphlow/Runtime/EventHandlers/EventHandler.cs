@@ -88,7 +88,7 @@ namespace AtMycelia.Hyphlow
             }
 
             //if somehow the flowchart is invalid or has been disabled we don't want to continue
-            if (fChart == null || !fChart.isActiveAndEnabled)
+            if (fChart == null || !this.gameObject.activeInHierarchy || !fChart.isActiveAndEnabled)
             {
                 return false;
             }

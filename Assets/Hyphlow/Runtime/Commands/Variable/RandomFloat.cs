@@ -1,6 +1,6 @@
 using UnityEngine;
-
 using UnityEngine.Scripting.APIUpdating;
+using UnityEngine.Serialization;
 
 namespace AtMycelia.Hyphlow
 {
@@ -9,35 +9,38 @@ namespace AtMycelia.Hyphlow
     /// </summary>
     [CommandInfo("Variable", 
                  "Random Float", 
-                 "Sets an float variable to a random value in the defined range.")]
+                 "Sets an float or double variable to a random value in the defined range.")]
     [AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class RandomFloat : Command 
     {
-        [Tooltip("The variable whos value will be set")]
-        [VariableProperty(typeof(FloatVariable))]
-        [SerializeField] protected FloatVariable variable;
+        [Tooltip("The variable that will get its value set. Can be a float or a double.")]
+        [ContentTypeConstraint(typeof(float), typeof(double))]
+        [SerializeField] protected VariableReference _variable;
 
         [Tooltip("Minimum value for random range")]
-        [SerializeField] protected FloatData minValue;
+        [FormerlySerializedAs("minValue")]
+        [SerializeField] protected FloatData _minValue;
 
         [Tooltip("Maximum value for random range")]
-        [SerializeField] protected FloatData maxValue;
+        [FormerlySerializedAs("maxValue")]
+        [SerializeField] protected FloatData _maxValue;
 
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            _variableDataCache.Add(minValue);
-            _variableDataCache.Add(maxValue);
+            _variableDataCache.Add(_minValue);
+            _variableDataCache.Add(_maxValue);
         }
 
         #region Public members
 
         public override void OnEnter()
         {
-            if (variable != null)
+            if (_variable != null)
             {
-                variable.Value = Random.Range(minValue.Value, maxValue.Value);
+                float val = Random.Range(_minValue.Value, _maxValue.Value);
+                _variable.SetValue(val);
             }
 
             Continue();
@@ -45,19 +48,20 @@ namespace AtMycelia.Hyphlow
 
         public override string GetSummary()
         {
-            if (variable == null)
+            string result = "Error: Variable not selected";
+            if (_variable.Variable != null)
             {
-                return "Error: Variable not selected";
+                result = $"Set {_variable.Variable.Key} between {_minValue.Value} and {_maxValue.Value}";
             }
 
-            return variable.Key;
+            return result;
         }
 
         public override bool HasReference(Variable variable)
         {
-            return (variable == this.variable) || 
-                ReferenceEquals(minValue.VarRef, variable) || 
-                ReferenceEquals(maxValue.VarRef, variable);
+            return (variable == this._oldVariable) || 
+                ReferenceEquals(_minValue.VarRef, variable) || 
+                ReferenceEquals(_maxValue.VarRef, variable);
         }
 
         public override Color GetButtonColor()
@@ -66,5 +70,20 @@ namespace AtMycelia.Hyphlow
         }
 
         #endregion
+
+        public override void ApplyBackwardsCompatibility()
+        {
+            base.ApplyBackwardsCompatibility();
+            if (_oldVariable != null)
+            {
+                _variable.Variable = _oldVariable;
+                _oldVariable = null;
+            }
+        }
+
+        [VariableProperty(typeof(FloatVariable))]
+        [FormerlySerializedAs("variable")]
+        [HideInInspector]
+        [SerializeField] protected FloatVariable _oldVariable;
     }
 }

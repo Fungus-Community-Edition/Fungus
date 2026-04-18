@@ -35,7 +35,7 @@ namespace AtMycelia.Amanita.VScripting
 
         protected override void OnEnable()
         {
-            eventDispatcher = AmanitaManager.S.EventDispatcher;
+            eventDispatcher = FindFirstObjectByType<EventDispatcher>();
             base.OnEnable();
         }
 
@@ -64,6 +64,17 @@ namespace AtMycelia.Amanita.VScripting
         }
 
         /// <summary>
+        /// Called by the Clickable2D object when it is clicked.
+        /// </summary>
+        public virtual void OnObjectClicked(Clickable2D clickableObject)
+        {
+            if (clickableObject == this.clickableObject)
+            {
+                StartCoroutine(DoExecuteBlock(waitFrames));
+            }
+        }
+
+        /// <summary>
         /// Executing a block on the same frame that the object is clicked can cause
         /// input problems (e.g. auto completing Say Dialog text). A single frame delay 
         /// fixes the problem.
@@ -86,18 +97,7 @@ namespace AtMycelia.Amanita.VScripting
             ExecuteBlock();
         }
 
-        #region Public members
-
-        /// <summary>
-        /// Called by the Clickable2D object when it is clicked.
-        /// </summary>
-        public virtual void OnObjectClicked(Clickable2D clickableObject)
-        {
-            if (clickableObject == this.clickableObject)
-            {
-                StartCoroutine(DoExecuteBlock(waitFrames));
-            }
-        }
+        
 
         public override string GetSummary()
         {
@@ -109,6 +109,5 @@ namespace AtMycelia.Amanita.VScripting
             return "Error: no clickableObject set.";
         }
 
-        #endregion
     }
 }
