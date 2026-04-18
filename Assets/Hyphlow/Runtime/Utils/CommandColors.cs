@@ -13,7 +13,7 @@ namespace AtMycelia.Hyphlow
         public static Color System = new Color32(200, 200, 200, 255);
         public static Color ConditionalLogic = new Color32(253, 253, 150, 255);
         public static Color Label = new Color32(200, 200, 253, 255);
-
+        public static Color Physics = new Color32(235, 191, 217, 255);
 
         public static Color Animation = new Color32(170, 204, 169, 255);
         public static Color Sprite = new Color32(221, 184, 169, 255);

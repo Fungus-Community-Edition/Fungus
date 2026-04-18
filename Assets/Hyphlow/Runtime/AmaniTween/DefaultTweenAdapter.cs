@@ -32,6 +32,26 @@ namespace AtMycelia.Hyphlow.Tweening
             return DefaultTweenHandle.From(tweenRot);
         }
 
+        public ITweenHandle RotateLocalTo(Transform target, Quaternion rotation, float duration)
+        {
+            var tweenRot = TweenLocalRotation(target, target.localRotation, rotation, duration);
+            return DefaultTweenHandle.From(tweenRot);
+        }
+
+        public Tween<Quaternion> TweenLocalRotation(Transform toRotate, Quaternion startRot,
+            Quaternion endRot, float duration)
+        {
+            string id = GenIDFor(toRotate, "LocalRotation");
+            void UpdateRot(Quaternion newRot)
+            {
+                toRotate.localRotation = newRot;
+            }
+            Tween<Quaternion> result = new Tween<Quaternion>(toRotate, id, startRot,
+                endRot, duration, UpdateRot);
+
+            return result;
+        }
+
         protected virtual string GenIDFor(UnityObj unityObj, string aspectName)
         {
             string typeName = unityObj.GetType().Name;
@@ -289,7 +309,6 @@ namespace AtMycelia.Hyphlow.Tweening
             return result;
         }
 
-        
         public ITweenHandle FadeBackgroundColor(Camera target, Color targetVal, float duration)
         {
             var tween = TweenCameraBGColor(target, target.backgroundColor, targetVal, duration);
@@ -560,11 +579,6 @@ namespace AtMycelia.Hyphlow.Tweening
 
         public ITweenHandle ShakePosition(Transform target, Vector3 axis, Vector3 force, float duration, bool isLocalSpace)
         {
-            if (target == null)
-            {
-                return null;
-            }
-
             Vector3 startPos = isLocalSpace ? 
                 target.localPosition : 
                 target.position;
@@ -575,11 +589,6 @@ namespace AtMycelia.Hyphlow.Tweening
             
             void OnTweenUpdate(float progress)
             {
-                if (target == null)
-                {
-                    return;
-                }
-
                 Vector3 randomOffset = UnityRandom.insideUnitSphere;
                 randomOffset = Vector3.Scale(randomOffset, force);
                 randomOffset = Vector3.Scale(randomOffset, axisMask);
@@ -601,11 +610,6 @@ namespace AtMycelia.Hyphlow.Tweening
             tween = tween.SetOnComplete(OnTweenComplete);
             void OnTweenComplete()
             {
-                if (target == null)
-                {
-                    return;
-                }
-
                 if (isLocalSpace)
                 {
                     target.localPosition = startPos;

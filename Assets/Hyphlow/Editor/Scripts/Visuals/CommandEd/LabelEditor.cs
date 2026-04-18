@@ -52,14 +52,14 @@ namespace AtMycelia.Hyphlow.EditorUtils
         {
             base.OnEnable();
 
-            keyProp = serializedObject.FindProperty("key");
+            keyProp = serializedObject.FindProperty("_key");
         }
         
         public override void DrawCommandGUI()
         {
             Label t = target as Label;
 
-            var flowchart = (Flowchart)t.GetFlowchart();
+            var flowchart = t.GetFlowchart();
             if (flowchart == null)
             {
                 return;

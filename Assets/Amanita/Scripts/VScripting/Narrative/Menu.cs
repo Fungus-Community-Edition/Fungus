@@ -129,7 +129,7 @@ namespace AtMycelia.Amanita.DialogueSys.VScripting
         public virtual string GetStringId()
         {
             // String id for Menu commands is MENU.<Localization Id>.<Command id>
-            return "MENU." + GetFlowchartLocalizationId() + "." + itemId;
+            return "MENU." + "." + itemId;
         }
 
         #endregion

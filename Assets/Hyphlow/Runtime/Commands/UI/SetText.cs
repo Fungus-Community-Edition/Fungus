@@ -59,12 +59,31 @@ namespace AtMycelia.Hyphlow
         
         public override string GetSummary()
         {
+            string result = "Error: No text object selected";
             if (_targetTextObject != null && _targetTextObject.Value != null)
             {
-                return _targetTextObject.Value.name + " : " + text.Value;
+                string textSummary = GetTextSummaryStr();
+                result = $"{_targetTextObject.Value.name} to {textSummary}";
             }
             
-            return "Error: No text object selected";
+            return result;
+        }
+
+        private string GetTextSummaryStr()
+        {
+            if (text == null || (string.IsNullOrEmpty(text.Value) && !text.RepresentingVar))
+            {
+                return "None";
+            }
+
+            if (text.RepresentingVar)
+            {
+                return text.VarRef.Key;
+            }
+            else
+            {
+                return $"\"{text.Value}\"";
+            }
         }
         
         public override Color GetButtonColor()
@@ -112,7 +131,7 @@ namespace AtMycelia.Hyphlow
         public virtual string GetStringId()
         {
             // String id for Set Text commands is SETTEXT.<Localization Id>.<Command id>
-            return "SETTEXT." + GetFlowchartLocalizationId() + "." + itemId;
+            return "SETTEXT." + "." + itemId;
         }
 
         #endregion

@@ -13,21 +13,22 @@ namespace AtMycelia.Hyphlow
                  "Destroys a specified game object in the scene.")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class Destroy : Command, ISerializationCallbackReceiver
     {
         [Tooltip("Reference to game object to destroy")]
         [SerializeField] protected GameObjectData _targetGameObject;
 
         [Tooltip("Optional delay given to destroy")]
+        [FormerlySerializedAs("destroyInXSeconds")]
         [SerializeField]
-        protected FloatData destroyInXSeconds = new FloatData(0);
+        protected FloatData _destroyInXSeconds = new FloatData(0);
 
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
             _variableDataCache.Add(_targetGameObject);
-            _variableDataCache.Add(destroyInXSeconds);
+            _variableDataCache.Add(_destroyInXSeconds);
         }
 
         #region Public members
@@ -36,10 +37,14 @@ namespace AtMycelia.Hyphlow
         {
             if (_targetGameObject.Value != null)
             {
-                if (destroyInXSeconds.Value != 0)
-                    Destroy(_targetGameObject, destroyInXSeconds.Value);
+                if (_destroyInXSeconds.Value != 0)
+                {
+                    Destroy(_targetGameObject, _destroyInXSeconds.Value);
+                }
                 else
+                {
                     Destroy(_targetGameObject.Value);
+                }
             }
 
             Continue();
@@ -47,12 +52,23 @@ namespace AtMycelia.Hyphlow
 
         public override string GetSummary()
         {
-            if (_targetGameObject.Value == null)
+            string result;
+            if (_targetGameObject.Value == null && !_targetGameObject.RepresentingVar)
             {
-                return "Error: No game object selected";
+                result = "Error: No game object selected";
+            }
+            else
+            {
+                result = _targetGameObject.RepresentingVar ? 
+                    $"{_targetGameObject.VarRef.Key}" : 
+                    $"{_targetGameObject.Value.name}";
+                if (_destroyInXSeconds.Value != 0)
+                {
+                    result += $" in {_destroyInXSeconds.Value} seconds";
+                }
             }
 
-            return _targetGameObject.Value.name + (destroyInXSeconds.Value == 0 ? "" : " in " + destroyInXSeconds.Value.ToString());
+            return result;
         }
 
         public override Color GetButtonColor()
@@ -62,21 +78,27 @@ namespace AtMycelia.Hyphlow
 
         public override bool HasReference(Variable variable)
         {
-            if (ReferenceEquals(_targetGameObject.VarRef, variable) || ReferenceEquals(destroyInXSeconds.VarRef, variable))
+            if (ReferenceEquals(_targetGameObject.VarRef, variable) || ReferenceEquals(_destroyInXSeconds.VarRef, variable))
                 return true;
 
             return false;
+        }
+
+        protected virtual void OnDestroy()
+        {
+            CancelInvoke();
+            StopAllCoroutines();
         }
 
         #endregion
 
         #region Backwards compatibility
 
-        
+
         public override void ApplyBackwardsCompatibility()
         {
             base.ApplyBackwardsCompatibility();
-            destroyInXSeconds ??= new FloatData(0);
+            _destroyInXSeconds ??= new FloatData(0);
             if (targetGameObjectOLD != null)
             {
                 _targetGameObject.Value = targetGameObjectOLD;

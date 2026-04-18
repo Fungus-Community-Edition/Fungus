@@ -1,0 +1,66 @@
+﻿:root 
+{
+}
+
+#VarRowRoot
+{
+	flex-grow: 1;
+	height: auto;
+	min-height: 60px; /* Twice the size of a regular all-in-one row */
+	flex-direction: column;
+}
+
+#SpaceFiller
+{
+	flex-grow: 0;
+	width: 120px;
+	padding: 0;
+	-unity-text-align: middle-left;
+	border-radius: 2px;
+	border-color: white;
+	font-size: 14px;
+	margin: 0px 3px 0px 0px;
+}
+
+#TopRow
+{
+	flex-grow: 1;
+	margin: var(--slight-bottom-margin-only);
+	flex-direction: row;
+
+	/* To make sure the top row doesn't get squished by the matrix field below it. */
+	min-height: 30px;
+	max-height: 30px;
+}
+
+.varRowTypeLabel 
+{
+  background-color: #434343;
+  height: auto;
+}
+
+.propertyField
+{
+	height: auto;
+	width: auto;
+}
+
+#ValueFieldHolder
+{
+	width: 100%;
+	flex-direction: row;
+}
+
+#ValueField
+{
+	width: 100%;   
+	font-size: 16px;
+	padding: 0px 3px 0px 3px;
+	margin: 0px;
+
+}
+
+.varRowTypeLabel
+{
+	background-color: #3C5E4F;
+}

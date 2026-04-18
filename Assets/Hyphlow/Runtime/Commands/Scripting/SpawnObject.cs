@@ -17,7 +17,7 @@ namespace AtMycelia.Hyphlow
                  "Instantiate a game object")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class SpawnObject : Command
     {
         [Tooltip("Game object to copy when spawning. Can be a scene object or a prefab.")]
@@ -37,7 +37,8 @@ namespace AtMycelia.Hyphlow
 
         [Tooltip("Optional variable to store the GameObject that was just created.")]
         [SerializeField]
-        protected GameObjectData _newlySpawnedObject;
+        [ContentTypeConstraint(typeof(GameObject))]
+        protected VariableReference _newlySpawnedObject;
 
         protected override void RefreshVariableDataCache()
         {
@@ -47,7 +48,6 @@ namespace AtMycelia.Hyphlow
             _variableDataCache.Add(_spawnAtSelf);
             _variableDataCache.Add(_spawnPosition);
             _variableDataCache.Add(_spawnRotation);
-            _variableDataCache.Add(_newlySpawnedObject);
         }
 
         #region Public members
@@ -64,7 +64,7 @@ namespace AtMycelia.Hyphlow
 
             if (_parentTransform.Value != null)
             {
-                newObject = GameObject.Instantiate(_sourceObject.Value,_parentTransform.Value);
+                newObject = GameObject.Instantiate(_sourceObject.Value, _parentTransform.Value);
             }
             else
             {
@@ -73,27 +73,38 @@ namespace AtMycelia.Hyphlow
 
             if (!_spawnAtSelf.Value)
             {
-                newObject.transform.localPosition = _spawnPosition.Value;
-                newObject.transform.localRotation = Quaternion.Euler(_spawnRotation.Value);
+                Quaternion spawnRot = Quaternion.Euler(_spawnRotation.Value);
+                newObject.transform.SetLocalPositionAndRotation(_spawnPosition.Value, spawnRot);
             }
             else
             {
                 newObject.transform.SetPositionAndRotation(transform.position, transform.rotation);
             }
 
-            _newlySpawnedObject.Value = newObject;
+            if (_newlySpawnedObject.Variable != null)
+            {
+                _newlySpawnedObject.SetValue(newObject);
+            }
 
             Continue();
         }
 
         public override string GetSummary()
         {
-            if (_sourceObject.Value == null)
+            string result = "Error: No source GameObject specified";
+            if (_sourceObject.Value != null)
             {
-                return "Error: No source GameObject specified";
+                if (_sourceObject.RepresentingVar)
+                {
+                    result = $"Spawn from {_sourceObject.VarRef.Key}";
+                }
+                else
+                {
+                    result = $"Spawn {_sourceObject.Value.name}";
+                }
             }
 
-            return _sourceObject.Value.name;
+            return result;
         }
         
         public override Color GetButtonColor()

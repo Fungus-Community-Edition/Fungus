@@ -3,7 +3,7 @@ using UnityEngine;
 namespace AtMycelia.Hyphlow.Tweening.VScripting
 {
     [CommandInfo("BI Tween",
-        "Punch Rotation",
+        "Simple/Punch Rotation",
         "Applies a jolt of force to a component's rotation and wobbles it back to its initial rotation.")]
     public class PunchRotation : BaseSimpleTweenCommand
     {
