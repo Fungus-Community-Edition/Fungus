@@ -3,10 +3,11 @@ using System.Text;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
+using UnityEngine.Serialization;
 
 namespace AtMycelia.Hyphlow
 {
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public abstract class VariableCondition : Condition, ISerializationCallbackReceiver
     {
         public enum AnyOrAll
@@ -16,8 +17,20 @@ namespace AtMycelia.Hyphlow
         }
 
         [Tooltip("Selecting AnyOf will result in true if at least one of the conditions is true. Selecting AllOF will result in true only when all the conditions are true.")]
-        [SerializeField] protected AnyOrAll anyOrAllConditions;
-        [SerializeField] protected List<ConditionExpression> conditions = new List<ConditionExpression>();
+        [SerializeField]
+        [FormerlySerializedAs("anyOrAllConditions")]
+        protected AnyOrAll _anyOrAllConditions;
+        [SerializeField]
+        [FormerlySerializedAs("conditions")]
+        protected List<ConditionExpression> _conditions = new List<ConditionExpression>();
+
+        [HideInInspector]
+        [FormerlySerializedAs("compareOperator")]
+        [SerializeField] protected CompareOperator _compareOperator;
+
+        [HideInInspector]
+        [FormerlySerializedAs("anyVar")]
+        [SerializeField] protected AnyVariableAndDataPair _anyVar;
 
         /// <summary>
         /// Called when the script is loaded or a value is changed in the
@@ -27,23 +40,23 @@ namespace AtMycelia.Hyphlow
         {
             base.OnValidate();
 
-            conditions ??= new List<ConditionExpression>();
+            _conditions ??= new List<ConditionExpression>();
 
-            if (conditions.Count == 0)
+            if (_conditions.Count == 0)
             {
-                conditions.Add(new ConditionExpression());
+                _conditions.Add(new ConditionExpression());
             }
         }
 
         protected override bool EvaluateCondition()
         {
-            if (conditions == null || conditions.Count == 0)
+            if (_conditions == null || _conditions.Count == 0)
             {
                 return false;
             }
 
             bool resultAny = false, resultAll = true;
-            foreach (ConditionExpression condition in conditions)
+            foreach (ConditionExpression condition in _conditions)
             {
                 bool curResult = false;
                 if (condition.AnyVar == null)
@@ -57,19 +70,19 @@ namespace AtMycelia.Hyphlow
                 resultAny |= curResult;
             }
 
-            if (anyOrAllConditions == AnyOrAll.AnyOf_OR) return resultAny;
+            if (_anyOrAllConditions == AnyOrAll.AnyOf_OR) return resultAny;
 
             return resultAll;
         }
 
         protected override bool HasNeededProperties()
         {
-            if (conditions == null || conditions.Count == 0)
+            if (_conditions == null || _conditions.Count == 0)
             {
                 return false;
             }
 
-            foreach (ConditionExpression condition in conditions)
+            foreach (ConditionExpression condition in _conditions)
             {
                 if (condition.AnyVar == null || condition.AnyVar.LhsVariable == null)
                 {
@@ -87,7 +100,7 @@ namespace AtMycelia.Hyphlow
             }
 
             string connector = "";
-            if (anyOrAllConditions == AnyOrAll.AnyOf_OR)
+            if (_anyOrAllConditions == AnyOrAll.AnyOf_OR)
             {
                 connector = " <b>OR</b> ";
             }
@@ -97,9 +110,9 @@ namespace AtMycelia.Hyphlow
             }
 
             StringBuilder summary = new StringBuilder("");
-            for (int i = 0; i < conditions.Count; i++)
+            for (int i = 0; i < _conditions.Count; i++)
             {
-                var currentCond = conditions[i];
+                var currentCond = _conditions[i];
                 var anyVar = currentCond.AnyVar;
                 var lhsVar = anyVar.LhsVariable;
                 string lhsVarStr = lhsVar != null ? lhsVar.Key : "null";
@@ -112,7 +125,7 @@ namespace AtMycelia.Hyphlow
                 string whatToAppend = $"{lhsVarStr} {opDesc} {anyVar.GetDataDescription()}";
                 summary.Append(whatToAppend);
 
-                if (i < conditions.Count - 1)
+                if (i < _conditions.Count - 1)
                 {
                     summary.Append(connector);
                 }
@@ -122,7 +135,7 @@ namespace AtMycelia.Hyphlow
 
         public override bool HasReference(Variable variable)
         {
-            return anyVar.HasReference(variable);
+            return _anyVar.HasReference(variable);
         }
 
         #region Editor caches
@@ -131,9 +144,9 @@ namespace AtMycelia.Hyphlow
         {
             base.RefreshVariableCache();
 
-            if (conditions != null)
+            if (_conditions != null)
             {
-                foreach (var item in conditions)
+                foreach (var item in _conditions)
                 {
                     item.AnyVar.RefreshVariableCacheHelper(GetFlowchart(), ref referencedVariables);
                 }
@@ -143,12 +156,6 @@ namespace AtMycelia.Hyphlow
         #endregion Editor caches
 
         #region Backwards compat
-
-        [HideInInspector]
-        [SerializeField] protected CompareOperator compareOperator;
-
-        [HideInInspector]
-        [SerializeField] protected AnyVariableAndDataPair anyVar;
 
         [Tooltip("Variable to use in expression")]
         [VariableProperty]
@@ -209,7 +216,7 @@ namespace AtMycelia.Hyphlow
             UnityEditor.EditorApplication.delayCall += () =>
             {
                 if (this == null) return; // In case the object was deleted before the delayed call
-                anyVar?.Refresh();
+                _anyVar?.Refresh();
             };
 #endif
         }
@@ -224,21 +231,21 @@ namespace AtMycelia.Hyphlow
 
             if (variable != null)
             {
-                anyVar.LhsVariable = variable;
+                _anyVar.LhsVariable = variable;
                 // ^This should immediately update the var data
             }
 
             // just checking for anyVar != null fails here. Is any var being reintilaized somewhere?
 
-            if (anyVar != null && anyVar.LhsVariable != null)
+            if (_anyVar != null && _anyVar.LhsVariable != null)
             {
-                ConditionExpression cond = new ConditionExpression(compareOperator, anyVar);
-                if (!conditions.Contains(cond))
+                ConditionExpression cond = new ConditionExpression(_compareOperator, _anyVar);
+                if (!_conditions.Contains(cond))
                 {
-                    conditions.Add(cond);
+                    _conditions.Add(cond);
                 }
 
-                anyVar = null;
+                _anyVar = null;
                 variable = null;
             }
         }

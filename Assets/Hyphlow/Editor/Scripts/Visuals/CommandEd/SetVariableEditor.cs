@@ -16,10 +16,15 @@ namespace AtMycelia.Hyphlow.EditorUtils
         public override void OnEnable()
         {
             base.OnEnable();
-
+            SetVariable targetCommand = (SetVariable)target;
+            Flowchart fc = targetCommand.GetFlowchart();
+            if (fc != null)
+            {
+                VariableRegistryService.RebuildAll(fc);
+            }
             anyVarDataPairProp = serializedObject.FindProperty("_anyVar");
-            lhsVarProp = anyVarDataPairProp.FindPropertyRelative("varRef"); // VariableReference
-            anyVarDataProp = anyVarDataPairProp.FindPropertyRelative("data"); // AnyVariableData
+            lhsVarProp = anyVarDataPairProp.FindPropertyRelative("_varRef"); // VariableReference
+            anyVarDataProp = anyVarDataPairProp.FindPropertyRelative("_data"); // AnyVariableData
             setOperatorProp = serializedObject.FindProperty("_setOperator");
         }
 
@@ -66,7 +71,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
             EditorGUILayout.PropertyField(lhsVarProp, new GUIContent("Var to Set"));
 
             // Ensure owner is set in the serialized fields (avoid touching boxedValue)
-            var owningSourceProp = lhsVarProp.FindPropertyRelative("owningSource");
+            var owningSourceProp = lhsVarProp.FindPropertyRelative("_owningSource");
             if (owningSourceProp != null && owningSourceProp.objectReferenceValue == null && flowchart != null)
             {
                 owningSourceProp.objectReferenceValue = flowchart;
@@ -75,7 +80,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 owningSourceProp.objectReferenceValue as IVariableSource : 
                 null;
             // Resolve selected variable purely from serialized fields (no boxedValue)
-            var itemIdProp = lhsVarProp.FindPropertyRelative("itemId");
+            var itemIdProp = lhsVarProp.FindPropertyRelative("_itemId");
             selectedVariable = null;
             if (owner != null && itemIdProp != null)
             {
@@ -153,7 +158,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
             // Ensure AnyVariableData.data (SerializeReference) is of the correct IVariableData type
             // without touching boxedValue. We replace the managed reference when needed.
             var innerDataRefProp = anyVarDataProp != null
-                ? anyVarDataProp.FindPropertyRelative("data") // SerializeReference IVariableData
+                ? anyVarDataProp.FindPropertyRelative("_data") // SerializeReference IVariableData
                 : null;
 
             if (innerDataRefProp != null)
@@ -179,7 +184,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
             // Now draw the concrete inner data: anyVar.data.data
             // Re-fetch in case we just replaced the managed reference
-            var rhsVarDataPropLocal = anyVarDataPairProp.FindPropertyRelative("data.data");
+            var rhsVarDataPropLocal = anyVarDataPairProp.FindPropertyRelative("_data._data");
             if (rhsVarDataPropLocal != null)
             {
                 EditorGUILayout.PropertyField(rhsVarDataPropLocal, _valueToApplyLabel, true);

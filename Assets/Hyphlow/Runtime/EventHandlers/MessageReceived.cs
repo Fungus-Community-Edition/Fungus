@@ -1,5 +1,4 @@
 using UnityEngine;
-
 using UnityEngine.Scripting.APIUpdating;
 using UnityEngine.Serialization;
 
@@ -42,7 +41,7 @@ namespace AtMycelia.Hyphlow
         /// <param name="message">Message.</param>
         public void OnSendFungusMessage(string message)
         {
-            if (this._oldMessage == message)
+            if (this._message.Value == message)
             {
                 ExecuteBlock();
             }
@@ -50,7 +49,7 @@ namespace AtMycelia.Hyphlow
 
         public override string GetSummary()
         {
-            return _oldMessage;
+            return _message.Value;
         }
 
         #endregion

@@ -35,22 +35,32 @@ namespace AtMycelia.Hyphlow.EditorUtils
             new GUIContent(VariableUtil.GetCompareOperatorDescription(CompareOperator.NotEquals)),
         };
 
-        protected SerializedProperty conditions;
-
         public override void OnEnable()
         {
             base.OnEnable();
 
-            conditions = serializedObject.FindProperty("conditions");
+            conditions = serializedObject.FindProperty("_conditions");
+            anyOrAllConditions = serializedObject.FindProperty("_anyOrAllConditions");
         }
+
+        protected SerializedProperty conditions;
+        protected SerializedProperty anyOrAllConditions;
 
         public override void DrawCommandGUI()
         {
             serializedObject.Update();
 
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("anyOrAllConditions"));
+            EditorGUILayout.PropertyField(anyOrAllConditions);
 
-            conditions.arraySize = EditorGUILayout.IntField("Size", conditions.arraySize);
+            int newSize = EditorGUILayout.IntField("Size", conditions.arraySize);
+            bool sizeChanged = newSize != conditions.arraySize;
+            if (sizeChanged)
+            {
+                conditions.arraySize = Mathf.Max(0, newSize);
+                serializedObject.ApplyModifiedProperties();
+                serializedObject.Update();
+            }
+
             GUILayout.Label("Conditions", EditorStyles.boldLabel);
 
             VariableCondition condTarget = target as VariableCondition;
@@ -58,6 +68,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
             var flowchart = condTarget.GetFlowchart();
             if (flowchart == null)
             {
+                serializedObject.ApplyModifiedProperties();
                 return;
             }
 
@@ -65,11 +76,11 @@ namespace AtMycelia.Hyphlow.EditorUtils
             for (int i = 0; i < conditions.arraySize; i++)
             {
                 var conditionAnyVar = conditions.GetArrayElementAtIndex(i)
-                    .FindPropertyRelative("anyVar");
-                var varRefProp = conditionAnyVar.FindPropertyRelative("varRef");
-                var varDataProp = conditionAnyVar.FindPropertyRelative("data.data");
+                    .FindPropertyRelative("_anyVar");
+                var varRefProp = conditionAnyVar.FindPropertyRelative("_varRef");
+                var varDataProp = conditionAnyVar.FindPropertyRelative("_data._data");
                 var conditionCompare = conditions.GetArrayElementAtIndex(i)
-                    .FindPropertyRelative("compareOperator");
+                    .FindPropertyRelative("_compareOperator");
 
                 EditorGUILayout.PropertyField(varRefProp, new GUIContent("Lhs"), true);
 

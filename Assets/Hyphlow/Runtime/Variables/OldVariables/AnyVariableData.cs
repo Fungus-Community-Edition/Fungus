@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 using baseObj = System.Object;
 
 namespace AtMycelia.Hyphlow
@@ -12,36 +13,38 @@ namespace AtMycelia.Hyphlow
     [Serializable]
     public partial class AnyVariableData : VariableData
     {
-        [SerializeReference] protected IVariableData data; 
+        [SerializeReference]
+        [FormerlySerializedAs("data")]
+        protected IVariableData _data; 
         // ^Represents the actual data being held, which can change dynamically
 
         public override baseObj BoxedValue
         {
             get
             {
-                if (data == null)
+                if (_data == null)
                 {
                     return null;
                 }
-                return data.BoxedValue;
+                return _data.BoxedValue;
             }
             set
             {
-                if (data == null)
+                if (_data == null)
                 {
                     return;
                 }
 
                 if (value == null)
                 {
-                    data.BoxedValue = null;
+                    _data.BoxedValue = null;
                     return;
                 }
 
                 Type valueType = value.GetType();
-                if (data.ContentType.Equals(valueType))
+                if (_data.ContentType.Equals(valueType))
                 {
-                    data.BoxedValue = value;
+                    _data.BoxedValue = value;
                 }
                 else
                 {
@@ -89,7 +92,7 @@ namespace AtMycelia.Hyphlow
                 return;
             }
 
-            data = toSet;
+            _data = toSet;
         }
 
         public void SetFor(Type contentType)
@@ -100,47 +103,47 @@ namespace AtMycelia.Hyphlow
                 return;
             }
 
-            if (data != null && contentType.Equals(data.ContentType))
+            if (_data != null && contentType.Equals(_data.ContentType))
             {
                 return;
             }
 
             IVariableData toSet = VariableDataTypeRegistry.CreateForContentType(contentType);
-            data = toSet;
+            _data = toSet;
         }
 
-        public override string GetDescription() => data?.GetDescription() ?? "Null";
+        public override string GetDescription() => _data?.GetDescription() ?? "Null";
 
         public override IVariable VarRef
         {
             get
             {
-                return data?.VarRef;
+                return _data?.VarRef;
             }
             set
             {
                 if (ReferenceEquals(value, null))
                 {
-                    backingVarRef.Variable = null;
-                    data.VarRef = null;
+                    _backingVarRef.Variable = null;
+                    _data.VarRef = null;
                     return;
                 }
 
                 // Adapt the data to the type of the var
                 SetFor(value.GetType(), value.ContentType);
 
-                data.VarRef = backingVarRef.Variable = value;
+                _data.VarRef = _backingVarRef.Variable = value;
             }
         }
 
-        public override Type ContentType => data?.ContentType;
+        public override Type ContentType => _data?.ContentType;
 
         public bool HasReference(Variable var)
         {
             bool result = false;
-            if (data is not null)
+            if (_data is not null)
             {
-                result = ReferenceEquals(data.VarRef, var);
+                result = ReferenceEquals(_data.VarRef, var);
             }
             return result;
         }
@@ -148,22 +151,22 @@ namespace AtMycelia.Hyphlow
         public T GetValue<T>()
         {
             Type tType = typeof(T);
-            if (data is null)
+            if (_data is null)
             {
                 string logMessage = $"Cannot get value of type {tType.Name} from AnyVariableData " +
                     $"because it has no data.";
                 Debug.LogError(logMessage);
                 return default;
             }
-            if (!tType.IsAssignableFrom(data.ContentType))
+            if (!tType.IsAssignableFrom(_data.ContentType))
             {
                 string logMessage = $"Cannot get value of type {tType.Name} from AnyVariableData " +
-                    $"because it holds data of type {data.ContentType.Name}.";
+                    $"because it holds data of type {_data.ContentType.Name}.";
                 Debug.LogError(logMessage);
                 return default;
             }
 
-            return (T)data.BoxedValue;
+            return (T)_data.BoxedValue;
         }
     }
 

@@ -16,6 +16,20 @@ namespace AtMycelia.Hyphlow.EditorUtils
     [CustomPropertyDrawer(typeof(VariableReference))]
     public class VariableReferenceDrawer : PropertyDrawer
     {
+        public VariableReferenceDrawer()
+        {
+            if (!Application.isPlaying)
+            {
+                GameObject activeGo = Selection.activeGameObject;
+                Flowchart fc = null;
+                if (activeGo != null && activeGo.TryGetComponent(out Flowchart found))
+                {
+                    fc = found;
+                }
+                VariableRegistryService.RebuildAll(fc);
+            }
+        }
+
         public override void OnGUI(Rect position, SerializedProperty varRefProp, GUIContent label)
         {
             EditorGUI.BeginProperty(position, label, varRefProp);
@@ -54,8 +68,8 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 .Prepend("<None>")
                 .ToArray();
 
-            SerializedProperty itemIdProp = varRefProp.FindPropertyRelative("itemId");
-            SerializedProperty owningSourceProp = varRefProp.FindPropertyRelative("owningSource");
+            SerializedProperty itemIdProp = varRefProp.FindPropertyRelative("_itemId");
+            SerializedProperty owningSourceProp = varRefProp.FindPropertyRelative("_owningSource");
 
             int currentItemId = itemIdProp.intValue;
             UnityObj storedOwner = owningSourceProp.objectReferenceValue;

@@ -17,8 +17,12 @@ namespace AtMycelia.Hyphlow
     {
         // What we do is store the id of the var, and then return the var itself based on
         // what source we're asked to work with. This minimizes the amount of data we need to serialize.
-        [SerializeField] private byte itemId;
-        [SerializeField] private UnityObj owningSource;
+        [SerializeField]
+        [FormerlySerializedAs("itemId")]
+        private byte _itemId;
+        [SerializeField]
+        [FormerlySerializedAs("owningSource")]
+        private UnityObj _owningSource;
 
         [FormerlySerializedAs("owningFc")]
         [SerializeField] [HideInInspector] private Flowchart legacyOwningFc;
@@ -47,7 +51,7 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         public virtual byte ItemId
         {
-            get { return itemId; }
+            get { return _itemId; }
         }
 
         /// <summary>
@@ -57,7 +61,7 @@ namespace AtMycelia.Hyphlow
         {
             get
             {
-                if (itemId == Muscariable.InvalidID)
+                if (_itemId == Muscariable.InvalidID)
                 {
                     //Debug.LogWarning($"VariableReference: Variable is null. Owner is {VarOwner}");
                     return null;
@@ -70,7 +74,7 @@ namespace AtMycelia.Hyphlow
 
                 if (VarOwner != null)
                 {
-                    result = VarOwner.GetVariable(itemId);
+                    result = VarOwner.GetVariable(_itemId);
                 }
                 return result;
             }
@@ -78,12 +82,12 @@ namespace AtMycelia.Hyphlow
             {
                 if (value == null)
                 {
-                    itemId = Muscariable.InvalidID;
+                    _itemId = Muscariable.InvalidID;
                     VarOwner = null;
                 }
                 else
                 {
-                    itemId = value.ItemId;
+                    _itemId = value.ItemId;
                     VarOwner = value.Owner;
                 }
             }
@@ -97,23 +101,23 @@ namespace AtMycelia.Hyphlow
         {
             varOwner = null;
 
-            if (IsUnityObjectNull(owningSource))
+            if (IsUnityObjectNull(_owningSource))
             {
                 if (!IsUnityObjectNull(legacyOwningFc))
                 {
-                    owningSource = legacyOwningFc;
+                    _owningSource = legacyOwningFc;
                     legacyOwningFc = null;
                     legacyOwningVsa = null;
                 }
                 else if (!IsUnityObjectNull(legacyOwningVsa))
                 {
-                    owningSource = legacyOwningVsa;
+                    _owningSource = legacyOwningVsa;
                     legacyOwningVsa = null;
                 }
             }
 
-            varOwner ??= owningSource as Flowchart;
-            varOwner ??= owningSource as VariableSourceAsset;
+            varOwner ??= _owningSource as Flowchart;
+            varOwner ??= _owningSource as VariableSourceAsset;
         }
 
         private static bool IsUnityObjectNull(UnityObj unityObj)
@@ -153,7 +157,7 @@ namespace AtMycelia.Hyphlow
             set
             {
                 varOwner = value;
-                owningSource = value as UnityObj;
+                _owningSource = value as UnityObj;
                 legacyOwningFc = null;
                 legacyOwningVsa = null;
             }

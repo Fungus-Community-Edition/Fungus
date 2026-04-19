@@ -19,7 +19,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
             DisplayLeftHandSideVar();
             void DisplayLeftHandSideVar()
             {
-                lhsVarRefProp = holdsVarAndDataPair.FindPropertyRelative("varRef");
+                lhsVarRefProp = holdsVarAndDataPair.FindPropertyRelative("_varRef");
                 EditorGUI.PropertyField(position, lhsVarRefProp, label);
                 lhsVarRefProp.serializedObject.ApplyModifiedProperties();
             }
@@ -59,7 +59,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 DrawInnerDataField();
                 void DrawInnerDataField()
                 {
-                    SerializedProperty innerDataProp = holdsVarAndDataPair.FindPropertyRelative("data.data");
+                    SerializedProperty innerDataProp = holdsVarAndDataPair.FindPropertyRelative("_data._data");
                     if (currentLeftHandSideVar != null && innerDataProp != null)
                     {
                         EditorGUI.PropertyField(position, innerDataProp, new GUIContent("Data"), includeChildren: true);

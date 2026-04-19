@@ -311,33 +311,52 @@ namespace AtMycelia.Hyphlow
         {
             if (on)
             {
+                _varManager.VariableAdded += OnPostVarAdded;
+                _varManager.VariableRemoved += OnPostVarRemoved;
                 _varManager.PreVariableAdded += OnPreVarAdded;
                 _varManager.PreVariableRemoved += OnPreVarRemoved;
                 EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
             }
             else
             {
+                _varManager.VariableAdded -= OnPostVarAdded;
+                _varManager.VariableRemoved -= OnPostVarRemoved;
                 _varManager.PreVariableAdded -= OnPreVarAdded;
                 _varManager.PreVariableRemoved -= OnPreVarRemoved;
                 EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
             }
         }
 
+        private void OnPostVarRemoved(IVariable variable)
+        {
+            AnyRightAfterVarRemoved(variable);
+        }
+
+        public static event Action<IVariable> AnyRightAfterVarRemoved = delegate { };
+
+        private void OnPostVarAdded(IVariable variable)
+        {
+            AnyRightAfterVarAdded(variable);
+        }
+
+        public static event Action<IVariable> AnyRightAfterVarAdded = delegate { };
+
         private void OnPreVarRemoved(IVariable variable)
         {
-            AnyRightBeforeVarRemoved((Muscariable)variable);
+            AnyRightBeforeVarRemoved(variable);
         }
 
         // We only want editor code to respond to these events.
         
-        public static event Action<Muscariable> AnyRightBeforeVarRemoved = delegate { };
+        public static event Action<IVariable> AnyRightBeforeVarRemoved = delegate { };
 
         private void OnPreVarAdded(IVariable variable)
         {
-            AnyRightBeforeVarAdded((Muscariable)variable);
+            AnyRightBeforeVarAdded(variable);
         }
 
-        public static event Action<Muscariable> AnyRightBeforeVarAdded = delegate { };
+        public static event Action<IVariable> AnyRightBeforeVarAdded = delegate { };
+        
 #endif
 
         protected virtual void EnsureValidUniqueId()

@@ -113,8 +113,8 @@ namespace AtMycelia.Hyphlow
                 FlowchartSignals.VariableAdded += OnVarAdded;
                 FlowchartSignals.VariableRemoved += OnVarRemoved;
 
-                VariableSourceAsset.AnyRightBeforeVarAdded += OnAnyVariableChanged;
-                VariableSourceAsset.AnyRightBeforeVarRemoved += OnAnyVariableChanged;
+                VariableSourceAsset.AnyRightAfterVarAdded += OnAnyVariableChanged;
+                VariableSourceAsset.AnyRightAfterVarRemoved += OnAnyVariableChanged;
 
                 EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
 #endif
@@ -133,8 +133,8 @@ namespace AtMycelia.Hyphlow
                 FlowchartSignals.VariableAdded -= OnVarAdded;
                 FlowchartSignals.VariableRemoved -= OnVarRemoved;
 
-                VariableSourceAsset.AnyRightBeforeVarAdded -= OnAnyVariableChanged;
-                VariableSourceAsset.AnyRightBeforeVarRemoved -= OnAnyVariableChanged;
+                VariableSourceAsset.AnyRightAfterVarAdded -= OnAnyVariableChanged;
+                VariableSourceAsset.AnyRightAfterVarRemoved -= OnAnyVariableChanged;
 
                 EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
 #endif
@@ -166,7 +166,7 @@ namespace AtMycelia.Hyphlow
             _registry.Rebuild();
         }
 
-        private void OnAnyVariableChanged(Muscariable variable)
+        private void OnAnyVariableChanged(IVariable variable)
         {
             _registry.Rebuild();
         }

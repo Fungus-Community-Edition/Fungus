@@ -19,10 +19,10 @@ namespace AtMycelia.Hyphlow
         private readonly Func<IReadOnlyList<VariableSourceAsset>> _globalSourcesProvider;
 
         // Master dictionary of all variables
-        private Dictionary<string, IVariable> _vars = new Dictionary<string, IVariable>();
+        private readonly Dictionary<string, IVariable> _vars = new Dictionary<string, IVariable>();
 
         // Secondary index: contentType -> dict of vars
-        private Dictionary<Type, Dictionary<string, IVariable>> _varsByType =
+        private readonly Dictionary<Type, Dictionary<string, IVariable>> _varsByType =
             new Dictionary<Type, Dictionary<string, IVariable>>();
 
         public IReadOnlyDictionary<string, IVariable> Variables => _vars;
@@ -54,6 +54,17 @@ namespace AtMycelia.Hyphlow
 #endif
         }
 
+        private void OnSelectionChanged()
+        {
+#if UNITY_EDITOR
+            var selected = Selection.activeGameObject;
+            if (selected != null && selected.TryGetComponent<Flowchart>(out var fc))
+            {
+                Rebuild(fc);
+            }
+#endif
+        }
+
         private void OnVariableValueChanged(IVariable variable, object arg2)
         {
 #if UNITY_EDITOR
@@ -81,19 +92,6 @@ namespace AtMycelia.Hyphlow
             }
             OnSelectionChanged();
         }
-
-
-        private void OnSelectionChanged()
-        {
-#if UNITY_EDITOR
-            var selected = Selection.activeGameObject;
-            if (selected != null && selected.TryGetComponent<Flowchart>(out var fc))
-            {
-                Rebuild(fc);
-            }
-#endif
-        }
-
 
         public void Rebuild(IVariableSource localSource = null)
         {

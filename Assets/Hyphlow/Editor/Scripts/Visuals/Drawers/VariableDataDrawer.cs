@@ -32,22 +32,22 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 return;
             }
 
-            var literalValueProp = varDataProp.FindPropertyRelative("value");
+            var literalValueProp = varDataProp.FindPropertyRelative("_value");
             if (anyVarData != null) 
             {
-                literalValueProp = varDataProp.FindPropertyRelative("data.value");
+                literalValueProp = varDataProp.FindPropertyRelative("_data._value");
             }
-            var backingVarRefProp = varDataProp.FindPropertyRelative("backingVarRef");
+            var backingVarRefProp = varDataProp.FindPropertyRelative("_backingVarRef");
             if (anyVarData != null)
             {
-                backingVarRefProp = varDataProp.FindPropertyRelative("data.backingVarRef");
+                backingVarRefProp = varDataProp.FindPropertyRelative("_data._backingVarRef");
             }
             if (backingVarRefProp == null)
             {
                 EditorGUI.EndProperty();
                 return;
             }
-            var itemIdProp = backingVarRefProp.FindPropertyRelative("itemId");
+            var itemIdProp = backingVarRefProp.FindPropertyRelative("_itemId");
 
             bool shouldDrawLiteral = ShouldDrawLiteral(varDataProp);
             Rect labelRect, valueRect, popupRect, fieldRect;
@@ -291,14 +291,10 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 IVariable chosenNow = orderedVars[selectedIndex];
                 bool choseLiteralValue = chosenNow == null;
 
-                SerializedProperty owningFcProp = backingVarRefProp.FindPropertyRelative("legacyOwningFc");
-                SerializedProperty owningVsaProp = backingVarRefProp.FindPropertyRelative("legacyOwningVsa");
                 SerializedProperty ownerProp = backingVarRefProp.FindPropertyRelative("owningSource");
 
                 if (choseLiteralValue)
                 {
-                    owningFcProp.objectReferenceValue = null;
-                    owningVsaProp.objectReferenceValue = null;
                     ownerProp.objectReferenceValue = localFlowchart;
                     itemIdProp.intValue = Variable.InvalidID;
                 }
@@ -319,15 +315,11 @@ namespace AtMycelia.Hyphlow.EditorUtils
                             // This means that the underlying VariableData changed to a whole new instance. 
                             // Thus, we'll need to refetch the properties to point to the new instance.
                             backingVarRefProp = varDataProp.FindPropertyRelative("data.backingVarRef");
-                            owningFcProp = backingVarRefProp.FindPropertyRelative("legacyOwningFc");
-                            owningVsaProp = backingVarRefProp.FindPropertyRelative("legacyOwningVsa");
                             ownerProp = backingVarRefProp.FindPropertyRelative("owningSource");
                             itemIdProp = backingVarRefProp.FindPropertyRelative("itemId");
                         }
                     }
 
-                    owningFcProp.objectReferenceValue = null;
-                    owningVsaProp.objectReferenceValue = null;
                     ownerProp.objectReferenceValue = vOwner as UnityObj;
                     itemIdProp.intValue = chosenNow.ItemId;
                 }
