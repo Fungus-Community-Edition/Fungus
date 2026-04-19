@@ -1,9 +1,10 @@
-﻿using UnityEditor;
-using UnityEngine;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using UnityEditor;
+using UnityEditor.SceneManagement;
+using UnityEngine;
 using UnityObj = UnityEngine.Object;
 
 namespace AtMycelia.Hyphlow.EditorUtils
@@ -15,11 +16,13 @@ namespace AtMycelia.Hyphlow.EditorUtils
     [CustomPropertyDrawer(typeof(VariableReference))]
     public class VariableReferenceDrawer : PropertyDrawer
     {
-        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+        public override void OnGUI(Rect position, SerializedProperty varRefProp, GUIContent label)
         {
-            EditorGUI.BeginProperty(position, label, property);
+            EditorGUI.BeginProperty(position, label, varRefProp);
 
-            UnityObj targetObject = property.serializedObject.targetObject;
+            varRefProp.serializedObject.Update();
+
+            UnityObj targetObject = varRefProp.serializedObject.targetObject;
             Type[] allowedContentTypes = GetAllowedTypes(fieldInfo);
             VariableRegistry varRegistry = null;
 
@@ -27,7 +30,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
             void EnsurePrerequisites(out bool success)
             {
                 success = false;
-                
+
                 varRegistry = VariableRegistryService.Registry;
                 if (varRegistry == null)
                 {
@@ -51,8 +54,8 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 .Prepend("<None>")
                 .ToArray();
 
-            SerializedProperty itemIdProp = property.FindPropertyRelative("itemId");
-            SerializedProperty owningSourceProp = property.FindPropertyRelative("owningSource");
+            SerializedProperty itemIdProp = varRefProp.FindPropertyRelative("itemId");
+            SerializedProperty owningSourceProp = varRefProp.FindPropertyRelative("owningSource");
 
             int currentItemId = itemIdProp.intValue;
             UnityObj storedOwner = owningSourceProp.objectReferenceValue;
@@ -65,7 +68,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
                 if (found >= 0)
                 {
-                    currentIndex = found + 1;
+                    currentIndex = found + 1; // +1 because of the <None> option at index 0
                 }
             }
 
@@ -75,19 +78,18 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 // matches the stored owner reference. This way, even if there are multiple
                 // variables with the same ID, we should still show the correct one as
                 // selected in the dropdown.
-                if (varEl == null)
+                bool rightId = varEl != null && varEl.ItemId == currentItemId;
+                if (!rightId)
                 {
                     return false;
                 }
-                if (varEl.ItemId != currentItemId)
-                {
-                    return false;
-                }
+
                 if (storedOwner == null)
                 {
                     return true;
                 }
-                return ReferenceEquals(varEl.Owner as UnityObj, storedOwner);
+                bool rightOwner = ReferenceEquals(varEl.Owner as UnityObj, storedOwner);
+                return rightId && rightOwner;
             }
             EditorGUI.BeginChangeCheck();
             int newIndex = EditorGUI.Popup(position, label.text, currentIndex, options);
@@ -95,6 +97,8 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
             if (EditorGUI.EndChangeCheck())
             {
+                Undo.RecordObject(targetObject, "Set Variable Reference");
+
                 bool choseToSetNullVar = newIndex == 0;
                 if (choseToSetNullVar)
                 {
@@ -109,7 +113,28 @@ namespace AtMycelia.Hyphlow.EditorUtils
                     owningSourceProp.objectReferenceValue = chosen.Owner as UnityObj;
                 }
 
-                property.serializedObject.ApplyModifiedProperties();
+                varRefProp.serializedObject.ApplyModifiedProperties();
+
+                if (PrefabUtility.IsPartOfPrefabInstance(targetObject))
+                {
+                    PrefabUtility.RecordPrefabInstancePropertyModifications(targetObject);
+                }
+
+                EditorUtility.SetDirty(targetObject);
+                GameObject go = null;
+                if (targetObject is GameObject)
+                {
+                    go = targetObject as GameObject;
+                }
+                else if (targetObject is Component)
+                {
+                    go = (targetObject as Component).gameObject;
+                }
+                PrefabStage prefabStage = PrefabStageUtility.GetPrefabStage(go);
+                if (prefabStage != null)
+                {
+                    EditorSceneManager.MarkSceneDirty(prefabStage.scene);
+                }
             }
 
             EditorGUI.EndProperty();

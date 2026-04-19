@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
     /// <summary>
     /// Attribute class for Fungus event handlers.
     /// </summary>
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class EventHandlerInfoAttribute : Attribute
     {
         public EventHandlerInfoAttribute(string category, string eventHandlerName, string helpText)
@@ -20,7 +20,7 @@ namespace AtMycelia.Hyphlow
             this.EventHandlerName = eventHandlerName;
             this.HelpText = helpText;
         }
-        
+
         public string Category { get; set; }
         public string EventHandlerName { get; set; }
         public string HelpText { get; set; }
@@ -38,8 +38,8 @@ namespace AtMycelia.Hyphlow
     [RequireComponent(typeof(Flowchart))]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
-    public class EventHandler : MonoBehaviour, ISerializationCallbackReceiver
-    {   
+    public class EventHandler : MonoBehaviour, ISerializationCallbackReceiver, IBackwardsCompatibilityApplier
+    {
         [HideInInspector]
         [FormerlySerializedAs("parentSequence")]
         [SerializeField] protected Block parentBlock;
@@ -53,7 +53,7 @@ namespace AtMycelia.Hyphlow
         }
 
         #region Public members
-        
+
         /// <summary>
         /// The parent Block which owns this Event Handler.
         /// </summary>
@@ -181,7 +181,7 @@ namespace AtMycelia.Hyphlow
 
         public virtual void OnBeforeSerialize()
         {
-            
+
         }
 
         public virtual void OnAfterDeserialize()
@@ -209,5 +209,9 @@ namespace AtMycelia.Hyphlow
 
         private EventDispatcher _eventDispatcher;
 
+        public virtual void ApplyBackwardsCompatibility()
+        {
+
+        }
     }
 }

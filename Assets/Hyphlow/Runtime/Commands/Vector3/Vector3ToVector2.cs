@@ -1,6 +1,6 @@
 using UnityEngine;
-
 using UnityEngine.Scripting.APIUpdating;
+using UnityEngine.Serialization;
 
 namespace AtMycelia.Hyphlow
 {
@@ -9,39 +9,39 @@ namespace AtMycelia.Hyphlow
     /// </summary>
     [CommandInfo("Vector3",
                  "ToVector2",
-                 "Convert Fungus Vector3 to Fungus Vector2")]
+                 "Convert Hyphlow Vector3 to Hyphlow Vector2")]
     [AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class Vector3ToVector2 : Command
     {
         [SerializeField]
-        protected Vector3Data vec3;
+        [ContentTypeConstraint(typeof(Vector3))]
+        protected VariableReference _vecThree = new VariableReference();
 
         [SerializeField]
-        protected Vector2Data vec2;
-
-        protected override void RefreshVariableDataCache()
-        {
-            base.RefreshVariableDataCache();
-            _variableDataCache.Add(vec3);
-            _variableDataCache.Add(vec2);
-        }
+        [ContentTypeConstraint(typeof(Vector2))]
+        protected VariableReference _vecTwo = new VariableReference();
 
         public override void OnEnter()
         {
-            vec2.Value = vec3.Value;
-
+            var valToSet = _vecThree.GetValue<Vector3>();
+            _vecTwo.SetValue(valToSet);
             Continue();
         }
 
         public override string GetSummary()
         {
-            if (vec3.vector3Ref != null && vec2.vector2Ref != null)
+            string result;
+            if (_vecThree.Variable != null && _vecTwo.Variable != null)
             {
-                return "Converting " + vec3.vector3Ref.Key + " to " + vec2.vector2Ref.Key;
+                result = "Converting " + _vecThree.VarKey + " to " + _vecTwo.VarKey;
+            }
+            else
+            {
+                result = "Error: variables not set";
             }
 
-            return "Error: variables not set";
+            return result;
         }
 
         public override Color GetButtonColor()
@@ -49,13 +49,50 @@ namespace AtMycelia.Hyphlow
             return CommandColors.Flow;
         }
 
-
         public override bool HasReference(Variable variable)
         {
-            if (ReferenceEquals(variable, vec3.VarRef) || ReferenceEquals(variable, vec2.VarRef))
+            if (ReferenceEquals(variable, _vecThree.Variable) || 
+                ReferenceEquals(variable, _vecTwo.Variable))
                 return true;
 
             return false;
         }
+
+        public override void ApplyBackwardsCompatibility()
+        {
+            base.ApplyBackwardsCompatibility();
+
+            if (_oldVecThree != null)
+            {
+                if (_vecThree.Variable == null && _oldVecThree.VarRef != null)
+                {
+                    _vecThree.Variable = _oldVecThree.VarRef;
+                }
+
+                _oldVecThree = null;
+            }
+
+            if (_oldVecTwo != null)
+            {
+                if (_vecTwo.Variable == null && _oldVecTwo.VarRef != null)
+                {
+                    _vecTwo.Variable = _oldVecTwo.VarRef;
+                }
+
+                _oldVecTwo = null;
+            }
+        }
+
+        [SerializeField]
+        [FormerlySerializedAs("vec3")]
+        [FormerlySerializedAs("_vec3")]
+        [HideInInspector]
+        protected Vector3Data _oldVecThree;
+
+        [SerializeField]
+        [FormerlySerializedAs("vec2")]
+        [FormerlySerializedAs("_vec2")]
+        [HideInInspector]
+        protected Vector2Data _oldVecTwo;
     }
 }

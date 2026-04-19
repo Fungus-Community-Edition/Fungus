@@ -8,8 +8,6 @@ using UnityEditor;
 
 namespace AtMycelia.Hyphlow
 {
-    
-
     /// <summary>
     /// Abstract base class for variables.
     /// </summary>
@@ -219,13 +217,21 @@ namespace AtMycelia.Hyphlow
                     return;
                 }
 
-                if (value != null && ContentType.IsAssignableFrom(value.GetType()))
+                if (value == null)
                 {
-                    this.value = (T)value;
+                    this.value = default;
                     return;
                 }
-                // Optional: allow numeric conversions or throw
-                throw new InvalidCastException($"Cannot assign value of type {value?.GetType().Name ?? "null"} to {typeof(T).Name}.");
+
+                Type valueType = value.GetType();
+                if (TypeUtils.TypesCompatible(ContentType, valueType))
+                {
+                    this.value = ConvertTo(value);
+                    return;
+                }
+
+                throw new InvalidCastException($"Cannot assign value of type {value?.GetType().Name ?? "null"} " +
+                    $"to {GetType().Name}.");
             }
         }
 
@@ -239,14 +245,20 @@ namespace AtMycelia.Hyphlow
                     return;
                 }
 
-                if (value is T || value == null)
+                if (value == null)
                 {
-                    this.value = (T)value;
+                    this.value = default;
+                    return;
                 }
-                else
+
+                Type valueType = value.GetType();
+                if (TypeUtils.TypesCompatible(ContentType, valueType))
                 {
-                    throw new InvalidCastException($"Cannot assign value of type {value?.GetType().Name ?? "null"} to {typeof(T).Name}.");
+                    this.value = ConvertTo(value);
+                    return;
                 }
+
+                throw new InvalidCastException($"Cannot assign value of type {value?.GetType().Name ?? "null"} to {typeof(T).Name}.");
             }
         }
 
@@ -368,7 +380,7 @@ namespace AtMycelia.Hyphlow
             }
         }
 
-        //Apply to get from base system.object to T
+        // Apply to get from base system.object to T
         public override bool Evaluate(CompareOperator op, object value)
         {
             if (value is T || value == null)

@@ -201,10 +201,16 @@ namespace AtMycelia.Hyphlow
             }
             else
             {
+                object convertedValue;
+                if (TryConvertValue(val, ourVar.ContentType, out convertedValue))
+                {
+                    ourVar.BoxedValue = convertedValue;
+                    return;
+                }
+
                 var ourContentType = ourVar.ContentType;
                 var valueType = val?.GetType();
-                bool typesAreCompatible = ourContentType.IsAssignableFrom(valueType) || 
-                    valueType.IsAssignableFrom(ourContentType);
+                bool typesAreCompatible = TypeUtils.TypesCompatible(valueType, ourContentType);
                 bool canBeAssigned = (ourContentType.IsClass && val == null) || typesAreCompatible;
                 if (!canBeAssigned)
                 {
@@ -216,6 +222,24 @@ namespace AtMycelia.Hyphlow
                     ourVar.BoxedValue = val;
                 }
             }
+        }
+
+        private static bool TryConvertValue(object value, System.Type targetType, out object convertedValue)
+        {
+            if (value is Vector3 vector3 && targetType == typeof(Vector2))
+            {
+                convertedValue = (Vector2)vector3;
+                return true;
+            }
+
+            if (value is Vector2 vector2 && targetType == typeof(Vector3))
+            {
+                convertedValue = (Vector3)vector2;
+                return true;
+            }
+
+            convertedValue = null;
+            return false;
         }
     }
 
