@@ -10,7 +10,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1404956649453682, guid: 4ecd3eccefa01ca4da38d03c8e7c2a8d, type: 3}
       propertyPath: m_Name
-      value: P2 Variant
+      value: P2
       objectReference: {fileID: 0}
     - target: {fileID: 1404956649453682, guid: 4ecd3eccefa01ca4da38d03c8e7c2a8d, type: 3}
       propertyPath: m_IsActive
@@ -418,51 +418,6 @@ PrefabInstance:
       propertyPath: m_Color.r
       value: 0.19117653
       objectReference: {fileID: 0}
-    - target: {fileID: 1147893091482852528, guid: 4ecd3eccefa01ca4da38d03c8e7c2a8d,
-        type: 3}
-      propertyPath: _variableManager._isInitted
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1147893091482852528, guid: 4ecd3eccefa01ca4da38d03c8e7c2a8d,
-        type: 3}
-      propertyPath: _variableManager._nextValidVarID
-      value: 7
-      objectReference: {fileID: 0}
-    - target: {fileID: 1147893091482852528, guid: 4ecd3eccefa01ca4da38d03c8e7c2a8d,
-        type: 3}
-      propertyPath: _variableManager._legacyVariables.Array.size
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 1147893091482852528, guid: 4ecd3eccefa01ca4da38d03c8e7c2a8d,
-        type: 3}
-      propertyPath: '_variableManager._legacyVariables.Array.data[0]'
-      value: 
-      objectReference: {fileID: 1197017489905728377}
-    - target: {fileID: 1147893091482852528, guid: 4ecd3eccefa01ca4da38d03c8e7c2a8d,
-        type: 3}
-      propertyPath: '_variableManager._legacyVariables.Array.data[1]'
-      value: 
-      objectReference: {fileID: 1197602805482458083}
-    - target: {fileID: 1147893091482852528, guid: 4ecd3eccefa01ca4da38d03c8e7c2a8d,
-        type: 3}
-      propertyPath: '_variableManager._legacyVariables.Array.data[2]'
-      value: 
-      objectReference: {fileID: 1197403627009746907}
-    - target: {fileID: 1147893091482852528, guid: 4ecd3eccefa01ca4da38d03c8e7c2a8d,
-        type: 3}
-      propertyPath: '_variableManager._legacyVariables.Array.data[3]'
-      value: 
-      objectReference: {fileID: 1196937775568482115}
-    - target: {fileID: 1147893091482852528, guid: 4ecd3eccefa01ca4da38d03c8e7c2a8d,
-        type: 3}
-      propertyPath: '_variableManager._legacyVariables.Array.data[4]'
-      value: 
-      objectReference: {fileID: 1197282497836387681}
-    - target: {fileID: 1147893091482852528, guid: 4ecd3eccefa01ca4da38d03c8e7c2a8d,
-        type: 3}
-      propertyPath: '_variableManager._legacyVariables.Array.data[5]'
-      value: 
-      objectReference: {fileID: 1197269438898171695}
     m_RemovedComponents:
     - {fileID: 114334667391765546, guid: 4ecd3eccefa01ca4da38d03c8e7c2a8d, type: 3}
     m_RemovedGameObjects: []
