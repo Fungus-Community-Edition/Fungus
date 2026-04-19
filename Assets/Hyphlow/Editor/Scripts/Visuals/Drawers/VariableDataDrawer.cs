@@ -137,7 +137,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
             {
                 if (backingVarRefProp != null)
                 {
-                    SerializedProperty owningFcProp = backingVarRefProp.FindPropertyRelative("owningSource");
+                    SerializedProperty owningFcProp = backingVarRefProp.FindPropertyRelative("_owningSource");
                     if (owningFcProp != null && owningFcProp.objectReferenceValue != null)
                     {
                         var fc = owningFcProp.objectReferenceValue as Flowchart;
@@ -291,7 +291,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 IVariable chosenNow = orderedVars[selectedIndex];
                 bool choseLiteralValue = chosenNow == null;
 
-                SerializedProperty ownerProp = backingVarRefProp.FindPropertyRelative("owningSource");
+                SerializedProperty ownerProp = backingVarRefProp.FindPropertyRelative("_owningSource");
 
                 if (choseLiteralValue)
                 {
@@ -314,9 +314,9 @@ namespace AtMycelia.Hyphlow.EditorUtils
                         {
                             // This means that the underlying VariableData changed to a whole new instance. 
                             // Thus, we'll need to refetch the properties to point to the new instance.
-                            backingVarRefProp = varDataProp.FindPropertyRelative("data.backingVarRef");
-                            ownerProp = backingVarRefProp.FindPropertyRelative("owningSource");
-                            itemIdProp = backingVarRefProp.FindPropertyRelative("itemId");
+                            backingVarRefProp = varDataProp.FindPropertyRelative("_data._backingVarRef");
+                            ownerProp = backingVarRefProp.FindPropertyRelative("_owningSource");
+                            itemIdProp = backingVarRefProp.FindPropertyRelative("_itemId");
                         }
                     }
 

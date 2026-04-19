@@ -5,7 +5,7 @@ namespace AtMycelia.Amanita
 {
     public static class AmanitaBootstrapper
     {
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void BootstrapOnRuntimeLoad()
         {
             EnsureAmanitaReady();

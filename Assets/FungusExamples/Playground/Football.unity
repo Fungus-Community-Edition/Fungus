@@ -736,8 +736,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeRect:
     serializedVersion: 2
-    x: -153.33345
-    y: 124.99986
+    x: -320.66632
+    y: 124.3332
     width: 143
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
@@ -1243,10 +1243,8 @@ MonoBehaviour:
   _otherSettings: []
   description: 
   uiModel:
-    _selectedBlocks:
-    - {fileID: 53095145}
-    _selectedCommands:
-    - {fileID: 53095178}
+    _selectedBlocks: []
+    _selectedCommands: []
     _owner: {fileID: 53095135}
     <ScrollPos>k__BackingField: {x: 347.47632, y: 132.21451}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}

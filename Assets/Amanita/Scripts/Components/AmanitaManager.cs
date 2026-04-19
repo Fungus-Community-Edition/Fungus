@@ -130,6 +130,7 @@ namespace AtMycelia.Amanita
             }
 
             AmanitaManager manager = Instantiate(prefab);
+            manager.name = prefab.name; // Remove "(Clone)" from the name for cleanliness
             return manager;
         }
 

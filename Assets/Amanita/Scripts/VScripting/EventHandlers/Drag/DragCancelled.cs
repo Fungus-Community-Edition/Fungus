@@ -3,6 +3,7 @@ using System.Linq;
 using UnityEngine;
 using AtMycelia.Hyphlow;
 using UnityEngine.Scripting.APIUpdating;
+using UnityEngine.Serialization;
 
 namespace AtMycelia.Amanita.VScripting
 {
@@ -26,14 +27,12 @@ namespace AtMycelia.Amanita.VScripting
 			}
 		}
 
-		[VariableProperty(typeof(GameObjectVariable))]
-		[SerializeField] protected GameObjectVariable draggableRef;
+		[ContentTypeConstraint(typeof(Component), typeof(GameObject))]
+		[SerializeField] protected VariableReference _draggableRef = new VariableReference();
 
 		[Tooltip("Draggable object to listen for drag events on")]
-		[SerializeField] protected List<Draggable2D> draggableObjects;
-
-		[HideInInspector]
-		[SerializeField] protected Draggable2D draggableObject;
+		[FormerlySerializedAs("draggableObjects")]
+		[SerializeField] protected List<Draggable2D> _draggableObjects;
 
 		protected override void ToggleSubs(bool on)
 		{
@@ -57,14 +56,10 @@ namespace AtMycelia.Amanita.VScripting
 
 		void ISerializationCallbackReceiver.OnAfterDeserialize()
 		{
-			//add any dragableobject already present to list for backwards compatability
-			if (draggableObject != null)
+			if (_oldDraggableRef != null)
 			{
-				if (!draggableObjects.Contains(draggableObject))
-				{
-					draggableObjects.Add(draggableObject);
-				}
-				draggableObject = null;
+				_draggableRef.Variable = _oldDraggableRef;
+				_oldDraggableRef = null;
 			}
 		}
 
@@ -74,15 +69,13 @@ namespace AtMycelia.Amanita.VScripting
 
 		#endregion Compatibility
 
-		#region Public members
-
 		public virtual void OnDragCancelled(Draggable2D draggableObject)
 		{
-			if (draggableObjects.Contains(draggableObject))
+			if (_draggableObjects.Contains(draggableObject))
 			{
-				if (draggableRef != null)
+				if (_oldDraggableRef != null)
 				{
-					draggableRef.Value = draggableObject.gameObject;
+					_oldDraggableRef.Value = draggableObject.gameObject;
 				}
 				ExecuteBlock();
 			}
@@ -90,25 +83,36 @@ namespace AtMycelia.Amanita.VScripting
 
 		public override string GetSummary()
 		{
-			if (draggableObjects.Count(x => x != null) == 0)
+			if (_draggableObjects.Count(x => x != null) == 0)
 			{
 				return "Error: no draggable objects assigned.";
 			}
 
 			string summary = "Draggable: ";
-			if (this.draggableObjects != null && this.draggableObjects.Count != 0)
+			if (this._draggableObjects != null && this._draggableObjects.Count != 0)
 			{
-				for (int i = 0; i < this.draggableObjects.Count; i++)
+				for (int i = 0; i < this._draggableObjects.Count; i++)
 				{
-					if (draggableObjects[i] != null)
+					if (_draggableObjects[i] != null)
 					{
-						summary += draggableObjects[i].name + ",";
+						summary += _draggableObjects[i].name + ",";
 					}
 				}
 			}
 			return summary;
 		}
 
-		#endregion Public members
+		public override void ApplyBackwardsCompatibility()
+		{
+			base.ApplyBackwardsCompatibility();
+			
+		}
+
+		[VariableProperty(typeof(GameObjectVariable))]
+		[FormerlySerializedAs("draggableRef")]
+		[HideInInspector]
+		[SerializeField] protected GameObjectVariable _oldDraggableRef;
+
+        protected override EventDispatcher EventDispatcher => AmanitaManager.S.EventDispatcher;
 	}
 }

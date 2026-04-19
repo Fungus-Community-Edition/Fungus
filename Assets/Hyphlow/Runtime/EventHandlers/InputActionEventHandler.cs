@@ -28,7 +28,7 @@ namespace AtMycelia.Hyphlow
             base.ToggleSubs(on);
             if (inputAction == null)
             {
-                Debug.LogError($"[InputActionEventHandler]: Missing InputAction in Flowchart {fChart.name}, " +
+                Debug.LogError($"[InputActionEventHandler]: Missing InputAction in Flowchart {_fChart.name}, " +
                     $"Block {ParentBlock.BlockName}");
                 return;
             }

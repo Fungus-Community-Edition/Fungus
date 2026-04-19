@@ -6,7 +6,7 @@ namespace AtMycelia.Hyphlow
 {
     public static class HyphlowBootstrapper
     {
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void BootstrapOnRuntimeLoad()
         {
             EnsureHyphlowReady();
@@ -23,6 +23,7 @@ namespace AtMycelia.Hyphlow
 
             var managerPrefab = Resources.Load<GameObject>(_pathToHyphlowManagerPrefab);
             _essentialsHolder = UnityObj.Instantiate(managerPrefab);
+            _essentialsHolder.name = managerPrefab.name;
         }
 
         private static readonly string _pathToHyphlowManagerPrefab = "AtMycelia/Hyphlow/HyphlowManager";

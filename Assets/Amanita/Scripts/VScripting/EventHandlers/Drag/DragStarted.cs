@@ -29,9 +29,7 @@ namespace AtMycelia.Amanita.VScripting
 
 		[VariableProperty(typeof(GameObjectVariable))]
 		[SerializeField] protected GameObjectVariable draggableRef;
-
 		[SerializeField] protected List<Draggable2D> draggableObjects;
-
 		[HideInInspector]
 		[SerializeField] protected Draggable2D draggableObject;
 
@@ -75,8 +73,6 @@ namespace AtMycelia.Amanita.VScripting
 
 		#endregion Compatibility
 
-		#region Public members
-
 		/// <summary>
 		/// Called by the Draggable2D object when the drag starts.
 		/// </summary>
@@ -114,6 +110,7 @@ namespace AtMycelia.Amanita.VScripting
 			return summary;
 		}
 
-		#endregion Public members
+
+		protected override EventDispatcher EventDispatcher => AmanitaManager.S.EventDispatcher;
 	}
 }

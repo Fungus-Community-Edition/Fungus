@@ -244,6 +244,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5878556027373521807}
   - component: {fileID: 1195367437289545555}
+  - component: {fileID: 5188742647640079216}
   m_Layer: 0
   m_Name: AmanitaManager
   m_TagString: Untagged
@@ -264,10 +265,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 8089503210191499104}
   - {fileID: 4530344656296388645}
   - {fileID: 1863358515568243330}
-  - {fileID: 3147403676795859469}
   - {fileID: 2486890052373678517}
   - {fileID: 2539697782535284076}
   - {fileID: 8944574023134844228}
@@ -286,6 +285,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tweenAnchorHolder: {fileID: 0}
+--- !u!114 &5188742647640079216
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 819678433502044778}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6bacc8888852c94bab5c3b36cdf1574, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1583813129268073707
 GameObject:
   m_ObjectHideFlags: 0
@@ -1020,50 +1031,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   orderIndex: 0
   holdsSayDialogs: {fileID: 3577610850333282877}
---- !u!1 &6070629516716148992
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 3147403676795859469}
-  - component: {fileID: 4977962291727290879}
-  m_Layer: 0
-  m_Name: EventDispatcher
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &3147403676795859469
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6070629516716148992}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 5878556027373521807}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4977962291727290879
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6070629516716148992}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d6bacc8888852c94bab5c3b36cdf1574, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &6256209923599778292
 GameObject:
   m_ObjectHideFlags: 0
@@ -1175,50 +1142,6 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Character Name
---- !u!1 &8362598556905022977
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 8089503210191499104}
-  - component: {fileID: 6887896797987514617}
-  m_Layer: 0
-  m_Name: TweenManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &8089503210191499104
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8362598556905022977}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 5878556027373521807}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6887896797987514617
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8362598556905022977}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f89a45815a406c840bce512fcd3a46e9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &8499662965253551042
 GameObject:
   m_ObjectHideFlags: 0
@@ -1941,6 +1864,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3204976415759936792, guid: f56d2b69f69539b4d98dccf0aa165f58,
         type: 3}
+      propertyPath: _duration._value
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3204976415759936792, guid: f56d2b69f69539b4d98dccf0aa165f58,
+        type: 3}
       propertyPath: _fadeColor.value.a
       value: 0
       objectReference: {fileID: 0}
@@ -1951,12 +1879,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3204976415759936792, guid: f56d2b69f69539b4d98dccf0aa165f58,
         type: 3}
+      propertyPath: _fadeColor._value.a
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3204976415759936792, guid: f56d2b69f69539b4d98dccf0aa165f58,
+        type: 3}
+      propertyPath: _targetAlpha._value
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3204976415759936792, guid: f56d2b69f69539b4d98dccf0aa165f58,
+        type: 3}
       propertyPath: _oldWaitUntilFinished
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3204976415759936792, guid: f56d2b69f69539b4d98dccf0aa165f58,
         type: 3}
       propertyPath: _waitUntilFinished.value
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3204976415759936792, guid: f56d2b69f69539b4d98dccf0aa165f58,
+        type: 3}
+      propertyPath: _waitUntilFinished._value
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3204976415759936792, guid: f56d2b69f69539b4d98dccf0aa165f58,
@@ -1977,6 +1920,11 @@ PrefabInstance:
     - target: {fileID: 3204976415759936792, guid: f56d2b69f69539b4d98dccf0aa165f58,
         type: 3}
       propertyPath: _fadeTexture.backingVarRef.owningSource
+      value: 
+      objectReference: {fileID: 4738044054644098906}
+    - target: {fileID: 3204976415759936792, guid: f56d2b69f69539b4d98dccf0aa165f58,
+        type: 3}
+      propertyPath: _fadeTexture._backingVarRef._owningSource
       value: 
       objectReference: {fileID: 4738044054644098906}
     - target: {fileID: 3204976415759936792, guid: f56d2b69f69539b4d98dccf0aa165f58,

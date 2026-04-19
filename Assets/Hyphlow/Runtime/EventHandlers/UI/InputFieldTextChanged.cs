@@ -27,7 +27,7 @@ namespace AtMycelia.Hyphlow
         {
             if (inputFieldHolder == null || inputFieldHolder.Value == null)
             {
-                Debug.LogError($"[InputFieldTextChanged EventHandler]: Missing input field holder in Flowchart {fChart.name}, Block {ParentBlock.BlockName}");
+                Debug.LogError($"[InputFieldTextChanged EventHandler]: Missing input field holder in Flowchart {_fChart.name}, Block {ParentBlock.BlockName}");
                 return;
             }
 

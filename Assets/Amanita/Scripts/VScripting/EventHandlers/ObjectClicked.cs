@@ -1,7 +1,6 @@
 using UnityEngine;
 using System.Collections;
 using AtMycelia.Hyphlow;
-
 using UnityEngine.Scripting.APIUpdating;
 
 namespace AtMycelia.Amanita.VScripting
@@ -31,31 +30,17 @@ namespace AtMycelia.Amanita.VScripting
         [Tooltip("Wait for a number of frames before executing the block.")]
         [SerializeField] protected int waitFrames = 1;
 
-        protected EventDispatcher eventDispatcher;
-
-        protected override void OnEnable()
-        {
-            eventDispatcher = FindFirstObjectByType<EventDispatcher>();
-            base.OnEnable();
-        }
-
         protected override void ToggleSubs(bool on)
         {
             base.ToggleSubs(on);
             if (on)
             {
-                eventDispatcher.AddListener<ObjectClickedEvent>(OnObjectClickedEvent);
+                EventDispatcher.AddListener<ObjectClickedEvent>(OnObjectClickedEvent);
             }
             else
             {
-                eventDispatcher.RemoveListener<ObjectClickedEvent>(OnObjectClickedEvent);
+                EventDispatcher.RemoveListener<ObjectClickedEvent>(OnObjectClickedEvent);
             }
-        }
-
-        protected override void OnDisable()
-        {
-            base.OnDisable();
-            eventDispatcher = null;
         }
 
         void OnObjectClickedEvent(ObjectClickedEvent evt)
@@ -97,8 +82,6 @@ namespace AtMycelia.Amanita.VScripting
             ExecuteBlock();
         }
 
-        
-
         public override string GetSummary()
         {
             if (clickableObject != null)
@@ -108,6 +91,8 @@ namespace AtMycelia.Amanita.VScripting
 
             return "Error: no clickableObject set.";
         }
+
+        protected override EventDispatcher EventDispatcher => AmanitaManager.S.EventDispatcher;
 
     }
 }
