@@ -19,9 +19,20 @@ namespace AtMycelia.Hyphlow.Tweening.VScripting
             _variableDataCache.Add(_amount);
         }
 
+        protected override void RegisterAllTargets()
+        {
+            _targTrans = null;
+            if (_toShake.Value != null)
+            {
+                _targTrans = _toShake.Value.transform;
+            }
+            _allTargets.Add(_targTrans);
+        }
+
+        protected Transform _targTrans;
         protected override bool AreTargetsValid()
         {
-            bool result = _toShake != null && _toShake.BoxedValue != null;
+            bool result = _targTrans != null;
             return result;
         }
 
@@ -29,8 +40,7 @@ namespace AtMycelia.Hyphlow.Tweening.VScripting
         {
             _ourTween?.Kill();
 
-            Transform tForm = _toShake.Value.transform;
-            _startScale = tForm.localScale;
+            _startScale = _targTrans.localScale;
             _shakeProgress = 0f;
 
             _ourTween = _tweener.TweenGeneral(GetShakeProgress, UpdateShakeProgress, _progressDest, _duration);

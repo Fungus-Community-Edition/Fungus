@@ -49,6 +49,16 @@ namespace AtMycelia.Hyphlow.Tweening.VScripting
             base.OnEnter();
         }
 
+        protected override void RegisterAllTargets()
+        {
+            FetchTransforms();
+            _allTargets.Add(_lookerTransform);
+            _allTargets.Add(_targetTransform);
+            if (_upBaseTransform != null)
+            {
+                _allTargets.Add(_upBaseTransform);
+            }
+        }
         private void FetchTransforms()
         {
             _lookerTransform = GetTransformFrom(_looker);

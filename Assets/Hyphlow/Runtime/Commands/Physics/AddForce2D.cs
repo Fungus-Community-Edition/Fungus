@@ -57,7 +57,7 @@ namespace AtMycelia.Hyphlow
         public override void OnEnter()
         {
             Vector2 forceToApply = _force.Value * _forceScaleFactor.Value;
-            Debug.Log($"Applying force: {forceToApply} to Rigidbody2D: {_rb.Value.name} with ForceMode2D: {_forceMode}");
+            //Debug.Log($"Applying force: {forceToApply} to Rigidbody2D: {_rb.Value.name} with ForceMode2D: {_forceMode}");
             switch (_forceFunction)
             {
                 case ForceFunction.AddForce:

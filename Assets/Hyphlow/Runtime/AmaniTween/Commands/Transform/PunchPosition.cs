@@ -3,13 +3,13 @@ using UnityEngine;
 namespace AtMycelia.Hyphlow.Tweening.VScripting
 {
     [CommandInfo("BI Tween",
-        "Simple/Punch Rotation",
-        "Applies a jolt of force to a component's rotation and wobbles it back to its initial rotation.")]
-    public class PunchRotation : BaseSimpleTweenCommand
+        "Simple/Punch Position",
+        "Applies a jolt of force to a component's position and wobbles it back to its initial position.")]
+    public class PunchPosition : BaseSimpleTweenCommand
     {
         [Tooltip("The Component with the transform to punch.")]
         [SerializeField] protected ComponentData _toPunch = new ComponentData();
-        [Tooltip("The maximum rotational offset for the punch (in degrees).")]
+        [Tooltip("The maximum positional offset for the punch.")]
         [SerializeField] protected Vector3Data _amount = new Vector3Data();
         [Tooltip("Whether to punch in local space instead of world space.")]
         [SerializeField] protected BooleanData _isLocalSpace = new BooleanData(false);
@@ -22,9 +22,22 @@ namespace AtMycelia.Hyphlow.Tweening.VScripting
             _variableDataCache.Add(_isLocalSpace);
         }
 
+        protected override void RegisterAllTargets()
+        {
+            _targTrans = null;
+            if (_toPunch.Value != null)
+            {
+                _targTrans = _toPunch.Value.transform;
+            }
+
+            _allTargets.Add(_targTrans);
+        }
+
+        protected Transform _targTrans;
+
         protected override bool AreTargetsValid()
         {
-            bool result = _toPunch != null && _toPunch.BoxedValue != null;
+            bool result = _targTrans != null;
             return result;
         }
 
@@ -32,21 +45,20 @@ namespace AtMycelia.Hyphlow.Tweening.VScripting
         {
             _ourTween?.Kill();
 
-            Transform tForm = _toPunch.Value.transform;
-            _startEulerAngles = _isLocalSpace ?
-                tForm.localEulerAngles :
-                tForm.eulerAngles;
+            _startPosition = _isLocalSpace ? 
+                             _targTrans.localPosition : 
+                             _targTrans.position;
             _punchProgress = 0f;
 
             _ourTween = _tweener.TweenGeneral(GetPunchProgress, UpdatePunchProgress, _progressDest, _duration);
             return _ourTween;
         }
 
-        private Vector3 _startEulerAngles;
+        private Vector3 _startPosition;
         private float _punchProgress;
         private IGeneralTweenAdapter<float> _tweener;
         private static readonly int _progressDest = 1;
-
+        
         private float GetPunchProgress()
         {
             return _punchProgress;
@@ -75,20 +87,20 @@ namespace AtMycelia.Hyphlow.Tweening.VScripting
             Vector3 offset = _amount.Value * punchScale;
 
             Transform tForm = _toPunch.Value.transform;
-            Vector3 eulerToApply = _startEulerAngles + offset;
+            Vector3 posToApply = _startPosition + offset;
             if (_isLocalSpace)
             {
-                tForm.localRotation = Quaternion.Euler(eulerToApply);
+                tForm.localPosition = posToApply;
             }
             else
             {
-                tForm.rotation = Quaternion.Euler(eulerToApply);
+                tForm.position = posToApply;
             }
         }
 
         private const float _phaseOffset = 0.25f;
         private const float _oscillationCycles = 2f;
-
+        
         protected override void StopAllTweens()
         {
             if (_toPunch == null || _toPunch.Value == null)
@@ -125,7 +137,7 @@ namespace AtMycelia.Hyphlow.Tweening.VScripting
 
         private void HandleTweenComplete()
         {
-            ReturnToStartRotation();
+            ReturnToStartPos();
 
             if (_waitUntilFinished)
             {
@@ -133,7 +145,7 @@ namespace AtMycelia.Hyphlow.Tweening.VScripting
             }
         }
 
-        private void ReturnToStartRotation()
+        private void ReturnToStartPos()
         {
             if (_toPunch == null || _toPunch.Value == null)
             {
@@ -141,14 +153,13 @@ namespace AtMycelia.Hyphlow.Tweening.VScripting
             }
 
             Transform tForm = _toPunch.Value.transform;
-            Quaternion startRotation = Quaternion.Euler(_startEulerAngles);
             if (_isLocalSpace)
             {
-                tForm.localRotation = startRotation;
+                tForm.localPosition = _startPosition;
             }
             else
             {
-                tForm.rotation = startRotation;
+                tForm.position = _startPosition;
             }
         }
 
@@ -170,7 +181,7 @@ namespace AtMycelia.Hyphlow.Tweening.VScripting
             string spaceStr = _isLocalSpace.Value ? "local" : "world";
             string durationStr = _duration.RepresentingVar ? $"{_duration.VarRef.Key}" : $"{_duration.Value}";
 
-            string result = $"{targetStr} punch rotation {amountStr} in {spaceStr} space over {durationStr} seconds.";
+            string result = $"{targetStr} punch {amountStr} in {spaceStr} space over {durationStr} seconds.";
             return result;
         }
     }

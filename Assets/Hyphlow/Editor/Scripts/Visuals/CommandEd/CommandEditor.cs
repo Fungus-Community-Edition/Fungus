@@ -46,6 +46,12 @@ namespace AtMycelia.Hyphlow.EditorUtils
             if (NullTargetCheck()) // Check for an orphaned editor instance
                 return;
 
+            var targetCommand = target as Command;
+            Flowchart fc = targetCommand.GetFlowchart();
+            if (fc != null)
+            {
+                VariableRegistryService.RebuildAll(fc);
+            }
             reorderableLists = new Dictionary<string, ReorderableList>();
         }
 

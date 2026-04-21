@@ -11,8 +11,8 @@ namespace AtMycelia.Hyphlow
     [CommandInfo("Variable",
                  "Set Variable",
                  "Sets a Muscariable (or legacy Flowchart variable) to a new value using a " +
-        "simple arithmetic operation. The value can be a constant or reference another " +
-        "variable of the same type.")]
+                "simple arithmetic operation. The value can be a constant or reference another " +
+                "variable of the same type.")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
     [MovedFrom("AtMycelia.Amanita.VScripting.Commands")]

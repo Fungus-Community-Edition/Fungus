@@ -19,6 +19,18 @@ namespace AtMycelia.Hyphlow.Tweening.VScripting
             _variableDataCache.Add(_amount);
         }
 
+        protected override void RegisterAllTargets()
+        {
+            _targTrans = null;
+            if (_toPunch.Value != null)
+            {
+                _targTrans = _toPunch.Value.transform;
+            }
+            _allTargets.Add(_targTrans);
+        }
+
+        protected Transform _targTrans;
+
         protected override bool AreTargetsValid()
         {
             bool result = _toPunch != null && _toPunch.BoxedValue != null;
@@ -29,8 +41,7 @@ namespace AtMycelia.Hyphlow.Tweening.VScripting
         {
             _ourTween?.Kill();
 
-            Transform tForm = _toPunch.Value.transform;
-            _startScale = tForm.localScale;
+            _startScale = _targTrans.localScale;
             _punchProgress = 0f;
 
             _ourTween = _tweener.TweenGeneral(GetPunchProgress, UpdatePunchProgress,

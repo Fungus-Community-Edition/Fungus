@@ -26,6 +26,12 @@ namespace AtMycelia.Hyphlow.Tweening.VScripting
 
         private Transform _targetTransform;
 
+        protected override void RegisterAllTargets()
+        {
+            _targetTransform = GetTargetTransform();
+            _allTargets.Add(_targetTransform);
+        }
+
         private Transform GetTargetTransform()
         {
             Transform result = null;

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AtMycelia.Hyphlow.EditorUtils.FcWindow;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -18,6 +19,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
     {
         public VariableReferenceDrawer()
         {
+            
             if (!Application.isPlaying)
             {
                 GameObject activeGo = Selection.activeGameObject;
@@ -25,6 +27,15 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 if (activeGo != null && activeGo.TryGetComponent(out Flowchart found))
                 {
                     fc = found;
+                }
+                else
+                {
+                    // Fallback to whatever the FlowchartWindow is working with.
+                    FlowchartWindow fcWindow = FlowchartWindow.S;
+                    if (fcWindow != null)
+                    {
+                        fc = fcWindow.Flowchart;
+                    }
                 }
                 VariableRegistryService.RebuildAll(fc);
             }

@@ -3,19 +3,31 @@ using UnityEngine;
 namespace AtMycelia.Hyphlow.Tweening.VScripting
 {
     [CommandInfo("BI Tween",
-        "Simple/Scale Set",
-        "Scales a component's transform to a target scale over time.")]
-    public class ScaleSet : BaseSimpleTweenCommand
+        "Simple/Scale Relative",
+        "Scales a component's transform by a target amount over time.")]
+    public class ScaleRelative : BaseSimpleTweenCommand
     {
         [Tooltip("The Component with the transform to scale.")]
         [SerializeField] protected ComponentData _toScale = new ComponentData();
-        [Tooltip("The target scale to use.")]
-        [SerializeField] protected Vector3Data _targetScale = new Vector3Data();
+        [Tooltip("The amount to scale by.")]
+        [SerializeField] protected Vector3Data _scaleByAmount = new Vector3Data();
         [Tooltip("The scale the tween will start at. Only applies if ToFrom is set to From.")]
         [SerializeField] protected Vector3Data _scaleFromValue = new Vector3Data();
-        [Tooltip("Does the tween act from current TO destination or is it reversed and act " +
-            "FROM destination to its current")]
-        [SerializeField] protected StartFromMode _toFrom = StartFromMode.Current;
+        [Tooltip("Whether or not the tween starts from the target's current scale or " +
+            "another one.")]
+        [SerializeField] protected StartFromMode _startMode = StartFromMode.Current;
+
+        protected override void RegisterAllTargets()
+        {
+            _targTrans = null;
+            if (_toScale.Value != null)
+            {
+                _targTrans = _toScale.Value.transform;
+            }
+            _allTargets.Add(_targTrans);
+        }
+
+        protected Transform _targTrans;
 
         protected override bool AreTargetsValid()
         {
@@ -27,11 +39,10 @@ namespace AtMycelia.Hyphlow.Tweening.VScripting
         {
             _ourTween?.Kill();
             Vector3 startScale = DecideStartScale();
-            Vector3 endScale = _targetScale.Value;
-            Transform tForm = _toScale.Value.transform;
-            tForm.localScale = startScale;
+            Vector3 endScale = startScale + _scaleByAmount.Value;
+            _targTrans.localScale = startScale;
 
-            _ourTween = _tweener.ScaleTo(tForm, endScale, _duration);
+            _ourTween = _tweener.ScaleTo(_targTrans, endScale, _duration);
             return _ourTween;
         }
 
@@ -39,7 +50,7 @@ namespace AtMycelia.Hyphlow.Tweening.VScripting
         {
             Vector3 startScale = Vector3.one;
 
-            if (_toFrom == StartFromMode.FromValue)
+            if (_startMode == StartFromMode.FromValue)
             {
                 startScale = _scaleFromValue.Value;
             }
@@ -91,9 +102,9 @@ namespace AtMycelia.Hyphlow.Tweening.VScripting
             }
 
             string targetStr = _toScale.RepresentingVar ? $"{_toScale.VarRef.Key}" : $"{_toScale.Value.name}";
-            string toFromStr = _toFrom.ToString();
+            string toFromStr = _startMode.ToString();
 
-            if (_toFrom == StartFromMode.FromValue)
+            if (_startMode == StartFromMode.FromValue)
             {
                 string scaleFromStr = _scaleFromValue.RepresentingVar
                     ? $"{_scaleFromValue.VarRef.Key}"
@@ -101,15 +112,15 @@ namespace AtMycelia.Hyphlow.Tweening.VScripting
                 toFromStr += $"({scaleFromStr}) to";
             }
 
-            string targetScaleStr = _targetScale.RepresentingVar
-                ? $"{_targetScale.VarRef.Key}"
-                : $"{_targetScale.Value}";
+            string scaleByStr = _scaleByAmount.RepresentingVar
+                ? $"{_scaleByAmount.VarRef.Key}"
+                : $"{_scaleByAmount.Value}";
 
             string durationStr = _duration.RepresentingVar
                 ? $"{_duration.VarRef.Key}"
                 : $"{_duration.Value}";
 
-            string result = $"{targetStr} {toFromStr} {targetScaleStr} over {durationStr} seconds.";
+            string result = $"{targetStr} {toFromStr} {scaleByStr} relative to start over {durationStr} seconds.";
             return result;
         }
     }

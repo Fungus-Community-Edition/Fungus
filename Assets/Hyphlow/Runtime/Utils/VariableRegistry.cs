@@ -40,57 +40,7 @@ namespace AtMycelia.Hyphlow
 
         private void ToggleEditorSubs(bool on)
         {
-#if UNITY_EDITOR
-            if (on)
-            {
-                Selection.selectionChanged += OnSelectionChanged;
-                VariableSignals.PostValueChange += OnVariableValueChanged;
-            }
-            else
-            {
-                Selection.selectionChanged -= OnSelectionChanged;
-                VariableSignals.PostValueChange -= OnVariableValueChanged;
-            }
-#endif
-        }
-
-        private void OnSelectionChanged()
-        {
-#if UNITY_EDITOR
-            var selected = Selection.activeGameObject;
-            if (selected != null && selected.TryGetComponent<Flowchart>(out var fc))
-            {
-                Rebuild(fc);
-            }
-#endif
-        }
-
-        private void OnVariableValueChanged(IVariable variable, object arg2)
-        {
-#if UNITY_EDITOR
-            EditorApplication.delayCall += () =>
-             {
-                 if (variable == null)
-                 {
-                     return;
-                 }
-                 if (Application.isPlaying)
-                 {
-                     return; // We only want to respond to var value changes in the editor,
-                             // since that's the only time we care about keeping the registry's
-                             // values up to date with the actual variable values in the scene.
-                 }
-                 OnSelectionChanged();
-             };
-             return;
-#endif
-            if (Application.isPlaying)
-            {
-                return; // We only want to respond to var value changes in the editor,
-                        // since that's the only time we care about keeping the registry's
-                        // values up to date with the actual variable values in the scene.
-            }
-            OnSelectionChanged();
+            // No-op for now.
         }
 
         public void Rebuild(IVariableSource localSource = null)
@@ -114,7 +64,7 @@ namespace AtMycelia.Hyphlow
                     }
                 }
             }
-            
+
             RegisterOtherFcVars();
             void RegisterOtherFcVars()
             {

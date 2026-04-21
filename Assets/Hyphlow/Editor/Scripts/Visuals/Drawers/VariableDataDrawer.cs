@@ -25,29 +25,42 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 return;
             }
             var varData = varDataObj as VariableData;
-            AnyVariableData anyVarData = varData as AnyVariableData;
+            AnyVariableData anyVarData = varData as AnyVariableData; // We want to handle AnyVariableData as a special case
             if (varData == null)
             {
                 EditorGUI.EndProperty();
                 return;
             }
 
-            var literalValueProp = varDataProp.FindPropertyRelative("_value");
-            if (anyVarData != null) 
+            SerializedProperty literalValueProp, backingVarRefProp = null, itemIdProp = null;
+            FetchProps(out bool shouldContinue);
+            void FetchProps(out bool shouldContinue)
             {
-                literalValueProp = varDataProp.FindPropertyRelative("_data._value");
+                shouldContinue = true;
+                literalValueProp = varDataProp.FindPropertyRelative("_value");
+                if (anyVarData != null)
+                {
+                    literalValueProp = varDataProp.FindPropertyRelative("_data._value");
+                }
+                backingVarRefProp = varDataProp.FindPropertyRelative("_backingVarRef");
+                if (anyVarData != null)
+                {
+                    backingVarRefProp = varDataProp.FindPropertyRelative("_data._backingVarRef");
+                }
+                if (backingVarRefProp == null)
+                {
+                    shouldContinue = false;
+                    EditorGUI.EndProperty();
+                    return;
+                }
+
+                itemIdProp = backingVarRefProp.FindPropertyRelative("_itemId");
             }
-            var backingVarRefProp = varDataProp.FindPropertyRelative("_backingVarRef");
-            if (anyVarData != null)
+
+            if (!shouldContinue)
             {
-                backingVarRefProp = varDataProp.FindPropertyRelative("_data._backingVarRef");
-            }
-            if (backingVarRefProp == null)
-            {
-                EditorGUI.EndProperty();
                 return;
             }
-            var itemIdProp = backingVarRefProp.FindPropertyRelative("_itemId");
 
             bool shouldDrawLiteral = ShouldDrawLiteral(varDataProp);
             Rect labelRect, valueRect, popupRect, fieldRect;
@@ -404,8 +417,8 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 return !varData.RepresentingVar;
             }
 
-            var backingVarRefProp = varDataProp.FindPropertyRelative("backingVarRef");
-            var itemIdProp = backingVarRefProp?.FindPropertyRelative("itemId");
+            var backingVarRefProp = varDataProp.FindPropertyRelative("_backingVarRef");
+            var itemIdProp = backingVarRefProp?.FindPropertyRelative("_itemId");
             return itemIdProp == null || itemIdProp.intValue == Variable.InvalidID;
         }
 
@@ -500,11 +513,11 @@ namespace AtMycelia.Hyphlow.EditorUtils
             }
             else
             {
-                var typedUnderlyingDataProp = varDataProp.FindPropertyRelative("data");
+                var typedUnderlyingDataProp = varDataProp.FindPropertyRelative("_data");
                 if (typedUnderlyingDataProp == null)
                 {
                     EditorGUI.BeginProperty(position, label, varDataProp);
-                    EditorGUI.HelpBox(position, $"Could not find 'data' property for AnyVariableData drawer " +
+                    EditorGUI.HelpBox(position, $"Could not find '_data' property for AnyVariableData drawer " +
                         $"for {varDataProp.propertyPath}.", MessageType.Warning);
                     EditorGUI.EndProperty();
                     return;

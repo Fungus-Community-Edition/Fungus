@@ -20,15 +20,13 @@ namespace AtMycelia.Hyphlow.Tweening.VScripting
         [Tooltip("Whether to apply rotation in local space instead of world space.")]
         [SerializeField] protected BooleanData _isLocal = new BooleanData(true);
 
-        public override void OnEnter()
+        protected override void RegisterAllTargets()
         {
             _targetTransform = GetTargetTransform();
-            base.OnEnter();
+            _allTargets.Add(_targetTransform);
         }
 
-        private Transform _targetTransform;
-
-        private Transform GetTargetTransform()
+        protected virtual Transform GetTargetTransform()
         {
             Transform result = null;
             if (_toRotate == null)
@@ -48,6 +46,8 @@ namespace AtMycelia.Hyphlow.Tweening.VScripting
 
             return result;
         }
+
+        private Transform _targetTransform;
 
         protected override bool AreTargetsValid()
         {

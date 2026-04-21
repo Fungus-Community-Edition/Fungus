@@ -386,10 +386,10 @@ namespace AtMycelia.Hyphlow
         {
             return new VectorTwoMuscariable
             {
-                scope = src.scope,
-                key = src.key,
-                itemID = src.itemID,
-                value = src.value
+                _scope = src._scope,
+                _key = src._key,
+                _itemId = src._itemId,
+                _value = src._value
             };
         }
 

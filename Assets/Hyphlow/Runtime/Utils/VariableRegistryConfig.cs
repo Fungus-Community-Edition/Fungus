@@ -1,32 +1,35 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace AtMycelia.Hyphlow
 {
     [CreateAssetMenu(fileName = "VariableRegistryConfig", menuName = "Atelier Mycelia/Amanita/Variable Registry Config")]
     public sealed class VariableRegistryConfig : ScriptableObject
     {
-        [SerializeField] private List<VariableSourceAsset> globalSources = new List<VariableSourceAsset>();
+        [SerializeField]
+        [FormerlySerializedAs("globalSources")]
+        private List<VariableSourceAsset> _globalSources = new List<VariableSourceAsset>();
 
         public IReadOnlyList<VariableSourceAsset> GlobalSources
         {
             get
             {
                 EnsureGlobalSourcesList();
-                return globalSources;
+                return _globalSources;
             }
         }
 
         private void EnsureGlobalSourcesList()
         {
-            globalSources ??= new List<VariableSourceAsset>();
+            _globalSources ??= new List<VariableSourceAsset>();
         }
 
         public void SetGlobalSources(IList<VariableSourceAsset> sources)
         {
             EnsureGlobalSourcesList();
-            globalSources.Clear();
+            _globalSources.Clear();
 
             if (sources == null)
             {
@@ -37,8 +40,8 @@ namespace AtMycelia.Hyphlow
                 return;
             }
 
-            globalSources.AddRange(sources);
-            globalSources.RemoveAll(source => source == null);
+            _globalSources.AddRange(sources);
+            _globalSources.RemoveAll(source => source == null);
 
             Changed();
         }

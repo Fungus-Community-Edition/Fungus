@@ -77,14 +77,12 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
         private static Type GetEffectiveVarType(IVariable var)
         {
-            if (var is IVariablePointer ptr && ptr.Component is IVariable inner)
-                return inner.GetType();
             return var?.GetType();
         }
 
         protected IVariable _prevLeftHandSideVar;
 
-        protected static bool TryGetTypeActionsFor(System.Type varPropType, out VariableTypeActions typeActionsRes)
+        protected static bool TryGetTypeActionsFor(Type varPropType, out VariableTypeActions typeActionsRes)
         {
             return VariableTypeRegistry.TryGetTypeActionsFor(varPropType, out typeActionsRes);
         }
