@@ -6,8 +6,8 @@ namespace AtMycelia.Hyphlow
     /// Calls Pause on given source.
     /// </summary>
     [CommandInfo("Audio",
-                 "Play Source Pause",
-                     "Calls Pause on given source")]
+                 "Pause A.Source",
+                "Calls Pause on given AudioSource")]
     [AddComponentMenu("")]
     public class AudioSourcePause : AudioSourceBase
     {
