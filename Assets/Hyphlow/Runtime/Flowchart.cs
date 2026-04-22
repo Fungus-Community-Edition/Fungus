@@ -22,7 +22,7 @@ namespace AtMycelia.Hyphlow
     /// </summary>
     [ExecuteInEditMode]
     [RequireComponent(typeof(VariableManagerComponent))]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class Flowchart : MonoBehaviour, ISubstitutionHandler, IReorderableMuscariableSource,
         IForceResetUidHandler, ISerializationCallbackReceiver, ITearDownResponder, IRefreshable,
         IBackwardsCompatibilityApplier
@@ -317,7 +317,6 @@ namespace AtMycelia.Hyphlow
                 {
                     _varManager = gameObject.GetOrAddComponent<VariableManagerComponent>();
                 }
-
 
                 return _varManager.Variables.Count;
             }

@@ -52,7 +52,7 @@ namespace AtMycelia.SaveSys.VScripting
             {
                 if (idRef != null)
                 {
-                    idRef.VarOwner = fChart;
+                    idRef.VarOwner = _fChart;
                 }
             }
         }
@@ -108,7 +108,7 @@ namespace AtMycelia.SaveSys.VScripting
         {
             markerIDs ??= new List<VariableReference>();
             VariableReference varRef = new VariableReference();
-            varRef.VarOwner = fChart;
+            varRef.VarOwner = _fChart;
             varRef.Variable = var;
             markerIDs.Add(varRef);
         }

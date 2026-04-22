@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityObj = UnityEngine.Object;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -15,7 +16,7 @@ namespace AtMycelia.Hyphlow
     /// <summary>
     /// Centralized registry that keeps Flowcharts discoverable in both the editor and at runtime.
     /// </summary>
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public static class FlowchartRegistry
     {
         private static readonly bool _readAssetFlowchartsInRuntime = false;
@@ -66,12 +67,21 @@ namespace AtMycelia.Hyphlow
             {
                 FlowchartSignals.FlowchartEnabled += OnFlowchartEnabled;
                 FlowchartSignals.FlowchartDestroyed += OnFlowchartDestroyed;
+                SceneManager.sceneLoaded += OnSceneLoaded;
             }
             else
             {
                 FlowchartSignals.FlowchartEnabled -= OnFlowchartEnabled;
                 FlowchartSignals.FlowchartDestroyed -= OnFlowchartDestroyed;
+                SceneManager.sceneLoaded -= OnSceneLoaded;
             }
+
+            ToggleEditorSubs(on);
+        }
+
+        private static void OnSceneLoaded(Scene arg0, LoadSceneMode arg1)
+        {
+            CaptureExistingFlowcharts();
         }
 
         private static void OnFlowchartEnabled(Flowchart flowchart)
@@ -108,7 +118,10 @@ namespace AtMycelia.Hyphlow
 
             CaptureLoadedFlowcharts();
             CaptureResourceFlowcharts();
+            FullRefreshed();
         }
+
+        public static event Action FullRefreshed = delegate { };
 
         private static void CaptureLoadedFlowcharts()
         {
@@ -363,6 +376,33 @@ namespace AtMycelia.Hyphlow
                 _assetFlowcharts.Clear();
                 _prefabModeFlowcharts.Clear();
             }
+        }
+
+        private static void ToggleEditorSubs(bool on)
+        {
+#if UNITY_EDITOR
+
+            if (on)
+            {
+                EditorSceneManager.sceneOpened += OnEditorSceneOpened;
+                EditorSceneManager.sceneClosed += OnEditorSceneClosed;
+            }
+            else
+            {
+                EditorSceneManager.sceneOpened -= OnEditorSceneOpened;
+                EditorSceneManager.sceneClosed -= OnEditorSceneClosed;
+            }
+#endif
+        }
+
+        private static void OnEditorSceneClosed(Scene scene)
+        {
+            CaptureExistingFlowcharts();
+        }
+
+        private static void OnEditorSceneOpened(Scene scene, OpenSceneMode mode)
+        {
+            CaptureExistingFlowcharts();
         }
     }
 }

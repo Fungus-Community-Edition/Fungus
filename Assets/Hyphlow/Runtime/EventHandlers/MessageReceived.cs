@@ -1,6 +1,6 @@
 using UnityEngine;
-
 using UnityEngine.Scripting.APIUpdating;
+using UnityEngine.Serialization;
 
 namespace AtMycelia.Hyphlow
 {
@@ -15,8 +15,24 @@ namespace AtMycelia.Hyphlow
     public class MessageReceived : EventHandler 
     {
         [Tooltip("Fungus message to listen for")]
-        [SerializeField] protected string message = "";
+        [SerializeField]
+        protected StringData _message = new StringData(string.Empty);
 
+
+        [FormerlySerializedAs("message")]
+        [HideInInspector]
+        [SerializeField] protected string _oldMessage = "";
+
+        public override void ApplyBackwardsCompatibility()
+        {
+            base.ApplyBackwardsCompatibility();
+            if (!string.IsNullOrEmpty(_oldMessage))
+            {
+                _message.Value = _oldMessage;
+                _oldMessage = "";
+            }
+        }
+        
         #region Public members
 
         /// <summary>
@@ -25,7 +41,7 @@ namespace AtMycelia.Hyphlow
         /// <param name="message">Message.</param>
         public void OnSendFungusMessage(string message)
         {
-            if (this.message == message)
+            if (this._message.Value == message)
             {
                 ExecuteBlock();
             }
@@ -33,7 +49,7 @@ namespace AtMycelia.Hyphlow
 
         public override string GetSummary()
         {
-            return message;
+            return _message.Value;
         }
 
         #endregion

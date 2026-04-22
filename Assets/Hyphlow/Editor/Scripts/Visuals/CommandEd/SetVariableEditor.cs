@@ -8,26 +8,29 @@ namespace AtMycelia.Hyphlow.EditorUtils
     [CustomEditor(typeof(SetVariable))]
     public class SetVariableEditor : CommandEditor
     {
-        protected SerializedProperty anyVarDataPairProp;
-        protected SerializedProperty anyVarDataProp;
-        protected SerializedProperty setOperatorProp;
-        protected SerializedProperty lhsVarProp;
-
         public override void OnEnable()
         {
             base.OnEnable();
-
-            anyVarDataPairProp = serializedObject.FindProperty("_anyVar");
-            lhsVarProp = anyVarDataPairProp.FindPropertyRelative("varRef"); // VariableReference
-            anyVarDataProp = anyVarDataPairProp.FindPropertyRelative("data"); // AnyVariableData
-            setOperatorProp = serializedObject.FindProperty("_setOperator");
+            _anyVarDataPairProp = serializedObject.FindProperty("_anyVar");
+            _lhsVarProp = _anyVarDataPairProp.FindPropertyRelative("_varRef"); // VariableReference
+            _anyVarDataProp = _anyVarDataPairProp.FindPropertyRelative("_data"); // AnyVariableData
+            _setOperatorProp = serializedObject.FindProperty("_setOperator");
+            _owningSourceProp = _lhsVarProp.FindPropertyRelative("_owningSource");
+            _itemIdProp = _lhsVarProp.FindPropertyRelative("_itemId");
         }
+
+        protected SerializedProperty _anyVarDataPairProp;
+        protected SerializedProperty _anyVarDataProp;
+        protected SerializedProperty _setOperatorProp;
+        protected SerializedProperty _lhsVarProp;
+        protected SerializedProperty _owningSourceProp;
+        protected SerializedProperty _itemIdProp;
 
         public override void DrawCommandGUI()
         {
-            setVarCommand = (SetVariable)target;
-            flowchart = setVarCommand.GetFlowchart();
-            if (flowchart == null)
+            _setVarCommand = (SetVariable)target;
+            _flowchart = _setVarCommand.GetFlowchart();
+            if (_flowchart == null)
             {
                 return;
             }
@@ -52,44 +55,45 @@ namespace AtMycelia.Hyphlow.EditorUtils
             }
         }
 
-        protected Flowchart flowchart;
-        protected SetVariable setVarCommand;
+        protected Flowchart _flowchart;
+        protected SetVariable _setVarCommand;
 
-        protected IVariable selectedVariable;
-        protected int selectedOpIndex;
-        protected readonly List<GUIContent> operatorsList = new List<GUIContent>();
-        protected readonly List<SetOperator> operatorValues = new List<SetOperator>();
+        protected IVariable _selectedVariable;
+        protected int _selectedOpIndex;
+        protected readonly List<GUIContent> _operatorsList = new List<GUIContent>();
+        protected readonly List<SetOperator> _operatorValues = new List<SetOperator>();
 
         protected virtual void HandleLhsVarField()
         {
             // Draw the VariableReference field via its drawer (lets user pick the variable)
-            EditorGUILayout.PropertyField(lhsVarProp, new GUIContent("Var to Set"));
+            EditorGUILayout.PropertyField(_lhsVarProp, new GUIContent("Var to Set"));
 
             // Ensure owner is set in the serialized fields (avoid touching boxedValue)
-            var owningSourceProp = lhsVarProp.FindPropertyRelative("owningSource");
-            if (owningSourceProp != null && owningSourceProp.objectReferenceValue == null && flowchart != null)
+            bool shouldAssignFlowchartAsOwner = _owningSourceProp != null && 
+                _owningSourceProp.objectReferenceValue == null &&
+                _flowchart != null;
+            if (shouldAssignFlowchartAsOwner)
             {
-                owningSourceProp.objectReferenceValue = flowchart;
+                _owningSourceProp.objectReferenceValue = _flowchart;
             }
-            IVariableSource owner = owningSourceProp != null ? 
-                owningSourceProp.objectReferenceValue as IVariableSource : 
+            IVariableSource owner = _owningSourceProp != null ? 
+                _owningSourceProp.objectReferenceValue as IVariableSource : 
                 null;
             // Resolve selected variable purely from serialized fields (no boxedValue)
-            var itemIdProp = lhsVarProp.FindPropertyRelative("itemId");
-            selectedVariable = null;
-            if (owner != null && itemIdProp != null)
+            _selectedVariable = null;
+            if (owner != null && _itemIdProp != null)
             {
-                byte itemId = (byte)itemIdProp.intValue; // Unity stores byte as int internally
-                selectedVariable = owner.GetVariable(itemId);
+                byte itemId = (byte)_itemIdProp.intValue; // Unity stores byte as int internally
+                _selectedVariable = owner.GetVariable(itemId);
             }
         }
 
         protected virtual void DrawSetOperatorField()
         {
-            operatorsList.Clear();
-            operatorValues.Clear();
+            _operatorsList.Clear();
+            _operatorValues.Clear();
 
-            if (selectedVariable != null)
+            if (_selectedVariable != null)
             {
                 TryAdd(SetOperator.Assign);
                 TryAdd(SetOperator.Negate);
@@ -105,61 +109,61 @@ namespace AtMycelia.Hyphlow.EditorUtils
             }
 
             // Determine current selection index
-            if (operatorValues.Count > 0)
+            if (_operatorValues.Count > 0)
             {
-                var currentOp = setVarCommand.SetOperator;
-                int idx = operatorValues.IndexOf(currentOp);
-                selectedOpIndex = idx >= 0 ? idx : 0;
+                var currentOp = _setVarCommand.SetOperator;
+                int idx = _operatorValues.IndexOf(currentOp);
+                _selectedOpIndex = idx >= 0 ? idx : 0;
             }
             else
             {
-                selectedOpIndex = 0;
+                _selectedOpIndex = 0;
             }
 
             // Show popup
             GUIContent operatorContent = new GUIContent("Operation", "Arithmetic operator to use");
-            selectedOpIndex = EditorGUILayout.Popup(operatorContent, selectedOpIndex, operatorsList.ToArray());
+            _selectedOpIndex = EditorGUILayout.Popup(operatorContent, _selectedOpIndex, _operatorsList.ToArray());
         }
 
         protected void TryAdd(SetOperator op)
         {
-            if (selectedVariable != null && selectedVariable.IsArithmeticSupported(op))
+            if (_selectedVariable != null && _selectedVariable.IsArithmeticSupported(op))
             {
-                operatorsList.Add(new GUIContent(VariableUtil.GetSetOperatorDescription(op)));
-                operatorValues.Add(op);
+                _operatorsList.Add(new GUIContent(VariableUtil.GetSetOperatorDescription(op)));
+                _operatorValues.Add(op);
             }
         }
 
         protected virtual void ApplySetOperatorChoice()
         {
-            bool weHaveValidSetOp = selectedVariable != null &&
-                                    operatorValues.Count > 0 &&
-                                    selectedOpIndex >= 0 &&
-                                    selectedOpIndex < operatorValues.Count;
+            bool weHaveValidSetOp = _selectedVariable != null &&
+                                    _operatorValues.Count > 0 &&
+                                    _selectedOpIndex >= 0 &&
+                                    _selectedOpIndex < _operatorValues.Count;
             if (weHaveValidSetOp)
             {
-                SetOperator chosenOp = operatorValues[selectedOpIndex];
-                setOperatorProp.enumValueIndex = (int)chosenOp;
+                SetOperator chosenOp = _operatorValues[_selectedOpIndex];
+                _setOperatorProp.enumValueIndex = (int)chosenOp;
             }
         }
 
         protected virtual void HandleRhsValueField()
         {
-            if (selectedVariable == null)
+            if (_selectedVariable == null)
             {
                 return;
             }
 
             // Ensure AnyVariableData.data (SerializeReference) is of the correct IVariableData type
             // without touching boxedValue. We replace the managed reference when needed.
-            var innerDataRefProp = anyVarDataProp != null
-                ? anyVarDataProp.FindPropertyRelative("data") // SerializeReference IVariableData
+            var innerDataRefProp = _anyVarDataProp != null
+                ? _anyVarDataProp.FindPropertyRelative("_data") // SerializeReference IVariableData
                 : null;
 
             if (innerDataRefProp != null)
             {
                 object current = innerDataRefProp.managedReferenceValue;
-                var varType = selectedVariable.GetType();
+                var varType = _selectedVariable.GetType();
                 Type desiredDataType = VariableDataTypeRegistry.CreateForVar(varType)?.GetType();
 
                 if (desiredDataType != null)
@@ -179,7 +183,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
             // Now draw the concrete inner data: anyVar.data.data
             // Re-fetch in case we just replaced the managed reference
-            var rhsVarDataPropLocal = anyVarDataPairProp.FindPropertyRelative("data.data");
+            var rhsVarDataPropLocal = _anyVarDataPairProp.FindPropertyRelative("_data._data");
             if (rhsVarDataPropLocal != null)
             {
                 EditorGUILayout.PropertyField(rhsVarDataPropLocal, _valueToApplyLabel, true);

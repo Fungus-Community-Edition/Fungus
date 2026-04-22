@@ -1,6 +1,6 @@
 using UnityEngine;
-
 using UnityEngine.Scripting.APIUpdating;
+using UnityEngine.Serialization;
 
 namespace AtMycelia.Hyphlow
 {
@@ -11,32 +11,36 @@ namespace AtMycelia.Hyphlow
                  "Normalise",
                  "Normalise a Vector3")]
     [AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class Vector3Normalise : Command
     {
         [SerializeField]
-        protected Vector3Data vec3In, vec3Out;
+        [FormerlySerializedAs("vec3In")]
+        protected Vector3Data vecThreeIn;
+
+        [SerializeField]
+        [ContentTypeConstraint(typeof(Vector3))]
+        protected VariableReference _vecThreeOut;
 
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            _variableDataCache.Add(vec3In);
-            _variableDataCache.Add(vec3Out);
+            _variableDataCache.Add(vecThreeIn);
         }
 
         public override void OnEnter()
         {
-            vec3Out.Value = vec3In.Value.normalized;
-
+            var normalized = vecThreeIn.Value.normalized;
+            _vecThreeOut.SetValue(normalized);
             Continue();
         }
 
         public override string GetSummary()
         {
-            if (vec3Out.vector3Ref == null)
-                return "";
+            if (_vecThreeOut.Variable == null)
+                return "Needs output var";
             else
-                return vec3Out.vector3Ref.Key;
+                return _vecThreeOut.Variable.Key;
         }
 
         public override Color GetButtonColor()
@@ -46,10 +50,31 @@ namespace AtMycelia.Hyphlow
 
         public override bool HasReference(Variable variable)
         {
-            if (ReferenceEquals(vec3In.VarRef, variable) || ReferenceEquals(vec3Out.VarRef, variable))
+            if (ReferenceEquals(vecThreeIn.VarRef, variable) || 
+                ReferenceEquals(_oldVecThreeOut.VarRef, variable))
                 return true;
 
             return false;
         }
+
+        public override void ApplyBackwardsCompatibility()
+        {
+            base.ApplyBackwardsCompatibility();
+            if (_oldVecThreeOut != null)
+            {
+                if (_oldVecThreeOut.VarRef != null)
+                {
+                    _vecThreeOut.Variable = _oldVecThreeOut.VarRef;
+                }
+
+                _oldVecThreeOut = null;
+            }
+        }
+
+        [SerializeField]
+        [FormerlySerializedAs("_vec3Out")]
+        [FormerlySerializedAs("vec3Out")]
+        [HideInInspector]
+        protected Vector3Data _oldVecThreeOut;
     }
 }

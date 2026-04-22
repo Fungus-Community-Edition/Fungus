@@ -8,8 +8,6 @@ using UnityEditor;
 
 namespace AtMycelia.Hyphlow
 {
-    
-
     /// <summary>
     /// Abstract base class for variables.
     /// </summary>
@@ -19,12 +17,18 @@ namespace AtMycelia.Hyphlow
     [ExecuteInEditMode]
     public abstract class Variable : MonoBehaviour, IVariable
     {
-        [SerializeField] protected VariableScope scope;
+        [SerializeField]
+        [FormerlySerializedAs("scope")]
+        protected VariableScope _scope;
 
-        [SerializeField] protected string key = "";
+        [SerializeField]
+        [FormerlySerializedAs("key")]
+        protected string _key = "";
 
         [HideInInspector]
-        [SerializeField] private byte itemID = InvalidID;
+        [SerializeField]
+        [FormerlySerializedAs("itemID")]
+        private byte _itemId = InvalidID;
 
         [HideInInspector]
         [FormerlySerializedAs("itemID")]
@@ -39,8 +43,8 @@ namespace AtMycelia.Hyphlow
         // Flowcharts assign them.
         public byte ItemId
         {
-            get => itemID;
-            set => itemID = value;
+            get => _itemId;
+            set => _itemId = value;
         }
 
         #region Public members
@@ -55,17 +59,17 @@ namespace AtMycelia.Hyphlow
         /// <summary>
         /// Visibility scope for the variable.
         /// </summary>
-        public virtual VariableScope Scope { get { return scope; } set { scope = value; } }
+        public virtual VariableScope Scope { get { return _scope; } set { _scope = value; } }
 
         /// <summary>
         /// String identifier for the variable.
         /// </summary>
         public virtual string Key
         {
-            get { return key; } 
+            get { return _key; } 
             set
             {
-                key = value;
+                _key = value;
             }
         }
 
@@ -174,7 +178,7 @@ namespace AtMycelia.Hyphlow
             // Backwards compatibility: migrate old int ItemID to uint
             if (oldItemID != InvalidID)
             {
-                itemID = (byte)oldItemID;
+                _itemId = (byte)oldItemID;
                 oldItemID = 0;
             }
 
@@ -195,7 +199,9 @@ namespace AtMycelia.Hyphlow
     {
         public override Type ContentType => typeof(T);
 
-        [SerializeField] protected T value;
+        [SerializeField]
+        [FormerlySerializedAs("value")]
+        protected T _value;
 
         private bool ShouldBlockValueAssignment()
         {
@@ -211,7 +217,7 @@ namespace AtMycelia.Hyphlow
         // Explicit IVariable implementation for object-typed access
         object IVariable.BoxedValue
         {
-            get => value; // boxes T correctly (works for structs like Vector2)
+            get => _value; // boxes T correctly (works for structs like Vector2)
             set
             {
                 if (ShouldBlockValueAssignment())
@@ -219,19 +225,27 @@ namespace AtMycelia.Hyphlow
                     return;
                 }
 
-                if (value != null && ContentType.IsAssignableFrom(value.GetType()))
+                if (value == null)
                 {
-                    this.value = (T)value;
+                    this._value = default;
                     return;
                 }
-                // Optional: allow numeric conversions or throw
-                throw new InvalidCastException($"Cannot assign value of type {value?.GetType().Name ?? "null"} to {typeof(T).Name}.");
+
+                Type valueType = value.GetType();
+                if (TypeUtils.TypesCompatible(ContentType, valueType))
+                {
+                    this._value = ConvertTo(value);
+                    return;
+                }
+
+                throw new InvalidCastException($"Cannot assign value of type {value?.GetType().Name ?? "null"} " +
+                    $"to {GetType().Name}.");
             }
         }
 
         public override object BoxedValue
         {
-            get => value;
+            get => _value;
             set
             {
                 if (ShouldBlockValueAssignment())
@@ -239,14 +253,20 @@ namespace AtMycelia.Hyphlow
                     return;
                 }
 
-                if (value is T || value == null)
+                if (value == null)
                 {
-                    this.value = (T)value;
+                    this._value = default;
+                    return;
                 }
-                else
+
+                Type valueType = value.GetType();
+                if (TypeUtils.TypesCompatible(ContentType, valueType))
                 {
-                    throw new InvalidCastException($"Cannot assign value of type {value?.GetType().Name ?? "null"} to {typeof(T).Name}.");
+                    this._value = ConvertTo(value);
+                    return;
                 }
+
+                throw new InvalidCastException($"Cannot assign value of type {value?.GetType().Name ?? "null"} to {typeof(T).Name}.");
             }
         }
 
@@ -255,7 +275,7 @@ namespace AtMycelia.Hyphlow
         {
             get
             {
-                return this.value;
+                return this._value;
             }
             set
             {
@@ -264,7 +284,7 @@ namespace AtMycelia.Hyphlow
                     return;
                 }
 
-                this.value = value;
+                this._value = value;
                 baseVal = value;
             }
         }
@@ -272,7 +292,7 @@ namespace AtMycelia.Hyphlow
         public virtual void Init(T startValue)
         {
             this.startValue = startValue;
-            this.value = startValue;
+            this._value = startValue;
             baseVal = startValue;
         }
 
@@ -280,18 +300,18 @@ namespace AtMycelia.Hyphlow
         {
             base.OnBaseValueSet(prevValue);
             // Use a safe conversion path instead of direct unboxing cast to handle legacy boxed numerics (e.g. boxed double -> float)
-            this.value = ConvertTo(baseVal);
+            this._value = ConvertTo(baseVal);
         }
 
         public override object GetValue()
         {
-            return value;
+            return _value;
         }
 
         public override void SetValue(object value)
         {
             // Use conversion helper so callers setting with boxed primitives (double) can be converted to T (float) safely.
-            this.value = ConvertTo(value);
+            this._value = ConvertTo(value);
         }
 
         protected T startValue;
@@ -330,7 +350,7 @@ namespace AtMycelia.Hyphlow
             }
             catch (System.Exception ex)
             {
-                string errorMessage = $"Cannot initialize {nameof(T)} variable {this.key} with {startValue}";
+                string errorMessage = $"Cannot initialize {nameof(T)} variable {this._key} with {startValue}";
                 throw new System.ArgumentException(errorMessage, ex);
             }
         }
@@ -368,7 +388,7 @@ namespace AtMycelia.Hyphlow
             }
         }
 
-        //Apply to get from base system.object to T
+        // Apply to get from base system.object to T
         public override bool Evaluate(CompareOperator op, object value)
         {
             if (value is T || value == null)
@@ -416,7 +436,7 @@ namespace AtMycelia.Hyphlow
         public bool Equals(T other)
         {
             bool result = false;
-            if (value == null)
+            if (_value == null)
             {
                 if (other == null)
                 {
@@ -425,7 +445,7 @@ namespace AtMycelia.Hyphlow
             }
             else
             {
-                result = value.Equals(other);
+                result = _value.Equals(other);
             }
             return result;
         }

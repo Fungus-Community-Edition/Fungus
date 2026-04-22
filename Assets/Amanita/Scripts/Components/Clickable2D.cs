@@ -3,6 +3,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.Scripting.APIUpdating;
 using AtMycelia.Amanita.VScripting;
 using AtMycelia.Hyphlow;
+using UnityEngine.Serialization;
 
 namespace AtMycelia.Amanita
 {
@@ -15,17 +16,22 @@ namespace AtMycelia.Amanita
 	public class Clickable2D : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
 	{
 		[Tooltip("Is object clicking enabled")]
-		[SerializeField] protected bool clickEnabled = true;
+		[FormerlySerializedAs("clickEnabled")]
+		[SerializeField] protected bool _clickEnabled = true;
 
 		[Tooltip("Mouse texture to use when hovering mouse over object")]
-		[SerializeField] protected Texture2D hoverCursor;
+		[FormerlySerializedAs("hoverCursor")]
+		[SerializeField] protected Texture2D _hoverCursor;
 
-		[Tooltip("Use the UI Event System to check for clicks. Clicks that hit an overlapping UI object will be ignored. Camera must have a PhysicsRaycaster component, or a Physics2DRaycaster for 2D colliders.")]
-		[SerializeField] protected bool useEventSystem;
+		[Tooltip("Use the UI Event System to check for clicks. Clicks that hit an " +
+			"overlapping UI object will be ignored. Camera must have a " +
+			"PhysicsRaycaster component, or a Physics2DRaycaster for 2D colliders.")]
+		[FormerlySerializedAs("useEventSystem")]
+		[SerializeField] protected bool _useEventSystem;
 
 		protected virtual void ChangeCursor(Texture2D cursorTexture)
 		{
-			if (!clickEnabled)
+			if (!_clickEnabled)
 			{
 				return;
 			}
@@ -35,7 +41,7 @@ namespace AtMycelia.Amanita
 
 		protected virtual void DoPointerClick()
 		{
-			if (!clickEnabled)
+			if (!_clickEnabled)
 			{
 				return;
 			}
@@ -47,7 +53,7 @@ namespace AtMycelia.Amanita
 
 		protected virtual void DoPointerEnter()
 		{
-			ChangeCursor(hoverCursor);
+			ChangeCursor(_hoverCursor);
 		}
 
 		protected virtual void DoPointerExit()
@@ -60,7 +66,7 @@ namespace AtMycelia.Amanita
 
 		protected virtual void OnMouseDown()
 		{
-			if (!useEventSystem)
+			if (!_useEventSystem)
 			{
 				DoPointerClick();
 			}
@@ -68,7 +74,7 @@ namespace AtMycelia.Amanita
 
 		protected virtual void OnMouseEnter()
 		{
-			if (!useEventSystem)
+			if (!_useEventSystem)
 			{
 				DoPointerEnter();
 			}
@@ -76,7 +82,7 @@ namespace AtMycelia.Amanita
 
 		protected virtual void OnMouseExit()
 		{
-			if (!useEventSystem)
+			if (!_useEventSystem)
 			{
 				DoPointerExit();
 			}
@@ -89,7 +95,7 @@ namespace AtMycelia.Amanita
 		/// <summary>
 		/// Is object clicking enabled.
 		/// </summary>
-		public bool ClickEnabled { set { clickEnabled = value; } }
+		public bool ClickEnabled { set { _clickEnabled = value; } }
 
 		#endregion
 
@@ -97,7 +103,7 @@ namespace AtMycelia.Amanita
 
 		public void OnPointerClick(PointerEventData eventData)
 		{
-			if (useEventSystem)
+			if (_useEventSystem)
 			{
 				DoPointerClick();
 			}
@@ -109,7 +115,7 @@ namespace AtMycelia.Amanita
 
 		public void OnPointerEnter(PointerEventData eventData)
 		{
-			if (useEventSystem)
+			if (_useEventSystem)
 			{
 				DoPointerEnter();
 			}
@@ -121,12 +127,13 @@ namespace AtMycelia.Amanita
 
 		public void OnPointerExit(PointerEventData eventData)
 		{
-			if (useEventSystem)
+			if (_useEventSystem)
 			{
 				DoPointerExit();
 			}
 		}
 
 		#endregion
+
 	}
 }

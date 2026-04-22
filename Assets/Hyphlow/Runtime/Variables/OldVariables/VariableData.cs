@@ -2,24 +2,27 @@ using System;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
+using UnityEngine.Serialization;
 
 namespace AtMycelia.Hyphlow
 {
     // To reduce the boilerplate in IVariableData implementors such as AnimatorData and FloatData
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public abstract class VariableData : IVariableData, IRefreshable, ISerializationCallbackReceiver
     {
-        [SerializeField] protected VariableReference backingVarRef = new VariableReference();
+        [SerializeField]
+        [FormerlySerializedAs("backingVarRef")]
+        protected VariableReference _backingVarRef = new VariableReference();
 
         public IVariableSource VarOwner
         {
             get
             {
-                return backingVarRef.VarOwner;
+                return _backingVarRef.VarOwner;
             }
             set
             {
-                backingVarRef.VarOwner = value;
+                _backingVarRef.VarOwner = value;
             }
         }
 
@@ -34,11 +37,11 @@ namespace AtMycelia.Hyphlow
         {
             get
             {
-                return backingVarRef.Variable;
+                return _backingVarRef.Variable;
             }
             set
             {
-                bool alreadyAssigned = ReferenceEquals(value, backingVarRef.Variable);
+                bool alreadyAssigned = ReferenceEquals(value, _backingVarRef.Variable);
                 if (alreadyAssigned)
                 {
                     return;
@@ -46,7 +49,7 @@ namespace AtMycelia.Hyphlow
 
                 if (value == null) // We want to treat null-assignments as switching to literal mode
                 {
-                    backingVarRef.Variable = null;
+                    _backingVarRef.Variable = null;
                     return;
                 }
 
@@ -57,7 +60,7 @@ namespace AtMycelia.Hyphlow
                         $"ContentType of {ContentType.Name}.";
                     throw new InvalidCastException(errorMessage);
                 }
-                backingVarRef.Variable = value;
+                _backingVarRef.Variable = value;
             }
         }
 
@@ -110,8 +113,8 @@ namespace AtMycelia.Hyphlow
         {
             if (variable == null)
             {
-                backingVarRef.Variable = null;
-                backingVarRef.VarOwner = null;
+                _backingVarRef.Variable = null;
+                _backingVarRef.VarOwner = null;
                 return;
             }
 
@@ -138,7 +141,7 @@ namespace AtMycelia.Hyphlow
 
         public virtual void Refresh()
         {
-            backingVarRef.Refresh();
+            _backingVarRef.Refresh();
         }
 
         public virtual void SetContentsTo(IVariableData otherVarData)
@@ -177,7 +180,7 @@ namespace AtMycelia.Hyphlow
         {
             if (LegacyVarRef != null)
             {
-                backingVarRef.Variable = LegacyVarRef;
+                _backingVarRef.Variable = LegacyVarRef;
                 LegacyVarRef = null;
             }
         }
@@ -214,13 +217,13 @@ namespace AtMycelia.Hyphlow
 
         public VariableData()
         {
-            value = default;
+            _value = default;
             VarRef = null;
         }
 
         public VariableData(TValue startVal = default)
         {
-            value = startVal;
+            _value = startVal;
             VarRef = null;
         }
 
@@ -230,13 +233,13 @@ namespace AtMycelia.Hyphlow
         {
             get
             {
-                backingVarRef.Refresh();
+                _backingVarRef.Refresh();
                 if (RepresentingVar)
                 {
                     return (TValue)VarRef.BoxedValue;
                 }
                 
-                return value;
+                return _value;
                 
             }
             set
@@ -247,7 +250,7 @@ namespace AtMycelia.Hyphlow
                 }
                 else
                 {
-                    this.value = value;
+                    this._value = value;
                     VarRef = null;
                 }
             }
@@ -257,14 +260,14 @@ namespace AtMycelia.Hyphlow
         {
             get
             {
-                backingVarRef.Refresh();
+                _backingVarRef.Refresh();
                 if (RepresentingVar)
                 {
                     return VarRef.BoxedValue;
                 }
                 else
                 {
-                    return value;
+                    return _value;
                 }
             }
             set
@@ -286,7 +289,7 @@ namespace AtMycelia.Hyphlow
                 }
                 else
                 {
-                    this.value = (TValue)whatToAssign;
+                    this._value = (TValue)whatToAssign;
                     VarRef = null;
                 }
             }
@@ -296,22 +299,24 @@ namespace AtMycelia.Hyphlow
         {
             get
             {
-                return value;
+                return _value;
             }
             set
             {
-                this.value = value;
+                this._value = value;
             }
         }
-        [SerializeField] protected TValue value = default;
+        [SerializeField]
+        [FormerlySerializedAs("value")]
+        protected TValue _value = default;
 
         public override string GetDescription()
         {
             string result = "null"; // <- This is valid for reference types
 
-            if (!RepresentingVar && value != null)
+            if (!RepresentingVar && _value != null)
             {
-                result = value.ToString();
+                result = _value.ToString();
             }
             else if (RepresentingVar)
             {
@@ -334,7 +339,7 @@ namespace AtMycelia.Hyphlow
         public virtual void SetContentsTo(VariableData<TValue> otherVarData)
         {
             this.VarRef = otherVarData.VarRef;
-            this.value = otherVarData.value;
+            this._value = otherVarData._value;
         }
 
         public override string ToString()

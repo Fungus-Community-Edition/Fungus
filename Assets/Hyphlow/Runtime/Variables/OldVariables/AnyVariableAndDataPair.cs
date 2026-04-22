@@ -16,18 +16,23 @@ namespace AtMycelia.Hyphlow
 [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class AnyVariableAndDataPair : ISerializationCallbackReceiver
     {
-        [SerializeField] private VariableReference varRef = new VariableReference();
-        [SerializeField] private AnyVariableData data = new AnyVariableData(); // RHS
+        [SerializeField]
+        [FormerlySerializedAs("varRef")]
+        private VariableReference _varRef = new VariableReference();
+
+        [SerializeField]
+        [FormerlySerializedAs("data")]
+        private AnyVariableData _data = new AnyVariableData(); // RHS
 
         public AnyVariableData Data
         {
             get
             {
-                return data;
+                return _data;
             }
             set
             {
-                data = value;
+                _data = value;
             }
         }
 
@@ -36,20 +41,20 @@ namespace AtMycelia.Hyphlow
             get
             {
                 // Always derive from the serialized reference to avoid stale cache
-                varRef?.Refresh();
-                return varRef?.Variable;
+                _varRef?.Refresh();
+                return _varRef?.Variable;
             }
             set
             {
-                varRef ??= new VariableReference();
-                varRef.Variable = value;
+                _varRef ??= new VariableReference();
+                _varRef.Variable = value;
             }
         }
 
         public bool HasReference(Variable variable)
         {
             // Only legacy comparison makes sense for this signature
-            return ReferenceEquals(variable, LhsVariable) || data.HasReference(variable);
+            return ReferenceEquals(variable, LhsVariable) || _data.HasReference(variable);
         }
 
 #if UNITY_EDITOR
@@ -64,7 +69,7 @@ namespace AtMycelia.Hyphlow
                 flowchart.DetermineSubstituteVariables(asStringVar.Value, referencedVariables);
             }
 
-            string text = data.BoxedValue as string;
+            string text = _data.BoxedValue as string;
             if (!string.IsNullOrEmpty(text))
             {
                 flowchart.DetermineSubstituteVariables(text, referencedVariables);
@@ -74,18 +79,18 @@ namespace AtMycelia.Hyphlow
 
         public string GetDataDescription()
         {
-            if (data == null)
+            if (_data == null)
             {
                 return "Null";
             }
 
-            string desc = data.GetDescription();
+            string desc = _data.GetDescription();
             if (!string.IsNullOrEmpty(desc))
             {
                 return desc;
             }
 
-            object boxed = data.BoxedValue;
+            object boxed = _data.BoxedValue;
             return boxed != null ? 
                 boxed.ToString() : 
                 "Null";
@@ -116,7 +121,7 @@ namespace AtMycelia.Hyphlow
 
             if (foundActions)
             {
-                compareResult = typeActions.CompareFunc(eff, data, compareOperator);
+                compareResult = typeActions.CompareFunc(eff, _data, compareOperator);
             }
 
             return foundActions;
@@ -128,7 +133,7 @@ namespace AtMycelia.Hyphlow
             bool foundActions = TryGetTypeActionsFor(VarType, out VariableTypeActions typeActions);
             if (foundActions)
             {
-                typeActions.SetFunc(eff, data, setOperator);
+                typeActions.SetFunc(eff, _data, setOperator);
             }
         }
 

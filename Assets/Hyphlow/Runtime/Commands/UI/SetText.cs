@@ -20,17 +20,19 @@ namespace AtMycelia.Hyphlow
         
         [Tooltip("String value to assign to the text object")]
         [FormerlySerializedAs("stringData")]
-        [SerializeField] protected StringDataMulti text = new StringDataMulti();
+        [FormerlySerializedAs("text")]
+        [HyphlowTextArea(3, 10)]
+        [SerializeField] protected StringDataMulti _text = new StringDataMulti();
 
         [Tooltip("Notes about this story text for other authors, localization, etc.")]
         [HyphlowTextArea(3, 10)]
-        [SerializeField] protected string description;
+        [SerializeField] protected StringData _description;
 
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
             _variableDataCache.Add(_targetTextObject);
-            _variableDataCache.Add(text);
+            _variableDataCache.Add(_text);
         }
 
         #region Public members
@@ -38,7 +40,7 @@ namespace AtMycelia.Hyphlow
         public override void OnEnter()
         {
             var flowchart = GetFlowchart();
-            string newText = flowchart.SubstituteVariables(text.Value);
+            string newText = flowchart.SubstituteVariables(_text.Value);
             
             if (_targetTextObject == null)
             {
@@ -71,18 +73,18 @@ namespace AtMycelia.Hyphlow
 
         private string GetTextSummaryStr()
         {
-            if (text == null || (string.IsNullOrEmpty(text.Value) && !text.RepresentingVar))
+            if (_text == null || (string.IsNullOrEmpty(_text.Value) && !_text.RepresentingVar))
             {
                 return "None";
             }
 
-            if (text.RepresentingVar)
+            if (_text.RepresentingVar)
             {
-                return text.VarRef.Key;
+                return _text.VarRef.Key;
             }
             else
             {
-                return $"\"{text.Value}\"";
+                return $"\"{_text.Value}\"";
             }
         }
         
@@ -93,7 +95,7 @@ namespace AtMycelia.Hyphlow
 
         public override bool HasReference(Variable variable)
         {
-            return ReferenceEquals(text.VarRef, variable) || base.HasReference(variable);
+            return ReferenceEquals(_text.VarRef, variable) || base.HasReference(variable);
         }
 
         #endregion
@@ -106,7 +108,7 @@ namespace AtMycelia.Hyphlow
             base.RefreshVariableCache();
 
             var f = GetFlowchart();
-            f.DetermineSubstituteVariables(text, referencedVariables);
+            f.DetermineSubstituteVariables(_text, referencedVariables);
         }
 #endif
         #endregion Editor caches
@@ -115,17 +117,17 @@ namespace AtMycelia.Hyphlow
 
         public virtual string GetStandardText()
         {
-            return text;
+            return _text;
         }
 
         public virtual void SetStandardText(string standardText)
         {
-            text.Value = standardText;
+            _text.Value = standardText;
         }
 
         public virtual string GetDescription()
         {
-            return description;
+            return _oldDescription;
         }
         
         public virtual string GetStringId()
@@ -142,16 +144,28 @@ namespace AtMycelia.Hyphlow
         {
             base.ApplyBackwardsCompatibility();
 
-            if (targetTextObject != null)
+            if (_oldTargetTextObject != null)
             {
-                _targetTextObject.Value = targetTextObject;
-                targetTextObject = null;
+                _targetTextObject.Value = _oldTargetTextObject;
+                _oldTargetTextObject = null;
+            }
+
+            if (!string.IsNullOrEmpty(_oldDescription))
+            {
+                _description.Value = _oldDescription;
+                _oldDescription = null;
             }
         }
 
         [SerializeField]
+        [FormerlySerializedAs("targetTextObject")]
         [HideInInspector]
-        protected GameObject targetTextObject;
+        protected GameObject _oldTargetTextObject;
+
+        [SerializeField]
+        [FormerlySerializedAs("description")]
+        [HideInInspector]
+        protected string _oldDescription;
 
         #endregion
     }    

@@ -65,7 +65,7 @@ namespace AtMycelia.Hyphlow
         {
             get
             {
-                backingVarRef.Refresh();
+                _backingVarRef.Refresh();
                 string result;
                 if (VarRef != null)
                 {
@@ -77,13 +77,13 @@ namespace AtMycelia.Hyphlow
                 }
                 else
                 {
-                    result = value;
+                    result = _value;
                 }
 
                 // To make sure we never return a null value
                 if (result == null)
                 {
-                    result = value = string.Empty;
+                    result = _value = string.Empty;
                 }
 
                 return result;
@@ -97,7 +97,7 @@ namespace AtMycelia.Hyphlow
                 else
                 {
                     base.Value = value;
-                    base.value = value;
+                    base._value = value;
                 }
             }
         }

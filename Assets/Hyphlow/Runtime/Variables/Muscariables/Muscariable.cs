@@ -1,6 +1,8 @@
 using System;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
+using UnityEngine.Serialization;
 
 namespace AtMycelia.Hyphlow
 {
@@ -13,30 +15,35 @@ namespace AtMycelia.Hyphlow
         "AtMycelia.Amanita.Core", "Muscariable")]
     public abstract class Muscariable : IVariable, IEquatable<Muscariable>
     {
-        [SerializeField] protected VariableScope scope = VariableScope.Private;
-        [SerializeField] protected string key = string.Empty;
+        [SerializeField]
+        [FormerlySerializedAs("scope")]
+        protected VariableScope _scope = VariableScope.Private;
+        [SerializeField]
+        [FormerlySerializedAs("key")]
+        protected string _key = string.Empty;
         [HideInInspector]
-        [SerializeField] protected byte itemID = InvalidID; 
+        [FormerlySerializedAs("itemID")]
+        [SerializeField] protected byte _itemId = InvalidID; 
         // ^Default to invalid ID to avoid accidental collisions with valid variables. See VariableDataCache for more.
 
         public static readonly byte InvalidID = 0;
 
         public virtual VariableScope Scope
         {
-            get => scope;
-            set => scope = value;
+            get => _scope;
+            set => _scope = value;
         }
 
         public virtual string Key
         {
-            get => key;
-            set => key = value;
+            get => _key;
+            set => _key = value;
         }
 
         public virtual byte ItemId
         {
-            get => itemID;
-            set => itemID = value;
+            get => _itemId;
+            set => _itemId = value;
         }
 
         public Muscariable() : base() { }
@@ -76,17 +83,17 @@ namespace AtMycelia.Hyphlow
 
         public Muscariable (IVariable otherVar)
         {
-            key = otherVar.Key;
-            scope = otherVar.Scope;
-            itemID = otherVar.ItemId;
+            _key = otherVar.Key;
+            _scope = otherVar.Scope;
+            _itemId = otherVar.ItemId;
             BoxedValue = otherVar.BoxedValue;
         }
 
         public Muscariable(string key, byte itemID, VariableScope scope)
         {
-            this.key = key;
-            this.itemID = itemID;
-            this.scope = scope;
+            this._key = key;
+            this._itemId = itemID;
+            this._scope = scope;
         }
 
         public abstract Type ContentType { get; }
@@ -241,23 +248,29 @@ namespace AtMycelia.Hyphlow
         "AtMycelia.Amanita.Core")]
     public abstract class Muscariable<T> : Muscariable, IVariable<T>, IEquatable<T>, IEquatable<IVariable<T>>
     {
-        [SerializeField] protected T value, startValue;
+        [SerializeField]
+        [FormerlySerializedAs("value")]
+        protected T _value;
+
+        [SerializeField]
+        [FormerlySerializedAs("startValue")]
+        protected T _startValue;
 
         // We have these constructors to make sure that the base value starts out synced 
         // with the strongly typed one
         public Muscariable() : base()
         {
-            value = startValue = default;
+            _value = _startValue = default;
         }
 
         public Muscariable(T startVal) : this()
         {
-            value = startValue = startVal;
+            _value = _startValue = startVal;
         }
 
         public virtual void Init(T startValue = default)
         {
-            this.startValue = startValue; 
+            this._startValue = startValue; 
             this.Value = startValue;
         }
 
@@ -270,17 +283,17 @@ namespace AtMycelia.Hyphlow
 
         public virtual T Value
         {
-            get { return value; }
+            get { return _value; }
             set
             {
-                bool sameVal = value != null && value.Equals(this.value);
+                bool sameVal = value != null && value.Equals(this._value);
                 if (sameVal)
                 {
                     return;
                 }
 
 
-                this.value = (T)value; 
+                this._value = (T)value; 
                 // ^Need to cast here for the sake of numeric types. Can't do an "as" cast with those.
                 TriggerOnValueChanged();
             }
@@ -288,7 +301,7 @@ namespace AtMycelia.Hyphlow
 
         public override object BoxedValue
         {
-            get { return value; }
+            get { return _value; }
             set
             {
                 if (!this.CanHoldAsValue(value))
@@ -298,7 +311,7 @@ namespace AtMycelia.Hyphlow
                     throw new ArgumentException(errorMessage);
                 }
                 object filteredValue = this.FilterForValueSet(value);
-                this.value = (T)filteredValue;
+                this._value = (T)filteredValue;
                 TriggerOnValueChanged();
             }
         }
@@ -306,8 +319,24 @@ namespace AtMycelia.Hyphlow
         protected override void TriggerOnValueChanged()
         {
             base.TriggerOnValueChanged();
-            OnValueChanged?.Invoke(value);
-            VariableSignals.PostValueChange.Invoke(this, value);
+#if UNITY_EDITOR
+            EditorApplication.delayCall += () =>
+            {
+                if (this == null)
+                {
+                    return;
+                }
+                if (Application.isPlaying)
+                {
+                    return; // We only want to respond to var value changes in the editor, not during play mode, to avoid perf issues and unintended consequences.
+                }
+                OnValueChanged?.Invoke(_value);
+                VariableSignals.PostValueChange.Invoke(this, _value);
+            };
+#else
+            OnValueChanged?.Invoke(_value);
+            VariableSignals.PostValueChange.Invoke(this, _value);
+#endif
         }
 
         public new event Action<T> OnValueChanged = delegate { };
@@ -401,7 +430,7 @@ namespace AtMycelia.Hyphlow
 
         public override void OnReset()
         {
-            value = startValue;
+            _value = _startValue;
             TriggerOnValueChanged();
         }
 

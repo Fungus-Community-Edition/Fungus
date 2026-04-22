@@ -57,21 +57,9 @@ namespace AtMycelia.Amanita.DialogueSys
             CheckEventSystem();
         }
 
-        // There must be an Event System in the scene for Say and Menu input to work.
-        // This method will automatically instantiate one if none exists.
         protected virtual void CheckEventSystem()
         {
             EventSystem eventSystem = GameObject.FindFirstObjectByType<EventSystem>();
-            if (eventSystem == null)
-            {
-                // Auto spawn an Event System from the prefab
-                GameObject prefab = Resources.Load<GameObject>(HyphlowConstants.EventSystemPrefabName);
-                if (prefab != null)
-                {
-                    GameObject go = Instantiate(prefab) as GameObject;
-                    go.name = "EventSystem";
-                }
-            }
         }
             
         protected virtual void Update()

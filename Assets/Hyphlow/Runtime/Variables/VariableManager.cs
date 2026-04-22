@@ -390,6 +390,15 @@ namespace AtMycelia.Hyphlow
                     }
                 }
             }
+
+            // Find the vars that have an itemId of 0, then reassign them valid IDs. We have to do
+            // this separately from the duplicate ID check because 0 is a valid byte value, so it
+            // won't be caught by the duplicate ID check even though it's not a valid ID for our purposes.
+            var zeroIdVars = _lookup.Values.Where(elem => elem.ItemId == Muscariable.InvalidID).ToList();
+            foreach (var elem in zeroIdVars)
+            {
+                elem.ItemId = NextValidVarID();
+            }
         }
 
         private byte NextValidVarID()
