@@ -67,9 +67,8 @@ namespace AtMycelia.Hyphlow.Sys
             Debug.LogWarning(errorMessage);
         }
 
-        public void Awake()
+        private void Awake()
         {
-#if UNITY_EDITOR
             if (S != null && S != this)
             {
                 string errorMessage = $"Multiple instances of HyphlowRuntimeSysAssets detected! This is not intended. " +
@@ -80,8 +79,18 @@ namespace AtMycelia.Hyphlow.Sys
                 Destroy(this);
                 return;
             }
-#endif
+
             S = this;
+        }
+
+        private void OnEnable()
+        {
+#if UNITY_EDITOR
+            if (S == null)
+            {
+                S = this; // Can happen between domain reloads
+            }
+#endif
         }
 
         // Singleton

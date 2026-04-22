@@ -18,6 +18,15 @@ namespace AtMycelia.Hyphlow.EditorUtils
             AssemblyReloadEvents.afterAssemblyReload += DoTheEnsuring;
         }
 
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        public static void InitInEditor()
+        {
+            // This is to help make sure that the Singletons aren't lost for too long.
+#if UNITY_EDITOR
+            DoTheEnsuring();
+#endif
+        }
+
         private static void DoTheEnsuring()
         {
             Debug.Log($"Doing default asset maintenance...");
