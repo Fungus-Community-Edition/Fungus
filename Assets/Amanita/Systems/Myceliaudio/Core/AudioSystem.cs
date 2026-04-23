@@ -23,6 +23,19 @@ namespace AtMycelia.Amanita.Myceliaudio
             set => _s = value;
         }
 
+        public static void EnsureExists()
+        {
+            // We check here to avoid creating craploads of AudioSyses from lots of
+            // AudioCommands being executed in short order
+            bool alreadySetUp = _s != null;
+            if (alreadySetUp)
+            {
+                return;
+            }
+
+            _s = AudioSystemBuilder.BuildDefault();
+        }
+
         public virtual void Init()
         {
             if (IsFullyInitted || 

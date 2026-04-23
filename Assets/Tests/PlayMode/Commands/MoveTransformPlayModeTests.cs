@@ -18,7 +18,7 @@ namespace AmaniTweenTests.Commands
             _target = _targetGo.transform;
 
             cmd.SetTarget(_target);
-            cmd.SetDuration(Duration);
+            cmd.SetDuration(_duration);
             cmd.SetRelativity(TweenRelativity.Absolute);
             cmd.SetToFrom(StartFromMode.Current);
         }
@@ -46,14 +46,14 @@ namespace AmaniTweenTests.Commands
             Vector3 destination = new Vector3(5f, 2f, -1f);
 
             _target.position = Vector3.zero;
-            command.SetAbsoluteDest(destination);
-            command.SetRelativity(TweenRelativity.Absolute);
-            command.SetToFrom(StartFromMode.Current);
-            command.SetDuration(Duration);
+            _command.SetAbsoluteDest(destination);
+            _command.SetRelativity(TweenRelativity.Absolute);
+            _command.SetToFrom(StartFromMode.Current);
+            _command.SetDuration(_duration);
 
             yield return RunBlockAndWait();
 
-            Assert.That(Vector3.Distance(_target.position, destination), Is.LessThan(Epsilon),
+            Assert.That(Vector3.Distance(_target.position, destination), Is.LessThan(_epsilon),
                 "Target did not reach absolute destination.");
         }
 
@@ -65,14 +65,14 @@ namespace AmaniTweenTests.Commands
             Vector3 expected = startPos + moveBy;
 
             _target.position = startPos;
-            command.SetMoveByAmount(moveBy);
-            command.SetRelativity(TweenRelativity.Relative);
-            command.SetToFrom(StartFromMode.Current);
-            command.SetDuration(Duration);
+            _command.SetMoveByAmount(moveBy);
+            _command.SetRelativity(TweenRelativity.Relative);
+            _command.SetToFrom(StartFromMode.Current);
+            _command.SetDuration(_duration);
 
             yield return RunBlockAndWait();
 
-            Assert.That(Vector3.Distance(_target.position, expected), Is.LessThan(Epsilon),
+            Assert.That(Vector3.Distance(_target.position, expected), Is.LessThan(_epsilon),
                 "Target did not reach relative destination.");
         }
 
@@ -83,20 +83,20 @@ namespace AmaniTweenTests.Commands
             Vector3 destination = new Vector3(0f, 2f, -3f);
 
             _target.position = new Vector3(3f, 3f, 3f);
-            command.SetMoveFromPosition(fromPos);
-            command.SetAbsoluteDest(destination);
-            command.SetRelativity(TweenRelativity.Absolute);
-            command.SetToFrom(StartFromMode.FromValue);
-            command.SetDuration(Duration);
+            _command.SetMoveFromPosition(fromPos);
+            _command.SetAbsoluteDest(destination);
+            _command.SetRelativity(TweenRelativity.Absolute);
+            _command.SetToFrom(StartFromMode.FromValue);
+            _command.SetDuration(_duration);
 
-            flowchart.ExecuteBlock(block);
+            _flowchart.ExecuteBlock(_block);
 
-            Assert.That(Vector3.Distance(_target.position, fromPos), Is.LessThan(Epsilon),
+            Assert.That(Vector3.Distance(_target.position, fromPos), Is.LessThan(_epsilon),
                 "Target did not snap to the From position before tweening.");
 
-            yield return new WaitForSeconds(Duration + 0.05f);
+            yield return new WaitForSeconds(_duration + 0.05f);
 
-            Assert.That(Vector3.Distance(_target.position, destination), Is.LessThan(Epsilon),
+            Assert.That(Vector3.Distance(_target.position, destination), Is.LessThan(_epsilon),
                 "Target did not reach destination after From tween.");
         }
 
@@ -104,6 +104,7 @@ namespace AmaniTweenTests.Commands
         {
             public void SetTarget(Component component)
             {
+                _toMove.SetFor(component.GetType());
                 _toMove.BoxedValue = component;
             }
 
