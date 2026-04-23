@@ -62,7 +62,7 @@ namespace AtMycelia.SaveSys
                 if (matchedMarker == null)
                 {
                     string errorMessage = "Decrypted text does not end with the expected completion marker.";
-                    throw new IOException(errorMessage);
+                    throw new InvalidDataException(errorMessage);
                 }
 
                 plainJson = plainText[..^matchedMarker.Length];

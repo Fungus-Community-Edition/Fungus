@@ -55,8 +55,8 @@ namespace VScriptingTests.VariableOperations
         {
             var holder = ScriptableObject.CreateInstance<IntegerDataHolder>();
             toDestroyInTearDown.Add(holder);
-            holder.data.VarRef = null;
-            holder.data.Value = 428192;
+            holder._data.VarRef = null;
+            holder._data.Value = 428192;
 
             // Open window bound to holder.data; Unity will invoke VariableDataDrawer
             var wnd = VariableDataTestWindow.Show(holder, "data");
@@ -74,7 +74,7 @@ namespace VScriptingTests.VariableOperations
 
             var so = new SerializedObject(holder);
             so.Update();
-            var itemIdProp = so.FindProperty("data.backingVarRef.itemId");
+            var itemIdProp = so.FindProperty("_data._backingVarRef._itemId");
             yield return windowViewWait;
             Assert.AreEqual(Variable.InvalidID, itemIdProp.intValue);
             wnd.Close();
@@ -97,7 +97,7 @@ namespace VScriptingTests.VariableOperations
 
             var holder = ScriptableObject.CreateInstance<IntegerDataHolder>();
             toDestroyInTearDown.Add(holder);
-            holder.data.VarRef = intVar;
+            holder._data.VarRef = intVar;
 
             var wnd = VariableDataTestWindow.Show(holder, "data");
             toDestroyInTearDown.Add(wnd);
@@ -111,7 +111,7 @@ namespace VScriptingTests.VariableOperations
 
             var so = new SerializedObject(holder);
             so.Update();
-            var itemIdProp = so.FindProperty("data.backingVarRef.itemId");
+            var itemIdProp = so.FindProperty("_data._backingVarRef._itemId");
             yield return windowViewWait;
             Assert.AreNotEqual(Variable.InvalidID, itemIdProp.intValue);
             wnd.Close();
@@ -121,7 +121,7 @@ namespace VScriptingTests.VariableOperations
         [Serializable]
         public class IntegerDataHolder : ScriptableObject
         {
-            public IntegerData data = new IntegerData();
+            public IntegerData _data = new IntegerData();
         }
     }
 }

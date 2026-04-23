@@ -76,7 +76,10 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
 
         private void OnVarAddedOrRemoved(IVariable variable)
         {
-            FlowchartWindow.S.Refresh();
+            if (FlowchartWindow.S != null)
+            {
+                FlowchartWindow.S.Refresh();
+            }
         }
 
         private void OnVarValueChanged(IVariable variable, object arg2)
