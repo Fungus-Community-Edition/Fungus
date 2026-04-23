@@ -56,7 +56,7 @@ namespace AtMycelia.Hyphlow
         /// <summary>
         /// This is relative to a Resources folder.
         /// </summary>
-        public const string PathToAmanitaVariableDisplayEditorUxml = "UIToolkitTemplates/VariableDisplayEditor";
+        public const string PathToVariableDisplayEditorUxml = "UIToolkitTemplates/VariableDisplayEditor";
 
         /// <summary>
         /// The default name of the Input EventSystem, stored in the resources folder.

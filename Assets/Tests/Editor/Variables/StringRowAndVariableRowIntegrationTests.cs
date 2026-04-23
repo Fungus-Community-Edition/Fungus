@@ -146,7 +146,7 @@ namespace VScriptingTests.VariableOperations
         protected UITKLabel _countLabel;
         protected VariableListView _listView;
         protected VariableRowManager manager;
-        protected readonly string pathToUxml = HyphlowConstants.PathToAmanitaVariableDisplayEditorUxml;
+        protected readonly string pathToUxml = HyphlowConstants.PathToVariableDisplayEditorUxml;
         protected VisualTreeAsset uxml;
 
         protected readonly List<UnityObj> _toDestroy = new();

@@ -14,7 +14,7 @@ using AtMycelia.Hyphlow;
 
 public class SaveSysSettingsWindowTests
 {
-    private const string UxmlPath = "Assets/Amanita/Editor/Resources/UIToolkitTemplates/SaveSysSettingsWindow.uxml";
+    private const string UxmlPath = "Assets/Hyphlow/Editor/Resources/UIToolkitTemplates/SaveSysSettingsWindow.uxml";
     private const string ResourcesSettingsFolder = "Assets/Resources/SaveSys/Settings";
     private const string ResourcesSettingsSubPath = "SaveSys/Settings";
     private const string SettingsAssetName = "SaveSystemSettings";
