@@ -16,26 +16,31 @@ namespace AtMycelia.Amanita.VScripting
     public class FadeSprite : Command
     {
         [Tooltip("Sprite object to be faded")]
-        [SerializeField] protected SpriteRenderer spriteRenderer;
+        [FormerlySerializedAs("spriteRenderer")]
+        [SerializeField] protected SpriteRenderer _spriteRenderer;
 
         [Tooltip("Length of time to perform the fade")]
-        [SerializeField] protected FloatData duration = new FloatData(1f);
+        [FormerlySerializedAs("duration")]
+        [SerializeField] protected FloatData _duration = new FloatData(1f);
 
         [Tooltip("Target color to fade to. To only fade transparency level, set the color to white and " +
                  "set the alpha to required transparency.")]
-        [SerializeField] protected ColorData targetColor = new ColorData(Color.white);
+        [FormerlySerializedAs("targetColor")]
+        [SerializeField] protected ColorData _targetColor = new ColorData(Color.white);
 
         [Tooltip("Wait until the fade has finished before executing the next command")]
-        [SerializeField] protected BooleanData waitUntilFinished = new BooleanData(true);
+        [FormerlySerializedAs("waitUntilFinished")]
+        [SerializeField] protected BooleanData _waitUntilFinished = new BooleanData(true);
 
-        [SerializeField] protected ScriptableObject fadeTweener;
+        [FormerlySerializedAs("fadeTweener")]
+        [SerializeField] protected ScriptableObject _fadeTweener;
 
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            _variableDataCache.Add(duration);
-            _variableDataCache.Add(targetColor);
-            _variableDataCache.Add(waitUntilFinished);
+            _variableDataCache.Add(_duration);
+            _variableDataCache.Add(_targetColor);
+            _variableDataCache.Add(_waitUntilFinished);
         }
 
         protected virtual void Awake()
@@ -47,16 +52,16 @@ namespace AtMycelia.Amanita.VScripting
 
         public override void OnEnter()
         {
-            if (spriteRenderer == null)
+            if (_spriteRenderer == null)
             {
                 Continue();
                 return;
             }
 
-            SpriteFader.FadeSprite(spriteRenderer, targetColor.Value, duration.Value,
+            SpriteFader.FadeSprite(_spriteRenderer, _targetColor.Value, _duration.Value,
                 Vector2.zero, doFadeTween, ContinueAfterWait);
 
-            if (!waitUntilFinished)
+            if (!_waitUntilFinished)
             {
                 Continue();
             }
@@ -64,7 +69,7 @@ namespace AtMycelia.Amanita.VScripting
 
         protected virtual void ContinueAfterWait()
         {
-            if (waitUntilFinished)
+            if (_waitUntilFinished)
             {
                 Continue();
             }
@@ -72,12 +77,12 @@ namespace AtMycelia.Amanita.VScripting
 
         public override string GetSummary()
         {
-            if (spriteRenderer == null)
+            if (_spriteRenderer == null)
             {
                 return "Error: No sprite renderer selected";
             }
 
-            return spriteRenderer.name + " to " + targetColor.Value.ToString();
+            return _spriteRenderer.name + " to " + _targetColor.Value.ToString();
         }
 
         public override Color GetButtonColor()
@@ -87,8 +92,8 @@ namespace AtMycelia.Amanita.VScripting
 
         public override bool HasReference(Variable variable)
         {
-            return ReferenceEquals(duration.VarRef, variable) || 
-                ReferenceEquals(targetColor.VarRef, variable) ||
+            return ReferenceEquals(_duration.VarRef, variable) || 
+                ReferenceEquals(_targetColor.VarRef, variable) ||
                 base.HasReference(variable);
         }
 
@@ -96,26 +101,31 @@ namespace AtMycelia.Amanita.VScripting
 
         #region Backwards compatibility
 
-        [HideInInspector] [FormerlySerializedAs("duration")] public float durationOLD;
-        [HideInInspector] [FormerlySerializedAs("targetColor")] public Color targetColorOLD;
-        [SerializeField][FormerlySerializedAs("waitUntilFinished")] protected bool waitUntilFinishedOLD;
+        [SerializeField] [HideInInspector] [FormerlySerializedAs("duration")] 
+        public float durationOLD;
+
+        [SerializeField] [HideInInspector] [FormerlySerializedAs("targetColor")] 
+        public Color targetColorOLD;
+
+        [SerializeField] [HideInInspector] [FormerlySerializedAs("waitUntilFinished")] 
+        protected bool waitUntilFinishedOLD;
 
         protected override void OnEnable()
         {
             base.OnEnable();
             if (durationOLD != default)
             {
-                duration.Value = durationOLD;
+                _duration.Value = durationOLD;
                 durationOLD = default;
             }
             if (targetColorOLD != default)
             {
-                targetColor.Value = targetColorOLD;
+                _targetColor.Value = targetColorOLD;
                 targetColorOLD = default;
             }
             if (waitUntilFinishedOLD != default)
             {
-                waitUntilFinished.Value = waitUntilFinishedOLD;
+                _waitUntilFinished.Value = waitUntilFinishedOLD;
                 waitUntilFinishedOLD = default;
             }
         }
@@ -130,10 +140,10 @@ namespace AtMycelia.Amanita.VScripting
 
         protected virtual void ValidateTweeners(bool logMessages = true)
         {
-            TweenUtils.EnsureValidTweener(ref fadeTweener,
+            TweenUtils.EnsureValidTweener(ref _fadeTweener,
                 typeof(IGraphicTweenAdapter),
                 "sprite-fading", logMessages);
-            doFadeTween = fadeTweener as IGraphicTweenAdapter;
+            doFadeTween = _fadeTweener as IGraphicTweenAdapter;
         }
 
         protected IGraphicTweenAdapter doFadeTween;

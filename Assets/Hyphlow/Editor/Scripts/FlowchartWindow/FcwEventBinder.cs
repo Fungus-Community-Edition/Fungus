@@ -47,6 +47,10 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
                 EditorSceneManager.sceneClosed += _onSceneClosed;
                 EditorSceneManager.sceneLoaded += _onSceneLoaded;
 
+                VariableSignals.PostValueChange += OnVarValueChanged;
+                VariableSignals.VariableAdded += OnVarAddedOrRemoved;
+                VariableSignals.VariableRemoved += OnVarAddedOrRemoved;
+
                 EditorApplication.playModeStateChanged += _onPlayModeStateChanged;
                 CommandSignals.CommandSelected += _moduleHost.ModuleDispatcher.NotifyCommandSelected;
                 FlowchartWindowSignals.ZoomChanged += _onZoomChanged;
@@ -60,10 +64,24 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
                 EditorSceneManager.sceneClosed -= _onSceneClosed;
                 EditorSceneManager.sceneLoaded -= _onSceneLoaded;
 
+                VariableSignals.PostValueChange -= OnVarValueChanged;
+                VariableSignals.VariableAdded -= OnVarAddedOrRemoved;
+                VariableSignals.VariableRemoved -= OnVarAddedOrRemoved;
+
                 EditorApplication.playModeStateChanged -= _onPlayModeStateChanged;
                 CommandSignals.CommandSelected -= _moduleHost.ModuleDispatcher.NotifyCommandSelected;
                 FlowchartWindowSignals.ZoomChanged -= _onZoomChanged;
             }
+        }
+
+        private void OnVarAddedOrRemoved(IVariable variable)
+        {
+            FlowchartWindow.S.Refresh();
+        }
+
+        private void OnVarValueChanged(IVariable variable, object arg2)
+        {
+            FlowchartWindow.S.Refresh();
         }
     }
 }

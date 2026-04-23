@@ -19,7 +19,12 @@ namespace AtMycelia.Hyphlow
         /// <summary> Wait until the called block finishes executing, then continue executing current block. </summary>
         WaitUntilFinished,
         /// <summary> Stop executing the current block before attempting to call. This allows for circular calls within the same frame </summary>
-        StopThenCall
+        StopThenCall,
+
+        /// <summary>
+        /// Mainly for debug. In production, functions the same as Stop.
+        /// </summary>
+        Null,
     }
 
     /// <summary>
@@ -33,29 +38,36 @@ namespace AtMycelia.Hyphlow
     public class Call : Command, IBlockCaller
     {
         [Tooltip("Flowchart which contains the block to execute. If none is specified then the current Flowchart is used.")]
-        [SerializeField] protected Flowchart targetFlowchart;
+        [FormerlySerializedAs("targetFlowchart")]
+        [SerializeField] protected Flowchart _targetFlowchart;
 
         [FormerlySerializedAs("targetSequence")]
         [Tooltip("Block to start executing")]
-        [SerializeField] protected Block targetBlock;
+        [FormerlySerializedAs("targetBlock")]
+        [SerializeField] protected Block _targetBlock;
 
         [Tooltip("Label to start execution at. Takes priority over startIndex.")]
-        [SerializeField] protected StringData startLabel = new StringData();
+        [FormerlySerializedAs("startLabel")]
+        [SerializeField] protected StringData _startLabel = new StringData();
 
         [Tooltip("Command index to start executing")]
-        [SerializeField] protected IntegerData startIndex = new IntegerData(0);
+        [FormerlySerializedAs("startIndex")]
+        [SerializeField] protected IntegerData _startIndex = new IntegerData(0);
     
-        [Tooltip("Select if the calling block should stop or continue executing commands, or wait until the called block finishes.")]
-        [SerializeField] protected CallMode callMode;
+        [Tooltip("Select if the calling block should stop or continue executing commands, " +
+            "or wait until the called block finishes.")]
+        [FormerlySerializedAs("callMode")]
+        [SerializeField] protected CallMode _callMode = CallMode.WaitUntilFinished;
 
-        [SerializeField] [HideInInspector] private ushort targetBlockId;
-        public ushort TargetBlockId => targetBlockId;
+        [SerializeField] [HideInInspector] [FormerlySerializedAs("targetBlockId")] 
+        private ushort _targetBlockId;
+        public ushort TargetBlockId => _targetBlockId;
 
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            _variableDataCache.Add(startLabel);
-            _variableDataCache.Add(startIndex);
+            _variableDataCache.Add(_startLabel);
+            _variableDataCache.Add(_startIndex);
         }
 
         public override void OnPreCut()
@@ -66,18 +78,18 @@ namespace AtMycelia.Hyphlow
 
         private void RegisterTargetBlockId()
         {
-            targetBlockId = targetBlock != null ? 
-                targetBlock.ItemId : 
+            _targetBlockId = _targetBlock != null ? 
+                _targetBlock.ItemId : 
                 (ushort)0;
         }
         #region Public members
 
         public override void OnEnter()
         {
-            if (targetBlock != null)
+            if (_targetBlock != null)
             {
                 // Check if calling your own parent block
-                bool callingOwnParent = ParentBlock != null && targetBlock.Equals(ParentBlock);
+                bool callingOwnParent = ParentBlock != null && _targetBlock.Equals(ParentBlock);
                 if (callingOwnParent)
                 {
                     // Just ignore the callmode in this case, and jump to first command in list
@@ -85,16 +97,16 @@ namespace AtMycelia.Hyphlow
                     return;
                 }
 
-                if (targetBlock.IsExecuting())
+                if (_targetBlock.IsExecuting())
                 {
-                    Debug.LogWarning(targetBlock.BlockName + " cannot be called/executed, it is already running.");
+                    Debug.LogWarning(_targetBlock.BlockName + " cannot be called/executed, it is already running.");
                     Continue();
                     return;
                 }
 
                 // Callback action for Wait Until Finished mode
                 Action onComplete = null;
-                if (callMode == CallMode.WaitUntilFinished)
+                if (_callMode == CallMode.WaitUntilFinished)
                 {
                     onComplete = delegate {
                         Continue();
@@ -102,41 +114,41 @@ namespace AtMycelia.Hyphlow
                 }
 
                 // Find the command index to start execution at
-                int index = startIndex;
-                if (startLabel.Value != "")
+                int index = _startIndex;
+                if (_startLabel.Value != "")
                 {
-                    int labelIndex = targetBlock.GetLabelIndex(startLabel.Value);
+                    int labelIndex = _targetBlock.GetLabelIndex(_startLabel.Value);
                     if (labelIndex != -1)
                     {
                         index = labelIndex;
                     }
                 }
 
-                if (targetFlowchart == null ||
-                    targetFlowchart.Equals(GetFlowchart()))
+                if (_targetFlowchart == null ||
+                    _targetFlowchart.Equals(GetFlowchart()))
                 {
-                    if (callMode == CallMode.StopThenCall)
+                    if (_callMode == CallMode.StopThenCall)
                     {
                         StopParentBlock();
                     }
-                    StartCoroutine(targetBlock.Execute(index, onComplete));
+                    StartCoroutine(_targetBlock.Execute(index, onComplete));
                 }
                 else
                 {
-                    if (callMode == CallMode.StopThenCall)
+                    if (_callMode == CallMode.StopThenCall)
                     {
                         StopParentBlock();
                     }
                     // Execute block in another Flowchart
-                    targetFlowchart.ExecuteBlock(targetBlock, index, onComplete);
+                    _targetFlowchart.ExecuteBlock(_targetBlock, index, onComplete);
                 }
             }
 
-            if (callMode == CallMode.Stop)
+            if (_callMode == CallMode.Stop || _callMode == CallMode.Null)
             {
                 StopParentBlock();
             }
-            else if (callMode == CallMode.Continue)
+            else if (_callMode == CallMode.Continue)
             {
                 Continue();
             }
@@ -144,9 +156,9 @@ namespace AtMycelia.Hyphlow
 
         public override void GetConnectedBlocks(ref List<Block> connectedBlocks)
         {
-            if (targetBlock != null)
+            if (_targetBlock != null)
             {
-                connectedBlocks.Add(targetBlock);
+                connectedBlocks.Add(_targetBlock);
             }       
         }
         
@@ -154,16 +166,16 @@ namespace AtMycelia.Hyphlow
         {
             string summary = "";
 
-            if (targetBlock == null)
+            if (_targetBlock == null)
             {
                 summary = "<None>";
             }
             else
             {
-                summary = targetBlock.BlockName;
+                summary = _targetBlock.BlockName;
             }
 
-            summary += " : " + callMode.ToString();
+            summary += " : " + _callMode.ToString();
 
             return summary;
         }
@@ -175,12 +187,12 @@ namespace AtMycelia.Hyphlow
 
         public override bool HasReference(Variable variable)
         {
-            return ReferenceEquals(startLabel.VarRef, variable) || base.HasReference(variable);
+            return ReferenceEquals(_startLabel.VarRef, variable) || base.HasReference(variable);
         }
 
         public bool MayCallBlock(Block block)
         {
-            return block == targetBlock;
+            return block == _targetBlock;
         }
 
         #endregion
@@ -196,12 +208,21 @@ namespace AtMycelia.Hyphlow
             base.ApplyBackwardsCompatibility();
             if (_oldStartIndex >= 0)
             {
-                startIndex.LiteralValue = _oldStartIndex;
+                _startIndex.LiteralValue = _oldStartIndex;
                 _oldStartIndex = -1;
             }
         }
 
         [FormerlySerializedAs("startIndex")]
         [SerializeField] protected int _oldStartIndex;
+
+        protected override void DelayedOnValidate()
+        {
+            base.DelayedOnValidate();
+            if (_callMode == CallMode.Null)
+            {
+                _callMode = CallMode.Stop;
+            }
+        }
     }
 }

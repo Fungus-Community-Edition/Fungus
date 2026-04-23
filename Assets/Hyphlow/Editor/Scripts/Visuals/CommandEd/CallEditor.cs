@@ -16,11 +16,11 @@ namespace AtMycelia.Hyphlow.EditorUtils
         {
             base.OnEnable();
 
-            targetFlowchartProp = serializedObject.FindProperty("targetFlowchart");
-            targetBlockProp = serializedObject.FindProperty("targetBlock");
-            startLabelProp = serializedObject.FindProperty("startLabel");
-            startIndexProp = serializedObject.FindProperty("startIndex");
-            callModeProp = serializedObject.FindProperty("callMode");
+            targetFlowchartProp = serializedObject.FindProperty("_targetFlowchart");
+            targetBlockProp = serializedObject.FindProperty("_targetBlock");
+            startLabelProp = serializedObject.FindProperty("_startLabel");
+            startIndexProp = serializedObject.FindProperty("_startIndex");
+            callModeProp = serializedObject.FindProperty("_callMode");
         }
 
         public override void DrawCommandGUI()

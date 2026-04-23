@@ -87,6 +87,7 @@ namespace AtMycelia.Hyphlow
             _lookup.Remove(toRemove.ItemId);
             MarkOwnerAsDirty();
             VariableRemoved(toRemove);
+            VariableSignals.VariableRemoved(toRemove);
         }
 
         private Dictionary<byte, IVariable> _lookup = new();
@@ -295,6 +296,7 @@ namespace AtMycelia.Hyphlow
             _lookup[toAdd.ItemId] = toAdd;
             MarkOwnerAsDirty();
             VariableAdded(toAdd);
+            VariableSignals.VariableAdded(toAdd);
         }
 
         public event Action<IVariable> PreVariableAdded = delegate { };

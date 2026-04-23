@@ -1,5 +1,9 @@
 namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
 {
+    /// <summary>
+    /// Hosts the dispatchers for the Flowchart Window modules. The dispatchers are responsible 
+    /// for dispatching events to the modules.
+    /// </summary>
     public sealed class FcwModuleHost
     {
         private readonly BlockModuleDispatcher _blockModuleDispatcher = new BlockModuleDispatcher();

@@ -533,7 +533,7 @@ namespace AtMycelia.Hyphlow.Tweening
         /// </summary>
         public ITweenHandle FadeVolume(AudioSource target, float targVal, float duration)
         {
-            var tween = TweenAudioSourceVolume(target, target.volume, targVal, duration);
+            var tween = TweenAudioSourceVolume(target, target.volume * 100, targVal, duration);
             return DefaultTweenHandle.From(tween);
         }
 

@@ -38,6 +38,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
         public static HyphlowRuntimeSysAssets EnsureHyphlowRuntimeSysAssets()
         {
             HyphlowRuntimeSysAssets assets = HyphlowRuntimeSysAssets.S;
+
             if (assets == null)
             {
                 var all = Resources.LoadAll<HyphlowRuntimeSysAssets>("");
