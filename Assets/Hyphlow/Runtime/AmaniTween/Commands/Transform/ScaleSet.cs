@@ -1,6 +1,8 @@
 using UnityEngine;
+using AtMycelia.Hyphlow;
+using AtMycelia.Hyphlow;
 
-namespace AtMycelia.Hyphlow.Tweening.VScripting
+namespace AtMycelia.AmaniTween.VScripting
 {
     [CommandInfo("BI Tween",
         "Simple/Scale Set",

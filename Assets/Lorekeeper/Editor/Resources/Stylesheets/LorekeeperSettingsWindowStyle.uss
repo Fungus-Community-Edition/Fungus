@@ -56,3 +56,22 @@
 	width: 30%;
 	height: 30px;
 }
+
+.asset-type-toggle .unity-toggle__checkmark
+{
+	width: 32px;
+	height: 32px;
+}
+
+.asset-type-toggle .unity-toggle__input
+{
+	width: 32px;
+	height: 32px;
+	min-width: 32px;
+	min-height: 32px;
+}
+
+.asset-type-toggle .unity-toggle__text
+{
+	font-size: 20px;
+}

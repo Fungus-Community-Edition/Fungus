@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
-using AtMycelia.Hyphlow;
 
 namespace AtMycelia.Amanita.DialogueSys
 {

@@ -16,7 +16,7 @@ namespace VScriptingTests.MuscariableTests.DataOnly
             strVar.Init();
 
             string captured = null;
-            strVar.OnValueChanged += v => captured = v;
+            strVar.OnValueChanged += v => captured = v.BoxedValue.ToString();
 
             strVar.Value = SampleS;
             Assert.AreEqual(SampleS, strVar.Value);

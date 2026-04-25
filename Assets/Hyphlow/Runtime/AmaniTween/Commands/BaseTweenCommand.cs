@@ -1,7 +1,8 @@
 using AtMycelia.Hyphlow.Sys;
 using UnityEngine;
+using AtMycelia.Hyphlow;
 
-namespace AtMycelia.Hyphlow.Tweening.VScripting
+namespace AtMycelia.AmaniTween.VScripting
 { 
     public abstract class BaseTweenCommand : Command, ITweenCommand
     {

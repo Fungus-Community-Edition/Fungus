@@ -3,8 +3,35 @@
     <ui:VisualElement name="SectionPlate">
         <ui:Label text="Excluded Paths" name="ExclusionsLabel" style="width: 100%; -unity-text-align: upper-center;" />
     </ui:VisualElement>
-    <ui:Label tabindex="-1" text="Relative to Assets Folder" parse-escape-sequences="true" display-tooltip-when-elided="true" />
+    <ui:Label tabindex="-1" text="Relative to Assets Folder" parse-escape-sequences="true" display-tooltip-when-elided="true" name="RelativeToAssetFolderLabel" style="font-size: 24px;" />
     <ui:ListView name="RelativeToAssetsPathListView" header-title="Relative to Asset Folder" reorderable="true" reorder-mode="Animated" show-border="true" show-add-remove-footer="true" />
+    <ui:VisualElement name="AssetTypeSection">
+        <ui:Label text="Tracked Asset Types" name="TrackedAssetTypesLabel" style="width: 100%; -unity-text-align: upper-center; font-size: 24px;" />
+        <ui:ScrollView name="AssetTypeScrollView" style="max-height: 300px;">
+            <ui:Toggle name="TrackAudioClipsToggle" text="Audio Clips" class="asset-type-toggle" />
+            <ui:Toggle name="TrackAudioMixersToggle" text="Audio Mixers" class="asset-type-toggle" />
+            <ui:Toggle name="TrackSpritesToggle" text="Sprites" class="asset-type-toggle" />
+            <ui:Toggle name="TrackTexturesToggle" text="Textures" class="asset-type-toggle" />
+            <ui:Toggle name="TrackRenderTexturesToggle" text="Render Textures" class="asset-type-toggle" />
+            <ui:Toggle name="TrackCubemapsToggle" text="Cubemaps" class="asset-type-toggle" />
+            <ui:Toggle name="TrackMaterialsToggle" text="Materials" class="asset-type-toggle" />
+            <ui:Toggle name="TrackShadersToggle" text="Shaders" class="asset-type-toggle" />
+            <ui:Toggle name="TrackComputeShadersToggle" text="Compute Shaders" class="asset-type-toggle" />
+            <ui:Toggle name="TrackAnimationClipsToggle" text="Animation Clips" class="asset-type-toggle" />
+            <ui:Toggle name="TrackAnimatorControllersToggle" text="Animator Controllers" class="asset-type-toggle" />
+            <ui:Toggle name="TrackAvatarsToggle" text="Avatars" class="asset-type-toggle" />
+            <ui:Toggle name="TrackModelsToggle" text="Models" class="asset-type-toggle" />
+            <ui:Toggle name="TrackMeshesToggle" text="Meshes" class="asset-type-toggle" />
+            <ui:Toggle name="TrackPrefabsToggle" text="Prefabs" class="asset-type-toggle" />
+            <ui:Toggle name="TrackFontsToggle" text="Fonts" class="asset-type-toggle" />
+            <ui:Toggle name="TrackTmpFontAssetsToggle" text="TMP Font Assets" class="asset-type-toggle" />
+            <ui:Toggle name="TrackScriptableObjectsToggle" text="Scriptable Objects" class="asset-type-toggle" />
+            <ui:Toggle name="TrackTextAssetsToggle" text="Text Assets" class="asset-type-toggle" />
+            <ui:Toggle name="TrackPhysicsMaterialsToggle" text="Physics Materials" class="asset-type-toggle" />
+            <ui:Toggle name="TrackPhysicsMaterials2DToggle" text="Physics Materials 2D" class="asset-type-toggle" />
+            <ui:Toggle name="TrackOtherToggle" text="Other" class="asset-type-toggle" />
+        </ui:ScrollView>
+    </ui:VisualElement>
     <ui:VisualElement name="BottomButtons">
         <ui:Button text="Save" parse-escape-sequences="true" display-tooltip-when-elided="true" name="SaveButton" />
     </ui:VisualElement>

@@ -1,9 +1,9 @@
-using AtMycelia.Amanita.Myceliaudio;
-using AtMycelia.Amanita.SaveSys;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
+using AtMycelia.Myceliaudio;
+using AtMycelia.Myceliasmius;
 
 namespace SaveSystemTests
 {
@@ -70,7 +70,7 @@ namespace SaveSystemTests
             audioApplier.ApplyRange(new[] { save }, null);
             yield return null;
 
-            Assert.IsFalse(AudioSys.GetIsPlaying(TrackGroup.BGMusic, 0),
+            Assert.IsFalse(AudioSys.IsPlayingMain(TrackGroup.BGMusic, 0),
                 "No BGM should be playing after applying a save captured with no playback.");
             Assert.AreEqual(-1, save.GetBgmIndex(0), "Expected invalid BGM index when nothing was playing.");
         }
@@ -124,7 +124,7 @@ namespace SaveSystemTests
             audioApplier.ApplyRange(new[] { save }, null);
             yield return null;
 
-            Assert.IsFalse(AudioSys.GetIsPlaying(TrackGroup.BGMusic, 0),
+            Assert.IsFalse(AudioSys.IsPlayingMain(TrackGroup.BGMusic, 0),
                 "Playback should not start when clip cannot be resolved.");
         }
 

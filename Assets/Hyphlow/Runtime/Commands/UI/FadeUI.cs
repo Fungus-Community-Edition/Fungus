@@ -1,4 +1,4 @@
-using AtMycelia.Hyphlow.Tweening;
+using AtMycelia.AmaniTween;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;

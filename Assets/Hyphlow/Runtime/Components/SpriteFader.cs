@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System;
-using AtMycelia.Hyphlow.Tweening;
+using AtMycelia.AmaniTween;
 
 namespace AtMycelia.Amanita
 {

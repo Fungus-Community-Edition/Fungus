@@ -1,4 +1,4 @@
-using AtMycelia.Hyphlow.Tweening;
+using AtMycelia.AmaniTween;
 using UnityEngine;
 
 #if UNITY_EDITOR

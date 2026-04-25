@@ -1,12 +1,12 @@
-using AtMycelia.Amanita.Myceliaudio;
-using AtMycelia.Amanita.Myceliaudio.VScripting;
 using AtMycelia.Hyphlow;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
 using AtMycelia.Amanita;
-using AtMycelia.Hyphlow.Tweening;
+using AtMycelia.Hyphlowceliaudio;
+using AtMycelia.Myceliaudio;
+
 
 namespace VScriptingTests.Commands
 {
@@ -67,7 +67,7 @@ namespace VScriptingTests.Commands
                 .SetValue(cmd, DefaultTweener); // default adapter
         }
 
-        private static MyceliaudioTweenAdapter DefaultTweener => DefaultAmanitaAssets.MyceliaudioTweener;
+        private static MyceliaudioTweenAdapter DefaultTweener => DefaultHyphlowceliaudioAssets.MyceliaudioTweener;
 
         protected override void AssertFinalState()
         {

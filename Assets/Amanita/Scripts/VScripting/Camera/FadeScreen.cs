@@ -1,5 +1,5 @@
 using UnityEngine;
-using AtMycelia.Hyphlow.Tweening;
+using AtMycelia.AmaniTween;
 using UnityEngine.Serialization;
 using AtMycelia.Hyphlow;
 

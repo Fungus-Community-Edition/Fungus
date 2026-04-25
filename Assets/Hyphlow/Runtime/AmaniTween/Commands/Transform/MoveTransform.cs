@@ -1,7 +1,8 @@
 using UnityEngine;
 using UnityEngine.Serialization;
+using AtMycelia.Hyphlow;
 
-namespace AtMycelia.Hyphlow.Tweening.VScripting
+namespace AtMycelia.AmaniTween.VScripting
 {
     [CommandInfo("BI Tween", 
         "Move", 

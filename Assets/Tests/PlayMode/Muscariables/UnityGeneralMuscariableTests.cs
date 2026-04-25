@@ -3,6 +3,7 @@ using NUnit.Framework;
 using System;
 using UnityEngine;
 using UnityEngine.TestTools;
+using UnityObj = UnityEngine.Object;
 
 namespace VScriptingTests.MuscariableTests.DataOnly
 {
@@ -38,7 +39,7 @@ namespace VScriptingTests.MuscariableTests.DataOnly
             goVar.Init();
 
             GameObject captured = null;
-            goVar.OnValueChanged += g => captured = g;
+            goVar.OnValueChanged += g => captured = g.BoxedValue as GameObject;
 
             goVar.Value = firstGameObject;
             Assert.AreEqual(firstGameObject, goVar.Value);
@@ -113,7 +114,7 @@ namespace VScriptingTests.MuscariableTests.DataOnly
             transVar.Init();
 
             Transform captured = null;
-            transVar.OnValueChanged += t => captured = t;
+            transVar.OnValueChanged += t => captured = t.BoxedValue as Transform;
 
             transVar.Value = firstTransform;
             Assert.AreEqual(firstTransform, transVar.Value);
@@ -155,7 +156,7 @@ namespace VScriptingTests.MuscariableTests.DataOnly
             unityObjVar.Init();
 
             UnityEngine.Object captured = null;
-            unityObjVar.OnValueChanged += o => captured = o;
+            unityObjVar.OnValueChanged += o => captured = o.BoxedValue as UnityObj;
 
             unityObjVar.Value = firstGameObject;  // GameObject is a UnityObject
             Assert.AreEqual(firstGameObject, unityObjVar.Value);

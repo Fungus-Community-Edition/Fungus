@@ -7,7 +7,6 @@ using UnityEngine.EventSystems;
 using UnityEngine.TestTools;
 
 #if ENABLE_INPUT_SYSTEM
-using UnityEngine.InputSystem.UI;
 #endif
 
 [TestFixture]

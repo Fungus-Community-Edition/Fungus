@@ -120,7 +120,7 @@ namespace AtMycelia.Hyphlow
             }
             else
             {
-                result = ContentType.IsAssignableFrom(obj.GetType());
+                result = TypeUtils.TypesCompatible(obj.GetType(), ContentType);
             }
 
             return result;
@@ -311,35 +311,45 @@ namespace AtMycelia.Hyphlow
                     throw new ArgumentException(errorMessage);
                 }
                 object filteredValue = this.FilterForValueSet(value);
-                this._value = (T)filteredValue;
+                this._value = ConvertToValue(filteredValue);
                 TriggerOnValueChanged();
             }
         }
 
-        protected override void TriggerOnValueChanged()
+        protected virtual T ConvertToValue(object value)
         {
-            base.TriggerOnValueChanged();
-#if UNITY_EDITOR
-            EditorApplication.delayCall += () =>
+            if (ReferenceEquals(value, null))
             {
-                if (this == null)
-                {
-                    return;
-                }
-                if (Application.isPlaying)
-                {
-                    return; // We only want to respond to var value changes in the editor, not during play mode, to avoid perf issues and unintended consequences.
-                }
-                OnValueChanged?.Invoke(_value);
-                VariableSignals.PostValueChange.Invoke(this, _value);
-            };
-#else
-            OnValueChanged?.Invoke(_value);
-            VariableSignals.PostValueChange.Invoke(this, _value);
-#endif
-        }
+                return default;
+            }
 
-        public new event Action<T> OnValueChanged = delegate { };
+            if (value is T typedValue)
+            {
+                return typedValue;
+            }
+
+            var targetType = typeof(T);
+            var underlying = Nullable.GetUnderlyingType(targetType) ?? targetType;
+
+            if (underlying.IsEnum)
+            {
+                if (value is string enumString)
+                {
+                    return (T)Enum.Parse(underlying, enumString);
+                }
+
+                object enumValue = Enum.ToObject(underlying, value);
+                return (T)enumValue;
+            }
+
+            if (value is IConvertible)
+            {
+                object changedValue = Convert.ChangeType(value, underlying);
+                return (T)changedValue;
+            }
+
+            return (T)value;
+        }
 
         public override void Apply(SetOperator setOperator, object toApply)
         {
@@ -349,7 +359,7 @@ namespace AtMycelia.Hyphlow
                 throw new Exception(errorMessage);
             }
 
-            Apply(setOperator, (T)toApply);
+            Apply(setOperator, ConvertToValue(toApply));
         }
 
         public virtual void Apply(SetOperator setOperator, T toApply)

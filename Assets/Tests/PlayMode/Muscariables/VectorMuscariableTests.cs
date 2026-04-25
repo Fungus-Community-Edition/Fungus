@@ -15,7 +15,7 @@ namespace VScriptingTests.MuscariableTests.DataOnly
             v.Init();
 
             Vector2 captured = default;
-            v.OnValueChanged += val => captured = val;
+            v.OnValueChanged += val => captured = (Vector2)val.BoxedValue;
 
             v.Value = V2A;
             Assert.AreEqual(V2A, v.Value);
@@ -29,7 +29,7 @@ namespace VScriptingTests.MuscariableTests.DataOnly
             v.Init();
 
             Vector2 recorded = default;
-            v.OnValueChanged += val => recorded = val;
+            v.OnValueChanged += val => recorded = (Vector2)val.BoxedValue;
 
             v.X = 5.0f;
             Assert.AreEqual(5.0f, v.Value.x, Epsilon);
@@ -106,7 +106,7 @@ namespace VScriptingTests.MuscariableTests.DataOnly
             v.Init();
 
             Vector3 captured = default;
-            v.OnValueChanged += val => captured = val;
+            v.OnValueChanged += val => captured = (Vector3)val.BoxedValue;
 
             v.X = 7.5f;
             Assert.AreEqual(7.5f, v.Value.x, Epsilon);
