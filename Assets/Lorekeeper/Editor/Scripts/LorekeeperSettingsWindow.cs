@@ -16,11 +16,13 @@ namespace Lorekeeper.EditorCode
             LKUtils.EnsureWeHaveResourcesFolder();
 
             LorekeeperSettingsWindow window = GetWindow<LorekeeperSettingsWindow>();
-            window.maxSize = window.minSize = windowSize;
+            window.minSize = _windowSize;
+            window.maxSize = _windowSize + new Vector2(1, 1);
             window.titleContent = new GUIContent("LorekeeperSettings");
+            window.Focus();
         }
 
-        protected static Vector2 windowSize = new Vector2(600, 400);
+        protected static Vector2 _windowSize = new Vector2(600, 700);
         
         public void CreateGUI()
         {
@@ -37,6 +39,29 @@ namespace Lorekeeper.EditorCode
                 assetsPathFieldHolder = root.Q<ListView>("RelativeToAssetsPathListView");
                 addPathButton = root.Q<Button>("AddPathButton");
                 saveButton = root.Q<Button>("SaveButton");
+
+                trackAudioClipsToggle = root.Q<Toggle>("TrackAudioClipsToggle");
+                trackAudioMixersToggle = root.Q<Toggle>("TrackAudioMixersToggle");
+                trackSpritesToggle = root.Q<Toggle>("TrackSpritesToggle");
+                trackTexturesToggle = root.Q<Toggle>("TrackTexturesToggle");
+                trackRenderTexturesToggle = root.Q<Toggle>("TrackRenderTexturesToggle");
+                trackCubemapsToggle = root.Q<Toggle>("TrackCubemapsToggle");
+                trackMaterialsToggle = root.Q<Toggle>("TrackMaterialsToggle");
+                trackShadersToggle = root.Q<Toggle>("TrackShadersToggle");
+                trackComputeShadersToggle = root.Q<Toggle>("TrackComputeShadersToggle");
+                trackAnimationClipsToggle = root.Q<Toggle>("TrackAnimationClipsToggle");
+                trackAnimatorControllersToggle = root.Q<Toggle>("TrackAnimatorControllersToggle");
+                trackAvatarsToggle = root.Q<Toggle>("TrackAvatarsToggle");
+                trackModelsToggle = root.Q<Toggle>("TrackModelsToggle");
+                trackMeshesToggle = root.Q<Toggle>("TrackMeshesToggle");
+                trackPrefabsToggle = root.Q<Toggle>("TrackPrefabsToggle");
+                trackFontsToggle = root.Q<Toggle>("TrackFontsToggle");
+                trackTmpFontAssetsToggle = root.Q<Toggle>("TrackTmpFontAssetsToggle");
+                trackScriptableObjectsToggle = root.Q<Toggle>("TrackScriptableObjectsToggle");
+                trackTextAssetsToggle = root.Q<Toggle>("TrackTextAssetsToggle");
+                trackPhysicsMaterialsToggle = root.Q<Toggle>("TrackPhysicsMaterialsToggle");
+                trackPhysicsMaterials2DToggle = root.Q<Toggle>("TrackPhysicsMaterials2DToggle");
+                trackOtherToggle = root.Q<Toggle>("TrackOtherToggle");
             }
 
             ToggleSubs(true);
@@ -56,6 +81,7 @@ namespace Lorekeeper.EditorCode
                 // assetsPathFieldHolder.virtualizationMethod = CollectionVirtualizationMethod.DynamicHeight;
             }
 
+            SyncSettingsToUI();
         }
 
         
@@ -65,6 +91,29 @@ namespace Lorekeeper.EditorCode
 
         protected ListView assetsPathFieldHolder;
         protected Button addPathButton, saveButton;
+
+        protected Toggle trackAudioClipsToggle;
+        protected Toggle trackAudioMixersToggle;
+        protected Toggle trackSpritesToggle;
+        protected Toggle trackTexturesToggle;
+        protected Toggle trackRenderTexturesToggle;
+        protected Toggle trackCubemapsToggle;
+        protected Toggle trackMaterialsToggle;
+        protected Toggle trackShadersToggle;
+        protected Toggle trackComputeShadersToggle;
+        protected Toggle trackAnimationClipsToggle;
+        protected Toggle trackAnimatorControllersToggle;
+        protected Toggle trackAvatarsToggle;
+        protected Toggle trackModelsToggle;
+        protected Toggle trackMeshesToggle;
+        protected Toggle trackPrefabsToggle;
+        protected Toggle trackFontsToggle;
+        protected Toggle trackTmpFontAssetsToggle;
+        protected Toggle trackScriptableObjectsToggle;
+        protected Toggle trackTextAssetsToggle;
+        protected Toggle trackPhysicsMaterialsToggle;
+        protected Toggle trackPhysicsMaterials2DToggle;
+        protected Toggle trackOtherToggle;
 
         protected virtual void ToggleSubs(bool on)
         {
@@ -144,6 +193,7 @@ namespace Lorekeeper.EditorCode
         {
             UIEvents.SaveButtonClicked();
             Settings.Blacklist = blacklistCopy;
+            SyncUIToSettings();
             // ^To make sure it's updated with what's in the UI
             LKUtils.WriteSettingsToDisk(Settings);
         }
@@ -158,6 +208,7 @@ namespace Lorekeeper.EditorCode
                 ToggleSubs(true);
                 assetsPathFieldHolder.itemsSource = blacklistCopy;
                 assetsPathFieldHolder.Rebuild();
+                SyncSettingsToUI();
             }
             // ^We need this since closing the window and then reopening it doesn't usually
             // get CreateGUI called twice
@@ -168,6 +219,72 @@ namespace Lorekeeper.EditorCode
             ToggleSubs(false);
             Settings.Clear();
             blacklistCopy.Clear();
+        }
+
+        protected void SyncSettingsToUI()
+        {
+            trackAudioClipsToggle.SetValueWithoutNotify(Settings.TrackAudioClips);
+            trackAudioMixersToggle.SetValueWithoutNotify(Settings.TrackAudioMixers);
+
+            trackSpritesToggle.SetValueWithoutNotify(Settings.TrackSprites);
+            trackTexturesToggle.SetValueWithoutNotify(Settings.TrackTextures);
+            trackRenderTexturesToggle.SetValueWithoutNotify(Settings.TrackRenderTextures);
+            trackCubemapsToggle.SetValueWithoutNotify(Settings.TrackCubemaps);
+            trackMaterialsToggle.SetValueWithoutNotify(Settings.TrackMaterials);
+            trackShadersToggle.SetValueWithoutNotify(Settings.TrackShaders);
+            trackComputeShadersToggle.SetValueWithoutNotify(Settings.TrackComputeShaders);
+
+            trackAnimationClipsToggle.SetValueWithoutNotify(Settings.TrackAnimationClips);
+            trackAnimatorControllersToggle.SetValueWithoutNotify(Settings.TrackAnimatorControllers);
+            trackAvatarsToggle.SetValueWithoutNotify(Settings.TrackAvatars);
+
+            trackModelsToggle.SetValueWithoutNotify(Settings.TrackModels);
+            trackMeshesToggle.SetValueWithoutNotify(Settings.TrackMeshes);
+            trackPrefabsToggle.SetValueWithoutNotify(Settings.TrackPrefabs);
+
+            trackFontsToggle.SetValueWithoutNotify(Settings.TrackFonts);
+            trackTmpFontAssetsToggle.SetValueWithoutNotify(Settings.TrackTmpFontAssets);
+
+            trackScriptableObjectsToggle.SetValueWithoutNotify(Settings.TrackScriptableObjects);
+            trackTextAssetsToggle.SetValueWithoutNotify(Settings.TrackTextAssets);
+
+            trackPhysicsMaterialsToggle.SetValueWithoutNotify(Settings.TrackPhysicsMaterials);
+            trackPhysicsMaterials2DToggle.SetValueWithoutNotify(Settings.TrackPhysicsMaterials2D);
+
+            trackOtherToggle.SetValueWithoutNotify(Settings.TrackOther);
+        }
+
+        protected void SyncUIToSettings()
+        {
+            Settings.TrackAudioClips = trackAudioClipsToggle.value;
+            Settings.TrackAudioMixers = trackAudioMixersToggle.value;
+
+            Settings.TrackSprites = trackSpritesToggle.value;
+            Settings.TrackTextures = trackTexturesToggle.value;
+            Settings.TrackRenderTextures = trackRenderTexturesToggle.value;
+            Settings.TrackCubemaps = trackCubemapsToggle.value;
+            Settings.TrackMaterials = trackMaterialsToggle.value;
+            Settings.TrackShaders = trackShadersToggle.value;
+            Settings.TrackComputeShaders = trackComputeShadersToggle.value;
+
+            Settings.TrackAnimationClips = trackAnimationClipsToggle.value;
+            Settings.TrackAnimatorControllers = trackAnimatorControllersToggle.value;
+            Settings.TrackAvatars = trackAvatarsToggle.value;
+
+            Settings.TrackModels = trackModelsToggle.value;
+            Settings.TrackMeshes = trackMeshesToggle.value;
+            Settings.TrackPrefabs = trackPrefabsToggle.value;
+
+            Settings.TrackFonts = trackFontsToggle.value;
+            Settings.TrackTmpFontAssets = trackTmpFontAssetsToggle.value;
+
+            Settings.TrackScriptableObjects = trackScriptableObjectsToggle.value;
+            Settings.TrackTextAssets = trackTextAssetsToggle.value;
+
+            Settings.TrackPhysicsMaterials = trackPhysicsMaterialsToggle.value;
+            Settings.TrackPhysicsMaterials2D = trackPhysicsMaterials2DToggle.value;
+
+            Settings.TrackOther = trackOtherToggle.value;
         }
     }
 

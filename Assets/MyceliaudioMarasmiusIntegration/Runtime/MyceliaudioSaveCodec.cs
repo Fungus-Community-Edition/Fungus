@@ -1,5 +1,4 @@
 using AtMycelia.FSExt;
-using AtMycelia.Amanita.Myceliaudio;
 using FullSerializer;
 using System;
 using System.Collections.Generic;
@@ -7,9 +6,9 @@ using System.Linq;
 using UnityEngine;
 using Lorekeeper;
 using AtMycelia.SaveSys;
+using AtMycelia.Myceliaudio;
 
-
-namespace AtMycelia.Amanita.SaveSys
+namespace AtMycelia.Myceliasmius
 {
     [SaveSysDisplayName("Myceliaudio Codec (Amanita Default)")]
     [SaveSysAssetName("DefMyceliaudioCodec")]
@@ -44,11 +43,11 @@ namespace AtMycelia.Amanita.SaveSys
         public override MyceliaudioSaveData EncodeToSave(AudioSystem from)
         {
             AudioSystem audioSys = AudioSystem.S;
-            var volumeSettings = audioSys.GetVolumeSettings();
+            var volumeSettings = audioSys.VolumeSettings;
 
             // For now, we only support saving BGMusic Track 0
-            bool currentlyPlaying = audioSys.GetIsPlaying(TrackGroup.BGMusic, 0);
-            AudioClip mainBgm = audioSys.GetBaseMainClip(TrackGroup.BGMusic, 0);
+            bool currentlyPlaying = audioSys.GetClipPlayingAt(TrackGroup.BGMusic, 0);
+            AudioClip mainBgm = audioSys.GetMainClipAssigned(TrackGroup.BGMusic, 0);
             PlayAudioArgs playAudioArgs = PlayAudioArgs.Null;
             int assetIndex = -1;
 
@@ -121,8 +120,19 @@ namespace AtMycelia.Amanita.SaveSys
             return saveData;
         }
 
-        protected ShadowDatabase ShadowDB => AmanitaManager.ShadowDB;
+        protected ShadowDatabase ShadowDB
+        {
+            get
+            {
+                if (_shadowDb == null)
+                {
+                    _shadowDb = Resources.FindObjectsOfTypeAll<ShadowDatabase>().FirstOrDefault();
+                }
+                return _shadowDb;
+            }
+        }
 
+        protected ShadowDatabase _shadowDb;
         public IList<SaveData> FindAndCreateAll(Action<IList<SaveData>> onComplete = null)
         {
             IList<SaveData> result = null;

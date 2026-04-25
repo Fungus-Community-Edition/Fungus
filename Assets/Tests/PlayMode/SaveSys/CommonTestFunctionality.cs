@@ -1,5 +1,4 @@
 using AtMycelia.Amanita;
-using AtMycelia.Amanita.Myceliaudio;
 using AtMycelia.SaveSys;
 using AtMycelia.Hyphlow;
 using FullSerializer;
@@ -17,6 +16,8 @@ using UnityEngine.TestTools;
 using UnityObj = UnityEngine.Object;
 using AtMycelia;
 using AtMycelia.Amanita.SaveSys;
+using AtMycelia.Myceliaudio;
+using AtMycelia.Myceliasmius;
 
 namespace SaveSystemTests
 {
@@ -192,7 +193,6 @@ namespace SaveSystemTests
         {
             Flowchart.ResetStaticsForTest();
             AmanitaManager.ResetStaticsForTest();
-            AudioSystem.ResetStaticsForTest();
         }
 
         protected virtual void ResetSingletonStaticsForTearDown()
@@ -201,7 +201,6 @@ namespace SaveSystemTests
             SaveSystemBootstrapper.ResetStaticsForTest();
             Flowchart.ResetStaticsForTest();
             AmanitaManager.ResetStaticsForTest();
-            AudioSystem.ResetStaticsForTest();
         }
 
         private void SetupSaveSystemAndDependencies()

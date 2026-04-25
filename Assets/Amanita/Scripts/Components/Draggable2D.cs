@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using AtMycelia.Hyphlow;
 using AtMycelia.Amanita.VScripting;
 using AtMycelia.Hyphlow.Sys;
-using AtMycelia.Hyphlow.Tweening;
+using AtMycelia.AmaniTween;
 
 namespace AtMycelia.Amanita
 {

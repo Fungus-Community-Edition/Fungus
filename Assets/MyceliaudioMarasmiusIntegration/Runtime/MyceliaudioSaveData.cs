@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using AtMycelia.SaveSys;
-using AtMycelia.Amanita.Myceliaudio;
+using AtMycelia.Myceliaudio;
 
-namespace AtMycelia.Amanita.SaveSys
+namespace AtMycelia.Myceliasmius
 {
     [System.Serializable]
     public class MyceliaudioSaveData : SaveData

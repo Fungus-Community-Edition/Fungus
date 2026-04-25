@@ -70,7 +70,9 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
                 Flowchart.ClearSelectedCommands();
                 Flowchart.ClearSelectedBlocks();
             }
+            
 
+            Flowchart.SelectedBlock = block;
             Flowchart.AddToSelection(block);
         }
 

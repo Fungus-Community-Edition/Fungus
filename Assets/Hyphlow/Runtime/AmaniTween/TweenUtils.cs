@@ -2,7 +2,7 @@ using AtMycelia.Hyphlow.Sys;
 using UnityEngine;
 using Type = System.Type;
 
-namespace AtMycelia.Hyphlow.Tweening
+namespace AtMycelia.AmaniTween
 {
     public static class TweenUtils
     {

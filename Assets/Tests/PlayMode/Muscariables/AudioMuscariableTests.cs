@@ -51,7 +51,7 @@ namespace VScriptingTests.MuscariableTests.DataOnly
             clipVar.Init();
 
             AudioClip captured = null;
-            clipVar.OnValueChanged += c => captured = c;
+            clipVar.OnValueChanged += c => captured = c.BoxedValue as AudioClip;
 
             clipVar.Value = clipA;
             Assert.AreEqual(clipA, clipVar.Value);
@@ -108,7 +108,7 @@ namespace VScriptingTests.MuscariableTests.DataOnly
             v.Init();
 
             AudioSource captured = null;
-            v.OnValueChanged += s => captured = s;
+            v.OnValueChanged += s => captured = s.BoxedValue as AudioSource;
 
             v.Value = sourceA;
             Assert.AreEqual(sourceA, v.Value);

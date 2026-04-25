@@ -1,6 +1,7 @@
 using UnityEngine;
+using AtMycelia.Hyphlow;
 
-namespace AtMycelia.Hyphlow.Tweening.VScripting
+namespace AtMycelia.AmaniTween.VScripting
 {
     [CommandInfo("BI Tween",
         "Simple/Shake Position",

@@ -13,7 +13,9 @@
         "AtMycelia.Marasmius.Core",
         "AtMycelia.Hyphlow.Core",
         "AtMycelia.MarasmiusHyphlowInt.Core",
-        "AtMycelia.MarasmiusMyceliaudioInt.Core"
+        "AtMycelia.Hyphlowceliaudio.Core",
+        "AtMycelia.Myceliaudio.Core",
+        "AtMycelia.Myceliasmius.Core"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

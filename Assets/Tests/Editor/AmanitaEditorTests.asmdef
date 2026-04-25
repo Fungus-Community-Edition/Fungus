@@ -8,14 +8,14 @@
         "AtMycelia.Amanita.Core",
         "Amanita.Core.Editor",
         "Lorekeeper",
-        "AmanitaLegacyCollection",
         "AtMycelia.Common",
         "AtMycelia.Marasmius.Core",
         "AtMycelia.Marasmius.Editor",
         "AtMycelia.Hyphlow.Core",
         "AtMycelia.Hyphlow.Editor",
         "AtMycelia.Common.Editor",
-        "AtMycelia.MarasmiusHyphlowInt.Core"
+        "AtMycelia.MarasmiusHyphlowInt.Core",
+        "AtMycelia.Hyphlowceliaudio.Core"
     ],
     "includePlatforms": [
         "Editor"

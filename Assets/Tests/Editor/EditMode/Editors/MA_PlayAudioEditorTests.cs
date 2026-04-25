@@ -6,9 +6,9 @@ using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
 using AtMycelia.Hyphlow;
-using AtMycelia.Amanita.Myceliaudio.VScripting;
 using UnityObj = UnityEngine.Object;
 using AtMycelia.Hyphlow.EditorUtils;
+using AtMycelia.Hyphlowceliaudio;
 
 namespace VScriptingTests.CommandEditorOperations
 {

@@ -1,7 +1,7 @@
 using AtMycelia.Hyphlow.Sys;
 using UnityEditor;
 using UnityEngine;
-using AtMycelia.Hyphlow.Tweening;
+using AtMycelia.AmaniTween;
 
 namespace AtMycelia.Hyphlow.EditorUtils
 {

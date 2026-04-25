@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using AtMycelia.Amanita.VScripting;
-using AtMycelia.Hyphlow.Tweening;
+using AtMycelia.AmaniTween;
 using UnityEditor;
 using UnityEngine;
 

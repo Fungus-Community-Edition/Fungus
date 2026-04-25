@@ -2,12 +2,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using AtMycelia.SaveSys;
-using AtMycelia.Amanita.Myceliaudio;
 using Lorekeeper;
+using AtMycelia.Myceliaudio;
 
-namespace AtMycelia.Amanita.SaveSys
+namespace AtMycelia.Myceliasmius
 {
-    [SaveSysDisplayName("Myceliaudio Applier (Amanita Default)")]
+    [SaveSysDisplayName("Myceliaudio Applier (Default)")]
     [SaveSysAssetName("DefMyceliaudioApplier")]
     public class MyceliaudioApplier : SaveDataApplier<MyceliaudioSaveData>
     {
@@ -34,8 +34,7 @@ namespace AtMycelia.Amanita.SaveSys
                 // save data waaaay too big), and thus we need to fetch them based
                 // on the clip name. 
                 
-                var shadowDb = AmanitaManager.ShadowDB;
-                IList<AudioClip> allAudioClips = shadowDb.GetAssetsOfType<AudioClip>(AssetType.AudioClip);
+                IList<AudioClip> allAudioClips = _shadowDb.GetAssetsOfType<AudioClip>(AssetType.AudioClip);
                 PlayAudioArgs audioArgs = saveData.PlayAudioArgs;
 
                 AudioClip toPlay = FindTheCorrectClip();
@@ -45,7 +44,7 @@ namespace AtMycelia.Amanita.SaveSys
                     const int theOneBgmTrackWeCareAbout = 0;
                     int assetIndex = saveData.GetBgmIndex(theOneBgmTrackWeCareAbout);
                     bool validIndex = assetIndex >= 0 && assetIndex < allAudioClips.Count;
-                    string mainClipName = saveData.PlayAudioArgs.MainClipName;
+                    string mainClipName = saveData.PlayAudioArgs.MainClip.name;
                     bool canUseNameAsFallback = mainClipName.Length > 0;
                     if (validIndex)
                     {
@@ -75,6 +74,18 @@ namespace AtMycelia.Amanita.SaveSys
         
         }
 
+        protected ShadowDatabase ShadowDb
+        {
+            get
+            {
+                if (_shadowDb == null)
+                {
+                    _shadowDb = Resources.LoadAll<ShadowDatabase>("").FirstOrDefault();
+                }
+                return _shadowDb;
+            }
+        }
+        protected ShadowDatabase _shadowDb;
 
         public override void Apply(SaveData saveData, System.Action onComplete)
         {

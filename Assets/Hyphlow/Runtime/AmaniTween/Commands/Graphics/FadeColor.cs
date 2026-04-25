@@ -1,9 +1,10 @@
-using AtMycelia.Hyphlow.Tweening.VScripting;
+using AtMycelia.AmaniTween.VScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using AtMycelia.Hyphlow;
 
-namespace AtMycelia.Hyphlow.Tweening
+namespace AtMycelia.AmaniTween
 {
     [CommandInfo("BI Tween/Graphics",
                  "Fade Color",

@@ -1,6 +1,6 @@
 using System;
 
-namespace AtMycelia.Hyphlow.Tweening
+namespace AtMycelia.AmaniTween
 {
     public interface ITween 
     {

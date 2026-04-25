@@ -1,5 +1,5 @@
 using AtMycelia.Hyphlow.Sys;
-using AtMycelia.Hyphlow.Tweening;
+using AtMycelia.AmaniTween;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
