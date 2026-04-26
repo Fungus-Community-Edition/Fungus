@@ -82,7 +82,7 @@ namespace AtMycelia.Hyphlow
             {
                 if (value == null)
                 {
-                    _itemId = Muscariable.InvalidID;
+                    //_itemId = Muscariable.InvalidID; // Commented out for now. We may want to hold onto the item id
                     VarOwner = null;
                 }
                 else
@@ -218,8 +218,11 @@ namespace AtMycelia.Hyphlow
                 bool canBeAssigned = (ourContentType.IsClass && val == null) || typesAreCompatible;
                 if (!canBeAssigned)
                 {
+                    UnityObj ctx = _owningSource is UnityObj ?
+                        _owningSource :
+                        null;
                     Debug.LogError($"VariableReference: Value type {valueType} is not " +
-                        $"assignable to variable content type {ourContentType}.");
+                        $"assignable to variable content type {ourContentType}.", ctx);
                 }
                 else
                 {
