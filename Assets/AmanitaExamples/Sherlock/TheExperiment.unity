@@ -3791,40 +3791,65 @@ MonoBehaviour:
         _scope: 0
         _key: screenFade
         _itemId: 1
-        _value: {fileID: 425446617}
+        scope: 0
+        key: 
+        itemID: 0
+        value: {fileID: 0}
         _startValue: {fileID: 0}
+        _value: {fileID: 425446617}
+        startValue: {fileID: 0}
     - rid: 3688520095763791986
       type: {class: FloatMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         _scope: 0
         _key: screenFadeDur
         _itemId: 2
-        _value: 1
+        scope: 0
+        key: 
+        itemID: 0
+        value: 0
         _startValue: 0
+        _value: 1
+        startValue: 0
     - rid: 3688520095763791987
       type: {class: GameObjectMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         _scope: 0
         _key: images
         _itemId: 3
-        _value: {fileID: 1782167288}
+        scope: 0
+        key: 
+        itemID: 0
+        value: {fileID: 0}
         _startValue: {fileID: 0}
+        _value: {fileID: 1782167288}
+        startValue: {fileID: 0}
     - rid: 3688520095763791988
       type: {class: FloatMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         _scope: 0
         _key: imageFadeDur
         _itemId: 4
-        _value: 1
+        scope: 0
+        key: 
+        itemID: 0
+        value: 0
         _startValue: 0
+        _value: 1
+        startValue: 0
     - rid: 3688520102555156566
       type: {class: GameObjectMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         _scope: 0
         _key: coffeeCup
         _itemId: 5
-        _value: {fileID: 1789234733}
+        scope: 0
+        key: 
+        itemID: 0
+        value: {fileID: 0}
         _startValue: {fileID: 0}
+        _value: {fileID: 1789234733}
+        startValue: {fileID: 0}
 --- !u!4 &961274901
 Transform:
   m_ObjectHideFlags: 0
@@ -4737,24 +4762,39 @@ MonoBehaviour:
         _scope: 0
         _key: bgm
         _itemId: 1
-        _value: {fileID: 8300000, guid: f3c866bbc4639e7409c30c71736d84a6, type: 3}
+        scope: 0
+        key: 
+        itemID: 0
+        value: {fileID: 0}
         _startValue: {fileID: 0}
+        _value: {fileID: 8300000, guid: f3c866bbc4639e7409c30c71736d84a6, type: 3}
+        startValue: {fileID: 0}
     - rid: 3688520077367050241
       type: {class: AudioClipMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         _scope: 0
         _key: pourLiquid
         _itemId: 2
-        _value: {fileID: 8300000, guid: e513fc9af808b8c438338e58bc17a700, type: 3}
+        scope: 0
+        key: 
+        itemID: 0
+        value: {fileID: 0}
         _startValue: {fileID: 0}
+        _value: {fileID: 8300000, guid: e513fc9af808b8c438338e58bc17a700, type: 3}
+        startValue: {fileID: 0}
     - rid: 3688520102555156480
       type: {class: FloatMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         _scope: 0
         _key: audioFadeDur
         _itemId: 3
-        _value: 2
+        scope: 0
+        key: 
+        itemID: 0
+        value: 0
         _startValue: 0
+        _value: 2
+        startValue: 0
 --- !u!4 &1102568031
 Transform:
   m_ObjectHideFlags: 0
@@ -6911,8 +6951,10 @@ MonoBehaviour:
   _otherSettings: []
   description: 'Example scene from Sherlock: The Game Is On'
   uiModel:
-    _selectedBlocks: []
-    _selectedCommands: []
+    _selectedBlocks:
+    - {fileID: 1390555362}
+    _selectedCommands:
+    - {fileID: 1390555355}
     _owner: {fileID: 1390555290}
     <ScrollPos>k__BackingField: {x: 3200.309, y: 1264.8037}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
@@ -7076,7 +7118,7 @@ MonoBehaviour:
       _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    _value: ' Here, I need you to drink this.'
+    _value: Here, I need you to drink this.
     stringRef: {fileID: 0}
     stringVal: 
   _description:
@@ -9996,7 +10038,7 @@ MonoBehaviour:
       _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    _value: It's for an experiment.
+    _value: 'It''s for an experiment. '
     stringRef: {fileID: 0}
     stringVal: 
   _description:
@@ -10140,7 +10182,7 @@ MonoBehaviour:
       _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    _value: '{worried}... Why?'
+    _value: '{worried}...Why?'
     stringRef: {fileID: 0}
     stringVal: 
   _description:
@@ -10284,7 +10326,7 @@ MonoBehaviour:
       _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    _value: '{answer}{flash=0.1}Well you arrived at just the right time.'
+    _value: '{answer}{flash=0.1}Well, you arrived at just the right time. '
     stringRef: {fileID: 0}
     stringVal: 
   _description:
@@ -11091,7 +11133,7 @@ MonoBehaviour:
       _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    _value: ' Don''t worry. It won''t kill you.'
+    _value: Don't worry. It won't kill you.
     stringRef: {fileID: 0}
     stringVal: 
   _description:
@@ -11685,7 +11727,7 @@ MonoBehaviour:
       _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    _value: Ah John, {pleased}there you are.
+    _value: Ah, John. {pleased}There you are.
     stringRef: {fileID: 0}
     stringVal: 
   _description:
@@ -12639,7 +12681,7 @@ MonoBehaviour:
   nodeRect:
     serializedVersion: 2
     x: -2620.7441
-    y: -1010.3363
+    y: -1009.3363
     width: 153
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}

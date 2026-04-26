@@ -223,12 +223,10 @@ GameObject:
   - component: {fileID: 163283998}
   - component: {fileID: 163283997}
   - component: {fileID: 163283994}
-  - component: {fileID: 163283989}
   - component: {fileID: 163283988}
   - component: {fileID: 163283986}
   - component: {fileID: 163283999}
   - component: {fileID: 163284003}
-  - component: {fileID: 163284004}
   m_Layer: 0
   m_Name: Flowchart
   m_TagString: Untagged
@@ -257,6 +255,7 @@ MonoBehaviour:
   version: 1
   _legacyVariables: []
   _oldMuscariables: []
+  _otherSettings: []
   description: 'This example shows how to write to a 3D Text Mesh using
 
     the
@@ -281,7 +280,7 @@ MonoBehaviour:
     _selectedBlocks:
     - {fileID: 163283984}
     _selectedCommands:
-    - {fileID: 163283988}
+    - {fileID: 163283986}
     _owner: {fileID: 163283982}
     <ScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
@@ -301,13 +300,11 @@ MonoBehaviour:
   saveSelection: 1
   showLineNumbers: 0
   hideCommands: []
-  localizationId: 
-  luaBindingName: flowchart
   includeInSaves: 1
   saveBlocks: 1
   saveVariables: 1
   loadPriority: 0
-  alwaysKeepGuid: 1
+  _alwaysKeepGuid: 1
   _blockListCache:
   - {fileID: 163283984}
   - {fileID: 163283992}
@@ -320,11 +317,11 @@ MonoBehaviour:
   - {fileID: 163283998}
   - {fileID: 163283997}
   - {fileID: 163283994}
-  - {fileID: 163283989}
+  - {fileID: 0}
   - {fileID: 163283988}
   - {fileID: 163283986}
   - {fileID: 163283999}
-  - {fileID: 163284004}
+  - {fileID: 0}
   nextValidVarID: 3
   uniqueId: d13a4b43-ecd5-45af-98ac-de05b001ed24
   references:
@@ -359,10 +356,8 @@ MonoBehaviour:
   - {fileID: 163283998}
   - {fileID: 163283997}
   - {fileID: 163283994}
-  - {fileID: 163283989}
-  - {fileID: 163283988}
   - {fileID: 163283986}
-  - {fileID: 163284004}
+  - {fileID: 163283988}
   includeInSaves: 1
   loadPriority: 0
   suppressAllAutoSelections: 1
@@ -378,12 +373,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4580f28dd8581476b810b38eea2f1316, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scope: 0
-  key: PlayerName
-  itemID: 1
+  _scope: 0
+  _key: PlayerName
+  _itemId: 1
   oldItemID: 0
   _owner: {fileID: 163283983}
-  value: 
+  _value: 
 --- !u!114 &163283986
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -399,21 +394,21 @@ MonoBehaviour:
   itemId: 30
   indentLevel: 0
   _targetGameObject:
-    backingVarRef:
-      itemId: 2
-      owningSource: {fileID: 163283983}
+    _backingVarRef:
+      _itemId: 2
+      _owningSource: {fileID: 163283983}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 1538358643}
+    _value: {fileID: 1538358643}
     gameObjectRef: {fileID: 0}
     gameObjectVal: {fileID: 0}
   _activeState:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 163283983}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 163283983}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    _value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
   targetGameObjectOLD: {fileID: 0}
@@ -447,119 +442,119 @@ MonoBehaviour:
   itemId: 29
   indentLevel: 0
   _storyText:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: Hi, {$PlayerName}. How are you today?
+    _value: Hi, {$PlayerName}. How are you today?
     stringRef: {fileID: 0}
     stringVal: 
   _description:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 
+    _value: 
     stringRef: {fileID: 0}
     stringVal: 
   _character:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     gameObjectRef: {fileID: 0}
     gameObjectVal: {fileID: 0}
   _portrait:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     spriteRef: {fileID: 0}
     spriteVal: {fileID: 0}
   _voiceOverClip:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     audioClipRef: {fileID: 0}
   _showAlways:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 1
+    _value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
   _showCount:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 1
+    _value: 1
     integerRef: {fileID: 0}
     integerVal: 0
   _extendPrevious:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    _value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
   _fadeWhenDone:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 1
+    _value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
   _waitForClick:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 1
+    _value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
   _stopVoiceover:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 1
+    _value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
   _waitForVO:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    _value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
   _setSayDialog:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     gameObjectRef: {fileID: 0}
     gameObjectVal: {fileID: 0}
   _characterCached: {fileID: 0}
@@ -576,39 +571,6 @@ MonoBehaviour:
   _oldWaitForClick: 1
   _oldStopVoiceover: 1
   _oldWaitForVO: 0
---- !u!114 &163283989
-MonoBehaviour:
-  m_ObjectHideFlags: 2
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 163283982}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dbd8c931f22994b9d90e2037fffaa770, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemId: 28
-  indentLevel: 0
-  _targetGameObject:
-    backingVarRef:
-      itemId: 2
-      owningSource: {fileID: 163283983}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
-    value: {fileID: 1538358643}
-    gameObjectRef: {fileID: 0}
-    gameObjectVal: {fileID: 0}
-  _activeState:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 163283983}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
-    value: 0
-    booleanRef: {fileID: 0}
-    booleanVal: 0
-  targetGameObjectOLD: {fileID: 0}
 --- !u!114 &163283990
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -621,9 +583,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10eaeba5e91be479e95d4fa48679f549, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  parentBlock: {fileID: 163283984}
-  suppressBlockAutoSelect: 0
-  targetButton: {fileID: 373310154}
+  _parentBlock: {fileID: 163283984}
+  _suppressBlockAutoSelect: 0
+  _targetButton:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _data:
+      rid: 3688520168047117307
+  _oldTargetButton: {fileID: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: 3688520168047117307
+      type: {class: GameObjectData, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        _backingVarRef:
+          _itemId: 0
+          _owningSource: {fileID: 0}
+          legacyOwningFc: {fileID: 0}
+          legacyOwningVsa: {fileID: 0}
+        _value: {fileID: 373310152}
+        gameObjectRef: {fileID: 0}
+        gameObjectVal: {fileID: 0}
 --- !u!114 &163283991
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -639,59 +623,59 @@ MonoBehaviour:
   itemId: 6
   indentLevel: 0
   textObject:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 163283983}
+    _backingVarRef:
+      _itemId: 3
+      _owningSource: {fileID: 163283983}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 717539585}
+    _value: {fileID: 717539585}
     gameObjectRef: {fileID: 0}
     gameObjectVal: {fileID: 0}
   text:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 163283983}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 163283983}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: Hello! Please enter your name
+    _value: Hello! Please enter your name
     stringRef: {fileID: 0}
     stringVal: 
   description: 
   clearText:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 163283983}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 163283983}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 1
+    _value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
   waitUntilFinished:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 163283983}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 163283983}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 1
+    _value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
   textColor: 0
   setAlpha:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 163283983}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 163283983}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 1
+    _value: 1
     floatRef: {fileID: 0}
     floatVal: 0
   setColor:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 163283983}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 163283983}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {r: 1, g: 1, b: 1, a: 1}
+    _value: {r: 1, g: 1, b: 1, a: 1}
     colorRef: {fileID: 0}
     colorVal: {r: 0, g: 0, b: 0, a: 0}
   _oldTextObject: {fileID: 0}
@@ -740,8 +724,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2f6487d21a03404cb21b245f0242e79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  parentBlock: {fileID: 163283992}
-  suppressBlockAutoSelect: 0
+  _parentBlock: {fileID: 163283992}
+  _suppressBlockAutoSelect: 0
   waitForFrames: 1
 --- !u!114 &163283994
 MonoBehaviour:
@@ -758,12 +742,12 @@ MonoBehaviour:
   itemId: 27
   indentLevel: 0
   _duration:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 163283983}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 163283983}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 2
+    _value: 2
     floatRef: {fileID: 0}
     floatVal: 0
   durationOLD: 0
@@ -782,21 +766,21 @@ MonoBehaviour:
   itemId: 9
   indentLevel: 0
   _targetGameObject:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 163283983}
+    _backingVarRef:
+      _itemId: 2
+      _owningSource: {fileID: 163283983}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 1538358643}
+    _value: {fileID: 1538358643}
     gameObjectRef: {fileID: 0}
     gameObjectVal: {fileID: 0}
   _activeState:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 163283983}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 163283983}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 1
+    _value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
   targetGameObjectOLD: {fileID: 0}
@@ -815,21 +799,21 @@ MonoBehaviour:
   itemId: 8
   indentLevel: 0
   _targetGameObject:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 163283983}
+    _backingVarRef:
+      _itemId: 2
+      _owningSource: {fileID: 163283983}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 1538358643}
+    _value: {fileID: 1538358643}
     gameObjectRef: {fileID: 0}
     gameObjectVal: {fileID: 0}
   _activeState:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 163283983}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 163283983}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    _value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
   targetGameObjectOLD: {fileID: 0}
@@ -847,16 +831,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 26
   indentLevel: 0
-  targetObjects:
+  _targetObjects:
   - {fileID: 1229749171}
   - {fileID: 373310152}
-  interactableState:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 163283983}
+  _interactableState:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 163283983}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 1
+    _value: 1
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _affectChildren:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
 --- !u!114 &163283998
@@ -874,59 +867,59 @@ MonoBehaviour:
   itemId: 25
   indentLevel: 0
   textObject:
-    backingVarRef:
-      itemId: 3
-      owningSource: {fileID: 163283983}
+    _backingVarRef:
+      _itemId: 3
+      _owningSource: {fileID: 163283983}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 717539585}
+    _value: {fileID: 717539585}
     gameObjectRef: {fileID: 0}
     gameObjectVal: {fileID: 0}
   text:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 163283983}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 163283983}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: Nice to meet you, {$PlayerName}.
+    _value: Nice to meet you, {$PlayerName}.
     stringRef: {fileID: 0}
     stringVal: 
   description: 
   clearText:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 163283983}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 163283983}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 1
+    _value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
   waitUntilFinished:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 163283983}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 163283983}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 1
+    _value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
   textColor: 0
   setAlpha:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 163283983}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 163283983}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 1
+    _value: 1
     floatRef: {fileID: 0}
     floatVal: 0
   setColor:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 163283983}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 163283983}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {r: 1, g: 1, b: 1, a: 1}
+    _value: {r: 1, g: 1, b: 1, a: 1}
     colorRef: {fileID: 0}
     colorVal: {r: 0, g: 0, b: 0, a: 0}
   _oldTextObject: {fileID: 0}
@@ -947,25 +940,34 @@ MonoBehaviour:
   itemId: 31
   indentLevel: 0
   _targetTextObject:
-    backingVarRef:
-      itemId: 2
-      owningSource: {fileID: 163283983}
+    _backingVarRef:
+      _itemId: 2
+      _owningSource: {fileID: 163283983}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     gameObjectRef: {fileID: 0}
     gameObjectVal: {fileID: 0}
-  text:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 163283983}
+  _text:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 163283983}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 'Player Name: {$PlayerName}'
+    _value: 'Player Name: {$PlayerName}'
     stringRef: {fileID: 0}
     stringVal: 
-  description: 
-  targetTextObject: {fileID: 0}
+  _description:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _value: 
+    stringRef: {fileID: 0}
+    stringVal: 
+  _oldTargetTextObject: {fileID: 0}
+  _oldDescription: 
 --- !u!114 &163284000
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -981,17 +983,17 @@ MonoBehaviour:
   itemId: 23
   indentLevel: 0
   _targetTextObject:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 163283983}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 163283983}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 1229749171}
+    _value: {fileID: 1229749171}
     gameObjectRef: {fileID: 0}
     gameObjectVal: {fileID: 0}
   stringVariable:
-    itemId: 1
-    owningSource: {fileID: 163283983}
+    _itemId: 1
+    _owningSource: {fileID: 163283983}
     legacyOwningFc: {fileID: 0}
     legacyOwningVsa: {fileID: 0}
   _oldTargetText: {fileID: 0}
@@ -1008,8 +1010,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5942d3ed820e745b2beca47228bac126, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  parentBlock: {fileID: 163284002}
-  suppressBlockAutoSelect: 0
+  _parentBlock: {fileID: 163284002}
+  _suppressBlockAutoSelect: 0
   targetInputField: {fileID: 1229749173}
 --- !u!114 &163284002
 MonoBehaviour:
@@ -1070,87 +1072,29 @@ MonoBehaviour:
     - rid: 3688519847650001611
       type: {class: GameObjectMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
+        _scope: 0
+        _key: canvas
+        _itemId: 2
         scope: 0
-        key: canvas
-        itemID: 2
-        value: {fileID: 1538358643}
+        key: 
+        itemID: 0
+        value: {fileID: 0}
+        _startValue: {fileID: 0}
+        _value: {fileID: 1538358643}
         startValue: {fileID: 0}
     - rid: 3688519855250080026
       type: {class: GameObjectMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
+        _scope: 0
+        _key: textObj
+        _itemId: 3
         scope: 0
-        key: textObj
-        itemID: 3
-        value: {fileID: 717539585}
-        startValue: {fileID: 0}
---- !u!114 &163284004
-MonoBehaviour:
-  m_ObjectHideFlags: 2
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 163283982}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ee868ea8200db974db6c9e854343ed12, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemId: 32
-  indentLevel: 0
-  _anyVariableData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 163283983}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
-    data:
-      rid: 3688519850024502134
-  _anyVariableAndDataPair:
-    varRef:
-      itemId: 7
-      owningSource: {fileID: 11400000, guid: a966fb2fe1cdf2a4e97590b0b2d113ba, type: 2}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
-    data:
-      backingVarRef:
-        itemId: 0
-        owningSource: {fileID: 0}
-        legacyOwningFc: {fileID: 0}
-        legacyOwningVsa: {fileID: 0}
-      data:
-        rid: 3688519847650001189
-    variable: {fileID: 0}
-  _componentData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
-  references:
-    version: 2
-    RefIds:
-    - rid: 3688519847650001189
-      type: {class: AudioClipData, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
-      data:
-        backingVarRef:
-          itemId: 0
-          owningSource: {fileID: 163283983}
-          legacyOwningFc: {fileID: 0}
-          legacyOwningVsa: {fileID: 0}
+        key: 
+        itemID: 0
         value: {fileID: 0}
-        audioClipRef: {fileID: 0}
-    - rid: 3688519850024502134
-      type: {class: StringData, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
-      data:
-        backingVarRef:
-          itemId: 1
-          owningSource: {fileID: 163283983}
-          legacyOwningFc: {fileID: 0}
-          legacyOwningVsa: {fileID: 0}
-        value: 
-        stringRef: {fileID: 0}
-        stringVal: 
+        _startValue: {fileID: 0}
+        _value: {fileID: 717539585}
+        startValue: {fileID: 0}
 --- !u!1 &373310152
 GameObject:
   m_ObjectHideFlags: 0
