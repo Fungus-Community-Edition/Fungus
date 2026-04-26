@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
@@ -34,6 +35,15 @@ namespace AtMycelia.Hyphlow
         public override int GetHashCode()
         {
             return Value != null ? Value.GetHashCode() : 0;
+        }
+
+        protected override void ApplyLegacyDataOnAfterDeserialize()
+        {
+            if (!string.IsNullOrEmpty(value))
+            {
+                _value = value;
+            }
+            base.ApplyLegacyDataOnAfterDeserialize();
         }
 
     }

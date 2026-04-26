@@ -96,6 +96,12 @@ namespace AtMycelia.Myceliaudio
             tracks[trackToSetFor].BaseVolume = newVol;
         }
 
+        public virtual float GetTrackBaseVolume(int trackToGetFor = 0)
+        {
+            EnsureTrackExists(trackToGetFor);
+            return tracks[trackToGetFor].BaseVolume;
+        }
+
         /// <summary>
         /// Normalized for AudioSources so we can use it as a multiplier. You know, since those prefer scales of 0 to 1.
         /// </summary>
@@ -294,15 +300,14 @@ namespace AtMycelia.Myceliaudio
 
         public virtual void Pause(int track)
         {
-            var trackInvolved = GetTrackEnsured(track);
-            trackInvolved.Pause();
+            var trackToPause = GetTrackEnsured(track);
+            trackToPause.Pause();
         }
 
         public virtual void UnPause(int track)
         {
-            var trackInvolved = GetTrackEnsured(track);
-            trackInvolved.UnPause();
+            var trackToUnPause = GetTrackEnsured(track);
+            trackToUnPause.UnPause();
         }
-
     }
 }

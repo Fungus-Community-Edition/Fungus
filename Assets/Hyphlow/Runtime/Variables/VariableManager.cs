@@ -182,7 +182,7 @@ namespace AtMycelia.Hyphlow
                         continue;
                     }
 
-                    if (legacyVar.ItemId == Muscariable.InvalidID || _lookup.ContainsKey(legacyVar.ItemId))
+                    if (legacyVar.ItemId == Muscariable.InvalidId || _lookup.ContainsKey(legacyVar.ItemId))
                     {
                         legacyVar.ItemId = NextValidVarID();
                     }
@@ -261,7 +261,7 @@ namespace AtMycelia.Hyphlow
             UpdateNextValidId();
             #region Ensure valid id and key
             bool duplicateId = _lookup.ContainsKey(toAdd.ItemId);
-            if (toAdd.ItemId == Muscariable.InvalidID)
+            if (toAdd.ItemId == Muscariable.InvalidId)
             {
                 toAdd.ItemId = NextValidVarID();
             }
@@ -362,7 +362,7 @@ namespace AtMycelia.Hyphlow
         {
             foreach (var elem in varsToRegister)
             {
-                if (elem.ItemId == Muscariable.InvalidID)
+                if (elem.ItemId == Muscariable.InvalidId)
                 {
                     elem.ItemId = NextValidVarID();
                 }
@@ -396,7 +396,7 @@ namespace AtMycelia.Hyphlow
             // Find the vars that have an itemId of 0, then reassign them valid IDs. We have to do
             // this separately from the duplicate ID check because 0 is a valid byte value, so it
             // won't be caught by the duplicate ID check even though it's not a valid ID for our purposes.
-            var zeroIdVars = _lookup.Values.Where(elem => elem.ItemId == Muscariable.InvalidID).ToList();
+            var zeroIdVars = _lookup.Values.Where(elem => elem.ItemId == Muscariable.InvalidId).ToList();
             foreach (var elem in zeroIdVars)
             {
                 elem.ItemId = NextValidVarID();

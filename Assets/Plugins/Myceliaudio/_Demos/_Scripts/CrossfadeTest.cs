@@ -20,6 +20,10 @@ namespace AtMycelia.Myceliaudio.Demos
 
         protected virtual void Awake()
         {
+            if (!isActiveAndEnabled)
+            {
+                return;
+            }
             AudioSys = AudioSystem.S;
 
             AudioSys.SetTrackGroupVol(TrackGroup.BGMusic, startingMusicVol);

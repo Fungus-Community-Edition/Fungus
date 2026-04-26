@@ -76,10 +76,25 @@ namespace AtMycelia.Myceliaudio
 
         public IDictionary<TrackGroup, TrackManager> TrackManagers = new Dictionary<TrackGroup, TrackManager>();
 
+        /// <summary>
+        /// Returns the real volume of the specified track, taking into account the base volume of the 
+        /// track's group and any anchors it may have. This is the value that will actually be heard 
+        /// when the track is played.
+        /// Scale: 0-100, where 0 is silence and 100 is full volume. 
+        /// </summary>
+        /// <param name="trackGroup"></param>
+        /// <param name="track"></param>
+        /// <returns></returns>
         public virtual float GetTrackVol(TrackGroup trackGroup, int track = 0)
         {
             TrackManager managerToUse = TrackManagers[trackGroup];
             return managerToUse.GetVolume(track);
+        }
+
+        public virtual float GetTrackBaseVol(TrackGroup trackGroup, int track = 0)
+        {
+            TrackManager managerToUse = TrackManagers[trackGroup];
+            return managerToUse.GetTrackBaseVolume(track);
         }
 
         public virtual void SetTrackVol(AlterAudioSourceArgs args)
@@ -142,6 +157,10 @@ namespace AtMycelia.Myceliaudio
             managerToUse.Stop(track);
         }
 
+        /// <summary>
+        /// Fades the volume of the specified track to the target value over the specified duration.
+        /// If a custom fader is provided in the args, it will be used instead of the default 
+        /// fading behavior. This affects a track's Base Volume.
         public virtual void FadeTrackVol(AlterAudioSourceArgs args)
         {
             TrackManager managerToUse = TrackManagers[args.TrackGroup];
@@ -246,16 +265,18 @@ namespace AtMycelia.Myceliaudio
             voiceManager.BaseVolume = settings.voice;
         }
 
-        public virtual void Pause(TrackGroup trackGroup, int track)
+        public virtual void Pause(TrackGroup trackGroup, int track = 0)
         {
             var manager = TrackManagers[trackGroup];
             manager.Pause(track);
         }
 
-        public virtual void UnPause(TrackGroup trackGroup, int track)
+        public virtual void UnPause(TrackGroup trackGroup, int track = 0)
         {
             var manager = TrackManagers[trackGroup];
             manager.UnPause(track);
         }
+
+
     }
 }

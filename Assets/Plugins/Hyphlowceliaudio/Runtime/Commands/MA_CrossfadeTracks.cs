@@ -1,6 +1,7 @@
 using AtMycelia.AmaniTween;
 using AtMycelia.AmaniTween.VScripting;
 using AtMycelia.Hyphlow;
+using AtMycelia.Hyphlow.Sys;
 using AtMycelia.Myceliaudio;
 using UnityEngine;
 
@@ -26,13 +27,24 @@ namespace AtMycelia.Hyphlowceliaudio
             base.OnEnter();
         }
 
+        protected override void ValidateTweener()
+        {
+            base.ValidateTweener();
+            _tweenerToUse = _tweenerSO as IMyceliaudioTweenAdapter;
+            if (_tweenerToUse == null)
+            {
+                Debug.LogError("The provided tweener does not implement IMyceliaudioTweenAdapter." +
+                    "Please provide a compatible tweener.");
+            }
+        }
+
         private void PrepareArgs()
         {
             _forFirstTrack.TrackGroup = _forSecondTrack.TrackGroup = _trackGroup;
             _forFirstTrack.FadeDuration = _forSecondTrack.FadeDuration = _duration.Value;
             
             _forFirstTrack.Track = _firstTrack.Value;
-            float secondTrackBaseVol = AudioSys.GetTrackVol(_trackGroup, _secondTrack.Value);
+            float secondTrackBaseVol = AudioSys.GetTrackBaseVol(_trackGroup, _secondTrack.Value);
             _forFirstTrack.TargetValue = secondTrackBaseVol;
             _forFirstTrack.CustomFader = FirstFadeWithTweener;
             _forFirstTrack.OnComplete = OnOneTweenComplete;
@@ -41,7 +53,7 @@ namespace AtMycelia.Hyphlowceliaudio
             // picked the first.
 
             _forSecondTrack.Track = _secondTrack.Value;
-            float firstTrackBaseVol = AudioSys.GetTrackVol(_trackGroup, _firstTrack.Value);
+            float firstTrackBaseVol = AudioSys.GetTrackBaseVol(_trackGroup, _firstTrack.Value);
             _forSecondTrack.TargetValue = firstTrackBaseVol;
             _forSecondTrack.CustomFader = SecondFadeWithTweener;
 

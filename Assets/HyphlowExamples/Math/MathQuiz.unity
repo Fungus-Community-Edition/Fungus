@@ -1018,12 +1018,11 @@ MonoBehaviour:
   version: 1
   _legacyVariables: []
   _oldMuscariables: []
+  _otherSettings: []
   description: 
   uiModel:
-    _selectedBlocks:
-    - {fileID: 1755499608}
-    _selectedCommands:
-    - {fileID: 1755499607}
+    _selectedBlocks: []
+    _selectedCommands: []
     _owner: {fileID: 1755499605}
     <ScrollPos>k__BackingField: {x: 0, y: 5.227273}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
@@ -1043,13 +1042,11 @@ MonoBehaviour:
   saveSelection: 1
   showLineNumbers: 0
   hideCommands: []
-  localizationId: 
-  luaBindingName: flowchart
   includeInSaves: 1
   saveBlocks: 1
   saveVariables: 1
   loadPriority: 0
-  alwaysKeepGuid: 1
+  _alwaysKeepGuid: 1
   _blockListCache:
   - {fileID: 1755499608}
   _commands:
@@ -1090,16 +1087,16 @@ MonoBehaviour:
   itemId: 19
   indentLevel: 0
   conversationText:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: "john bored left: I have a game for you. \nsherlock sarcastic right: Do
-      you, John.\nAlright, let's have it then.\njohn: I've picked 2 numbers at random
-      between 1 and 100.\nsherlock eyeroll: I know binary search John.\njohn apologetic:
-      No, it's not that game.\nconfident: You need to deduce the starting numbers
-      based on their results.\nsherlock thinking: Deduce you say, ... Proceed.\njohn
+    _value: "john bored left: I have a game for you. \nsherlock sarcastic right:
+      Do you, John.\nAlright, let's have it then.\njohn: I've picked 2 numbers at
+      random between 1 and 100.\nsherlock eyeroll: I know binary search John.\njohn
+      apologetic: No, it's not that game.\nconfident: You need to deduce the starting
+      numbers based on their results.\nsherlock thinking: Deduce you say, ... Proceed.\njohn
       pleased: One value multiplied by the other is {$AMulB}.\nThe atan of their
       ratio is {$AtanAOverB}\nThe maximum value passed through a 1-100 S Curve is
       {$maxSCurve}\nOne value's Log is {$LogA}\nOne Value's Exp is {$ExpB}\nThe square
@@ -1110,39 +1107,39 @@ MonoBehaviour:
     stringRef: {fileID: 0}
     stringVal: 
   clearPrevious:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 1
+    _value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
   waitForInput:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 1
+    _value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
   waitForSeconds:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
   fadeWhenDone:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 1
+    _value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
 --- !u!114 &1755499608
@@ -1202,8 +1199,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2f6487d21a03404cb21b245f0242e79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  parentBlock: {fileID: 1755499608}
-  suppressBlockAutoSelect: 0
+  _parentBlock: {fileID: 1755499608}
+  _suppressBlockAutoSelect: 0
   waitForFrames: 1
 --- !u!4 &1755499610
 Transform:
@@ -1214,7 +1211,7 @@ Transform:
   m_GameObject: {fileID: 1755499605}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 1, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1232,12 +1229,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 705fa1ac97df74e3a84ff952ffd923f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scope: 0
-  key: StartingB
-  itemID: 2
+  _scope: 0
+  _key: StartingB
+  _itemId: 2
   oldItemID: 0
   _owner: {fileID: 1755499606}
-  value: 0
+  _value: 0
 --- !u!114 &1755499612
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1250,12 +1247,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 705fa1ac97df74e3a84ff952ffd923f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scope: 0
-  key: StartingA
-  itemID: 1
+  _scope: 0
+  _key: StartingA
+  _itemId: 1
   oldItemID: 0
   _owner: {fileID: 1755499606}
-  value: 0
+  _value: 0
 --- !u!114 &1755499613
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1270,25 +1267,30 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 3
   indentLevel: 0
-  variable: {fileID: 1755499611}
-  minValue:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 1755499606}
+  _variable:
+    _itemId: 2
+    _owningSource: {fileID: 1755499606}
+    legacyOwningFc: {fileID: 0}
+    legacyOwningVsa: {fileID: 0}
+  _minValue:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 1755499606}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 2
+    _value: 2
     floatRef: {fileID: 0}
     floatVal: 0
-  maxValue:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 1755499606}
+  _maxValue:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 1755499606}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 99
+    _value: 99
     floatRef: {fileID: 0}
     floatVal: 0
+  _oldVariable: {fileID: 0}
 --- !u!114 &1755499614
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1303,25 +1305,30 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 2
   indentLevel: 0
-  variable: {fileID: 1755499612}
-  minValue:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 1755499606}
+  _variable:
+    _itemId: 1
+    _owningSource: {fileID: 1755499606}
+    legacyOwningFc: {fileID: 0}
+    legacyOwningVsa: {fileID: 0}
+  _minValue:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 1755499606}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 2
+    _value: 2
     floatRef: {fileID: 0}
     floatVal: 0
-  maxValue:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 1755499606}
+  _maxValue:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 1755499606}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 99
+    _value: 99
     floatRef: {fileID: 0}
     floatVal: 0
+  _oldVariable: {fileID: 0}
 --- !u!114 &1755499615
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1337,21 +1344,21 @@ MonoBehaviour:
   itemId: 5
   indentLevel: 0
   inValue:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 1755499606}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 1755499606}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
   outValue:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 1755499606}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 1755499606}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
   function: 0
@@ -1370,21 +1377,21 @@ MonoBehaviour:
   itemId: 4
   indentLevel: 0
   inValue:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 1755499606}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 1755499606}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
   outValue:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 1755499606}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 1755499606}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
   function: 0
@@ -1400,12 +1407,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 705fa1ac97df74e3a84ff952ffd923f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scope: 0
-  key: max
-  itemID: 8
+  _scope: 0
+  _key: max
+  _itemId: 8
   oldItemID: 0
   _owner: {fileID: 1755499606}
-  value: 0
+  _value: 0
 --- !u!114 &1755499618
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1418,12 +1425,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 705fa1ac97df74e3a84ff952ffd923f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scope: 0
-  key: SqrtMax
-  itemID: 7
+  _scope: 0
+  _key: SqrtMax
+  _itemId: 7
   oldItemID: 0
   _owner: {fileID: 1755499606}
-  value: 0
+  _value: 0
 --- !u!114 &1755499619
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1436,12 +1443,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 705fa1ac97df74e3a84ff952ffd923f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scope: 0
-  key: ExpB
-  itemID: 6
+  _scope: 0
+  _key: ExpB
+  _itemId: 6
   oldItemID: 0
   _owner: {fileID: 1755499606}
-  value: 0
+  _value: 0
 --- !u!114 &1755499620
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1454,12 +1461,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 705fa1ac97df74e3a84ff952ffd923f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scope: 0
-  key: LogA
-  itemID: 5
+  _scope: 0
+  _key: LogA
+  _itemId: 5
   oldItemID: 0
   _owner: {fileID: 1755499606}
-  value: 0
+  _value: 0
 --- !u!114 &1755499621
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1472,12 +1479,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 705fa1ac97df74e3a84ff952ffd923f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scope: 0
-  key: AOverB
-  itemID: 4
+  _scope: 0
+  _key: AOverB
+  _itemId: 4
   oldItemID: 0
   _owner: {fileID: 1755499606}
-  value: 0
+  _value: 0
 --- !u!114 &1755499622
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1490,12 +1497,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 705fa1ac97df74e3a84ff952ffd923f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scope: 0
-  key: AMulB
-  itemID: 3
+  _scope: 0
+  _key: AMulB
+  _itemId: 3
   oldItemID: 0
   _owner: {fileID: 1755499606}
-  value: 0
+  _value: 0
 --- !u!114 &1755499623
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1511,21 +1518,21 @@ MonoBehaviour:
   itemId: 12
   indentLevel: 0
   inValue:
-    backingVarRef:
-      itemId: 8
-      owningSource: {fileID: 1755499606}
+    _backingVarRef:
+      _itemId: 8
+      _owningSource: {fileID: 1755499606}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
   outValue:
-    backingVarRef:
-      itemId: 7
-      owningSource: {fileID: 1755499606}
+    _backingVarRef:
+      _itemId: 7
+      _owningSource: {fileID: 1755499606}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
 --- !u!114 &1755499624
@@ -1544,30 +1551,30 @@ MonoBehaviour:
   indentLevel: 0
   function: 1
   inLHSValue:
-    backingVarRef:
-      itemId: 1
-      owningSource: {fileID: 1755499606}
+    _backingVarRef:
+      _itemId: 1
+      _owningSource: {fileID: 1755499606}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
   inRHSValue:
-    backingVarRef:
-      itemId: 2
-      owningSource: {fileID: 1755499606}
+    _backingVarRef:
+      _itemId: 2
+      _owningSource: {fileID: 1755499606}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
   outValue:
-    backingVarRef:
-      itemId: 8
-      owningSource: {fileID: 1755499606}
+    _backingVarRef:
+      _itemId: 8
+      _owningSource: {fileID: 1755499606}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
 --- !u!114 &1755499625
@@ -1585,21 +1592,21 @@ MonoBehaviour:
   itemId: 10
   indentLevel: 0
   inValue:
-    backingVarRef:
-      itemId: 2
-      owningSource: {fileID: 1755499606}
+    _backingVarRef:
+      _itemId: 2
+      _owningSource: {fileID: 1755499606}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
   outValue:
-    backingVarRef:
-      itemId: 6
-      owningSource: {fileID: 1755499606}
+    _backingVarRef:
+      _itemId: 6
+      _owningSource: {fileID: 1755499606}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
 --- !u!114 &1755499626
@@ -1617,21 +1624,21 @@ MonoBehaviour:
   itemId: 9
   indentLevel: 0
   inValue:
-    backingVarRef:
-      itemId: 1
-      owningSource: {fileID: 1755499606}
+    _backingVarRef:
+      _itemId: 1
+      _owningSource: {fileID: 1755499606}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
   outValue:
-    backingVarRef:
-      itemId: 5
-      owningSource: {fileID: 1755499606}
+    _backingVarRef:
+      _itemId: 5
+      _owningSource: {fileID: 1755499606}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
   mode: 1
@@ -1647,12 +1654,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 705fa1ac97df74e3a84ff952ffd923f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scope: 0
-  key: min
-  itemID: 11
+  _scope: 0
+  _key: min
+  _itemId: 11
   oldItemID: 0
   _owner: {fileID: 1755499606}
-  value: 0
+  _value: 0
 --- !u!114 &1755499628
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1669,34 +1676,34 @@ MonoBehaviour:
   indentLevel: 0
   _setOperator: 4
   _anyVar:
-    varRef:
-      itemId: 3
-      owningSource: {fileID: 1755499606}
+    _varRef:
+      _itemId: 3
+      _owningSource: {fileID: 1755499606}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    data:
-      backingVarRef:
-        itemId: 0
-        owningSource: {fileID: 1755499606}
+    _data:
+      _backingVarRef:
+        _itemId: 0
+        _owningSource: {fileID: 1755499606}
         legacyOwningFc: {fileID: 0}
         legacyOwningVsa: {fileID: 0}
-      data:
+      _data:
         rid: 3688519855250080040
     variable: {fileID: 0}
   _oldVariable: {fileID: 0}
   _oldAnyVar:
-    varRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _varRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    data:
-      backingVarRef:
-        itemId: 0
-        owningSource: {fileID: 0}
+    _data:
+      _backingVarRef:
+        _itemId: 0
+        _owningSource: {fileID: 0}
         legacyOwningFc: {fileID: 0}
         legacyOwningVsa: {fileID: 0}
-      data:
+      _data:
         rid: -2
     variable: {fileID: 0}
   references:
@@ -1707,12 +1714,12 @@ MonoBehaviour:
     - rid: 3688519855250080040
       type: {class: FloatData, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
-        backingVarRef:
-          itemId: 2
-          owningSource: {fileID: 1755499606}
+        _backingVarRef:
+          _itemId: 2
+          _owningSource: {fileID: 1755499606}
           legacyOwningFc: {fileID: 0}
           legacyOwningVsa: {fileID: 0}
-        value: 0
+        _value: 0
         floatRef: {fileID: 0}
         floatVal: 0
 --- !u!114 &1755499629
@@ -1731,34 +1738,34 @@ MonoBehaviour:
   indentLevel: 0
   _setOperator: 0
   _anyVar:
-    varRef:
-      itemId: 3
-      owningSource: {fileID: 1755499606}
+    _varRef:
+      _itemId: 3
+      _owningSource: {fileID: 1755499606}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    data:
-      backingVarRef:
-        itemId: 0
-        owningSource: {fileID: 1755499606}
+    _data:
+      _backingVarRef:
+        _itemId: 0
+        _owningSource: {fileID: 1755499606}
         legacyOwningFc: {fileID: 0}
         legacyOwningVsa: {fileID: 0}
-      data:
+      _data:
         rid: 3688519855250080039
     variable: {fileID: 0}
   _oldVariable: {fileID: 0}
   _oldAnyVar:
-    varRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _varRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    data:
-      backingVarRef:
-        itemId: 0
-        owningSource: {fileID: 0}
+    _data:
+      _backingVarRef:
+        _itemId: 0
+        _owningSource: {fileID: 0}
         legacyOwningFc: {fileID: 0}
         legacyOwningVsa: {fileID: 0}
-      data:
+      _data:
         rid: -2
     variable: {fileID: 0}
   references:
@@ -1769,12 +1776,12 @@ MonoBehaviour:
     - rid: 3688519855250080039
       type: {class: FloatData, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
-        backingVarRef:
-          itemId: 1
-          owningSource: {fileID: 1755499606}
+        _backingVarRef:
+          _itemId: 1
+          _owningSource: {fileID: 1755499606}
           legacyOwningFc: {fileID: 0}
           legacyOwningVsa: {fileID: 0}
-        value: 0
+        _value: 0
         floatRef: {fileID: 0}
         floatVal: 0
 --- !u!114 &1755499630
@@ -1789,12 +1796,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 705fa1ac97df74e3a84ff952ffd923f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scope: 0
-  key: AtanAOverB
-  itemID: 9
+  _scope: 0
+  _key: AtanAOverB
+  _itemId: 9
   oldItemID: 0
   _owner: {fileID: 1755499606}
-  value: 0
+  _value: 0
 --- !u!114 &1755499631
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1810,21 +1817,21 @@ MonoBehaviour:
   itemId: 15
   indentLevel: 0
   inValue:
-    backingVarRef:
-      itemId: 4
-      owningSource: {fileID: 1755499606}
+    _backingVarRef:
+      _itemId: 4
+      _owningSource: {fileID: 1755499606}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
   outValue:
-    backingVarRef:
-      itemId: 9
-      owningSource: {fileID: 1755499606}
+    _backingVarRef:
+      _itemId: 9
+      _owningSource: {fileID: 1755499606}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
   function: 4
@@ -1844,34 +1851,34 @@ MonoBehaviour:
   indentLevel: 0
   _setOperator: 5
   _anyVar:
-    varRef:
-      itemId: 4
-      owningSource: {fileID: 1755499606}
+    _varRef:
+      _itemId: 4
+      _owningSource: {fileID: 1755499606}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    data:
-      backingVarRef:
-        itemId: 0
-        owningSource: {fileID: 1755499606}
+    _data:
+      _backingVarRef:
+        _itemId: 0
+        _owningSource: {fileID: 1755499606}
         legacyOwningFc: {fileID: 0}
         legacyOwningVsa: {fileID: 0}
-      data:
+      _data:
         rid: 3688519855250080042
     variable: {fileID: 0}
   _oldVariable: {fileID: 0}
   _oldAnyVar:
-    varRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _varRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    data:
-      backingVarRef:
-        itemId: 0
-        owningSource: {fileID: 0}
+    _data:
+      _backingVarRef:
+        _itemId: 0
+        _owningSource: {fileID: 0}
         legacyOwningFc: {fileID: 0}
         legacyOwningVsa: {fileID: 0}
-      data:
+      _data:
         rid: -2
     variable: {fileID: 0}
   references:
@@ -1882,12 +1889,12 @@ MonoBehaviour:
     - rid: 3688519855250080042
       type: {class: FloatData, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
-        backingVarRef:
-          itemId: 2
-          owningSource: {fileID: 1755499606}
+        _backingVarRef:
+          _itemId: 2
+          _owningSource: {fileID: 1755499606}
           legacyOwningFc: {fileID: 0}
           legacyOwningVsa: {fileID: 0}
-        value: 0
+        _value: 0
         floatRef: {fileID: 0}
         floatVal: 0
 --- !u!114 &1755499633
@@ -1906,34 +1913,34 @@ MonoBehaviour:
   indentLevel: 0
   _setOperator: 0
   _anyVar:
-    varRef:
-      itemId: 4
-      owningSource: {fileID: 1755499606}
+    _varRef:
+      _itemId: 4
+      _owningSource: {fileID: 1755499606}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    data:
-      backingVarRef:
-        itemId: 0
-        owningSource: {fileID: 1755499606}
+    _data:
+      _backingVarRef:
+        _itemId: 0
+        _owningSource: {fileID: 1755499606}
         legacyOwningFc: {fileID: 0}
         legacyOwningVsa: {fileID: 0}
-      data:
+      _data:
         rid: 3688519855250080041
     variable: {fileID: 0}
   _oldVariable: {fileID: 0}
   _oldAnyVar:
-    varRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _varRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    data:
-      backingVarRef:
-        itemId: 0
-        owningSource: {fileID: 0}
+    _data:
+      _backingVarRef:
+        _itemId: 0
+        _owningSource: {fileID: 0}
         legacyOwningFc: {fileID: 0}
         legacyOwningVsa: {fileID: 0}
-      data:
+      _data:
         rid: -2
     variable: {fileID: 0}
   references:
@@ -1944,12 +1951,12 @@ MonoBehaviour:
     - rid: 3688519855250080041
       type: {class: FloatData, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
-        backingVarRef:
-          itemId: 1
-          owningSource: {fileID: 1755499606}
+        _backingVarRef:
+          _itemId: 1
+          _owningSource: {fileID: 1755499606}
           legacyOwningFc: {fileID: 0}
           legacyOwningVsa: {fileID: 0}
-        value: 0
+        _value: 0
         floatRef: {fileID: 0}
         floatVal: 0
 --- !u!114 &1755499634
@@ -1964,12 +1971,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 705fa1ac97df74e3a84ff952ffd923f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scope: 0
-  key: remapped
-  itemID: 10
+  _scope: 0
+  _key: remapped
+  _itemId: 10
   oldItemID: 0
   _owner: {fileID: 1755499606}
-  value: 0
+  _value: 0
 --- !u!114 &1755499635
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1985,57 +1992,57 @@ MonoBehaviour:
   itemId: 17
   indentLevel: 0
   initialRangeLower:
-    backingVarRef:
-      itemId: 11
-      owningSource: {fileID: 1755499606}
+    _backingVarRef:
+      _itemId: 11
+      _owningSource: {fileID: 1755499606}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
   initialRangeUpper:
-    backingVarRef:
-      itemId: 8
-      owningSource: {fileID: 1755499606}
+    _backingVarRef:
+      _itemId: 8
+      _owningSource: {fileID: 1755499606}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 1
+    _value: 1
     floatRef: {fileID: 0}
     floatVal: 0
   value:
-    backingVarRef:
-      itemId: 7
-      owningSource: {fileID: 1755499606}
+    _backingVarRef:
+      _itemId: 7
+      _owningSource: {fileID: 1755499606}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
   newRangeLower:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 1755499606}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 1755499606}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
   newRangeUpper:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 1755499606}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 1755499606}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 100
+    _value: 100
     floatRef: {fileID: 0}
     floatVal: 0
   outValue:
-    backingVarRef:
-      itemId: 10
-      owningSource: {fileID: 1755499606}
+    _backingVarRef:
+      _itemId: 10
+      _owningSource: {fileID: 1755499606}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
 --- !u!114 &1755499636
@@ -2054,30 +2061,30 @@ MonoBehaviour:
   indentLevel: 0
   function: 0
   inLHSValue:
-    backingVarRef:
-      itemId: 1
-      owningSource: {fileID: 1755499606}
+    _backingVarRef:
+      _itemId: 1
+      _owningSource: {fileID: 1755499606}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
   inRHSValue:
-    backingVarRef:
-      itemId: 2
-      owningSource: {fileID: 1755499606}
+    _backingVarRef:
+      _itemId: 2
+      _owningSource: {fileID: 1755499606}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
   outValue:
-    backingVarRef:
-      itemId: 11
-      owningSource: {fileID: 1755499606}
+    _backingVarRef:
+      _itemId: 11
+      _owningSource: {fileID: 1755499606}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
 --- !u!114 &1755499637
@@ -2092,12 +2099,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 705fa1ac97df74e3a84ff952ffd923f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scope: 0
-  key: maxSCurve
-  itemID: 12
+  _scope: 0
+  _key: maxSCurve
+  _itemId: 12
   oldItemID: 0
   _owner: {fileID: 1755499606}
-  value: 0
+  _value: 0
 --- !u!114 &1755499638
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -2113,21 +2120,21 @@ MonoBehaviour:
   itemId: 18
   indentLevel: 0
   inValue:
-    backingVarRef:
-      itemId: 8
-      owningSource: {fileID: 1755499606}
+    _backingVarRef:
+      _itemId: 8
+      _owningSource: {fileID: 1755499606}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
   outValue:
-    backingVarRef:
-      itemId: 12
-      owningSource: {fileID: 1755499606}
+    _backingVarRef:
+      _itemId: 12
+      _owningSource: {fileID: 1755499606}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
   curve:
