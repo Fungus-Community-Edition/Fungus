@@ -292,7 +292,6 @@ namespace AtMycelia.Hyphlow
                     return;
                 }
 
-
                 this._value = (T)value; 
                 // ^Need to cast here for the sake of numeric types. Can't do an "as" cast with those.
                 TriggerOnValueChanged();

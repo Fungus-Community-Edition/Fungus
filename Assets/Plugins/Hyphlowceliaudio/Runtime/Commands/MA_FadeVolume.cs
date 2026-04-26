@@ -1,50 +1,62 @@
 using UnityEngine;
 using AtMycelia.Hyphlow;
 using AtMycelia.Myceliaudio;
+using UnityEngine.Serialization;
 
 namespace AtMycelia.Hyphlowceliaudio
 {
     [CommandInfo("Myceliaudio", "MA Fade Vol", "Fades the volume of an individual track")]
     public class MA_FadeVolume : MyceliaudioCommand, ISerializationCallbackReceiver
     {
-        [SerializeField] protected TrackGroup trackGroup = TrackGroup.BGMusic;
-        [SerializeField] protected IntegerData track = new IntegerData(0);
-        [SerializeField] protected FloatData targetVol = new FloatData();
-        [SerializeField] protected FloatData duration = new FloatData(1);
-        [SerializeField] protected BooleanData waitUntilFinished = new BooleanData(true);
-        [SerializeField] protected ScriptableObject fadeTween;
+        [FormerlySerializedAs("trackGroup")]
+        [SerializeField] protected TrackGroup _trackGroup = TrackGroup.BGMusic;
+
+        [FormerlySerializedAs("track")]
+        [SerializeField] protected IntegerData _track = new IntegerData(0);
+
+        [FormerlySerializedAs("targetVol")]
+        [SerializeField] protected FloatData _targetVol = new FloatData();
+
+        [FormerlySerializedAs("duration")]
+        [SerializeField] protected FloatData _duration = new FloatData(1);
+
+        [FormerlySerializedAs("waitUntilFinished")]
+        [SerializeField] protected BooleanData _waitUntilFinished = new BooleanData(true);
+
+        [FormerlySerializedAs("fadeTween")]
+        [SerializeField] protected ScriptableObject _fadeTween;
 
         protected virtual void Awake()
         {
-            ValidateTweens();
+            ValidateTweeer();
         }
 
-        protected virtual void ValidateTweens()
+        protected virtual void ValidateTweeer()
         {
-            if (fadeTween == null)
+            if (_fadeTween == null)
             {
-                fadeTween = MA_DefaultTweener;
-                doFade = MA_DefaultTweener;
+                _fadeTween = MA_DefaultTweener;
+                _tweenerToUse = MA_DefaultTweener;
                 return;
             }
 
-            doFade = fadeTween as IMyceliaudioTweenAdapter;
-            if (doFade == null)
+            _tweenerToUse = _fadeTween as IMyceliaudioTweenAdapter;
+            if (_tweenerToUse == null)
             {
                 Debug.Log($"Fade tweener assigned to MA_FadeVolume is not valid. It needs to implement " +
                     $"IMyceliaudioTweenAdapter. Going back to default.");
-                doFade = MA_DefaultTweener;
+                _tweenerToUse = MA_DefaultTweener;
             }
         }
 
-        protected IMyceliaudioTweenAdapter doFade;
+        protected IMyceliaudioTweenAdapter _tweenerToUse;
 
         public override void OnEnter()
         {
             base.OnEnter();
             PrepFadeArgs();
             AudioSys.FadeTrackVol(fade);
-            if (!waitUntilFinished)
+            if (!_waitUntilFinished)
             {
                 Continue();
             }
@@ -52,13 +64,13 @@ namespace AtMycelia.Hyphlowceliaudio
 
         protected virtual void PrepFadeArgs()
         {
-            fade.Track = track;
-            fade.TrackGroup = trackGroup;
-            fade.FadeDuration = duration;
-            fade.TargetValue = targetVol;
+            fade.Track = _track;
+            fade.TrackGroup = _trackGroup;
+            fade.FadeDuration = _duration;
+            fade.TargetValue = _targetVol;
             fade.CustomFader = FadeWithTweener; // We have a fallback, so this should be fine
 
-            if (waitUntilFinished)
+            if (_waitUntilFinished)
             {
                 fade.OnComplete = OnFadeComplete;
             }
@@ -70,7 +82,7 @@ namespace AtMycelia.Hyphlowceliaudio
 
         protected virtual void FadeWithTweener(AlterAudioSourceArgs args, IAudioTrack track)
         {
-            doFade.FadeVolume(track, args.TargetValue, args.FadeDuration)
+            _tweenerToUse.FadeVolume(track, args.TargetValue, args.FadeDuration)
                 .SetOnComplete(() => args.OnComplete(args));
         }
 
@@ -84,39 +96,39 @@ namespace AtMycelia.Hyphlowceliaudio
         public override string GetSummary()
         {
             string trackStr;
-            bool trackIsVar = track.integerRef != null;
+            bool trackIsVar = _track.integerRef != null;
             if (trackIsVar)
             {
-                trackStr = track.integerRef.Key;
+                trackStr = _track.integerRef.Key;
             }
             else
             {
-                trackStr = track.Value.ToString();
+                trackStr = _track.Value.ToString();
             }
 
             string volStr;
-            bool volumeIsVar = targetVol.VarRef != null;
+            bool volumeIsVar = _targetVol.VarRef != null;
             if (volumeIsVar)
             {
-                volStr = targetVol.VarRef.Key;
+                volStr = _targetVol.VarRef.Key;
             }
             else
             {
-                volStr = targetVol.Value.ToString();
+                volStr = _targetVol.Value.ToString();
             }
 
             string durStr;
-            bool durIsVol = duration.VarRef != null;
+            bool durIsVol = _duration.VarRef != null;
             if (durIsVol)
             {
-                durStr = duration.VarRef.Key;
+                durStr = _duration.VarRef.Key;
             }
             else
             {
-                durStr = duration.Value.ToString();
+                durStr = _duration.Value.ToString();
             }
 
-            string result = $"{trackGroup} Tr {trackStr} to {volStr} over {durStr} seconds";
+            string result = $"{_trackGroup} Tr {trackStr} to {volStr} over {durStr} seconds";
 
             //Tr {track.Value} to {targetVol.Value} over {duration.Value} seconds";
             return result;
@@ -125,15 +137,15 @@ namespace AtMycelia.Hyphlowceliaudio
         public override void OnAfterDeserialize()
         {
             base.OnAfterDeserialize();
-            targetVol ??= new FloatData();
-            duration ??= new FloatData(0);
-            waitUntilFinished ??= new BooleanData(false);
+            _targetVol ??= new FloatData();
+            _duration ??= new FloatData(0);
+            _waitUntilFinished ??= new BooleanData(false);
         }
 
         protected override void OnValidate()
         {
             base.OnValidate();
-            ValidateTweens();
+            ValidateTweeer();
         }
     }
 }

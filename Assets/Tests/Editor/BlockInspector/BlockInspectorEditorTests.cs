@@ -39,7 +39,7 @@ namespace VScriptingTests.FCWindowOperations
             _secondBlock.BlockName = "Block_B";
 
             _blockInspectorAsset = ScriptableObject.CreateInstance<BlockInspector>();
-            _blockInspectorAsset.block = _firstBlock;
+            _blockInspectorAsset._block = _firstBlock;
 
             _editor = Editor.CreateEditor(_blockInspectorAsset, typeof(BlockInspectorEditor)) as BlockInspectorEditor;
 

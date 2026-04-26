@@ -44,7 +44,6 @@ namespace AtMycelia.Hyphlowceliaudio
             return DefaultTweenHandle.From(tween);
         }
 
-
         public ITweenHandle FadePitchN33(AudioSource target, float targVal, float duration)
         {
             var tween = TweenAudioSourcePitchN33(target, target.pitch, targVal, duration);

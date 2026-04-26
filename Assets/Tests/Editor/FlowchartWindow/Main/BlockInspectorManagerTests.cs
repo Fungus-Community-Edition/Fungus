@@ -63,7 +63,7 @@ namespace VScriptingTests.FlowchartWindow.Main
 
             Assert.That(BlockInspectorManager.LastShownBlock, Is.SameAs(block));
             Assert.That(BlockInspectorManager.CurrentFlowchart, Is.SameAs(flowchart));
-            Assert.That(inspector.block, Is.SameAs(block));
+            Assert.That(inspector._block, Is.SameAs(block));
             Assert.That(Selection.activeObject, Is.SameAs(inspector));
         }
 

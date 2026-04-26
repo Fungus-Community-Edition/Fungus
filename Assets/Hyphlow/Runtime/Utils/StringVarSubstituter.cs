@@ -9,7 +9,11 @@ using UnityEngine.Scripting.APIUpdating;
 
 namespace AtMycelia.Hyphlow
 {
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    /// <summary>
+    /// For substituting the values of Hyphlow IVariables into strings. This is good for
+    /// when a Command (like SetText) needs a string representation of a variable's value.
+    /// </summary>
     public class StringVarSubstituter
     {
         public string SubstituteVariables(string input, IVariableSource variableSource)
@@ -61,21 +65,12 @@ namespace AtMycelia.Hyphlow
 
         private bool TryGetVariableValue(string key, IVariableSource variableSource, out string value)
         {
-            if (TryGetVariableFromSource(variableSource, key, out IVariable variable))
+            IVariable variable;
+            if (TryGetVariableFromSource(variableSource, key, out variable) ||
+                TryGetVariableFromOtherFlowcharts(variableSource, key, out variable) ||
+                TryGetVariableFromGlobalSources(key, out variable))
             {
-                value = variable.ToString();
-                return true;
-            }
-
-            if (TryGetVariableFromOtherFlowcharts(variableSource, key, out variable))
-            {
-                value = variable.ToString();
-                return true;
-            }
-
-            if (TryGetVariableFromGlobalSources(key, out variable))
-            {
-                value = variable.ToString();
+                value = variable.BoxedValue.ToString();
                 return true;
             }
 

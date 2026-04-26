@@ -148,7 +148,7 @@ namespace AtMycelia.Hyphlow
             return result;
         }
 
-        public T GetValue<T>()
+        public T GetValue<T>(bool logMessageOnFail = false)
         {
             Type tType = typeof(T);
             if (_data is null)
@@ -158,11 +158,16 @@ namespace AtMycelia.Hyphlow
                 Debug.LogError(logMessage);
                 return default;
             }
-            if (!tType.IsAssignableFrom(_data.ContentType))
+
+            bool validType = tType.IsAssignableFrom(_data.ContentType);
+            if (!validType)
             {
-                string logMessage = $"Cannot get value of type {tType.Name} from AnyVariableData " +
+                if (logMessageOnFail)
+                {
+                    var logMessage = $"Cannot get value of type {tType.Name} from AnyVariableData " +
                     $"because it holds data of type {_data.ContentType.Name}.";
-                Debug.LogError(logMessage);
+                    Debug.LogError(logMessage);
+                }
                 return default;
             }
 
