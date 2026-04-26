@@ -191,10 +191,8 @@ MonoBehaviour:
     using trigger
     parameters. '
   uiModel:
-    _selectedBlocks:
-    - {fileID: 16019626}
-    _selectedCommands:
-    - {fileID: 16019628}
+    _selectedBlocks: []
+    _selectedCommands: []
     _owner: {fileID: 16019622}
     <ScrollPos>k__BackingField: {x: 613.42035, y: 490.2066}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
@@ -246,7 +244,7 @@ Transform:
   m_GameObject: {fileID: 16019622}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.8391, y: 1.3062, z: 0}
+  m_LocalPosition: {x: 1, y: 1.3062, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -266,9 +264,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 9
   indentLevel: 0
-  targetFlowchart: {fileID: 0}
-  targetBlock: {fileID: 16019626}
-  startLabel:
+  _targetFlowchart: {fileID: 0}
+  _targetBlock: {fileID: 16019626}
+  _startLabel:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 16019623}
@@ -277,7 +275,7 @@ MonoBehaviour:
     _value: 
     stringRef: {fileID: 0}
     stringVal: 
-  startIndex:
+  _startIndex:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 16019623}
@@ -286,8 +284,8 @@ MonoBehaviour:
     _value: 0
     integerRef: {fileID: 0}
     integerVal: 0
-  callMode: 0
-  targetBlockId: 10
+  _callMode: 0
+  _targetBlockId: 10
   _oldStartIndex: -1
 --- !u!114 &16019626
 MonoBehaviour:
@@ -1047,8 +1045,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2f6487d21a03404cb21b245f0242e79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  parentBlock: {fileID: 16019626}
-  suppressBlockAutoSelect: 0
+  _parentBlock: {fileID: 16019626}
+  _suppressBlockAutoSelect: 0
   waitForFrames: 1
 --- !u!114 &16019653
 MonoBehaviour:
@@ -1062,12 +1060,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: afb91b566ceda411bad1e9d3c3243ecc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scope: 0
-  key: bgmTrack
-  itemID: 2
+  _scope: 0
+  _key: bgmTrack
+  _itemId: 2
   oldItemID: 0
   _owner: {fileID: 16019623}
-  value: 2
+  _value: 2
 --- !u!114 &16019654
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1080,12 +1078,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb9e14562e1210645a10d8edfca25e89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scope: 0
-  key: bgm
-  itemID: 1
+  _scope: 0
+  _key: bgm
+  _itemId: 1
   oldItemID: 0
   _owner: {fileID: 16019623}
-  value: {fileID: 8300000, guid: 1fafd5646150a7e4481f8d47f9ee2fe6, type: 3}
+  _value: {fileID: 8300000, guid: 1fafd5646150a7e4481f8d47f9ee2fe6, type: 3}
 --- !u!114 &16019655
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1115,18 +1113,28 @@ MonoBehaviour:
     - rid: 3688519855250080034
       type: {class: AnimatorMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
+        _scope: 0
+        _key: greenAlienAnimator
+        _itemId: 3
         scope: 0
-        key: greenAlienAnimator
-        itemID: 3
-        value: {fileID: 2120294220}
+        key: 
+        itemID: 0
+        value: {fileID: 0}
+        _startValue: {fileID: 0}
+        _value: {fileID: 2120294220}
         startValue: {fileID: 0}
     - rid: 3688519855250080035
       type: {class: StringMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
+        _scope: 0
+        _key: jumpingParamName
+        _itemId: 4
         scope: 0
-        key: jumpingParamName
-        itemID: 4
-        value: AmIJumping
+        key: 
+        itemID: 0
+        value: 
+        _startValue: 
+        _value: AmIJumping
         startValue: 
 --- !u!114 &16019656
 MonoBehaviour:

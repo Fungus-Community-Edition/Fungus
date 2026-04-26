@@ -21,10 +21,10 @@ namespace AtMycelia.Hyphlow
         [SerializeField]
         protected string _key = string.Empty;
         [HideInInspector]
-        [SerializeField] protected byte _itemId = InvalidID; 
+        [SerializeField] protected byte _itemId = InvalidId; 
         // ^Default to invalid ID to avoid accidental collisions with valid variables. See VariableDataCache for more.
 
-        public static readonly byte InvalidID = 0;
+        public static readonly byte InvalidId = 0;
 
         #region Legacy stuff
         [SerializeField]
@@ -32,7 +32,7 @@ namespace AtMycelia.Hyphlow
         [SerializeField]
         protected string key = string.Empty;
         [HideInInspector]
-        [SerializeField] protected byte itemId = InvalidID;
+        [SerializeField] protected byte itemID = InvalidId;
 
         #endregion
 
@@ -52,9 +52,9 @@ namespace AtMycelia.Hyphlow
                 _key = key;
             }
 
-            if (itemId != InvalidID)
+            if (itemID != InvalidId)
             {
-                _itemId = itemId;
+                _itemId = itemID;
             }
 
             if (scope != default)
@@ -63,7 +63,7 @@ namespace AtMycelia.Hyphlow
             }
 
             key = string.Empty;
-            itemId = InvalidID;
+            itemID = InvalidId;
             scope = default;
         }
 

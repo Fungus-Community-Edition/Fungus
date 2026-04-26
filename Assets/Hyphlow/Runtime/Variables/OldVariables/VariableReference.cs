@@ -61,7 +61,7 @@ namespace AtMycelia.Hyphlow
         {
             get
             {
-                if (_itemId == Muscariable.InvalidID)
+                if (_itemId == Muscariable.InvalidId)
                 {
                     //Debug.LogWarning($"VariableReference: Variable is null. Owner is {VarOwner}");
                     return null;

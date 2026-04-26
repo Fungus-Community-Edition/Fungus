@@ -78,7 +78,7 @@ namespace AtMycelia.Hyphlow
                     return false;
                 }
 
-                if (varRef.ItemId == Muscariable.InvalidID)
+                if (varRef.ItemId == Muscariable.InvalidId)
                 {
                     if (!string.IsNullOrEmpty(varRef.Key) || varRef.Owner != null)
                     {

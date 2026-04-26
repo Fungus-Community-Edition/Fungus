@@ -1797,7 +1797,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1443016623}
   - component: {fileID: 1443016622}
-  - component: {fileID: 1443016621}
+  - component: {fileID: 1443016624}
   m_Layer: 0
   m_Name: EventSystem
   m_TagString: Untagged
@@ -1805,26 +1805,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1443016621
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1443016620}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f231c4fb786f3946a6b90b886c48677, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SendPointerHoverToParent: 1
-  m_HorizontalAxis: Horizontal
-  m_VerticalAxis: Vertical
-  m_SubmitButton: Submit
-  m_CancelButton: Cancel
-  m_InputActionsPerSecond: 10
-  m_RepeatDelay: 0.5
-  m_ForceModuleActive: 0
 --- !u!114 &1443016622
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1855,6 +1835,48 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1443016624
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1443016620}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01614664b831546d2ae94a42149d80ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SendPointerHoverToParent: 1
+  m_MoveRepeatDelay: 0.5
+  m_MoveRepeatRate: 0.1
+  m_XRTrackingOrigin: {fileID: 0}
+  m_ActionsAsset: {fileID: -944628639613478452, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_PointAction: {fileID: 1054132383583890850, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_MoveAction: {fileID: 3710738434707379630, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_SubmitAction: {fileID: 2064916234097673511, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_CancelAction: {fileID: -1967631576421560919, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_LeftClickAction: {fileID: 8056856818456041789, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_MiddleClickAction: {fileID: 3279352641294131588, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_RightClickAction: {fileID: 3837173908680883260, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_ScrollWheelAction: {fileID: 4502412055082496612, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_TrackedDevicePositionAction: {fileID: 4754684134866288074, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_TrackedDeviceOrientationAction: {fileID: 1025543830046995696, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_DeselectOnBackgroundClick: 1
+  m_PointerBehavior: 0
+  m_CursorLockBehavior: 0
+  m_ScrollDeltaPerTick: 6
 --- !u!1 &1552838394
 GameObject:
   m_ObjectHideFlags: 0
@@ -2486,6 +2508,15 @@ GameObject:
   - component: {fileID: 1893991267}
   - component: {fileID: 1893991266}
   - component: {fileID: 1893991268}
+  - component: {fileID: 1893991270}
+  - component: {fileID: 1893991269}
+  - component: {fileID: 1893991271}
+  - component: {fileID: 1893991277}
+  - component: {fileID: 1893991276}
+  - component: {fileID: 1893991275}
+  - component: {fileID: 1893991274}
+  - component: {fileID: 1893991273}
+  - component: {fileID: 1893991272}
   m_Layer: 0
   m_Name: Main
   m_TagString: Untagged
@@ -2557,168 +2588,273 @@ MonoBehaviour:
         _scope: 0
         _key: firstClip
         _itemId: 1
-        _value: {fileID: 8300000, guid: d99959378cd1aed49b9d406020adc820, type: 3}
+        scope: 0
+        key: 
+        itemID: 0
+        value: {fileID: 0}
         _startValue: {fileID: 0}
+        _value: {fileID: 8300000, guid: d99959378cd1aed49b9d406020adc820, type: 3}
+        startValue: {fileID: 0}
     - rid: 3688520145283056190
       type: {class: AudioClipMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         _scope: 0
         _key: secondClip
         _itemId: 2
-        _value: {fileID: 8300000, guid: a5b41984cbdf6b9448bffa75bdeb8d77, type: 3}
+        scope: 0
+        key: 
+        itemID: 0
+        value: {fileID: 0}
         _startValue: {fileID: 0}
+        _value: {fileID: 8300000, guid: a5b41984cbdf6b9448bffa75bdeb8d77, type: 3}
+        startValue: {fileID: 0}
     - rid: 3688520145283056191
       type: {class: FloatMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         _scope: 0
         _key: volChangeInterval
         _itemId: 3
-        _value: 5
+        scope: 0
+        key: 
+        itemID: 0
+        value: 0
         _startValue: 0
+        _value: 5
+        startValue: 0
     - rid: 3688520145283056192
       type: {class: FloatMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         _scope: 0
         _key: fadeChangeInterval
         _itemId: 4
-        _value: 0.5
+        scope: 0
+        key: 
+        itemID: 0
+        value: 0
         _startValue: 0
+        _value: 0.5
+        startValue: 0
     - rid: 3688520145283056193
       type: {class: GameObjectMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         _scope: 0
         _key: raiseMusicVolButton
         _itemId: 5
-        _value: {fileID: 1287587855}
+        scope: 0
+        key: 
+        itemID: 0
+        value: {fileID: 0}
         _startValue: {fileID: 0}
+        _value: {fileID: 1287587855}
+        startValue: {fileID: 0}
     - rid: 3688520145283056194
       type: {class: GameObjectMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         _scope: 0
         _key: lowerMusicVolButton
         _itemId: 6
-        _value: {fileID: 696270933}
+        scope: 0
+        key: 
+        itemID: 0
+        value: {fileID: 0}
         _startValue: {fileID: 0}
+        _value: {fileID: 696270933}
+        startValue: {fileID: 0}
     - rid: 3688520145283056195
       type: {class: GameObjectMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         _scope: 0
         _key: raiseFadeDurButton
         _itemId: 7
-        _value: {fileID: 1846101125}
+        scope: 0
+        key: 
+        itemID: 0
+        value: {fileID: 0}
         _startValue: {fileID: 0}
+        _value: {fileID: 1846101125}
+        startValue: {fileID: 0}
     - rid: 3688520145283056196
       type: {class: GameObjectMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         _scope: 0
         _key: lowerFadeDurButton
         _itemId: 8
-        _value: {fileID: 663286349}
+        scope: 0
+        key: 
+        itemID: 0
+        value: {fileID: 0}
         _startValue: {fileID: 0}
+        _value: {fileID: 663286349}
+        startValue: {fileID: 0}
     - rid: 3688520145283056197
       type: {class: FloatMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         _scope: 0
         _key: startingMusicVol
         _itemId: 9
-        _value: 30
+        scope: 0
+        key: 
+        itemID: 0
+        value: 0
         _startValue: 0
+        _value: 30
+        startValue: 0
     - rid: 3688520145283056198
       type: {class: FloatMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         _scope: 0
         _key: startingFadeDur
         _itemId: 10
-        _value: 3
+        scope: 0
+        key: 
+        itemID: 0
+        value: 0
         _startValue: 0
+        _value: 3
+        startValue: 0
     - rid: 3688520145283056199
       type: {class: FloatMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         _scope: 0
         _key: minFadeDur
         _itemId: 11
-        _value: 0.5
+        scope: 0
+        key: 
+        itemID: 0
+        value: 0
         _startValue: 0
+        _value: 0.5
+        startValue: 0
     - rid: 3688520145283056200
       type: {class: FloatMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         _scope: 0
         _key: maxFadeDur
         _itemId: 12
-        _value: 5
+        scope: 0
+        key: 
+        itemID: 0
+        value: 0
         _startValue: 0
+        _value: 5
+        startValue: 0
     - rid: 3688520145283056208
       type: {class: FloatMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         _scope: 0
         _key: fullVol
         _itemId: 15
-        _value: 100
+        scope: 0
+        key: 
+        itemID: 0
+        value: 0
         _startValue: 0
+        _value: 100
+        startValue: 0
     - rid: 3688520145283056209
       type: {class: FloatMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         _scope: 0
         _key: silent
         _itemId: 16
-        _value: 0
+        scope: 0
+        key: 
+        itemID: 0
+        value: 0
         _startValue: 0
+        _value: 0
+        startValue: 0
     - rid: 3688520145283056237
       type: {class: FloatMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         _scope: 0
         _key: currentFadeDur
         _itemId: 19
-        _value: 0
+        scope: 0
+        key: 
+        itemID: 0
+        value: 0
         _startValue: 0
+        _value: 0
+        startValue: 0
     - rid: 3688520145283056240
       type: {class: GameObjectMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         _scope: 0
         _key: musicVolLabel
         _itemId: 20
-        _value: {fileID: 1552838394}
+        scope: 0
+        key: 
+        itemID: 0
+        value: {fileID: 0}
         _startValue: {fileID: 0}
+        _value: {fileID: 1552838394}
+        startValue: {fileID: 0}
     - rid: 3688520145283056241
       type: {class: GameObjectMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         _scope: 0
         _key: fadeDurLabel
         _itemId: 21
-        _value: {fileID: 855226739}
+        scope: 0
+        key: 
+        itemID: 0
+        value: {fileID: 0}
         _startValue: {fileID: 0}
+        _value: {fileID: 855226739}
+        startValue: {fileID: 0}
     - rid: 3688520145283056282
       type: {class: IntMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         _scope: 0
         _key: firstTrack
         _itemId: 13
-        _value: 0
+        scope: 0
+        key: 
+        itemID: 0
+        value: 0
         _startValue: 0
+        _value: 0
+        startValue: 0
     - rid: 3688520145283056283
       type: {class: IntMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         _scope: 0
         _key: secondTrack
         _itemId: 14
-        _value: 1
+        scope: 0
+        key: 
+        itemID: 0
+        value: 0
         _startValue: 0
+        _value: 1
+        startValue: 0
     - rid: 3688520145283056284
       type: {class: IntMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         _scope: 0
         _key: currentMusicVol
         _itemId: 17
-        _value: 0
+        scope: 0
+        key: 
+        itemID: 0
+        value: 0
         _startValue: 0
+        _value: 0
+        startValue: 0
     - rid: 3688520145283056285
       type: {class: IntMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         _scope: 0
         _key: audibleTrack
         _itemId: 18
-        _value: 0
+        scope: 0
+        key: 
+        itemID: 0
+        value: 0
         _startValue: 0
+        _value: 0
+        startValue: 0
 --- !u!114 &1893991233
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2744,10 +2880,11 @@ MonoBehaviour:
   description: 
   uiModel:
     _selectedBlocks:
-    - {fileID: 1893991256}
-    _selectedCommands: []
+    - {fileID: 1893991252}
+    _selectedCommands:
+    - {fileID: 1893991274}
     _owner: {fileID: 1893991230}
-    <ScrollPos>k__BackingField: {x: -55.714188, y: -90.072464}
+    <ScrollPos>k__BackingField: {x: -55.714188, y: -99.572464}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesExpanded>k__BackingField: 0
     <Zoom>k__BackingField: 1.1000001
@@ -2986,6 +3123,7 @@ MonoBehaviour:
   - {fileID: 1893991239}
   - {fileID: 1893991259}
   - {fileID: 1893991265}
+  - {fileID: 1893991271}
   - {fileID: 1893991240}
   - {fileID: 1893991235}
   - {fileID: 1893991238}
@@ -3578,6 +3716,10 @@ MonoBehaviour:
   description: 
   eventHandler: {fileID: 1893991249}
   commandList:
+  - {fileID: 1893991274}
+  - {fileID: 1893991273}
+  - {fileID: 1893991272}
+  - {fileID: 1893991270}
   - {fileID: 1893991251}
   - {fileID: 1893991250}
   - {fileID: 1893991257}
@@ -3748,6 +3890,10 @@ MonoBehaviour:
   description: 
   eventHandler: {fileID: 1893991255}
   commandList:
+  - {fileID: 1893991277}
+  - {fileID: 1893991275}
+  - {fileID: 1893991276}
+  - {fileID: 1893991269}
   - {fileID: 1893991254}
   - {fileID: 1893991253}
   - {fileID: 1893991258}
@@ -3948,7 +4094,7 @@ MonoBehaviour:
   indentLevel: 0
   _duration:
     _backingVarRef:
-      _itemId: 0
+      _itemId: 19
       _owningSource: {fileID: 1893991233}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
@@ -4044,18 +4190,18 @@ MonoBehaviour:
   _setOperator: 0
   _anyVar:
     _varRef:
-      _itemId: 22
+      _itemId: 17
       _owningSource: {fileID: 1893991233}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
     _data:
       _backingVarRef:
-        _itemId: 0
+        _itemId: 9
         _owningSource: {fileID: 1893991233}
         legacyOwningFc: {fileID: 0}
         legacyOwningVsa: {fileID: 0}
       _data:
-        rid: 3688520145283056328
+        rid: 3688520168047116422
     variable: {fileID: 0}
   _oldVariable: {fileID: 0}
   _oldAnyVar:
@@ -4078,17 +4224,17 @@ MonoBehaviour:
     RefIds:
     - rid: -2
       type: {class: , ns: , asm: }
-    - rid: 3688520145283056328
-      type: {class: IntegerData, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+    - rid: 3688520168047116422
+      type: {class: FloatData, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         _backingVarRef:
-          _itemId: 14
+          _itemId: 9
           _owningSource: {fileID: 1893991233}
           legacyOwningFc: {fileID: 0}
           legacyOwningVsa: {fileID: 0}
         _value: 0
-        integerRef: {fileID: 0}
-        integerVal: 0
+        floatRef: {fileID: 0}
+        floatVal: 0
 --- !u!114 &1893991266
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -4174,6 +4320,566 @@ MonoBehaviour:
         _value: {fileID: 1671126989}
         gameObjectRef: {fileID: 0}
         gameObjectVal: {fileID: 0}
+--- !u!114 &1893991269
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1893991230}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fab8abf0343545abbfebd9a7b7b34bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 36
+  indentLevel: 0
+  logType: 0
+  logMessage:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _value: Raising music vol
+    stringRef: {fileID: 0}
+    stringVal: 
+--- !u!114 &1893991270
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1893991230}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fab8abf0343545abbfebd9a7b7b34bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 36
+  indentLevel: 0
+  logType: 0
+  logMessage:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _value: Lowering music vol
+    stringRef: {fileID: 0}
+    stringVal: 
+--- !u!114 &1893991271
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1893991230}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c93d7fdc06652b4e809c53dbe33b6d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 36
+  indentLevel: 0
+  _trackGroup: 2
+  _operation: 2
+  _track:
+    _backingVarRef:
+      _itemId: 14
+      _owningSource: {fileID: 1893991233}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _value: 0
+    integerRef: {fileID: 0}
+    integerVal: 0
+  _targetVol:
+    _backingVarRef:
+      _itemId: 17
+      _owningSource: {fileID: 1893991233}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _value: 0
+    floatRef: {fileID: 0}
+    floatVal: 0
+  _trackSelection: 2
+  _outputVar:
+    _itemId: 0
+    _owningSource: {fileID: 0}
+    legacyOwningFc: {fileID: 0}
+    legacyOwningVsa: {fileID: 0}
+--- !u!114 &1893991272
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1893991230}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93cb9773f2ca04e2bbf7a68ccfc23267, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 36
+  indentLevel: 0
+--- !u!114 &1893991273
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1893991230}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f1ca510a57aa47568a5e4ee558ff41f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 36
+  indentLevel: 1
+--- !u!114 &1893991274
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1893991230}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5622b8a80845c980954170295f292, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 36
+  indentLevel: 0
+  _anyOrAllConditions: 0
+  _conditions:
+  - _compareOperator: 4
+    _anyVar:
+      _varRef:
+        _itemId: 17
+        _owningSource: {fileID: 1893991233}
+        legacyOwningFc: {fileID: 0}
+        legacyOwningVsa: {fileID: 0}
+      _data:
+        _backingVarRef:
+          _itemId: 0
+          _owningSource: {fileID: 0}
+          legacyOwningFc: {fileID: 0}
+          legacyOwningVsa: {fileID: 0}
+        _data:
+          rid: 3688520168047116608
+      variable: {fileID: 0}
+  _compareOperator: 0
+  _anyVar:
+    _varRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _data:
+      _backingVarRef:
+        _itemId: 0
+        _owningSource: {fileID: 0}
+        legacyOwningFc: {fileID: 0}
+        legacyOwningVsa: {fileID: 0}
+      _data:
+        rid: -2
+    variable: {fileID: 0}
+  variable: {fileID: 0}
+  booleanData:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  integerData:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _value: 0
+    integerRef: {fileID: 0}
+    integerVal: 0
+  floatData:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _value: 0
+    floatRef: {fileID: 0}
+    floatVal: 0
+  stringData:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _value: 
+    stringRef: {fileID: 0}
+    stringVal: 
+  animatorData:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _value: {fileID: 0}
+    animatorRef: {fileID: 0}
+    animatorVal: {fileID: 0}
+  audioSourceData:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _value: {fileID: 0}
+    audioSourceRef: {fileID: 0}
+  colorData:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _value: {r: 0, g: 0, b: 0, a: 0}
+    colorRef: {fileID: 0}
+    colorVal: {r: 0, g: 0, b: 0, a: 0}
+  gameObjectData:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+    gameObjectVal: {fileID: 0}
+  materialData:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _value: {fileID: 0}
+    materialRef: {fileID: 0}
+    materialVal: {fileID: 0}
+  objectData:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _value: {fileID: 0}
+    objectRef: {fileID: 0}
+    objectVal: {fileID: 0}
+  spriteData:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _value: {fileID: 0}
+    spriteRef: {fileID: 0}
+    spriteVal: {fileID: 0}
+  textureData:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _value: {fileID: 0}
+    textureRef: {fileID: 0}
+    textureVal: {fileID: 0}
+  transformData:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _value: {fileID: 0}
+    transformRef: {fileID: 0}
+    transformVal: {fileID: 0}
+  vector2Data:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _value: {x: 0, y: 0}
+    vector2Ref: {fileID: 0}
+    vector2Val: {x: 0, y: 0}
+  vector3Data:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _value: {x: 0, y: 0, z: 0}
+    vector3Ref: {fileID: 0}
+    vector3Val: {x: 0, y: 0, z: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 3688520168047116608
+      type: {class: FakeIntVariableData, ns: VScriptingTests.VariableOperations, asm: AmanitaEditorTests}
+      data:
+        _backingVarRef:
+          _itemId: 0
+          _owningSource: {fileID: 0}
+          legacyOwningFc: {fileID: 0}
+          legacyOwningVsa: {fileID: 0}
+        _value: 0
+        _intRef:
+          _scope: 0
+          _key: 
+          _itemId: 0
+          scope: 0
+          key: 
+          itemID: 0
+          value: 0
+          _startValue: 0
+          _value: 0
+          startValue: 0
+--- !u!114 &1893991275
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1893991230}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f1ca510a57aa47568a5e4ee558ff41f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 36
+  indentLevel: 1
+--- !u!114 &1893991276
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1893991230}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93cb9773f2ca04e2bbf7a68ccfc23267, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 36
+  indentLevel: 0
+--- !u!114 &1893991277
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1893991230}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5622b8a80845c980954170295f292, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 36
+  indentLevel: 0
+  _anyOrAllConditions: 0
+  _conditions:
+  - _compareOperator: 5
+    _anyVar:
+      _varRef:
+        _itemId: 17
+        _owningSource: {fileID: 1893991233}
+        legacyOwningFc: {fileID: 0}
+        legacyOwningVsa: {fileID: 0}
+      _data:
+        _backingVarRef:
+          _itemId: 0
+          _owningSource: {fileID: 0}
+          legacyOwningFc: {fileID: 0}
+          legacyOwningVsa: {fileID: 0}
+        _data:
+          rid: 3688520168047116445
+      variable: {fileID: 0}
+  _compareOperator: 0
+  _anyVar:
+    _varRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _data:
+      _backingVarRef:
+        _itemId: 0
+        _owningSource: {fileID: 0}
+        legacyOwningFc: {fileID: 0}
+        legacyOwningVsa: {fileID: 0}
+      _data:
+        rid: -2
+    variable: {fileID: 0}
+  variable: {fileID: 0}
+  booleanData:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  integerData:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _value: 0
+    integerRef: {fileID: 0}
+    integerVal: 0
+  floatData:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _value: 0
+    floatRef: {fileID: 0}
+    floatVal: 0
+  stringData:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _value: 
+    stringRef: {fileID: 0}
+    stringVal: 
+  animatorData:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _value: {fileID: 0}
+    animatorRef: {fileID: 0}
+    animatorVal: {fileID: 0}
+  audioSourceData:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _value: {fileID: 0}
+    audioSourceRef: {fileID: 0}
+  colorData:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _value: {r: 0, g: 0, b: 0, a: 0}
+    colorRef: {fileID: 0}
+    colorVal: {r: 0, g: 0, b: 0, a: 0}
+  gameObjectData:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+    gameObjectVal: {fileID: 0}
+  materialData:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _value: {fileID: 0}
+    materialRef: {fileID: 0}
+    materialVal: {fileID: 0}
+  objectData:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _value: {fileID: 0}
+    objectRef: {fileID: 0}
+    objectVal: {fileID: 0}
+  spriteData:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _value: {fileID: 0}
+    spriteRef: {fileID: 0}
+    spriteVal: {fileID: 0}
+  textureData:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _value: {fileID: 0}
+    textureRef: {fileID: 0}
+    textureVal: {fileID: 0}
+  transformData:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _value: {fileID: 0}
+    transformRef: {fileID: 0}
+    transformVal: {fileID: 0}
+  vector2Data:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _value: {x: 0, y: 0}
+    vector2Ref: {fileID: 0}
+    vector2Val: {x: 0, y: 0}
+  vector3Data:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _value: {x: 0, y: 0, z: 0}
+    vector3Ref: {fileID: 0}
+    vector3Val: {x: 0, y: 0, z: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 3688520168047116445
+      type: {class: FakeIntVariableData, ns: VScriptingTests.VariableOperations, asm: AmanitaEditorTests}
+      data:
+        _backingVarRef:
+          _itemId: 0
+          _owningSource: {fileID: 0}
+          legacyOwningFc: {fileID: 0}
+          legacyOwningVsa: {fileID: 0}
+        _value: 100
+        _intRef:
+          _scope: 0
+          _key: 
+          _itemId: 0
+          scope: 0
+          key: 
+          itemID: 0
+          value: 0
+          _startValue: 0
+          _value: 0
+          startValue: 0
 --- !u!1 &1936752980
 GameObject:
   m_ObjectHideFlags: 0

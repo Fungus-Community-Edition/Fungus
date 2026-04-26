@@ -325,7 +325,7 @@ MonoBehaviour:
     _value: {fileID: 1156195134}
     gameObjectRef: {fileID: 0}
     gameObjectVal: {fileID: 0}
-  text:
+  _text:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 53095156}
@@ -334,8 +334,17 @@ MonoBehaviour:
     _value: '{$p1Score}'
     stringRef: {fileID: 0}
     stringVal: 
-  description: 
-  targetTextObject: {fileID: 0}
+  _description:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _value: 
+    stringRef: {fileID: 0}
+    stringVal: 
+  _oldTargetTextObject: {fileID: 0}
+  _oldDescription: 
 --- !u!114 &53095138
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -359,7 +368,7 @@ MonoBehaviour:
     _value: {fileID: 2079785622}
     gameObjectRef: {fileID: 0}
     gameObjectVal: {fileID: 0}
-  text:
+  _text:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 53095156}
@@ -368,8 +377,17 @@ MonoBehaviour:
     _value: '{$p2Score}'
     stringRef: {fileID: 0}
     stringVal: 
-  description: 
-  targetTextObject: {fileID: 0}
+  _description:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _value: 
+    stringRef: {fileID: 0}
+    stringVal: 
+  _oldTargetTextObject: {fileID: 0}
+  _oldDescription: 
 --- !u!114 &53095139
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -382,8 +400,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d7d417659cd54a6787f70f763950c34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  parentBlock: {fileID: 53095145}
-  suppressBlockAutoSelect: 0
+  _parentBlock: {fileID: 53095145}
+  _suppressBlockAutoSelect: 0
   _message:
     _backingVarRef:
       _itemId: 2
@@ -637,9 +655,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 9
   indentLevel: 0
-  targetFlowchart: {fileID: 0}
-  targetBlock: {fileID: 53095193}
-  startLabel:
+  _targetFlowchart: {fileID: 0}
+  _targetBlock: {fileID: 53095193}
+  _startLabel:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 53095156}
@@ -648,7 +666,7 @@ MonoBehaviour:
     _value: 
     stringRef: {fileID: 0}
     stringVal: 
-  startIndex:
+  _startIndex:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 53095156}
@@ -657,8 +675,8 @@ MonoBehaviour:
     _value: 0
     integerRef: {fileID: 0}
     integerVal: 0
-  callMode: 1
-  targetBlockId: 47
+  _callMode: 1
+  _targetBlockId: 47
   _oldStartIndex: -1
 --- !u!114 &53095144
 MonoBehaviour:
@@ -736,8 +754,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeRect:
     serializedVersion: 2
-    x: -320.66632
-    y: 124.3332
+    x: 670.67914
+    y: 148.56381
     width: 143
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
@@ -776,8 +794,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeRect:
     serializedVersion: 2
-    x: 21.999651
-    y: -54.99992
+    x: 121.16649
+    y: -139.9999
     width: 100
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
@@ -806,9 +824,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 5
   indentLevel: 0
-  targetFlowchart: {fileID: 0}
-  targetBlock: {fileID: 53095146}
-  startLabel:
+  _targetFlowchart: {fileID: 0}
+  _targetBlock: {fileID: 53095146}
+  _startLabel:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 53095156}
@@ -817,7 +835,7 @@ MonoBehaviour:
     _value: 
     stringRef: {fileID: 0}
     stringVal: 
-  startIndex:
+  _startIndex:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 53095156}
@@ -826,8 +844,8 @@ MonoBehaviour:
     _value: 0
     integerRef: {fileID: 0}
     integerVal: 0
-  callMode: 1
-  targetBlockId: 6
+  _callMode: 1
+  _targetBlockId: 6
   _oldStartIndex: -1
 --- !u!114 &53095148
 MonoBehaviour:
@@ -1132,12 +1150,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: afb91b566ceda411bad1e9d3c3243ecc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scope: 0
-  key: p2Score
-  itemID: 2
+  _scope: 0
+  _key: p2Score
+  _itemId: 2
   oldItemID: 0
   _owner: {fileID: 53095156}
-  value: 0
+  _value: 0
 --- !u!114 &53095153
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1150,12 +1168,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: afb91b566ceda411bad1e9d3c3243ecc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scope: 0
-  key: p1Score
-  itemID: 1
+  _scope: 0
+  _key: p1Score
+  _itemId: 1
   oldItemID: 0
   _owner: {fileID: 53095156}
-  value: 0
+  _value: 0
 --- !u!114 &53095154
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1168,8 +1186,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d7d417659cd54a6787f70f763950c34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  parentBlock: {fileID: 53095155}
-  suppressBlockAutoSelect: 0
+  _parentBlock: {fileID: 53095155}
+  _suppressBlockAutoSelect: 0
   _message:
     _backingVarRef:
       _itemId: 1
@@ -1194,8 +1212,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeRect:
     serializedVersion: 2
-    x: -153.00009
-    y: 244.00005
+    x: -367.6796
+    y: 136.30794
     width: 133
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
@@ -1243,13 +1261,14 @@ MonoBehaviour:
   _otherSettings: []
   description: 
   uiModel:
-    _selectedBlocks: []
+    _selectedBlocks:
+    - {fileID: 53095171}
     _selectedCommands: []
     _owner: {fileID: 53095135}
-    <ScrollPos>k__BackingField: {x: 347.47632, y: 132.21451}
+    <ScrollPos>k__BackingField: {x: 430.80994, y: 181.09718}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesExpanded>k__BackingField: 0
-    <Zoom>k__BackingField: 1.5
+    <Zoom>k__BackingField: 1.1999999
     <BlockViewHeight>k__BackingField: 231
     <ScrollViewRect>k__BackingField:
       serializedVersion: 2
@@ -1343,12 +1362,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d769ea3513ad47aabf805db5252341d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scope: 0
-  key: ballSpawn
-  itemID: 7
+  _scope: 0
+  _key: ballSpawn
+  _itemId: 7
   oldItemID: 0
   _owner: {fileID: 53095156}
-  value: {x: 0, y: 0, z: 0}
+  _value: {x: 0, y: 0, z: 0}
 --- !u!114 &53095159
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1361,12 +1380,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d769ea3513ad47aabf805db5252341d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scope: 0
-  key: p2Spawn
-  itemID: 6
+  _scope: 0
+  _key: p2Spawn
+  _itemId: 6
   oldItemID: 0
   _owner: {fileID: 53095156}
-  value: {x: 5, y: 0, z: 0}
+  _value: {x: 5, y: 0, z: 0}
 --- !u!114 &53095160
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1379,12 +1398,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d769ea3513ad47aabf805db5252341d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scope: 0
-  key: p1Spawn
-  itemID: 5
+  _scope: 0
+  _key: p1Spawn
+  _itemId: 5
   oldItemID: 0
   _owner: {fileID: 53095156}
-  value: {x: -5, y: 0, z: 0}
+  _value: {x: -5, y: 0, z: 0}
 --- !u!114 &53095162
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1399,8 +1418,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeRect:
     serializedVersion: 2
-    x: 227.33337
-    y: -20.000088
+    x: 90.66708
+    y: -37.500187
     width: 165
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
@@ -1431,9 +1450,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 21
   indentLevel: 0
-  targetFlowchart: {fileID: 0}
-  targetBlock: {fileID: 53095162}
-  startLabel:
+  _targetFlowchart: {fileID: 0}
+  _targetBlock: {fileID: 53095162}
+  _startLabel:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 53095156}
@@ -1442,7 +1461,7 @@ MonoBehaviour:
     _value: 
     stringRef: {fileID: 0}
     stringVal: 
-  startIndex:
+  _startIndex:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 53095156}
@@ -1451,8 +1470,8 @@ MonoBehaviour:
     _value: 0
     integerRef: {fileID: 0}
     integerVal: 0
-  callMode: 1
-  targetBlockId: 16
+  _callMode: 1
+  _targetBlockId: 16
   _oldStartIndex: -1
 --- !u!114 &53095167
 MonoBehaviour:
@@ -1468,9 +1487,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 20
   indentLevel: 0
-  targetFlowchart: {fileID: 0}
-  targetBlock: {fileID: 53095162}
-  startLabel:
+  _targetFlowchart: {fileID: 0}
+  _targetBlock: {fileID: 53095162}
+  _startLabel:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 53095156}
@@ -1479,7 +1498,7 @@ MonoBehaviour:
     _value: 
     stringRef: {fileID: 0}
     stringVal: 
-  startIndex:
+  _startIndex:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 53095156}
@@ -1488,8 +1507,8 @@ MonoBehaviour:
     _value: 0
     integerRef: {fileID: 0}
     integerVal: 0
-  callMode: 1
-  targetBlockId: 16
+  _callMode: 1
+  _targetBlockId: 16
   _oldStartIndex: -1
 --- !u!114 &53095168
 MonoBehaviour:
@@ -1503,12 +1522,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4580f28dd8581476b810b38eea2f1316, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scope: 0
-  key: WinnerString
-  itemID: 3
+  _scope: 0
+  _key: WinnerString
+  _itemId: 3
   oldItemID: 0
   _owner: {fileID: 53095156}
-  value: 
+  _value: 
 --- !u!114 &53095169
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1647,8 +1666,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeRect:
     serializedVersion: 2
-    x: 214.33282
-    y: 115.33343
+    x: 117.66622
+    y: 227.00008
     width: 107
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
@@ -1737,7 +1756,7 @@ MonoBehaviour:
     _value: {fileID: 785288106}
     gameObjectRef: {fileID: 0}
     gameObjectVal: {fileID: 0}
-  text:
+  _text:
     _backingVarRef:
       _itemId: 3
       _owningSource: {fileID: 53095156}
@@ -1746,8 +1765,17 @@ MonoBehaviour:
     _value: 
     stringRef: {fileID: 0}
     stringVal: 
-  description: 
-  targetTextObject: {fileID: 0}
+  _description:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _value: 
+    stringRef: {fileID: 0}
+    stringVal: 
+  _oldTargetTextObject: {fileID: 0}
+  _oldDescription: 
 --- !u!114 &53095176
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1760,12 +1788,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: afb91b566ceda411bad1e9d3c3243ecc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scope: 0
-  key: ScoreToWin
-  itemID: 4
+  _scope: 0
+  _key: ScoreToWin
+  _itemId: 4
   oldItemID: 0
   _owner: {fileID: 53095156}
-  value: 5
+  _value: 5
 --- !u!114 &53095177
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1780,9 +1808,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 32
   indentLevel: 1
-  targetFlowchart: {fileID: 0}
-  targetBlock: {fileID: 53095171}
-  startLabel:
+  _targetFlowchart: {fileID: 0}
+  _targetBlock: {fileID: 53095171}
+  _startLabel:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 53095156}
@@ -1791,7 +1819,7 @@ MonoBehaviour:
     _value: 
     stringRef: {fileID: 0}
     stringVal: 
-  startIndex:
+  _startIndex:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 53095156}
@@ -1800,8 +1828,8 @@ MonoBehaviour:
     _value: 0
     integerRef: {fileID: 0}
     integerVal: 0
-  callMode: 0
-  targetBlockId: 27
+  _callMode: 0
+  _targetBlockId: 27
   _oldStartIndex: -1
 --- !u!114 &53095178
 MonoBehaviour:
@@ -1817,9 +1845,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 33
   indentLevel: 1
-  targetFlowchart: {fileID: 0}
-  targetBlock: {fileID: 53095203}
-  startLabel:
+  _targetFlowchart: {fileID: 0}
+  _targetBlock: {fileID: 53095203}
+  _startLabel:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 53095156}
@@ -1828,7 +1856,7 @@ MonoBehaviour:
     _value: 
     stringRef: {fileID: 0}
     stringVal: 
-  startIndex:
+  _startIndex:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 53095156}
@@ -1837,8 +1865,8 @@ MonoBehaviour:
     _value: 0
     integerRef: {fileID: 0}
     integerVal: 0
-  callMode: 0
-  targetBlockId: 47
+  _callMode: 0
+  _targetBlockId: 47
   _oldStartIndex: -1
 --- !u!114 &53095180
 MonoBehaviour:
@@ -2034,10 +2062,15 @@ MonoBehaviour:
     - rid: 3688520010277061303
       type: {class: BoolMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
-        scope: 1
-        key: gameIsOver
-        itemID: 8
+        _scope: 1
+        _key: gameIsOver
+        _itemId: 8
+        scope: 0
+        key: 
+        itemID: 0
         value: 0
+        _startValue: 0
+        _value: 0
         startValue: 0
 --- !u!114 &53095185
 MonoBehaviour:
@@ -2053,9 +2086,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 43
   indentLevel: 0
-  targetFlowchart: {fileID: 0}
-  targetBlock: {fileID: 53095162}
-  startLabel:
+  _targetFlowchart: {fileID: 0}
+  _targetBlock: {fileID: 53095162}
+  _startLabel:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 53095156}
@@ -2064,7 +2097,7 @@ MonoBehaviour:
     _value: 
     stringRef: {fileID: 0}
     stringVal: 
-  startIndex:
+  _startIndex:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 53095156}
@@ -2073,8 +2106,8 @@ MonoBehaviour:
     _value: 0
     integerRef: {fileID: 0}
     integerVal: 0
-  callMode: 1
-  targetBlockId: 16
+  _callMode: 1
+  _targetBlockId: 16
   _oldStartIndex: -1
 --- !u!114 &53095186
 MonoBehaviour:
@@ -2090,9 +2123,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 42
   indentLevel: 0
-  targetFlowchart: {fileID: 0}
-  targetBlock: {fileID: 53095146}
-  startLabel:
+  _targetFlowchart: {fileID: 0}
+  _targetBlock: {fileID: 53095146}
+  _startLabel:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 53095156}
@@ -2101,7 +2134,7 @@ MonoBehaviour:
     _value: 
     stringRef: {fileID: 0}
     stringVal: 
-  startIndex:
+  _startIndex:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 53095156}
@@ -2110,8 +2143,8 @@ MonoBehaviour:
     _value: 0
     integerRef: {fileID: 0}
     integerVal: 0
-  callMode: 1
-  targetBlockId: 6
+  _callMode: 1
+  _targetBlockId: 6
   _oldStartIndex: -1
 --- !u!114 &53095187
 MonoBehaviour:
@@ -2125,8 +2158,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2f6487d21a03404cb21b245f0242e79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  parentBlock: {fileID: 53095188}
-  suppressBlockAutoSelect: 0
+  _parentBlock: {fileID: 53095188}
+  _suppressBlockAutoSelect: 0
   waitForFrames: 1
 --- !u!114 &53095188
 MonoBehaviour:
@@ -2142,8 +2175,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeRect:
     serializedVersion: 2
-    x: -150.38026
-    y: -11.881184
+    x: 140.45314
+    y: 103.11893
     width: 60
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
@@ -2334,8 +2367,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeRect:
     serializedVersion: 2
-    x: 42.52388
-    y: 301.45203
+    x: 65.85719
+    y: 365.61914
     width: 211
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
@@ -2364,9 +2397,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 51
   indentLevel: 1
-  targetFlowchart: {fileID: 0}
-  targetBlock: {fileID: 53095171}
-  startLabel:
+  _targetFlowchart: {fileID: 0}
+  _targetBlock: {fileID: 53095171}
+  _startLabel:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 53095156}
@@ -2375,7 +2408,7 @@ MonoBehaviour:
     _value: 
     stringRef: {fileID: 0}
     stringVal: 
-  startIndex:
+  _startIndex:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 53095156}
@@ -2384,8 +2417,8 @@ MonoBehaviour:
     _value: 0
     integerRef: {fileID: 0}
     integerVal: 0
-  callMode: 0
-  targetBlockId: 27
+  _callMode: 0
+  _targetBlockId: 27
   _oldStartIndex: -1
 --- !u!114 &53095195
 MonoBehaviour:
@@ -2415,9 +2448,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 51
   indentLevel: 0
-  targetFlowchart: {fileID: 0}
-  targetBlock: {fileID: 53095193}
-  startLabel:
+  _targetFlowchart: {fileID: 0}
+  _targetBlock: {fileID: 53095193}
+  _startLabel:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 53095156}
@@ -2426,7 +2459,7 @@ MonoBehaviour:
     _value: 
     stringRef: {fileID: 0}
     stringVal: 
-  startIndex:
+  _startIndex:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 53095156}
@@ -2435,8 +2468,8 @@ MonoBehaviour:
     _value: 0
     integerRef: {fileID: 0}
     integerVal: 0
-  callMode: 1
-  targetBlockId: 47
+  _callMode: 1
+  _targetBlockId: 47
   _oldStartIndex: -1
 --- !u!114 &53095197
 MonoBehaviour:
@@ -2466,9 +2499,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 51
   indentLevel: 1
-  targetFlowchart: {fileID: 0}
-  targetBlock: {fileID: 53095203}
-  startLabel:
+  _targetFlowchart: {fileID: 0}
+  _targetBlock: {fileID: 53095203}
+  _startLabel:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 53095156}
@@ -2477,7 +2510,7 @@ MonoBehaviour:
     _value: 
     stringRef: {fileID: 0}
     stringVal: 
-  startIndex:
+  _startIndex:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 53095156}
@@ -2486,8 +2519,8 @@ MonoBehaviour:
     _value: 0
     integerRef: {fileID: 0}
     integerVal: 0
-  callMode: 1
-  targetBlockId: 47
+  _callMode: 1
+  _targetBlockId: 47
   _oldStartIndex: -1
 --- !u!114 &53095199
 MonoBehaviour:
@@ -2503,9 +2536,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 51
   indentLevel: 0
-  targetFlowchart: {fileID: 0}
-  targetBlock: {fileID: 53095146}
-  startLabel:
+  _targetFlowchart: {fileID: 0}
+  _targetBlock: {fileID: 53095146}
+  _startLabel:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 53095156}
@@ -2514,7 +2547,7 @@ MonoBehaviour:
     _value: 
     stringRef: {fileID: 0}
     stringVal: 
-  startIndex:
+  _startIndex:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 53095156}
@@ -2523,8 +2556,8 @@ MonoBehaviour:
     _value: 0
     integerRef: {fileID: 0}
     integerVal: 0
-  callMode: 1
-  targetBlockId: 6
+  _callMode: 1
+  _targetBlockId: 6
   _oldStartIndex: -1
 --- !u!114 &53095200
 MonoBehaviour:
@@ -2540,9 +2573,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 51
   indentLevel: 0
-  targetFlowchart: {fileID: 0}
-  targetBlock: {fileID: 53095203}
-  startLabel:
+  _targetFlowchart: {fileID: 0}
+  _targetBlock: {fileID: 53095203}
+  _startLabel:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 53095156}
@@ -2551,7 +2584,7 @@ MonoBehaviour:
     _value: 
     stringRef: {fileID: 0}
     stringVal: 
-  startIndex:
+  _startIndex:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 53095156}
@@ -2560,8 +2593,8 @@ MonoBehaviour:
     _value: 0
     integerRef: {fileID: 0}
     integerVal: 0
-  callMode: 1
-  targetBlockId: 47
+  _callMode: 1
+  _targetBlockId: 47
   _oldStartIndex: -1
 --- !u!114 &53095201
 MonoBehaviour:
@@ -2701,8 +2734,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeRect:
     serializedVersion: 2
-    x: 411.6903
-    y: 33.118668
+    x: 71.69044
+    y: 174.78523
     width: 191
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
@@ -3015,18 +3048,28 @@ MonoBehaviour:
     - rid: 3688519994442252373
       type: {class: StringMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
-        scope: 1
-        key: onLeftGoalHit
-        itemID: 1
-        value: OnLeftGoalHit
+        _scope: 1
+        _key: onLeftGoalHit
+        _itemId: 1
+        scope: 0
+        key: 
+        itemID: 0
+        value: 
+        _startValue: 
+        _value: OnLeftGoalHit
         startValue: 
     - rid: 3688519994442252374
       type: {class: StringMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
-        scope: 1
-        key: onRightGoalHit
-        itemID: 2
-        value: OnRightGoalHit
+        _scope: 1
+        _key: onRightGoalHit
+        _itemId: 2
+        scope: 0
+        key: 
+        itemID: 0
+        value: 
+        _startValue: 
+        _value: OnRightGoalHit
         startValue: 
 --- !u!4 &293127844
 Transform:
@@ -4017,11 +4060,11 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 44679673}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 1, y: 1}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -15, y: -15}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 15, y: -15}
   m_SizeDelta: {x: 160, y: 30}
-  m_Pivot: {x: 1, y: 1}
+  m_Pivot: {x: 0, y: 1}
 --- !u!114 &1156195136
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4881,11 +4924,11 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 44679673}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 15, y: -15}
+  m_AnchorMin: {x: 1, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -15, y: -15}
   m_SizeDelta: {x: 160, y: 30}
-  m_Pivot: {x: 0, y: 1}
+  m_Pivot: {x: 1, y: 1}
 --- !u!114 &2079785624
 MonoBehaviour:
   m_ObjectHideFlags: 0
