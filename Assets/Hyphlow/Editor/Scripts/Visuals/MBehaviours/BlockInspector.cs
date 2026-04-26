@@ -12,7 +12,8 @@ namespace AtMycelia.Hyphlow.EditorUtils
     public class BlockInspector : ScriptableObject 
     {
         [FormerlySerializedAs("sequence")]
-        public Block block;
+        [FormerlySerializedAs("block")]
+        public Block _block;
     }
 
     /// <summary>
@@ -23,16 +24,16 @@ namespace AtMycelia.Hyphlow.EditorUtils
     {
         // Cache the block and command editors so we only create and destroy them
         // when a different block / command is selected.
-        protected BlockEditor activeBlockEditor;
-        protected CommandEditor activeCommandEditor;
-        protected Command activeCommand; // Command currently being inspected
+        protected BlockEditor _activeBlockEditor;
+        protected CommandEditor _activeCommandEditor;
+        protected Command _activeCommand; // Command currently being inspected
 
         // Cached command editors to avoid creating / destroying editors more than necessary
         // This list is static so persists between {something}
         // CG-Tespy's note: At some point, we might want to make it so that we don't need more
         // than one CommandEditor at a time. So we can reuse the same one for different 
         // Commands to display.
-        protected static List<CommandEditor> cachedCommandEditors = new List<CommandEditor>();
+        protected static List<CommandEditor> _cachedCommandEditors = new List<CommandEditor>();
 
         protected void OnEnable()
         {
@@ -52,13 +53,13 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
         protected void ClearEditors()
         {
-            foreach (CommandEditor commandEditor in cachedCommandEditors)
+            foreach (CommandEditor commandEditor in _cachedCommandEditors)
             {
                 DestroyImmediate(commandEditor);
             }
 
-            cachedCommandEditors.Clear();
-            activeCommandEditor = null;
+            _cachedCommandEditors.Clear();
+            _activeCommandEditor = null;
         }
 
         protected void OnDisable()
@@ -74,7 +75,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
         public override void OnInspectorGUI() 
         {
             BlockInspector blockInspector = target as BlockInspector;
-            Block block = blockInspector.block;
+            Block block = blockInspector._block;
             bool weHaveAnythingToDraw = block != null && block.IsSelected;
             if (!weHaveAnythingToDraw)
             {
@@ -92,11 +93,24 @@ namespace AtMycelia.Hyphlow.EditorUtils
             EnsureBlockEditorTargetsOurBlock();
             void EnsureBlockEditorTargetsOurBlock()
             {
-                if (activeBlockEditor == null ||
-                    !block.Equals(activeBlockEditor.target))
+                if (_activeBlockEditor == null ||
+                    !block.Equals(_activeBlockEditor.target))
                 {
-                    DestroyImmediate(activeBlockEditor);
-                    activeBlockEditor = Editor.CreateEditor(block, typeof(BlockEditor)) as BlockEditor;
+                    DestroyImmediate(_activeBlockEditor);
+                    _activeBlockEditor = Editor.CreateEditor(block, typeof(BlockEditor)) as BlockEditor;
+                }
+            }
+
+            DrawBlockEnabledToggle();
+            void DrawBlockEnabledToggle()
+            {
+                EditorGUI.BeginChangeCheck();
+                bool enabled = EditorGUILayout.Toggle("Enabled", block.enabled);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    Undo.RecordObject(block, "Toggle Block Enabled");
+                    block.enabled = enabled;
+                    EditorUtility.SetDirty(block);
                 }
             }
 
@@ -108,9 +122,9 @@ namespace AtMycelia.Hyphlow.EditorUtils
             void DrawBaseBlockGUIInScrollView()
             {
                 var uiModel = flowchart.UIModel;
-                blockScrollPos = GUILayout.BeginScrollView(blockScrollPos, GUILayout.Height(uiModel.BlockViewHeight));
-                activeBlockEditor.DrawBlockName(flowchart);
-                activeBlockEditor.DrawBlockGUI(flowchart);
+                _blockScrollPos = GUILayout.BeginScrollView(_blockScrollPos, GUILayout.Height(uiModel.BlockViewHeight));
+                _activeBlockEditor.DrawBlockName(flowchart);
+                _activeBlockEditor.DrawBlockGUI(flowchart);
                 GUILayout.EndScrollView();
             }
 
@@ -131,13 +145,13 @@ namespace AtMycelia.Hyphlow.EditorUtils
             // Only change the activeCommand at the start of the GUI call sequence
             if (Event.current.type == EventType.Layout)
             {
-                activeCommand = commandToInspect;
+                _activeCommand = commandToInspect;
             }
 
             DrawCommandUI(flowchart, commandToInspect);
         }
 
-        protected Vector2 blockScrollPos;
+        protected Vector2 _blockScrollPos;
         
         /// <summary>
         /// In Unity 5.4, Screen.height returns the pixel height instead of the point height
@@ -147,10 +161,10 @@ namespace AtMycelia.Hyphlow.EditorUtils
         /// </summary>
         protected void UpdateWindowHeight()
         {
-            windowHeight = Screen.height * EditorGUIUtility.pixelsPerPoint;
+            _windowHeight = Screen.height * EditorGUIUtility.pixelsPerPoint;
         }
 
-        protected float windowHeight = 0f;
+        protected float _windowHeight = 0f;
 
         public void DrawCommandUI(Flowchart flowchart, Command inspectCommand)
         {
@@ -158,32 +172,32 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
             EditorGUILayout.Space();
 
-            activeBlockEditor.DrawButtonToolbar();
+            _activeBlockEditor.DrawButtonToolbar();
 
-            commandScrollPos = GUILayout.BeginScrollView(commandScrollPos);
+            _commandScrollPos = GUILayout.BeginScrollView(_commandScrollPos);
 
             if (inspectCommand != null)
             {
-                if (activeCommandEditor == null ||
-                    !inspectCommand.Equals(activeCommandEditor.target))
+                if (_activeCommandEditor == null ||
+                    !inspectCommand.Equals(_activeCommandEditor.target))
                 {
                     // See if we have a cached version of the command editor already
-                    var editors = cachedCommandEditors
+                    var editors = _cachedCommandEditors
                         .Where(e => e != null && e.target.Equals(inspectCommand));
 
                     if (editors.Any())
                     {
-                        activeCommandEditor = editors.First();
+                        _activeCommandEditor = editors.First();
                     }
                     else
                     {
-                        activeCommandEditor = Editor.CreateEditor(inspectCommand) as CommandEditor;
-                        cachedCommandEditors.Add(activeCommandEditor);
+                        _activeCommandEditor = Editor.CreateEditor(inspectCommand) as CommandEditor;
+                        _cachedCommandEditors.Add(_activeCommandEditor);
                     }
                 }
 
                 // 🔹 SAFETY WRAP
-                SafeIMGUI.Draw(() => activeCommandEditor.DrawCommandInspectorGUI(), inspectCommand.name);
+                SafeIMGUI.Draw(() => _activeCommandEditor.DrawCommandInspectorGUI(), inspectCommand.name);
             }
 
             GUILayout.EndScrollView();
@@ -211,7 +225,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
             //Repaint();
         }
 
-        protected Vector2 commandScrollPos;
+        protected Vector2 _commandScrollPos;
 
         protected void ResizeScrollView(Flowchart flowchart)
         {
@@ -226,11 +240,11 @@ namespace AtMycelia.Hyphlow.EditorUtils
             {
                 if (Event.current.type == EventType.MouseDown)
                 {
-                    resize = true;
+                    _resize = true;
                 }
             }
 
-            if (resize && Event.current.type == EventType.Repaint)
+            if (_resize && Event.current.type == EventType.Repaint)
             {
                 Undo.RecordObject(flowchart, "Resize view");
                 uiModel.BlockViewHeight = Event.current.mousePosition.y;
@@ -240,24 +254,24 @@ namespace AtMycelia.Hyphlow.EditorUtils
             
             // Stop resizing if mouse is outside inspector window.
             // This isn't standard Unity UI behavior but it is robust and safe.
-            if (resize && Event.current.type == EventType.MouseDrag)
+            if (_resize && Event.current.type == EventType.MouseDrag)
             {
-                Rect windowRect = new Rect(0, 0, EditorGUIUtility.currentViewWidth, windowHeight);
+                Rect windowRect = new Rect(0, 0, EditorGUIUtility.currentViewWidth, _windowHeight);
                 bool mouseOutsideInspectorWindow = !windowRect.Contains(Event.current.mousePosition);
                 if (mouseOutsideInspectorWindow)
                 {
-                    resize = false;
+                    _resize = false;
                 }
             }
 
             bool releasedMouse = Event.current.type == EventType.MouseUp;
             if (releasedMouse)
             {
-                resize = false;
+                _resize = false;
             }
         }
         
-        protected bool resize = false;
+        protected bool _resize = false;
 
         protected virtual void ClampBlockViewHeight(Flowchart flowchart)
         {
@@ -267,26 +281,26 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
             if (Event.current.commandName != "")
             {
-                clamp = false;
+                _clamp = false;
             }
             
-            if (clamp)
+            if (_clamp)
             {
                 // Make sure block view is always clamped to visible area
                 var uiModel = flowchart.UIModel;
                 float height = uiModel.BlockViewHeight;
                 height = Mathf.Max(200, height);
-                height = Mathf.Min(windowHeight - 200,height);
+                height = Mathf.Min(_windowHeight - 200,height);
                 uiModel.BlockViewHeight = height;
             }
             
             if (Event.current.type == EventType.Repaint)
             {
-                clamp = true;
+                _clamp = true;
             }
         }
 
-        protected bool clamp = false;
+        protected bool _clamp = false;
 
     }
 }

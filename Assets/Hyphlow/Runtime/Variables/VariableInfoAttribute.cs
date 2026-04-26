@@ -10,7 +10,7 @@ namespace AtMycelia.Hyphlow
     /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
 [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
-    public sealed class VariableInfoAttribute : System.Attribute
+    public sealed class VariableInfoAttribute : Attribute
     {
         // Note do not use "isPreviewedOnly:true", it causes the script to fail to load without errors shown
         public VariableInfoAttribute(string category, string optionDisplayName, Type contentType,

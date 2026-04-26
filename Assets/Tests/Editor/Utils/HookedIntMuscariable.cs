@@ -2,7 +2,7 @@ using AtMycelia.Hyphlow;
 
 namespace VScriptingTests.VariableOperations
 {
-    [VariableInfo("", "", typeof(int), ShowInMenu = false)]
+    [VariableInfo("", "", typeof(int), ShowInMenu = false, IsTest = true)]
     public class HookedIntMuscariable : IntMuscariable
     {
         public object LastBasePrev;

@@ -43,7 +43,7 @@ namespace AtMycelia.Hyphlowceliaudio
                 serializedObject.Update();
             }
 
-            EditorGUILayout.PropertyField(_outputVarProperty);
+            DrawOutputVar();
 
             serializedObject.ApplyModifiedProperties();
         }
@@ -77,6 +77,17 @@ namespace AtMycelia.Hyphlowceliaudio
             if (operation == GetOrSet.Set)
             {
                 EditorGUILayout.PropertyField(_targetVolProperty);
+            }
+        }
+
+        private void DrawOutputVar()
+        {
+            // We only want to do so when we're getting the volume, not when
+            // we're setting it. Similar thing as with DrawTargetVol, but reversed.
+            GetOrSet operation = (GetOrSet)_operationProperty.enumValueIndex;
+            if (operation == GetOrSet.Get)
+            {
+                EditorGUILayout.PropertyField(_outputVarProperty);
             }
         }
     }

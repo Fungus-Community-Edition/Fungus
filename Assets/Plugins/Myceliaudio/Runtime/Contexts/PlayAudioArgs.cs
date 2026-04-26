@@ -25,7 +25,8 @@ namespace AtMycelia.Myceliaudio
             {
                 if (value != null && value.loadType == AudioClipLoadType.DecompressOnLoad)
                 {
-                    Debug.LogWarning("PlayAudioArgs: Clip is set to DecompressOnLoad. This may cause performance issues.");
+                    //Debug.LogWarning("PlayAudioArgs: Clip is set to DecompressOnLoad. " +
+                    //    "This may cause performance issues.");
                 }
                 _mainClip = value;
             }

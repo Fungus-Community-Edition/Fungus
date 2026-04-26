@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
-
+using UnityEngine.Serialization;
 using UnityEngine.Scripting.APIUpdating;
 
 namespace AtMycelia.Hyphlow
@@ -14,20 +14,59 @@ namespace AtMycelia.Hyphlow
     [AddComponentMenu("")]
     [MovedFrom("AtMycelia.Amanita.VScripting.EventHandlers")]
     public class ButtonClicked : EventHandler
-    {   
+    {
         [Tooltip("The UI Button that the user can click on")]
-        [SerializeField] protected Button targetButton;
+        [ContentTypeConstraint(typeof(GameObject), typeof(Component))]
+        [SerializeField] protected AnyVariableData _targetButton;
 
-        #region Public members
-
-        public virtual void Start()
+        private void FetchButtonComponent()
         {
-            if (targetButton != null)
+            if (_button != null)
             {
-                targetButton.onClick.AddListener(OnButtonClick);
+                return;
+            }
+            Component component = _targetButton.GetValue<Component>();
+            GameObject gameObject = _targetButton.GetValue<GameObject>();
+            if (component != null)
+            {
+                _button = component.GetComponent<Button>();
+            }
+            else if (gameObject != null)
+            {
+                _button = gameObject.GetComponent<Button>();
+            }
+            else if (Application.isPlaying)
+            {
+                Debug.LogError("ButtonClicked event handler requires a Button component reference.", this);
+                return;
             }
         }
-        
+
+        private Button _button;
+
+        protected override void ToggleSubs(bool on)
+        {
+            base.ToggleSubs(on);
+            
+            if (_button == null)
+            {
+                FetchButtonComponent();
+                if (_button == null)
+                {
+                    return;
+                }
+            }
+
+            if (on)
+            {
+                _button.onClick.AddListener(OnButtonClick);
+            }
+            else
+            {
+                _button.onClick.RemoveListener(OnButtonClick);
+            }
+        }
+
         protected virtual void OnButtonClick()
         {
             ExecuteBlock();
@@ -35,14 +74,27 @@ namespace AtMycelia.Hyphlow
 
         public override string GetSummary()
         {
-            if (targetButton != null)
+            FetchButtonComponent();
+            if (_button != null)
             {
-                return targetButton.name;
+                return _button.name;
             }
 
             return "Error: no targetButton set.";
         }
 
-        #endregion
+        public override void ApplyBackwardsCompatibility()
+        {
+            base.ApplyBackwardsCompatibility();
+            if (_oldTargetButton != null)
+            {
+                _targetButton.SetFor<GameObjectMuscariable, GameObject>();
+                _targetButton.BoxedValue = _oldTargetButton.gameObject;
+                _oldTargetButton = null;
+            }
+        }
+
+        [FormerlySerializedAs("targetButton")]
+        [SerializeField] [HideInInspector] protected Button _oldTargetButton;
     }
 }

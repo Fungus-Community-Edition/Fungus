@@ -30,7 +30,8 @@ namespace AtMycelia.Hyphlow
         {
             IEnumerable<Type> varSubtypes = AppDomain.CurrentDomain.GetAssemblies()
                          .SelectMany(SafeGetTypes)
-                         .Where((elem) => IsInstantiatableType(elem, _iVariableType));
+                         .Where((elem) => IsInstantiatableType(elem, _iVariableType) && 
+                         !ShouldExcludeDueToBeingForTests(elem));
 
             SetVarTypeRegistry();
             void SetVarTypeRegistry()
@@ -84,15 +85,15 @@ namespace AtMycelia.Hyphlow
                 var activeScene = SceneManager.GetActiveScene();
                 string sceneName = activeScene.name;
                 bool weAreInTestScene = sceneName.Contains("Test");
-                if (attr.IsTest && !weAreInTestScene)
+                if (attr.IsTest && (!weAreInTestScene || Application.isEditor))
                 {
                     Debug.Log($"Excluding test type {typeToCheck.Name} from variable type registry" +
                         $"because the active scene is not a test scene.");
-                    return false;
+                    return true;
                 }
             }
 
-            return true;
+            return false;
         }
 
         private static string VarGetDescription(IVariableData varData)

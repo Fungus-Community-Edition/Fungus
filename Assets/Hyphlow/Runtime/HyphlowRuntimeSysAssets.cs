@@ -64,7 +64,7 @@ namespace AtMycelia.Hyphlow.Sys
         {
             string errorMessage =
                 $"Cannot set the contents of a HyphlowRuntimeSysAssets in Play Mode! Ignoring attempt.";
-            Debug.LogWarning(errorMessage);
+            //Debug.LogWarning(errorMessage);
         }
 
         private void Awake()

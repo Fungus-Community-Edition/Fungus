@@ -34,28 +34,28 @@ MonoBehaviour:
     - rid: 7903258335965610039
       type: {class: StringMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
-        scope: 0
-        key: Naruto
-        itemID: 6
-        value: Believe it! esytg
-        startValue: 
+        _scope: 0
+        _key: Naruto
+        _itemId: 6
+        _value: Believe it! esytg
+        _startValue: 
     - rid: 7903258335965610040
       type: {class: StringMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
-        scope: 0
-        key: OnePiece
-        itemID: 1
-        value: 'I will become the
+        _scope: 0
+        _key: OnePiece
+        _itemId: 1
+        _value: 'I will become the
 
           Pirate King!'
-        startValue: 
+        _startValue: 
     - rid: 7903258335965610041
       type: {class: StringMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
-        scope: 0
-        key: Bleach
-        itemID: 2
-        value: 'Throwing away victory for the sake of manners is a cookie mistake.
+        _scope: 0
+        _key: Bleach
+        _itemId: 2
+        _value: 'Throwing away victory for the sake of manners is a cookie mistake.
           Captains don''t have the time to waste on that kind of thing.
 
 
@@ -63,28 +63,28 @@ MonoBehaviour:
           waste your time trying to play the good guy. No matter what debts you may
           owe, from the instant you find yourself on the battleground, both sides
           are evil.'
-        startValue: 
+        _startValue: 
     - rid: 7903258335965610042
       type: {class: IntMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
-        scope: 0
-        key: meaningOfLife
-        itemID: 3
-        value: 24
-        startValue: 0
+        _scope: 0
+        _key: meaningOfLife
+        _itemId: 3
+        _value: 24
+        _startValue: 0
     - rid: 7903258335965610043
       type: {class: AudioClipMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
-        scope: 0
-        key: cuteBgm
-        itemID: 4
-        value: {fileID: 8300000, guid: c2b6a16176ef3b54d8b7aeca96c66316, type: 3}
-        startValue: {fileID: 0}
+        _scope: 0
+        _key: cuteBgm
+        _itemId: 4
+        _value: {fileID: 8300000, guid: c2b6a16176ef3b54d8b7aeca96c66316, type: 3}
+        _startValue: {fileID: 0}
     - rid: 7903258335965610044
       type: {class: FloatMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
-        scope: 0
-        key: pi
-        itemID: 5
-        value: 3.14159
-        startValue: 0
+        _scope: 0
+        _key: pi
+        _itemId: 5
+        _value: 3.14159
+        _startValue: 0
