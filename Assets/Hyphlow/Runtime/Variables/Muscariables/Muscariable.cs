@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
@@ -13,20 +14,58 @@ namespace AtMycelia.Hyphlow
     [MovedFrom(true, 
         "AtMycelia.Hyphlow", 
         "AtMycelia.Amanita.Core", "Muscariable")]
-    public abstract class Muscariable : IVariable, IEquatable<Muscariable>
+    public abstract class Muscariable : IVariable, IEquatable<Muscariable>, ISerializationCallbackReceiver
     {
         [SerializeField]
-        [FormerlySerializedAs("scope")]
         protected VariableScope _scope = VariableScope.Private;
         [SerializeField]
-        [FormerlySerializedAs("key")]
         protected string _key = string.Empty;
         [HideInInspector]
-        [FormerlySerializedAs("itemID")]
         [SerializeField] protected byte _itemId = InvalidID; 
         // ^Default to invalid ID to avoid accidental collisions with valid variables. See VariableDataCache for more.
 
         public static readonly byte InvalidID = 0;
+
+        #region Legacy stuff
+        [SerializeField]
+        protected VariableScope scope = VariableScope.Private;
+        [SerializeField]
+        protected string key = string.Empty;
+        [HideInInspector]
+        [SerializeField] protected byte itemId = InvalidID;
+
+        #endregion
+
+        void ISerializationCallbackReceiver.OnBeforeSerialize()
+        {
+        }
+
+        void ISerializationCallbackReceiver.OnAfterDeserialize()
+        {
+            ApplyLegacyDataOnAfterDeserialize();
+        }
+
+        protected virtual void ApplyLegacyDataOnAfterDeserialize()
+        {
+            if (!string.IsNullOrEmpty(key))
+            {
+                _key = key;
+            }
+
+            if (itemId != InvalidID)
+            {
+                _itemId = itemId;
+            }
+
+            if (scope != default)
+            {
+                _scope = scope;
+            }
+
+            key = string.Empty;
+            itemId = InvalidID;
+            scope = default;
+        }
 
         public virtual VariableScope Scope
         {
@@ -249,12 +288,38 @@ namespace AtMycelia.Hyphlow
     public abstract class Muscariable<T> : Muscariable, IVariable<T>, IEquatable<T>, IEquatable<IVariable<T>>
     {
         [SerializeField]
-        [FormerlySerializedAs("value")]
+        protected T value;
+
+        [SerializeField]
+        protected T _startValue;
+
+        [SerializeField]
         protected T _value;
 
         [SerializeField]
-        [FormerlySerializedAs("startValue")]
-        protected T _startValue;
+        protected T startValue;
+
+        protected override void ApplyLegacyDataOnAfterDeserialize()
+        {
+            base.ApplyLegacyDataOnAfterDeserialize();
+
+            bool origValueIsDefault = EqualityComparer<T>.Default.Equals(value, default) || value == null;
+            bool currentValueIsDefault = EqualityComparer<T>.Default.Equals(_value, default) || _value == null;
+            // ^The == null is to account for fake Unity nulls
+            if (!origValueIsDefault && currentValueIsDefault)
+            {
+                _value = value;
+            }
+
+            bool origStartValueIsDefault = EqualityComparer<T>.Default.Equals(startValue, default) || startValue == null;
+            bool currentStartValueIsDefault = EqualityComparer<T>.Default.Equals(_startValue, default) || _startValue == null;
+            if (!origStartValueIsDefault && currentStartValueIsDefault)
+            {
+                _startValue = startValue;
+            }
+
+            value = startValue = default;
+        }
 
         // We have these constructors to make sure that the base value starts out synced 
         // with the strongly typed one

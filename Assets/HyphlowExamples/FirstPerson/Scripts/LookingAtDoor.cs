@@ -13,16 +13,21 @@ namespace AtMycelia.Amanita.Examples
         public Transform eye;
 
         [ContentTypeConstraint(typeof(bool))]
-        public VariableReference fungusBoolHasGazed;
+        [SerializeField]
+        protected VariableReference _hasGazedBool = new VariableReference();
 
+        [ContentTypeConstraint(typeof(bool))]
+        [SerializeField]
+        protected VariableReference _isCompleteBool = new VariableReference();
 
         public void ActivateNow()
         {
             enabled = true;
 
-            if (fungusBoolHasGazed.Variable == null)
+            if (_hasGazedBool.Variable == null)
             {
-                string errorMessage = "LookingAtDoor: No variable set for fungusBoolHasGazed. Please set one in the inspector.";
+                string errorMessage = "LookingAtDoor: No variable set for hasGazedBool. " +
+                    "Please set one in the inspector.";
                 Debug.LogError(errorMessage);
             }
         }
@@ -47,10 +52,10 @@ namespace AtMycelia.Amanita.Examples
                 gazeCounter = 0;
             }
 
-            if (gazeCounter >= gazeTime && curCounter <= gazeTime)
+            if (gazeCounter >= gazeTime && curCounter <= gazeTime && !_isCompleteBool.GetValue<bool>())
             {
                 runBlockWhenGazed.Execute();
-                fungusBoolHasGazed.SetValue(true);
+                _hasGazedBool.SetValue(true);
             }
         }
     }

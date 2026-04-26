@@ -34,21 +34,36 @@ MonoBehaviour:
         _scope: 0
         _key: isUnlocked
         _itemId: 1
-        _value: 0
+        scope: 0
+        key: 
+        itemId: 0
+        value: 0
         _startValue: 0
+        _value: 0
+        startValue: 0
     - rid: 3688519627662688444
       type: {class: BoolMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         _scope: 0
         _key: isComplete
         _itemId: 2
-        _value: 0
+        scope: 0
+        key: 
+        itemId: 0
+        value: 0
         _startValue: 0
+        _value: 0
+        startValue: 0
     - rid: 3688519627662688445
       type: {class: BoolMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         _scope: 0
         _key: hasKey
         _itemId: 3
-        _value: 1
+        scope: 0
+        key: 
+        itemId: 0
+        value: 0
         _startValue: 0
+        _value: 0
+        startValue: 0
