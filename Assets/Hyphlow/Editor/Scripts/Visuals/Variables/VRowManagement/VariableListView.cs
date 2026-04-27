@@ -8,6 +8,7 @@ using UnityEngine.UIElements;
 using UITKLabel = UnityEngine.UIElements.Label;
 using UnityObj = UnityEngine.Object;
 using AtMycelia.Collections;
+using AtMycelia.EditorUtils;
 
 namespace AtMycelia.Hyphlow.EditorUtils
 {

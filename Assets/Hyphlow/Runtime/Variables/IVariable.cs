@@ -1,5 +1,4 @@
 using System;
-using AtMycelia.Amanita;
 
 namespace AtMycelia.Hyphlow
 {

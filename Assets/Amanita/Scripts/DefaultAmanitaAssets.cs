@@ -1,4 +1,3 @@
-using AtMycelia.AmaniTween;
 using UnityEngine;
 
 namespace AtMycelia.Amanita

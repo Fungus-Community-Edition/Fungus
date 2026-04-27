@@ -7,7 +7,7 @@ using NUnit.Framework;
 using UnityEngine.TestTools;
 using UnityObj = UnityEngine.Object;
 using AtMycelia.SaveSys;
-using AtMycelia.SaveSys.UI;
+using AtMycelia.SaveSys.Ui;
 
 namespace SaveSystemTests
 {

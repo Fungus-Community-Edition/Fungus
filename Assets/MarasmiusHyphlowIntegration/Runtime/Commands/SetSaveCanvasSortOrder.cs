@@ -1,6 +1,6 @@
 using UnityEngine;
 using AtMycelia.Hyphlow;
-using AtMycelia.SaveSys.UI;
+using AtMycelia.SaveSys.Ui;
 
 namespace AtMycelia.SaveSys.VScripting
 {

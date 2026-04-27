@@ -3,7 +3,6 @@ using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
-using AtMycelia.Amanita;
 using AtMycelia.Hyphlowceliaudio;
 using AtMycelia.Myceliaudio;
 

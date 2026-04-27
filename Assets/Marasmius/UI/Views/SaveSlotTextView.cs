@@ -1,8 +1,8 @@
 using UnityEngine;
-using AtMycelia.UI;
+using AtMycelia.Ui;
 using TMPro;
 
-namespace AtMycelia.SaveSys.UI
+namespace AtMycelia.SaveSys.Ui
 {
     /// <summary>
     /// Base class for text-based save slot views.

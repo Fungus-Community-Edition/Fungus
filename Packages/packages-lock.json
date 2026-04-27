@@ -1,10 +1,29 @@
 {
   "dependencies": {
+    "com.ateliermycelia.myceliaudio": {
+      "version": "https://github.com/Atelier-Mycelia/Myceliaudio.git?path=Packages/com.ateliermycelia.myceliaudio",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.unity.textmeshpro": "3.0.6",
+        "com.ateliermycelia.unityutils": "1.0.2"
+      },
+      "hash": "2c8bf6b6e3486288c00e1c8c64dafddf48b30bb0"
+    },
     "com.ateliermycelia.unityassemblymigrator": {
       "version": "file:com.ateliermycelia.mycomigrator",
       "depth": 0,
       "source": "embedded",
       "dependencies": {}
+    },
+    "com.ateliermycelia.unityutils": {
+      "version": "https://github.com/Atelier-Mycelia/UnityUtils.git?path=Packages/com.ateliermycelia.unityutils",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.unity.textmeshpro": "3.0.6"
+      },
+      "hash": "830276e35b17ac23342d40d54f4e98b445abf9fa"
     },
     "com.unity.2d.sprite": {
       "version": "1.0.0",
@@ -78,6 +97,14 @@
         "com.unity.modules.jsonserialize": "1.0.0"
       },
       "url": "https://packages.unity.com"
+    },
+    "com.unity.textmeshpro": {
+      "version": "5.0.0",
+      "depth": 1,
+      "source": "builtin",
+      "dependencies": {
+        "com.unity.ugui": "2.0.0"
+      }
     },
     "com.unity.ugui": {
       "version": "2.0.0",
