@@ -2,10 +2,10 @@
     "name": "AtMycelia.Hyphlowceliaudio.Core",
     "rootNamespace": "",
     "references": [
+        "GUID:6055be8ebefd69e48b49212b09b47b2f",
         "GUID:496102a5b2b933b4e880e1094585516e",
         "GUID:3e8446a8987ac8a47ba6568ab3ce29f4",
-        "GUID:3f6d2e24eb975e74c89b274691a961ec",
-        "GUID:6055be8ebefd69e48b49212b09b47b2f"
+        "GUID:315f594c192fac84b811333747e5ecb0"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -1,6 +1,5 @@
 using UnityEngine;
 using AtMycelia.Hyphlow;
-using AtMycelia.Hyphlow;
 
 namespace AtMycelia.AmaniTween.VScripting
 {

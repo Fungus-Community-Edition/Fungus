@@ -5,9 +5,9 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using UnityObj = UnityEngine.Object;
 using AtMycelia.SaveSys;
-using AtMycelia.SaveSys.UI;
-using AtMycelia.UI;
+using AtMycelia.SaveSys.Ui;
 using AtMycelia;
+using AtMycelia.Ui;
 
 namespace SaveSystemTests
 {

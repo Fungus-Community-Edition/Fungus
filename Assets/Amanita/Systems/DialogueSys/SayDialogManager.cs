@@ -1,6 +1,6 @@
 using AtMycelia.Collections;
 using System.Collections.Generic;
-using AtMycelia.Amanita.Collections.Generic;
+using AtMycelia.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 

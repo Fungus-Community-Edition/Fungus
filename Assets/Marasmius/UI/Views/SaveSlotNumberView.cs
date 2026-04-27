@@ -1,4 +1,4 @@
-using AtMycelia.SaveSys.UI;
+using AtMycelia.SaveSys.Ui;
 using UnityEngine;
 using TMPro;
 

@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace AtMycelia.SaveSys.UI
+namespace AtMycelia.SaveSys.Ui
 {
     /// <summary>
     /// Manages UI aspects of the save menu as a whole.

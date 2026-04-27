@@ -1,5 +1,7 @@
 {
   "dependencies": {
+    "com.ateliermycelia.myceliaudio": "https://github.com/Atelier-Mycelia/Myceliaudio.git?path=Packages/com.ateliermycelia.myceliaudio",
+    "com.ateliermycelia.unityutils": "https://github.com/Atelier-Mycelia/UnityUtils.git?path=Packages/com.ateliermycelia.unityutils",
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.ai.navigation": "2.0.9",
     "com.unity.ext.nunit": "2.0.5",

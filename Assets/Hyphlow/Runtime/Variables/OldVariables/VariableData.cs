@@ -3,7 +3,6 @@ using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
 using UnityEngine.Serialization;
-using AtMycelia;
 
 namespace AtMycelia.Hyphlow
 {

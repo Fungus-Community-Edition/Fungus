@@ -30,7 +30,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 VariableSourceAsset asset = AssetDatabase.LoadAssetAtPath<VariableSourceAsset>(path);
                 if (asset != null)
                 {
-                    asset.MigrateToVariableManager();
+                    //asset.MigrateToVariableManager();
                 }
             }
         }
