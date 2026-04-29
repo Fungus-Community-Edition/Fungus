@@ -61,7 +61,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
 				return;
 
 			var targetBlock = target as Block;
-
+			
 			var callers = FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None)
 				.Where(x => x is IBlockCaller)
 				.Select(x => x as IBlockCaller)

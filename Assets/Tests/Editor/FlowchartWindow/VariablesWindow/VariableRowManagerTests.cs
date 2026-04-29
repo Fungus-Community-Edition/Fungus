@@ -1,4 +1,5 @@
-﻿using AtMycelia.Hyphlow;
+﻿using AtMycelia.EditorUtils;
+using AtMycelia.Hyphlow;
 using AtMycelia.Hyphlow.EditorUtils;
 using NUnit.Framework;
 using System;
@@ -47,7 +48,7 @@ namespace VScriptingTests.VariableOperations
             PrepRowManager();
             void PrepRowManager()
             {
-                string pathToUxml = HyphlowConstants.PathToAmanitaVariableDisplayEditorUxml;
+                string pathToUxml = HyphlowConstants.PathToVariableDisplayEditorUxml;
                 _rootTemplate = Resources.Load<VisualTreeAsset>(pathToUxml);
                 _root = _rootTemplate.CloneTree();
                 _holdsManager = new VisualElement();

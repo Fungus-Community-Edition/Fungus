@@ -1,4 +1,4 @@
-using AtMycelia.Hyphlow.Tweening;
+using AtMycelia.AmaniTween;
 using UnityEngine;
 
 #if UNITY_EDITOR
@@ -64,7 +64,7 @@ namespace AtMycelia.Hyphlow.Sys
         {
             string errorMessage =
                 $"Cannot set the contents of a HyphlowRuntimeSysAssets in Play Mode! Ignoring attempt.";
-            Debug.LogWarning(errorMessage);
+            //Debug.LogWarning(errorMessage);
         }
 
         private void Awake()
@@ -94,8 +94,35 @@ namespace AtMycelia.Hyphlow.Sys
         }
 
         // Singleton
-        public static HyphlowRuntimeSysAssets S { get; set; }
+        public static HyphlowRuntimeSysAssets S
+        {
+            get
+            {
+                return _s;
+            }
+            set => _s = value;
+        }
+        private static HyphlowRuntimeSysAssets _s;
 
+        public static HyphlowRuntimeSysAssets EnsureExists()
+        {
+            if (S != null)
+            {
+                return S;
+            }
+            _s = SOUtils.EnsureSOExists<HyphlowRuntimeSysAssets>("AtMycelia/Hyphlow/Sys",
+                "HyphlowRuntimeSysAssets");
+
+            if (_s == null)
+            {
+                string errorMessage =
+                    $"Could not find a HyphlowRuntimeSysAssets in the Resources folder! " +
+                    $"Please create one and assign the necessary assets to it. " +
+                    $"Expected path: Resources/AtMycelia/Hyphlow/Sys/HyphlowRuntimeSysAssets.asset";
+                Debug.LogError(errorMessage);
+            }
+            return _s;
+        }
         private void OnDestroy()
         {
             if (S == this)

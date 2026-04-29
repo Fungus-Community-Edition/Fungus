@@ -401,12 +401,13 @@ MonoBehaviour:
   version: 1
   _legacyVariables: []
   _oldMuscariables: []
+  _otherSettings: []
   description: 
   uiModel:
     _selectedBlocks:
     - {fileID: 114182131449558960}
     _selectedCommands:
-    - {fileID: -8952826472531823386}
+    - {fileID: 114299940920854140}
     _owner: {fileID: 1942691996823588}
     <ScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
@@ -426,12 +427,11 @@ MonoBehaviour:
   saveSelection: 1
   showLineNumbers: 0
   hideCommands: []
-  localizationId: 
   includeInSaves: 1
   saveBlocks: 1
   saveVariables: 1
   loadPriority: 0
-  alwaysKeepGuid: 1
+  _alwaysKeepGuid: 1
   _blockListCache:
   - {fileID: 114593477394275294}
   - {fileID: 114182131449558960}
@@ -488,8 +488,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2f6487d21a03404cb21b245f0242e79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  parentBlock: {fileID: 114593477394275294}
-  suppressBlockAutoSelect: 0
+  _parentBlock: {fileID: 114593477394275294}
+  _suppressBlockAutoSelect: 0
   waitForFrames: 3
 --- !u!114 &114979932131573080
 MonoBehaviour:
@@ -503,12 +503,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebe929c2f37ad4b19ad9d33a77c5064a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scope: 0
-  key: spawnForce
-  itemID: 4
+  _scope: 0
+  _key: spawnForce
+  _itemId: 4
   oldItemID: 0
   _owner: {fileID: 114526636883379746}
-  value: {x: 0, y: 10}
+  _value: {x: 0, y: 10}
 --- !u!114 &114751314740007556
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -524,21 +524,21 @@ MonoBehaviour:
   itemId: 2
   indentLevel: 0
   _targetGameObject:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 114526636883379746}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 114526636883379746}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 1942691996823588}
+    _value: {fileID: 1942691996823588}
     gameObjectRef: {fileID: 0}
     gameObjectVal: {fileID: 0}
   _destroyInXSeconds:
-    backingVarRef:
-      itemId: 2
-      owningSource: {fileID: 114526636883379746}
+    _backingVarRef:
+      _itemId: 2
+      _owningSource: {fileID: 114526636883379746}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
   targetGameObjectOLD: {fileID: 0}
@@ -554,12 +554,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 705fa1ac97df74e3a84ff952ffd923f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scope: 0
-  key: destroyDelay
-  itemID: 5
+  _scope: 0
+  _key: destroyDelay
+  _itemId: 5
   oldItemID: 0
   _owner: {fileID: 114526636883379746}
-  value: 3
+  _value: 3
 --- !u!114 &114182131449558960
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -607,12 +607,12 @@ MonoBehaviour:
   indentLevel: 0
   messageTarget: 1
   _message:
-    backingVarRef:
-      itemId: 3
-      owningSource: {fileID: 114526636883379746}
+    _backingVarRef:
+      _itemId: 3
+      _owningSource: {fileID: 114526636883379746}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: EnemyShot
+    _value: EnemyShot
     stringRef: {fileID: 0}
     stringVal: 
   messageOLD: 
@@ -762,26 +762,41 @@ MonoBehaviour:
     - rid: 3688519968672710724
       type: {class: VectorTwoMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
+        _scope: 0
+        _key: spawnForce
+        _itemId: 1
         scope: 0
-        key: spawnForce
-        itemID: 1
-        value: {x: 0, y: 10}
+        key: 
+        itemID: 0
+        value: {x: 0, y: 0}
+        _startValue: {x: 0, y: 0}
+        _value: {x: 0, y: 10}
         startValue: {x: 0, y: 0}
     - rid: 3688519968672710725
       type: {class: FloatMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
+        _scope: 0
+        _key: destroyDelay
+        _itemId: 2
         scope: 0
-        key: destroyDelay
-        itemID: 2
-        value: 3
+        key: 
+        itemID: 0
+        value: 0
+        _startValue: 0
+        _value: 3
         startValue: 0
     - rid: 3688519968672710728
       type: {class: StringMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
+        _scope: 0
+        _key: hitMessage
+        _itemId: 3
         scope: 0
-        key: hitMessage
-        itemID: 3
-        value: EnemyShot
+        key: 
+        itemID: 0
+        value: 
+        _startValue: 
+        _value: EnemyShot
         startValue: 
 --- !u!114 &4278132626369988641
 MonoBehaviour:
@@ -798,41 +813,41 @@ MonoBehaviour:
   itemId: 5
   indentLevel: 0
   _rb:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 114526636883379746}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 114526636883379746}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 50266752063846120}
+    _value: {fileID: 50266752063846120}
     rigidbody2DRef: {fileID: 0}
     rigidbody2DVal: {fileID: 0}
   _forceMode: 1
   _forceFunction: 2
   _force:
-    backingVarRef:
-      itemId: 1
-      owningSource: {fileID: 114526636883379746}
+    _backingVarRef:
+      _itemId: 1
+      _owningSource: {fileID: 114526636883379746}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {x: 0, y: 0}
+    _value: {x: 0, y: 0}
     vector2Ref: {fileID: 0}
     vector2Val: {x: 0, y: 0}
   _forceScaleFactor:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 114526636883379746}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 114526636883379746}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 1
+    _value: 1
     floatRef: {fileID: 0}
     floatVal: 0
   _atPosition:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 114526636883379746}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 114526636883379746}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {x: 0, y: 0}
+    _value: {x: 0, y: 0}
     vector2Ref: {fileID: 0}
     vector2Val: {x: 0, y: 0}
 --- !u!114 &958645331840734462
@@ -847,32 +862,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75662d9886485a9478179361e82eb7bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  parentBlock: {fileID: 114182131449558960}
-  suppressBlockAutoSelect: 0
+  _parentBlock: {fileID: 114182131449558960}
+  _suppressBlockAutoSelect: 0
   _tagFilter:
     _tagFilter:
-    - backingVarRef:
-        itemId: 0
-        owningSource: {fileID: 0}
+    - _backingVarRef:
+        _itemId: 0
+        _owningSource: {fileID: 0}
         legacyOwningFc: {fileID: 0}
         legacyOwningVsa: {fileID: 0}
-      value: Enemy
+      _value: Enemy
       stringRef: {fileID: 0}
       stringVal: 
   _toWatch:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 1942691996823588}
+    _value: {fileID: 1942691996823588}
     gameObjectRef: {fileID: 0}
     gameObjectVal: {fileID: 0}
   FireOn: 1
   tagFilter: []
   _colliderVar:
-    itemId: 0
-    owningSource: {fileID: 0}
+    _itemId: 0
+    _owningSource: {fileID: 0}
     legacyOwningFc: {fileID: 0}
     legacyOwningVsa: {fileID: 0}
   colliderVar: {fileID: 0}
@@ -892,12 +907,12 @@ MonoBehaviour:
   indentLevel: 0
   logType: 0
   logMessage:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: Laser hit enemy!
+    _value: Laser hit enemy!
     stringRef: {fileID: 0}
     stringVal: 
 --- !u!114 &-8952826472531823386
@@ -915,21 +930,21 @@ MonoBehaviour:
   itemId: 7
   indentLevel: 0
   _targetGameObject:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 114526636883379746}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 114526636883379746}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 1942691996823588}
+    _value: {fileID: 1942691996823588}
     gameObjectRef: {fileID: 0}
     gameObjectVal: {fileID: 0}
   _destroyInXSeconds:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 114526636883379746}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 114526636883379746}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0.001
+    _value: 0.001
     floatRef: {fileID: 0}
     floatVal: 0
   targetGameObjectOLD: {fileID: 0}

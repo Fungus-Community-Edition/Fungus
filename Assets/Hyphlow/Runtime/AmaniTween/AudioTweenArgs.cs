@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace AtMycelia.Hyphlow.Tweening
+namespace AtMycelia.AmaniTween
 {
     public class AudioTweenArgs : TweenArgs<AudioSource, float>
     {

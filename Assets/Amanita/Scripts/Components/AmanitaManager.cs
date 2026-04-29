@@ -1,5 +1,5 @@
 ﻿using AtMycelia.SaveSys;
-using AtMycelia.Hyphlow.Tweening;
+using AtMycelia.AmaniTween;
 using FullSerializer;
 using Lorekeeper;
 using System.Collections.Generic;

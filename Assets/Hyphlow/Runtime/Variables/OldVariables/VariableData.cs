@@ -77,7 +77,7 @@ namespace AtMycelia.Hyphlow
                     return false;
                 }
 
-                if (varRef.ItemId == Muscariable.InvalidID)
+                if (varRef.ItemId == Muscariable.InvalidId)
                 {
                     if (!string.IsNullOrEmpty(varRef.Key) || varRef.Owner != null)
                     {
@@ -159,7 +159,7 @@ namespace AtMycelia.Hyphlow
             }
             else
             {
-                result = ContentType.IsAssignableFrom(obj.GetType());
+                result = TypeUtils.TypesCompatible(ContentType, obj.GetType());
             }
 
             return result;
@@ -236,7 +236,7 @@ namespace AtMycelia.Hyphlow
                 _backingVarRef.Refresh();
                 if (RepresentingVar)
                 {
-                    return (TValue)VarRef.BoxedValue;
+                    return ConvertToValue(VarRef.BoxedValue);
                 }
                 
                 return _value;
@@ -272,7 +272,6 @@ namespace AtMycelia.Hyphlow
             }
             set
             {
-                object whatToAssign = null;
                 bool canBeAssigned = CanHoldAsValue(value);
                 if (!canBeAssigned)
                 {
@@ -281,7 +280,7 @@ namespace AtMycelia.Hyphlow
                     throw new InvalidCastException(errorMessage);
                 }
 
-                whatToAssign = (TValue)value;
+                TValue whatToAssign = ConvertToValue(value);
 
                 if (RepresentingVar)
                 {
@@ -289,10 +288,45 @@ namespace AtMycelia.Hyphlow
                 }
                 else
                 {
-                    this._value = (TValue)whatToAssign;
+                    this._value = whatToAssign;
                     VarRef = null;
                 }
             }
+        }
+
+        protected virtual TValue ConvertToValue(object value)
+        {
+            if (ReferenceEquals(value, null))
+            {
+                return default;
+            }
+
+            if (value is TValue typedValue)
+            {
+                return typedValue;
+            }
+
+            var targetType = typeof(TValue);
+            var underlying = Nullable.GetUnderlyingType(targetType) ?? targetType;
+
+            if (underlying.IsEnum)
+            {
+                if (value is string enumString)
+                {
+                    return (TValue)Enum.Parse(underlying, enumString);
+                }
+
+                object enumValue = Enum.ToObject(underlying, value);
+                return (TValue)enumValue;
+            }
+
+            if (value is IConvertible)
+            {
+                object changedValue = Convert.ChangeType(value, underlying);
+                return (TValue)changedValue;
+            }
+
+            return (TValue)value;
         }
 
         public virtual TValue LiteralValue

@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace AtMycelia.SaveSys.UI
+namespace AtMycelia.SaveSys.Ui
 {
     public class SaveSlotUIManager : MonoBehaviour
     {

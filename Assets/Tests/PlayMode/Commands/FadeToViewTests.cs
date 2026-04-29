@@ -36,7 +36,7 @@ namespace VScriptingTests.Commands
             typeof(FadeToView).GetField("targetView", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
                 .SetValue(cmd, targetView);
             typeof(FadeToView).GetField("duration", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                .SetValue(cmd, Duration);
+                .SetValue(cmd, _duration);
             typeof(FadeToView).GetField("waitUntilFinished", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
                 .SetValue(cmd, true);
 
@@ -61,8 +61,8 @@ namespace VScriptingTests.Commands
 
         protected override void AssertFinalState()
         {
-            var vec3Comparer = new Vector3EqualityComparer(Epsilon);
-            var quatComparer = new QuaternionEqualityComparer(Epsilon);
+            var vec3Comparer = new Vector3EqualityComparer(_epsilon);
+            var quatComparer = new QuaternionEqualityComparer(_epsilon);
 
             // Not going to worry about the z pos here
             Vector3 expectedPos = targetView.transform.position;
@@ -70,7 +70,7 @@ namespace VScriptingTests.Commands
 
             Assert.That(cameraGO.transform.position, Is.EqualTo(expectedPos).Using(vec3Comparer), "Position mismatch");
             Assert.That(cameraGO.transform.rotation, Is.EqualTo(targetView.transform.rotation).Using(quatComparer), "Rotation mismatch");
-            Assert.AreEqual(targetView.ViewSize, cameraGO.orthographicSize, Epsilon, "Ortho size mismatch");
+            Assert.AreEqual(targetView.ViewSize, cameraGO.orthographicSize, _epsilon, "Ortho size mismatch");
         }
 
         [UnityTest]
@@ -84,16 +84,16 @@ namespace VScriptingTests.Commands
         public IEnumerator NoWait_ContinuesImmediately_AndFadesAndMoves()
         {
             typeof(FadeToView).GetField("waitUntilFinished", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                .SetValue(command, false);
+                .SetValue(_command, false);
 
             bool continued = false;
-            command.StartedContinue += _ => continued = true;
+            _command.StartedContinue += _ => continued = true;
 
-            flowchart.StartCoroutine(block.Execute());
+            _flowchart.StartCoroutine(_block.Execute());
 
             Assert.IsTrue(continued, "Continue() should be called immediately when waitUntilFinished is false.");
 
-            yield return new WaitForSeconds(Duration + 0.05f);
+            yield return new WaitForSeconds(_duration + 0.05f);
             AssertFinalState();
         }
     }

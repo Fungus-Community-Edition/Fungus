@@ -1,8 +1,7 @@
 using System;
-using UnityEditor;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
-using UnityEngine.Serialization;
 
 namespace AtMycelia.Hyphlow
 {
@@ -13,20 +12,58 @@ namespace AtMycelia.Hyphlow
     [MovedFrom(true, 
         "AtMycelia.Hyphlow", 
         "AtMycelia.Amanita.Core", "Muscariable")]
-    public abstract class Muscariable : IVariable, IEquatable<Muscariable>
+    public abstract class Muscariable : IVariable, IEquatable<Muscariable>, ISerializationCallbackReceiver
     {
         [SerializeField]
-        [FormerlySerializedAs("scope")]
         protected VariableScope _scope = VariableScope.Private;
         [SerializeField]
-        [FormerlySerializedAs("key")]
         protected string _key = string.Empty;
         [HideInInspector]
-        [FormerlySerializedAs("itemID")]
-        [SerializeField] protected byte _itemId = InvalidID; 
+        [SerializeField] protected byte _itemId = InvalidId; 
         // ^Default to invalid ID to avoid accidental collisions with valid variables. See VariableDataCache for more.
 
-        public static readonly byte InvalidID = 0;
+        public static readonly byte InvalidId = 0;
+
+        #region Legacy stuff
+        [SerializeField]
+        protected VariableScope scope = VariableScope.Private;
+        [SerializeField]
+        protected string key = string.Empty;
+        [HideInInspector]
+        [SerializeField] protected byte itemID = InvalidId;
+
+        #endregion
+
+        void ISerializationCallbackReceiver.OnBeforeSerialize()
+        {
+        }
+
+        void ISerializationCallbackReceiver.OnAfterDeserialize()
+        {
+            ApplyLegacyDataOnAfterDeserialize();
+        }
+
+        protected virtual void ApplyLegacyDataOnAfterDeserialize()
+        {
+            if (!string.IsNullOrEmpty(key))
+            {
+                _key = key;
+            }
+
+            if (itemID != InvalidId)
+            {
+                _itemId = itemID;
+            }
+
+            if (scope != default)
+            {
+                _scope = scope;
+            }
+
+            key = string.Empty;
+            itemID = InvalidId;
+            scope = default;
+        }
 
         public virtual VariableScope Scope
         {
@@ -120,7 +157,7 @@ namespace AtMycelia.Hyphlow
             }
             else
             {
-                result = ContentType.IsAssignableFrom(obj.GetType());
+                result = TypeUtils.TypesCompatible(obj.GetType(), ContentType);
             }
 
             return result;
@@ -249,12 +286,38 @@ namespace AtMycelia.Hyphlow
     public abstract class Muscariable<T> : Muscariable, IVariable<T>, IEquatable<T>, IEquatable<IVariable<T>>
     {
         [SerializeField]
-        [FormerlySerializedAs("value")]
+        protected T value;
+
+        [SerializeField]
+        protected T _startValue;
+
+        [SerializeField]
         protected T _value;
 
         [SerializeField]
-        [FormerlySerializedAs("startValue")]
-        protected T _startValue;
+        protected T startValue;
+
+        protected override void ApplyLegacyDataOnAfterDeserialize()
+        {
+            base.ApplyLegacyDataOnAfterDeserialize();
+
+            bool origValueIsDefault = EqualityComparer<T>.Default.Equals(value, default) || value == null;
+            bool currentValueIsDefault = EqualityComparer<T>.Default.Equals(_value, default) || _value == null;
+            // ^The == null is to account for fake Unity nulls
+            if (!origValueIsDefault && currentValueIsDefault)
+            {
+                _value = value;
+            }
+
+            bool origStartValueIsDefault = EqualityComparer<T>.Default.Equals(startValue, default) || startValue == null;
+            bool currentStartValueIsDefault = EqualityComparer<T>.Default.Equals(_startValue, default) || _startValue == null;
+            if (!origStartValueIsDefault && currentStartValueIsDefault)
+            {
+                _startValue = startValue;
+            }
+
+            value = startValue = default;
+        }
 
         // We have these constructors to make sure that the base value starts out synced 
         // with the strongly typed one
@@ -292,7 +355,6 @@ namespace AtMycelia.Hyphlow
                     return;
                 }
 
-
                 this._value = (T)value; 
                 // ^Need to cast here for the sake of numeric types. Can't do an "as" cast with those.
                 TriggerOnValueChanged();
@@ -311,35 +373,45 @@ namespace AtMycelia.Hyphlow
                     throw new ArgumentException(errorMessage);
                 }
                 object filteredValue = this.FilterForValueSet(value);
-                this._value = (T)filteredValue;
+                this._value = ConvertToValue(filteredValue);
                 TriggerOnValueChanged();
             }
         }
 
-        protected override void TriggerOnValueChanged()
+        protected virtual T ConvertToValue(object value)
         {
-            base.TriggerOnValueChanged();
-#if UNITY_EDITOR
-            EditorApplication.delayCall += () =>
+            if (ReferenceEquals(value, null))
             {
-                if (this == null)
-                {
-                    return;
-                }
-                if (Application.isPlaying)
-                {
-                    return; // We only want to respond to var value changes in the editor, not during play mode, to avoid perf issues and unintended consequences.
-                }
-                OnValueChanged?.Invoke(_value);
-                VariableSignals.PostValueChange.Invoke(this, _value);
-            };
-#else
-            OnValueChanged?.Invoke(_value);
-            VariableSignals.PostValueChange.Invoke(this, _value);
-#endif
-        }
+                return default;
+            }
 
-        public new event Action<T> OnValueChanged = delegate { };
+            if (value is T typedValue)
+            {
+                return typedValue;
+            }
+
+            var targetType = typeof(T);
+            var underlying = Nullable.GetUnderlyingType(targetType) ?? targetType;
+
+            if (underlying.IsEnum)
+            {
+                if (value is string enumString)
+                {
+                    return (T)Enum.Parse(underlying, enumString);
+                }
+
+                object enumValue = Enum.ToObject(underlying, value);
+                return (T)enumValue;
+            }
+
+            if (value is IConvertible)
+            {
+                object changedValue = Convert.ChangeType(value, underlying);
+                return (T)changedValue;
+            }
+
+            return (T)value;
+        }
 
         public override void Apply(SetOperator setOperator, object toApply)
         {
@@ -349,7 +421,7 @@ namespace AtMycelia.Hyphlow
                 throw new Exception(errorMessage);
             }
 
-            Apply(setOperator, (T)toApply);
+            Apply(setOperator, ConvertToValue(toApply));
         }
 
         public virtual void Apply(SetOperator setOperator, T toApply)

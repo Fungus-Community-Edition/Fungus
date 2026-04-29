@@ -19,22 +19,22 @@ namespace VScriptingTests.Commands
             cameraManager.ScreenFadeTexture = null;
 
             // Assign variable-backed fields via reflection
-            var durationData = (FloatData)cmdType.GetField("_duration", flags).GetValue(cmd);
-            durationData.Value = Duration;
+            var durationData = (FloatData)_cmdType.GetField("_duration", _flags).GetValue(cmd);
+            durationData.Value = _duration;
 
-            var targetAlphaData = (FloatData)cmdType.GetField("_targetAlpha", flags).GetValue(cmd);
+            var targetAlphaData = (FloatData)_cmdType.GetField("_targetAlpha", _flags).GetValue(cmd);
             targetAlphaData.Value = 0.75f;
 
-            var waitUntilFinishedData = (BooleanData)cmdType.GetField("_waitUntilFinished", flags).GetValue(cmd);
+            var waitUntilFinishedData = (BooleanData)_cmdType.GetField("_waitUntilFinished", _flags).GetValue(cmd);
             waitUntilFinishedData.Value = true;
 
-            cmdType.GetField("fadeTweener", flags)
+            _cmdType.GetField("fadeTweener", _flags)
                 .SetValue(cmd, null); // triggers default adapter
         }
 
         protected override void AssertFinalState()
         {
-            Assert.AreEqual(0.75f, cameraManager.ScreenOpacity, Epsilon, "Fade alpha mismatch");
+            Assert.AreEqual(0.75f, cameraManager.ScreenOpacity, _epsilon, "Fade alpha mismatch");
         }
 
         [UnityTest]
@@ -47,17 +47,17 @@ namespace VScriptingTests.Commands
         [UnityTest]
         public IEnumerator NoWait_ContinuesImmediately_AndFadesScreen()
         {
-            var waitUntilFinishedData = (BooleanData)cmdType.GetField("_waitUntilFinished", flags).GetValue(command);
+            var waitUntilFinishedData = (BooleanData)_cmdType.GetField("_waitUntilFinished", _flags).GetValue(_command);
             waitUntilFinishedData.Value = false;
 
             bool continued = false;
-            command.StartedContinue += _ => continued = true;
+            _command.StartedContinue += _ => continued = true;
 
-            flowchart.StartCoroutine(block.Execute());
+            _flowchart.StartCoroutine(_block.Execute());
 
             Assert.IsTrue(continued, "Continue() should be called immediately when waitUntilFinished is false.");
 
-            yield return new WaitForSeconds(Duration + 0.05f);
+            yield return new WaitForSeconds(_duration + 0.05f);
             AssertFinalState();
         }
     }

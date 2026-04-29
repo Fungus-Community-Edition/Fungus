@@ -499,42 +499,5 @@ namespace AtMycelia.Hyphlow.EditorUtils
     {
     }
 
-    [CustomPropertyDrawer(typeof(AnyVariableData), true)]
-    public class AnyVariableDataDrawer : VariableDataDrawer
-    {
-        public override void OnGUI(Rect position, SerializedProperty varDataProp, GUIContent label)
-        {
-            AnyVariableData varData = varDataProp.boxedValue as AnyVariableData;
-            SerializedProperty varDataPropToPass;
-            ContentTypeConstraintAttribute constraintAttr = fieldInfo.GetCustomAttribute<ContentTypeConstraintAttribute>();
-            if (constraintAttr != null)
-            {
-                varDataPropToPass = varDataProp;
-            }
-            else
-            {
-                var typedUnderlyingDataProp = varDataProp.FindPropertyRelative("_data");
-                if (typedUnderlyingDataProp == null)
-                {
-                    EditorGUI.BeginProperty(position, label, varDataProp);
-                    EditorGUI.HelpBox(position, $"Could not find '_data' property for AnyVariableData drawer " +
-                        $"for {varDataProp.propertyPath}.", MessageType.Warning);
-                    EditorGUI.EndProperty();
-                    return;
-                }
-
-                varDataPropToPass = typedUnderlyingDataProp;
-            }
-
-            if (varData.ContentType == null)
-            {
-                varData.SetFor(constraintAttr.AllowedTypes[0]);
-                varDataProp.boxedValue = varData;
-            }
-
-            base.OnGUI(position, varDataPropToPass, label);
-        }
-
-        
-    }
+    
 }

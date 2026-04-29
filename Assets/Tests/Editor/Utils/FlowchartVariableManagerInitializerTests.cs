@@ -70,7 +70,8 @@ namespace VScriptingTests.Utils
 
             InvokeInitializeFlowcharts();
 
-            Assert.AreEqual(beforeCount, varManager.Variables.Count, "VariableManagerComponent variables should not be removed.");
+            Assert.AreEqual(beforeCount, varManager.Variables.Count, 
+                "VariableManagerComponent variables should not be removed.");
             Assert.That(varManager.Variables.Any(variable => ReferenceEquals(variable, managedVar)), Is.True,
                 "Managed variable should still be present after initialization.");
         }

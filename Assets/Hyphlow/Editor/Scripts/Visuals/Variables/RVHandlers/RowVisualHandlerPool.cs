@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using AtMycelia.Amanita;
 using Debug = UnityEngine.Debug;
 
 namespace AtMycelia.Hyphlow.EditorUtils

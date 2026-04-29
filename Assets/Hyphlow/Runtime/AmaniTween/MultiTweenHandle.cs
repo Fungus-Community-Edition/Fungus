@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace AtMycelia.Hyphlow.Tweening
+namespace AtMycelia.AmaniTween
 {
     public sealed class MultiTweenHandle : ITweenHandle
     {

@@ -2,7 +2,6 @@
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
-using AtMycelia.Amanita;
 using UnityObj = UnityEngine.Object;
 using Type = System.Type;
 using System.Reflection;
@@ -14,56 +13,38 @@ using AtMycelia.SaveSys;
 /// <typeparam name="TCommand">The command type to test (e.g., FadeSprite)</typeparam>
 public abstract class CommandTestBase<TCommand> where TCommand : Command
 {
-    protected const float Duration = 0.5f;
-    protected const float Epsilon = 0.01f;
+    protected const float _duration = 0.5f;
+    protected const float _epsilon = 0.01f;
 
-    protected GameObject go;
-    protected Flowchart flowchart;
-    protected Block block;
-    protected TCommand command;
+    protected GameObject _go;
+    protected Flowchart _flowchart;
+    protected Block _block;
+    protected TCommand _command;
 
     [SetUp]
     public virtual void SetUp()
     {
-        if (AmanitaManager.S != null)
-        {
-            UnityObj.DestroyImmediate(AmanitaManager.S.gameObject);
-        }
+        _go = new GameObject(typeof(TCommand).Name + "_TestGO");
+        _flowchart = _go.AddComponent<Flowchart>();
+        _block = _flowchart.CreateBlock(Vector2.zero);
+        _block.BlockName = "TestBlock";
 
-        string pathToManager = "Prefabs/AmanitaManager";
-        AmanitaManager managerPrefab = Resources.Load<AmanitaManager>(pathToManager);
+        _command = _block.gameObject.AddComponent<TCommand>();
+        _block.CommandList.Add(_command);
 
-        if (managerPrefab == null)
-        {
-            throw new System.MissingFieldException("Wrong path to the Amanita Manager");
-        }
-
-        manager = UnityObj.Instantiate(managerPrefab);
-
-        go = new GameObject(typeof(TCommand).Name + "_TestGO");
-        flowchart = go.AddComponent<Flowchart>();
-        block = flowchart.CreateBlock(Vector2.zero);
-        block.BlockName = "TestBlock";
-
-        command = block.gameObject.AddComponent<TCommand>();
-        block.CommandList.Add(command);
-
-        cmdType = command.GetType();
-        ConfigureCommand(command);
+        _cmdType = _command.GetType();
+        ConfigureCommand(_command);
         
     }
 
-    protected AmanitaManager manager;
-    protected Type cmdType;
-    protected readonly BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Instance;
+    protected Type _cmdType;
+    protected readonly BindingFlags _flags = BindingFlags.NonPublic | BindingFlags.Instance;
 
     [TearDown]
     public virtual void TearDown()
     {
-        UnityObj.DestroyImmediate(go);
-        UnityObj.DestroyImmediate(manager.gameObject);
-        go = null;
-        manager = null;
+        UnityObj.DestroyImmediate(_go);
+        _go = null;
         SaveSystem.ResetStaticsForTest();
         Flowchart.ResetStaticsForTest();
     }
@@ -80,7 +61,7 @@ public abstract class CommandTestBase<TCommand> where TCommand : Command
 
     protected IEnumerator RunBlockAndWait()
     {
-        flowchart.ExecuteBlock(block);
-        yield return new WaitForSeconds(Duration + 0.05f);
+        _flowchart.ExecuteBlock(_block);
+        yield return new WaitForSeconds(_duration + 0.05f);
     }
 }

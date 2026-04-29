@@ -154,43 +154,29 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 return;
             }
 
-            // Ensure AnyVariableData.data (SerializeReference) is of the correct IVariableData type
-            // without touching boxedValue. We replace the managed reference when needed.
             var innerDataRefProp = _anyVarDataProp != null
-                ? _anyVarDataProp.FindPropertyRelative("_data") // SerializeReference IVariableData
+                ? _anyVarDataProp.FindPropertyRelative("_data")
                 : null;
 
-            if (innerDataRefProp != null)
+            if (innerDataRefProp != null && innerDataRefProp.managedReferenceValue == null)
             {
-                object current = innerDataRefProp.managedReferenceValue;
                 var varType = _selectedVariable.GetType();
                 Type desiredDataType = VariableDataTypeRegistry.CreateForVar(varType)?.GetType();
-
                 if (desiredDataType != null)
                 {
-                    bool needsReplace = current == null || current.GetType() != desiredDataType;
-                    if (needsReplace)
-                    {
-                        // Create a fresh IVariableData instance of the right type
-                        object replacement = System.Activator.CreateInstance(desiredDataType);
-                        innerDataRefProp.managedReferenceValue = replacement;
-                        // After replacing the managed reference, we must re-fetch nested properties.
-                        serializedObject.ApplyModifiedProperties();
-                        serializedObject.Update();
-                    }
+                    innerDataRefProp.managedReferenceValue = System.Activator.CreateInstance(desiredDataType);
+                    serializedObject.ApplyModifiedProperties();
+                    serializedObject.Update();
                 }
             }
 
-            // Now draw the concrete inner data: anyVar.data.data
-            // Re-fetch in case we just replaced the managed reference
-            var rhsVarDataPropLocal = _anyVarDataPairProp.FindPropertyRelative("_data._data");
-            if (rhsVarDataPropLocal != null)
+            if (_anyVarDataProp != null)
             {
-                EditorGUILayout.PropertyField(rhsVarDataPropLocal, _valueToApplyLabel, true);
+                EditorGUILayout.PropertyField(_anyVarDataProp, _valueToApplyLabel, true);
             }
             else
             {
-                EditorGUILayout.HelpBox("Unable to locate RHS data. Select a variable first.", 
+                EditorGUILayout.HelpBox("Unable to locate RHS data. Select a variable first.",
                     MessageType.Warning);
             }
         }

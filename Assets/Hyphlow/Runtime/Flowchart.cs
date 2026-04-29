@@ -21,7 +21,6 @@ namespace AtMycelia.Hyphlow
     /// Flowchart objects may be edited visually using the Flowchart editor window.
     /// </summary>
     [ExecuteInEditMode]
-    [RequireComponent(typeof(VariableManagerComponent))]
     [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class Flowchart : MonoBehaviour, ISubstitutionHandler, IReorderableMuscariableSource,
         IForceResetUidHandler, ISerializationCallbackReceiver, ITearDownResponder, IRefreshable,
@@ -1498,7 +1497,7 @@ namespace AtMycelia.Hyphlow
                 return;
             }
 
-            _varManager = GetComponent<VariableManagerComponent>();
+            _varManager = gameObject.GetComponent<VariableManagerComponent>();
             if (_varManager == null)
             {
                 _varManager = gameObject.AddComponent<VariableManagerComponent>();

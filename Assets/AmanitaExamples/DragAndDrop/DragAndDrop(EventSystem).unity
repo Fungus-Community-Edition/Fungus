@@ -1470,10 +1470,8 @@ MonoBehaviour:
     behavior and
     making objects clickable.'
   uiModel:
-    _selectedBlocks:
-    - {fileID: 2019116694}
-    _selectedCommands:
-    - {fileID: 2019116711}
+    _selectedBlocks: []
+    _selectedCommands: []
     _owner: {fileID: 2019116667}
     <ScrollPos>k__BackingField: {x: 344, y: 303.97437}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
@@ -1875,7 +1873,7 @@ Transform:
   m_GameObject: {fileID: 2019116667}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.16, y: 0.34, z: 0}
+  m_LocalPosition: {x: 0, y: 0.34, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2080,50 +2078,80 @@ MonoBehaviour:
     - rid: 3688519694093123649
       type: {class: TextureMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
+        _scope: 0
+        _key: cursorTex
+        _itemId: 1
         scope: 0
-        key: cursorTex
-        itemID: 1
-        value: {fileID: 2800000, guid: 22eb050bacf8c401ca8503e24bff3570, type: 3}
+        key: 
+        itemID: 0
+        value: {fileID: 0}
+        _startValue: {fileID: 0}
+        _value: {fileID: 2800000, guid: 22eb050bacf8c401ca8503e24bff3570, type: 3}
         startValue: {fileID: 0}
     - rid: 3688519694093123657
       type: {class: VectorTwoMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
+        _scope: 0
+        _key: cursorHotSpot
+        _itemId: 2
         scope: 0
-        key: cursorHotSpot
-        itemID: 2
+        key: 
+        itemID: 0
         value: {x: 0, y: 0}
+        _startValue: {x: 0, y: 0}
+        _value: {x: 0, y: 0}
         startValue: {x: 0, y: 0}
     - rid: 3688519694093123660
       type: {class: TransformMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
+        _scope: 0
+        _key: draggableSpr
+        _itemId: 3
         scope: 0
-        key: draggableSpr
-        itemID: 3
-        value: {fileID: 2135880373}
+        key: 
+        itemID: 0
+        value: {fileID: 0}
+        _startValue: {fileID: 0}
+        _value: {fileID: 2135880373}
         startValue: {fileID: 0}
     - rid: 3688519694093123661
       type: {class: TransformMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
+        _scope: 0
+        _key: dragTargSpr
+        _itemId: 4
         scope: 0
-        key: dragTargSpr
-        itemID: 4
-        value: {fileID: 442175928}
+        key: 
+        itemID: 0
+        value: {fileID: 0}
+        _startValue: {fileID: 0}
+        _value: {fileID: 442175928}
         startValue: {fileID: 0}
     - rid: 3688519694093123670
       type: {class: TransformMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
+        _scope: 0
+        _key: clickableSpr
+        _itemId: 5
         scope: 0
-        key: clickableSpr
-        itemID: 5
-        value: {fileID: 228925352}
+        key: 
+        itemID: 0
+        value: {fileID: 0}
+        _startValue: {fileID: 0}
+        _value: {fileID: 228925352}
         startValue: {fileID: 0}
     - rid: 3688519694093123672
       type: {class: TransformMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
+        _scope: 0
+        _key: clickableSpr2ElecBoogaloo
+        _itemId: 6
         scope: 0
-        key: clickableSpr2ElecBoogaloo
-        itemID: 6
-        value: {fileID: 1373034543}
+        key: 
+        itemID: 0
+        value: {fileID: 0}
+        _startValue: {fileID: 0}
+        _value: {fileID: 1373034543}
         startValue: {fileID: 0}
 --- !u!114 &2019116703
 MonoBehaviour:

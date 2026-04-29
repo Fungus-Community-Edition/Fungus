@@ -1,10 +1,11 @@
 using AtMycelia.Hyphlow.Sys;
 using UnityEngine;
 using System.Collections.Generic;
+using AtMycelia.Hyphlow;
 
-namespace AtMycelia.Hyphlow.Tweening.VScripting
+namespace AtMycelia.AmaniTween.VScripting
 {
-    public abstract class BaseSimpleTweenCommand : Command, ITweenCommand
+    public abstract partial class BaseSimpleTweenCommand : Command, ITweenCommand
     {
         [Tooltip("The time in seconds the animation will take to complete")]
         [SerializeField] protected FloatData _duration = new FloatData(1f);
@@ -126,5 +127,25 @@ namespace AtMycelia.Hyphlow.Tweening.VScripting
             base.DelayedOnValidate();
             ValidateTweener();
         }
+
+        #region Editor-only conveniences
+        public float DurationFloat
+        {
+            get => _duration;
+            set => _duration.Value = value;
+        }
+
+        public bool StopPreviousTweensBool
+        {
+            get => _stopPreviousTweens;
+            set => _stopPreviousTweens.Value = value;
+        }
+
+        public bool WaitUntilFinishedBool
+        {
+            get => _waitUntilFinished;
+            set => _waitUntilFinished.Value = value;
+        }
+        #endregion
     }
 }

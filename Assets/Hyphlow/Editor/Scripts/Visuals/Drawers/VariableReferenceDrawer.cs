@@ -86,7 +86,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
             UnityObj storedOwner = owningSourceProp.objectReferenceValue;
 
             int currentIndex = 0;
-            bool validId = currentItemId != Muscariable.InvalidID;
+            bool validId = currentItemId != Muscariable.InvalidId;
             if (validId)
             {
                 int found = candidates.FindIndex(IsVarWithRightIdAndOwner);
@@ -127,7 +127,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 bool choseToSetNullVar = newIndex == 0;
                 if (choseToSetNullVar)
                 {
-                    itemIdProp.intValue = Muscariable.InvalidID;
+                    itemIdProp.intValue = Muscariable.InvalidId;
                     owningSourceProp.objectReferenceValue = null;
                 }
                 else

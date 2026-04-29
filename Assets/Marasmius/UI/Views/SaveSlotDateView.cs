@@ -1,4 +1,4 @@
-namespace AtMycelia.SaveSys.UI
+namespace AtMycelia.SaveSys.Ui
 {
     public class SaveSlotDateView : SaveSlotTextView
     {

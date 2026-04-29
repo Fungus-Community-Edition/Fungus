@@ -3,9 +3,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using Type = System.Type;
 using UnityEngine.EventSystems;
-using AtMycelia.UI;
+using AtMycelia.Ui;
 
-namespace AtMycelia.SaveSys.UI
+namespace AtMycelia.SaveSys.Ui
 {
     /// <summary>
     /// For tying together multiple ISaveSlotUIView components under one controller.

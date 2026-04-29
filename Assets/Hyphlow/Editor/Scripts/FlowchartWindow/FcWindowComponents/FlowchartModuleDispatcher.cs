@@ -13,6 +13,10 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
         void Initialize(FlowchartWindow window);
     }
 
+    /// <summary>
+    /// Dispatcher for events related to the flowchart as a whole, such as flowchart changes, 
+    /// command selection, and window panning.
+    /// </summary>
     public sealed class FlowchartModuleDispatcher
     {
         private readonly List<IFlowchartWindowModule> modules = new List<IFlowchartWindowModule>();

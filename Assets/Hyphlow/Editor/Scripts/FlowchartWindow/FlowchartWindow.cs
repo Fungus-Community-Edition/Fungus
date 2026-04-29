@@ -43,6 +43,11 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             _eventBinder.Toggle(on);
         }
 
+        public void Refresh()
+        {
+            _graphicsRenderer?.RefreshNow();
+        }
+
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
             ResetActiveFlowchartSelections(() => ActiveFlowchart);

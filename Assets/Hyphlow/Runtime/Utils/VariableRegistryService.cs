@@ -228,7 +228,12 @@ namespace AtMycelia.Hyphlow
 
         public static VariableRegistryConfig LoadDefaultConfig()
         {
-            if (HyphlowRuntimeSysAssets.S.VariableRegistryConfig == null)
+            HyphlowRuntimeSysAssets.EnsureExists();
+            if (HyphlowRuntimeSysAssets.S == null)
+            {
+                return null;
+            }
+            if (HyphlowRuntimeSysAssets.S != null && HyphlowRuntimeSysAssets.S.VariableRegistryConfig == null)
             {
                 HyphlowRuntimeSysAssets.S.VariableRegistryConfig =
                     Resources.Load<VariableRegistryConfig>(DefaultConfigResourcesPath);

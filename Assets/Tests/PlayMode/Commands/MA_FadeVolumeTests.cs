@@ -1,12 +1,11 @@
-using AtMycelia.Amanita.Myceliaudio;
-using AtMycelia.Amanita.Myceliaudio.VScripting;
 using AtMycelia.Hyphlow;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
-using AtMycelia.Amanita;
-using AtMycelia.Hyphlow.Tweening;
+using AtMycelia.Hyphlowceliaudio;
+using AtMycelia.Myceliaudio;
+
 
 namespace VScriptingTests.Commands
 {
@@ -60,19 +59,19 @@ namespace VScriptingTests.Commands
             typeof(MA_FadeVolume).GetField("targetVol", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
                 .SetValue(cmd, new FloatData(targetVolume));
             typeof(MA_FadeVolume).GetField("duration", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                .SetValue(cmd, new FloatData(Duration));
+                .SetValue(cmd, new FloatData(_duration));
             typeof(MA_FadeVolume).GetField("waitUntilFinished", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
                 .SetValue(cmd, new BooleanData(true));
             typeof(MA_FadeVolume).GetField("fadeTween", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
                 .SetValue(cmd, DefaultTweener); // default adapter
         }
 
-        private static MyceliaudioTweenAdapter DefaultTweener => DefaultAmanitaAssets.MyceliaudioTweener;
+        private static MyceliaudioTweenAdapter DefaultTweener => DefaultHyphlowceliaudioAssets.MyceliaudioTweener;
 
         protected override void AssertFinalState()
         {
             float actual = AudioSystem.S.GetTrackVol(currentGroup, currentIndex);
-            Assert.AreEqual(targetVolume, actual, Epsilon,
+            Assert.AreEqual(targetVolume, actual, _epsilon,
                 $"Track volume mismatch for {currentGroup} track {currentIndex}");
         }
 
@@ -93,9 +92,9 @@ namespace VScriptingTests.Commands
             currentIndex = (int)caseData[1];
 
             typeof(MA_FadeVolume).GetField("trackGroup", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                .SetValue(command, currentGroup);
+                .SetValue(_command, currentGroup);
             typeof(MA_FadeVolume).GetField("track", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                .SetValue(command, new IntegerData(currentIndex));
+                .SetValue(_command, new IntegerData(currentIndex));
 
             AudioSystem.S.SetTrackVol(currentGroup, currentIndex, startVolume);
         }
@@ -107,17 +106,17 @@ namespace VScriptingTests.Commands
             ConfigFor(caseData);
             
             typeof(MA_FadeVolume).GetField("waitUntilFinished", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                .SetValue(command, new BooleanData(false));
+                .SetValue(_command, new BooleanData(false));
 
             bool continued = false;
-            command.StartedContinue += _ => continued = true;
+            _command.StartedContinue += _ => continued = true;
 
-            flowchart.ExecuteBlock(block);
+            _flowchart.ExecuteBlock(_block);
 
             Assert.IsTrue(continued,
                 $"Continue() should be called immediately when waitUntilFinished is false for {currentGroup} track {currentIndex}");
 
-            yield return new WaitForSeconds(Duration + 0.05f);
+            yield return new WaitForSeconds(_duration + 0.05f);
             AssertFinalState();
         }
     }

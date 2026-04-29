@@ -1,0 +1,20 @@
+{
+    "name": "AtMycelia.DevOnlyTools.Core",
+    "rootNamespace": "",
+    "references": [
+        "GUID:58f863c6f97a57444bb5b732288ccfe3",
+        "GUID:2cfb67c2f5eea424fba8c36f4f754aab",
+        "GUID:e2babc96bfd54444191259bf2d0a6377",
+        "GUID:3e8446a8987ac8a47ba6568ab3ce29f4",
+        "GUID:315f594c192fac84b811333747e5ecb0"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

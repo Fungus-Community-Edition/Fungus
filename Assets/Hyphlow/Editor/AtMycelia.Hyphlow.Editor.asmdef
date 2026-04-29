@@ -2,10 +2,10 @@
     "name": "AtMycelia.Hyphlow.Editor",
     "rootNamespace": "",
     "references": [
-        "GUID:3f6d2e24eb975e74c89b274691a961ec",
         "GUID:3e8446a8987ac8a47ba6568ab3ce29f4",
         "GUID:343deaaf83e0cee4ca978e7df0b80d21",
-        "GUID:6b9bef592926cd84491b0b24167b4fed"
+        "GUID:315f594c192fac84b811333747e5ecb0",
+        "GUID:545d5e6f2e39eb840a1084bebacdc8e2"
     ],
     "includePlatforms": [
         "Editor"

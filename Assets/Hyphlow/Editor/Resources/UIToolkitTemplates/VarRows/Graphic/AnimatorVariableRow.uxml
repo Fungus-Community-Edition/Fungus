@@ -4,11 +4,11 @@
     <Style src="project://database/Assets/Amanita/Editor/Resources/Stylesheets/VarRows/graphicRowStyle.uss?fileID=7433441132597879392&amp;guid=e7e8f7987c2268446a8d20f2aa060263&amp;type=3#graphicRowStyle" />
     <engine:VisualElement name="VarRowRoot">
         <engine:Label text="Animator" name="TypeLabel" class="varRowTypeLabel" />
-        <engine:TextField name="KeyInput" hide-placeholder-on-focus="true" binding-path="key" class="varRowInputField keyInput" />
+        <engine:TextField name="KeyInput" hide-placeholder-on-focus="true" binding-path="_key" class="varRowInputField keyInput" />
         <engine:VisualElement name="ValueFieldHolder">
-            <editor:ObjectField data-source-type="UnityEngine.AudioClip, UnityEngine.AudioModule" name="ValueField" binding-path="value" />
+            <editor:ObjectField data-source-type="UnityEngine.AudioClip, UnityEngine.AudioModule" name="ValueField" binding-path="_value" />
         </engine:VisualElement>
-        <engine:EnumField value="Private" type="AtMycelia.Hyphlow.VariableScope, AtMycelia.Hyphlow.Core" name="Scope" data-source-type="AtMycelia.Hyphlow.VariableScope, AtMycelia.Hyphlow.Core" binding-path="scope" class="scopeRoot" />
+        <engine:EnumField value="Private" type="AtMycelia.Hyphlow.VariableScope, AtMycelia.Hyphlow.Core" name="Scope" data-source-type="AtMycelia.Hyphlow.VariableScope, AtMycelia.Hyphlow.Core" binding-path="_scope" class="scopeRoot" />
         <engine:Button text="-" name="RemoveButton" class="removeButton" />
     </engine:VisualElement>
 </UXML>

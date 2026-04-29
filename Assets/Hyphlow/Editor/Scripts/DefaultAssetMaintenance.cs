@@ -1,7 +1,7 @@
 using AtMycelia.Hyphlow.Sys;
 using UnityEditor;
 using UnityEngine;
-using AtMycelia.Hyphlow.Tweening;
+using AtMycelia.AmaniTween;
 
 namespace AtMycelia.Hyphlow.EditorUtils
 {
@@ -38,6 +38,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
         public static HyphlowRuntimeSysAssets EnsureHyphlowRuntimeSysAssets()
         {
             HyphlowRuntimeSysAssets assets = HyphlowRuntimeSysAssets.S;
+
             if (assets == null)
             {
                 var all = Resources.LoadAll<HyphlowRuntimeSysAssets>("");

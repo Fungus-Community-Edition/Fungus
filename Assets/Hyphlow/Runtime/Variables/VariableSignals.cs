@@ -14,6 +14,9 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         public static Action<IVariable, object> PostValueChange = delegate { };
 
+        public static Action<IVariable> VariableAdded = delegate { };
+        public static Action<IVariable> VariableRemoved = delegate { };
+
 #if UNITY_EDITOR
         public static Action<IVariable> EditorValueChange = delegate { };
 #endif

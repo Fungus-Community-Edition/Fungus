@@ -14,27 +14,27 @@ namespace VScriptingTests.Commands
 
         protected override void ConfigureCommand(FadeSprite cmd)
         {
-            spriteRenderer = go.AddComponent<SpriteRenderer>();
+            spriteRenderer = _go.AddComponent<SpriteRenderer>();
             spriteRenderer.color = Color.white;
 
             // Assign private fields via reflection
-            cmdType.GetField("spriteRenderer", flags)
+            _cmdType.GetField("spriteRenderer", _flags)
                 .SetValue(cmd, spriteRenderer);
-            cmdType.GetField("duration", flags)
-                .SetValue(cmd, new FloatData(Duration));
-            cmdType.GetField("targetColor", flags)
+            _cmdType.GetField("duration", _flags)
+                .SetValue(cmd, new FloatData(_duration));
+            _cmdType.GetField("targetColor", _flags)
                 .SetValue(cmd, new ColorData(TargetColor));
-            cmdType.GetField("fadeTweener", flags)
+            _cmdType.GetField("fadeTweener", _flags)
                 .SetValue(cmd, null); // triggers default adapter
         }
 
         protected override void AssertFinalState()
         {
             var actual = spriteRenderer.color;
-            Assert.AreEqual(TargetColor.r, actual.r, Epsilon, "R channel mismatch");
-            Assert.AreEqual(TargetColor.g, actual.g, Epsilon, "G channel mismatch");
-            Assert.AreEqual(TargetColor.b, actual.b, Epsilon, "B channel mismatch");
-            Assert.AreEqual(TargetColor.a, actual.a, Epsilon, "A channel mismatch");
+            Assert.AreEqual(TargetColor.r, actual.r, _epsilon, "R channel mismatch");
+            Assert.AreEqual(TargetColor.g, actual.g, _epsilon, "G channel mismatch");
+            Assert.AreEqual(TargetColor.b, actual.b, _epsilon, "B channel mismatch");
+            Assert.AreEqual(TargetColor.a, actual.a, _epsilon, "A channel mismatch");
         }
 
         // --------------------
@@ -43,8 +43,8 @@ namespace VScriptingTests.Commands
         [UnityTest]
         public IEnumerator WaitUntilFinished_ChangesColor()
         {
-            cmdType.GetField("waitUntilFinished", flags)
-                .SetValue(command, new BooleanData(true));
+            _cmdType.GetField("waitUntilFinished", _flags)
+                .SetValue(_command, new BooleanData(true));
 
             yield return RunBlockAndWait();
             AssertFinalState();
@@ -56,24 +56,24 @@ namespace VScriptingTests.Commands
         [UnityTest]
         public IEnumerator NoWait_ContinuesImmediately_AndChangesColor()
         {
-            cmdType.GetField("waitUntilFinished", flags)
-                .SetValue(command, new BooleanData(false));
+            _cmdType.GetField("waitUntilFinished", _flags)
+                .SetValue(_command, new BooleanData(false));
 
             bool continued = false;
-            command.StartedContinue += OnFadeStartedContinue;
+            _command.StartedContinue += OnFadeStartedContinue;
             void OnFadeStartedContinue(Command c)
             {
                 continued = true;
-                command.StartedContinue -= OnFadeStartedContinue;
+                _command.StartedContinue -= OnFadeStartedContinue;
             }
 
-            flowchart.StartCoroutine(block.Execute());
+            _flowchart.StartCoroutine(_block.Execute());
 
             // Continue should be called immediately
             Assert.IsTrue(continued, "Continue() should be called immediately when waitUntilFinished is false.");
 
             // Tween should still run in background
-            yield return new WaitForSeconds(Duration + 0.05f);
+            yield return new WaitForSeconds(_duration + 0.05f);
             AssertFinalState();
         }
     }

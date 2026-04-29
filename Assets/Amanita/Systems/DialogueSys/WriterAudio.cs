@@ -1,8 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
-using AtMycelia.Amanita.Myceliaudio;
 using AtMycelia.Amanita.DialogueSys;
-using AtMycelia.Audio;
 using UnityEngine.Serialization;
 
 namespace AtMycelia.Amanita

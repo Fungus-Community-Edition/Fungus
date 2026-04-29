@@ -225,9 +225,11 @@ namespace AtMycelia.Hyphlow
                     return;
                 }
 
+                object prevValue = _value;
                 if (value == null)
                 {
                     this._value = default;
+                    VariableSignals.PostValueChange(this, prevValue);
                     return;
                 }
 
@@ -235,6 +237,7 @@ namespace AtMycelia.Hyphlow
                 if (TypeUtils.TypesCompatible(ContentType, valueType))
                 {
                     this._value = ConvertTo(value);
+                    VariableSignals.PostValueChange(this, prevValue);
                     return;
                 }
 
@@ -284,8 +287,10 @@ namespace AtMycelia.Hyphlow
                     return;
                 }
 
+                object prevValue = this._value;
                 this._value = value;
                 baseVal = value;
+                VariableSignals.PostValueChange(this, prevValue);
             }
         }
 

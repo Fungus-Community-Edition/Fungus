@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace AtMycelia.Hyphlow.Tweening
+namespace AtMycelia.AmaniTween
 {
     public class TweenManager : MonoBehaviour
     {

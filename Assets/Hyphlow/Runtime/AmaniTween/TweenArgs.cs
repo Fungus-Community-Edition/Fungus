@@ -1,6 +1,6 @@
 using UnityEngine.Events;
 
-namespace AtMycelia.Hyphlow.Tweening
+namespace AtMycelia.AmaniTween
 {
     public class TweenArgs : System.EventArgs
     {

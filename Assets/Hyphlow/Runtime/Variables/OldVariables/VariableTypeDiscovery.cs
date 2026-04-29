@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 using UnityEngine.Scripting.APIUpdating;
 
 namespace AtMycelia.Hyphlow
@@ -30,7 +30,8 @@ namespace AtMycelia.Hyphlow
         {
             IEnumerable<Type> varSubtypes = AppDomain.CurrentDomain.GetAssemblies()
                          .SelectMany(SafeGetTypes)
-                         .Where((elem) => IsInstantiatableType(elem, _iVariableType));
+                         .Where((elem) => IsInstantiatableType(elem, _iVariableType) && 
+                         !ShouldExcludeDueToBeingForTests(elem));
 
             SetVarTypeRegistry();
             void SetVarTypeRegistry()
@@ -70,6 +71,29 @@ namespace AtMycelia.Hyphlow
         {
             bool result = varInvolved.Evaluate(compareOp, varData.BoxedValue);
             return result;
+        }
+
+        private static bool ShouldExcludeDueToBeingForTests(Type typeToCheck)
+        {
+            VariableInfoAttribute attr = typeToCheck.GetCustomAttribute<VariableInfoAttribute>();
+            // We should only include test types if the currently-running scene is a test scene,
+            // to avoid cluttering the variable type registry with test types during normal use.
+            // This is because test types are often used for testing and debugging purposes, and
+            // may not be relevant or useful in a non-test context.
+            if (attr != null)
+            {
+                var activeScene = SceneManager.GetActiveScene();
+                string sceneName = activeScene.name;
+                bool weAreInTestScene = sceneName.Contains("Test");
+                if (attr.IsTest && (!weAreInTestScene || Application.isEditor))
+                {
+                    Debug.Log($"Excluding test type {typeToCheck.Name} from variable type registry" +
+                        $"because the active scene is not a test scene.");
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private static string VarGetDescription(IVariableData varData)

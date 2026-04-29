@@ -1,7 +1,7 @@
 using AtMycelia.Hyphlow;
 using UnityEngine;
 
-namespace AtMycelia.SaveSys.UI.VScripting
+namespace AtMycelia.SaveSys.Ui.VScripting
 {
 	[CommandInfo("Save Sys/UI", 
 		"Save Menu", 
