@@ -2178,10 +2178,8 @@ MonoBehaviour:
   _otherSettings: []
   description: 
   uiModel:
-    _selectedBlocks:
-    - {fileID: 1267026887}
-    _selectedCommands:
-    - {fileID: 1267026908}
+    _selectedBlocks: []
+    _selectedCommands: []
     _owner: {fileID: 1267026863}
     <ScrollPos>k__BackingField: {x: 0, y: -16.558445}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
@@ -2901,15 +2899,15 @@ MonoBehaviour:
     - rid: 3688519963393917793
     - rid: 3688519963393917794
     - rid: 3688519963393917795
-    - rid: 3688519963393917799
-    - rid: 3688519963393917839
+    - rid: 3688520209815568384
+    - rid: 3688520209815568385
     - rid: 3688519988602208545
-    _legacyVariables:
-    - {fileID: 1267026874}
-    - {fileID: 1267026872}
-    - {fileID: 1267026870}
-    - {fileID: 1267026869}
-    - {fileID: 1267026877}
+    - rid: 3688520209815568386
+    - rid: 3688520209815568387
+    - rid: 3688520209815568388
+    - rid: 3688520209815568389
+    - rid: 3688520209815568390
+    _legacyVariables: []
     _nextValidVarID: 14
     _isInitted: 1
   _cachedFlowchart: {fileID: 1267026880}
@@ -2981,40 +2979,6 @@ MonoBehaviour:
         _startValue: {fileID: 0}
         _value: {fileID: 119136498}
         startValue: {fileID: 0}
-    - rid: 3688519963393917799
-      type: {class: HookedIntMuscariable, ns: VScriptingTests.VariableOperations,
-        asm: AmanitaEditorTests}
-      data:
-        _scope: 0
-        _key: pointsPerKill
-        _itemId: 11
-        scope: 0
-        key: 
-        itemID: 0
-        value: 0
-        _startValue: 0
-        _value: 1
-        startValue: 0
-        LastGenericPrev: 0
-        BaseSetCount: 0
-        GenericSetCount: 0
-    - rid: 3688519963393917839
-      type: {class: HookedIntMuscariable, ns: VScriptingTests.VariableOperations,
-        asm: AmanitaEditorTests}
-      data:
-        _scope: 0
-        _key: victoryScoreThresh
-        _itemId: 12
-        scope: 0
-        key: 
-        itemID: 0
-        value: 0
-        _startValue: 0
-        _value: 5
-        startValue: 0
-        LastGenericPrev: 0
-        BaseSetCount: 0
-        GenericSetCount: 0
     - rid: 3688519988602208545
       type: {class: BoolMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
@@ -3028,6 +2992,97 @@ MonoBehaviour:
         _startValue: 0
         _value: 0
         startValue: 0
+    - rid: 3688520209815568384
+      type: {class: IntMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        _scope: 0
+        _key: pointsPerKill
+        _itemId: 11
+        scope: 0
+        key: 
+        itemID: 0
+        value: 0
+        _startValue: 0
+        _value: 1
+        startValue: 0
+    - rid: 3688520209815568385
+      type: {class: IntMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        _scope: 0
+        _key: victoryScoreThresh
+        _itemId: 12
+        scope: 0
+        key: 
+        itemID: 0
+        value: 0
+        _startValue: 0
+        _value: 5
+        startValue: 0
+    - rid: 3688520209815568386
+      type: {class: StringMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        _scope: 0
+        _key: healthString
+        _itemId: 1
+        scope: 0
+        key: 
+        itemID: 0
+        value: 
+        _startValue: 
+        _value: 
+        startValue: 
+    - rid: 3688520209815568387
+      type: {class: StringMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        _scope: 0
+        _key: scoreString
+        _itemId: 2
+        scope: 0
+        key: 
+        itemID: 0
+        value: 
+        _startValue: 
+        _value: 
+        startValue: 
+    - rid: 3688520209815568388
+      type: {class: IntMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        _scope: 0
+        _key: score
+        _itemId: 3
+        scope: 0
+        key: 
+        itemID: 0
+        value: 0
+        _startValue: 0
+        _value: 0
+        startValue: 0
+    - rid: 3688520209815568389
+      type: {class: IntMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        _scope: 0
+        _key: hp
+        _itemId: 4
+        scope: 0
+        key: 
+        itemID: 0
+        value: 0
+        _startValue: 0
+        _value: 3
+        startValue: 0
+    - rid: 3688520209815568390
+      type: {class: StringMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        _scope: 0
+        _key: gameOverString
+        _itemId: 5
+        scope: 0
+        key: 
+        itemID: 0
+        value: 
+        _startValue: 
+        _value: 
+        startValue: 
 --- !u!114 &1267026898
 MonoBehaviour:
   m_ObjectHideFlags: 2

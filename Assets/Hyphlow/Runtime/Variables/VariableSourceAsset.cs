@@ -463,23 +463,6 @@ namespace AtMycelia.Hyphlow
 
 #if UNITY_EDITOR
 
-        public void MigrateToVariableManager()
-        {
-            if (variables.Count == 0)
-            {
-                Debug.Log($"{this.name} has no variables to migrate.", this);
-                return;
-            }
-
-            _varManager ??= new VariableManager();
-            _varManager.Initialize(variables, new List<Variable>());
-            _varManager.VarOwner = this;
-            variables.Clear();
-            EditorUtility.SetDirty(this);
-            AssetDatabase.SaveAssetIfDirty(this);
-            AssetDatabase.Refresh();
-        }
-
         Muscariable IMuscariableSource.AddNewVariableOfContentType<TContentType>(string k, TContentType defaultVal, VariableScope scope)
         {
             return ((IMuscariableSource)_varManager).AddNewVariableOfContentType(k, defaultVal, scope);
