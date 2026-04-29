@@ -7,7 +7,6 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
     [CustomEditor(typeof(Flowchart))]
     public class FlowchartEditor : Editor
     {
-        
         public static bool FlowchartDataStale { get; set; }
 
         protected virtual void OnEnable()

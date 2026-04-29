@@ -65,12 +65,15 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
                 return;
             }
 
-            if (!block.IsSelected)
+            if (!block.IsSelected) // Single-clicking one block should deselect all other blocks and commands.
             {
                 Flowchart.ClearSelectedCommands();
+                Flowchart.ClearSelectedBlocks();
             }
+            
 
             Flowchart.SelectedBlock = block;
+            Flowchart.AddToSelection(block);
         }
 
         private Flowchart Flowchart => flowchartContext.Flowchart;

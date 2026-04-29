@@ -46,7 +46,8 @@ namespace AtMycelia.Hyphlow
             {
                 if (!string.IsNullOrEmpty(_uniqueId))
                 {
-                    Debug.LogWarning($"Warning: Overwriting existing AssetId on VariableSourceAsset {name}.");
+                    Debug.LogWarning($"Warning: Overwriting existing AssetId on VariableSourceAsset {name}.",
+                        this);
                 }
 
                 string prevId = _uniqueId;
@@ -62,17 +63,12 @@ namespace AtMycelia.Hyphlow
             }
         }
 
-        /// <summary>
-        /// If false, this VariableSourceAsset's UniqueId may be removed from the relevant GuidRegistry
-        /// when the asset is disabled. If true, the UniqueId will be kept in the registry.
-        /// </summary>
         public virtual bool AlwaysKeepGuid
         {
             get => _alwaysKeepGuid;
             set => _alwaysKeepGuid = value;
         }
 
-        // Always return a list, even if the backing field was deserialized as null.
         public IReadOnlyList<IVariable> Variables
         {
             get
@@ -101,7 +97,8 @@ namespace AtMycelia.Hyphlow
         /// <summary>
         /// Creates and returns a new Muscariable of the content type,
         /// assigning it the passed key and starting value.
-        /// Ignores the scope param, as VariableSourceAssets don't have scopes for their variables.
+        /// Ignores the scope param, as VariableSourceAssets always
+        /// have (functionally) global scopes for their vars.
         /// </summary>
         public virtual Muscariable<TContent> AddNewVariableOfContentType<TContent>(string key,
             TContent startingVal = default, VariableScope scope = VariableScope.Private)
@@ -208,10 +205,11 @@ namespace AtMycelia.Hyphlow
             if (newOrder == null || newOrder.Count == 0) return;
 
             IList<IVariable> whatWeGot = Variables.ToList();
-            if (whatWeGot.SameContentsAs(newOrder) == false)
+            bool sameContents = whatWeGot.SameContentsAs(newOrder);
+            if (!sameContents)
             {
-                Debug.LogWarning("VariableSource: ReorderVariables called with a list that " +
-                    "doesn't contain the same elements as this source.");
+                Debug.LogWarning($"VariableSource: ReorderVariables called with a list that " +
+                    "doesn't contain the same elements as this source.", this);
                 return;
             }
             else
@@ -220,9 +218,9 @@ namespace AtMycelia.Hyphlow
             }
         }
 
-        public virtual void RemoveVariable(string key)
+        public virtual void RemoveVariable(string key, StringComparison strCompare = StringComparison.Ordinal)
         {
-            _varManager.RemoveVariable(key);
+            _varManager.RemoveVariable(key, strCompare);
         }
 
         public virtual void RemoveVariable(IVariable variable)
@@ -231,7 +229,7 @@ namespace AtMycelia.Hyphlow
             {
                 string logMessage = $"Cannot remove {variable} (a non-Muscariable) from a VariableSource asset; " +
                     $"it can't hold that in the first place.";
-                Debug.LogWarning(logMessage);
+                Debug.LogWarning(logMessage, this);
                 return;
             }
 
@@ -272,8 +270,8 @@ namespace AtMycelia.Hyphlow
 
         public Muscariable AddVariable(Muscariable toAdd)
         {
-            AnyRightBeforeVarAdded(toAdd);
-
+            // The manager will handle the post-signaling and the actual addition,
+            // so we don't need to do either here.
             var result = _varManager.AddVariable(toAdd);
             return result;
         }
@@ -301,62 +299,57 @@ namespace AtMycelia.Hyphlow
 
         protected virtual void ToggleSubs(bool on)
         {
-#if UNITY_EDITOR
-            EditorToggleSubs(on);
-#endif
-        }
-
-#if UNITY_EDITOR
-        protected virtual void EditorToggleSubs(bool on)
-        {
             if (on)
             {
+                _varManager.VariableAdded += OnPostVarAdded;
+                _varManager.VariableRemoved += OnPostVarRemoved;
                 _varManager.PreVariableAdded += OnPreVarAdded;
                 _varManager.PreVariableRemoved += OnPreVarRemoved;
-                EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
             }
             else
             {
+                _varManager.VariableAdded -= OnPostVarAdded;
+                _varManager.VariableRemoved -= OnPostVarRemoved;
                 _varManager.PreVariableAdded -= OnPreVarAdded;
                 _varManager.PreVariableRemoved -= OnPreVarRemoved;
-                EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
             }
+
+            EditorToggleSubs(on);
+        }
+
+        private void OnPostVarAdded(IVariable variable)
+        {
+            VsaSignals.VariableAdded(this, variable);
+        }
+
+        private void OnPostVarRemoved(IVariable variable)
+        {
+            VsaSignals.VariableRemoved(this, variable);
+        }
+
+        private void OnPreVarAdded(IVariable variable)
+        {
+            VsaSignals.PreVariableAdded(this, variable);
         }
 
         private void OnPreVarRemoved(IVariable variable)
         {
-            AnyRightBeforeVarRemoved((Muscariable)variable);
+            VsaSignals.PreVariableRemoved(this, variable);
         }
 
-        // We only want editor code to respond to these events.
-        
-        public static event Action<Muscariable> AnyRightBeforeVarRemoved = delegate { };
-
-        private void OnPreVarAdded(IVariable variable)
+        protected virtual void EditorToggleSubs(bool on)
         {
-            AnyRightBeforeVarAdded((Muscariable)variable);
-        }
-
-        public static event Action<Muscariable> AnyRightBeforeVarAdded = delegate { };
-#endif
-
-        protected virtual void EnsureValidUniqueId()
-        {
-            bool thisIsTestOnly = SceneManager.GetActiveScene().name.StartsWith("InitTestScene");
-            if (thisIsTestOnly)
-            {
-                return;
-            }
-
-            if (string.IsNullOrEmpty(_uniqueId))
-            {
-                _uniqueId = Guid.NewGuid().ToString();
 #if UNITY_EDITOR
-                EditorUtility.SetDirty(this);
-#endif
+            if (on)
+            {
+                EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
             }
+            else
+            {
+                EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
+            }
+#endif
         }
-
 
 #if UNITY_EDITOR
         private void OnPlayModeStateChanged(PlayModeStateChange change)
@@ -380,7 +373,7 @@ namespace AtMycelia.Hyphlow
                         PlayerPrefs.SetString(key, valueAsJson);
                     }
                 }
-                
+
             }
             else if (change == PlayModeStateChange.ExitingPlayMode)//
             {
@@ -396,7 +389,7 @@ namespace AtMycelia.Hyphlow
                         {
                             string valueAsJson = PlayerPrefs.GetString(key);
                             EditorJsonUtility.FromJsonOverwrite(valueAsJson, currentVar);
-                            
+
                             PlayerPrefs.DeleteKey(key);
                         }
                     }
@@ -405,6 +398,23 @@ namespace AtMycelia.Hyphlow
         }
 
 #endif
+
+        protected virtual void EnsureValidUniqueId()
+        {
+            bool thisIsTestOnly = SceneManager.GetActiveScene().name.StartsWith("InitTestScene");
+            if (thisIsTestOnly)
+            {
+                return;
+            }
+
+            if (string.IsNullOrEmpty(_uniqueId))
+            {
+                _uniqueId = Guid.NewGuid().ToString();
+#if UNITY_EDITOR
+                EditorUtility.SetDirty(this);
+#endif
+            }
+        }
 
         protected virtual void OnDisable()
         {
@@ -452,23 +462,6 @@ namespace AtMycelia.Hyphlow
         }
 
 #if UNITY_EDITOR
-
-        public void MigrateToVariableManager()
-        {
-            if (variables.Count == 0)
-            {
-                Debug.Log($"{this.name} has no variables to migrate.");
-                return;
-            }
-
-            _varManager ??= new VariableManager();
-            _varManager.Initialize(variables, new List<Variable>());
-            _varManager.VarOwner = this;
-            variables.Clear();
-            EditorUtility.SetDirty(this);
-            AssetDatabase.SaveAssetIfDirty(this);
-            AssetDatabase.Refresh();
-        }
 
         Muscariable IMuscariableSource.AddNewVariableOfContentType<TContentType>(string k, TContentType defaultVal, VariableScope scope)
         {

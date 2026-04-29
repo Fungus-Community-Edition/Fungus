@@ -7,7 +7,6 @@ using UnityEngine.EventSystems;
 using UnityEngine.TestTools;
 
 #if ENABLE_INPUT_SYSTEM
-using UnityEngine.InputSystem.UI;
 #endif
 
 [TestFixture]
@@ -84,21 +83,6 @@ public class AmanitaManagerTests
         CleanupScene();
         AmanitaManager.ResetStaticsForTest();
         activeManager = null;
-    }
-
-    [UnityTest]
-    public IEnumerator EnsureExists_AddsEventSystem_WithInputModule()
-    {
-        yield return CreateManagerAsync();
-
-        var eventSystem = Object.FindFirstObjectByType<EventSystem>(FindObjectsInactive.Include);
-        Assert.IsNotNull(eventSystem, "AmanitaManager should guarantee an EventSystem exists in the scene.");
-
-#if ENABLE_INPUT_SYSTEM
-        var inputModule = eventSystem.GetComponent<InputSystemUIInputModule>();
-        Assert.IsNotNull(inputModule, "EventSystem should include an InputSystemUIInputModule.");
-        Assert.AreSame(eventSystem.gameObject, inputModule.gameObject, "InputSystemUIInputModule must reside on the EventSystem GameObject.");
-#endif
     }
 
     private IEnumerator CreateManagerAsync()

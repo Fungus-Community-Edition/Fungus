@@ -27,10 +27,14 @@ namespace VScriptingTests.VariableOperations
             _serializedObj.Update();
 
             var dataProp = _serializedObj.FindProperty("data");
-            Assert.IsNotNull(dataProp, "Could not find 'data' property on holder.");
+            if (dataProp == null)
+            {
+                dataProp = _serializedObj.FindProperty("_data");
+            }
+            Assert.IsNotNull(dataProp, "Could not find '_data' property on holder.");
 
-            _varRefProp = dataProp.FindPropertyRelative("backingVarRef");
-            Assert.IsNotNull(_varRefProp, "Could not find 'backingVarRef' property on data.");
+            _varRefProp = dataProp.FindPropertyRelative("_backingVarRef");
+            Assert.IsNotNull(_varRefProp, "Could not find '_backingVarRef' property on data.");
 
             _toDestroy.Add(_unityObjDataHolder);
         }
@@ -71,7 +75,12 @@ namespace VScriptingTests.VariableOperations
             _serializedObj.ApplyModifiedPropertiesWithoutUndo();
             _serializedObj.Update();
 
-            var dataProp = _serializedObj.FindProperty("data");
+            var dataProp = _serializedObj.FindProperty("_data");
+            if (dataProp == null)
+            {
+                dataProp = _serializedObj.FindProperty("data");
+            }
+
             var boxed = dataProp?.boxedValue as VariableData;
             boxed?.Refresh();
             _serializedObj.ApplyModifiedPropertiesWithoutUndo();

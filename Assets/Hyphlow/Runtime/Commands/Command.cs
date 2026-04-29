@@ -1,6 +1,6 @@
 using AtMycelia.Amanita;
 using AtMycelia.Hyphlow.Sys;
-using AtMycelia.Hyphlow.Tweening;
+using AtMycelia.AmaniTween;
 using System;
 using System.Collections;
 using System.Collections.Generic;

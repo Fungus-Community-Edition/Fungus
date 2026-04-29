@@ -4,13 +4,13 @@
     <engine:VisualElement name="VarRowRoot">
         <engine:VisualElement name="TopRow" style="flex-grow: 1; flex-direction: row;">
             <engine:Label text="String" name="TypeLabel" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" class="varRowTypeLabel" />
-            <engine:TextField name="KeyInput" hide-placeholder-on-focus="true" binding-path="key" class="varRowInputField keyInput" />
+            <engine:TextField name="KeyInput" hide-placeholder-on-focus="true" binding-path="_key" class="varRowInputField keyInput" />
             <engine:VisualElement name="SpaceFiller" />
-            <engine:EnumField value="Private" type="AtMycelia.Hyphlow.VariableScope, AtMycelia.Hyphlow.Core" name="Scope" data-source-type="AtMycelia.Hyphlow.VariableScope, AtMycelia.Hyphlow.Core" binding-path="scope" class="scopeRoot" />
+            <engine:EnumField value="Private" type="AtMycelia.Hyphlow.VariableScope, AtMycelia.Hyphlow.Core" name="Scope" data-source-type="AtMycelia.Hyphlow.VariableScope, AtMycelia.Hyphlow.Core" binding-path="_scope" class="scopeRoot" />
             <engine:Button text="-" name="RemoveButton" class="removeButton" />
         </engine:VisualElement>
         <engine:VisualElement name="ValueFieldHolder" style="flex-grow: 1;">
-            <engine:TextField name="ValueField" binding-path="value" multiline="true" vertical-scroller-visibility="Auto" select-all-on-mouse-up="false" select-all-on-focus="false" class="textField" style="white-space: pre-wrap;" />
+            <engine:TextField name="ValueField" binding-path="_value" multiline="true" vertical-scroller-visibility="Auto" select-all-on-mouse-up="false" select-all-on-focus="false" class="textField" style="white-space: pre-wrap;" />
         </engine:VisualElement>
     </engine:VisualElement>
 </UXML>

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using AtMycelia.Amanita;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -11,7 +10,7 @@ namespace AtMycelia.Hyphlow
     /// <summary>
     /// A registry and instantiator for legacy and muscari types alike.
     /// </summary>
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public static class VariableTypeRegistry
     {
         private static readonly IList<Type> _legacyTypes = new List<Type>();

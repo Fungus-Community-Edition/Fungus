@@ -5,45 +5,59 @@ using System.Collections.Generic;
 using AtMycelia.Hyphlow;
 using AtMycelia.Amanita.VScripting;
 using AtMycelia.Hyphlow.Sys;
-using AtMycelia.Hyphlow.Tweening;
+using AtMycelia.AmaniTween;
 
 namespace AtMycelia.Amanita
 {
     /// <summary>
-    /// Detects drag and drop interactions on a Game Object, and sends events to all Flowchart event handlers in the scene.
+    /// Detects drag and drop interactions on a Game Object, and sends events to all 
+    /// Flowchart event handlers in the scene.
+    /// 
     /// The Game Object must have Collider2D & RigidBody components attached. 
     /// The Collider2D must have the Is Trigger property set to true.
-    /// The RigidBody would typically have the Is Kinematic property set to true, unless you want the object to move around using physics.
-    /// Use in conjunction with the Drag Started, Drag Completed, Drag Cancelled, Drag Entered & Drag Exited event handlers.
+    /// 
+    /// The RigidBody would typically have the Is Kinematic property set to true, 
+    /// unless you want the object to move around using physics.
+    /// 
+    /// Use in conjunction with the Drag Started, Drag Completed, Drag Cancelled, 
+    /// Drag Entered & Drag Exited event handlers.
     /// </summary>
     public class Draggable2D : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler,
         IPointerEnterHandler, IPointerExitHandler
     {
         [Tooltip("Is object dragging enabled")]
-        [SerializeField] protected bool dragEnabled = true;
+        [FormerlySerializedAs("dragEnabled")]
+        [SerializeField] protected bool _dragEnabled = true;
 
         [Tooltip("Move object back to its starting position when drag is cancelled")]
-        [FormerlySerializedAs("returnToStartPos")]
-        [SerializeField] protected bool returnOnCancelled = true;
+        [FormerlySerializedAs("returnOnCancelled")]
+        [SerializeField] protected bool _returnOnCancelled = true;
 
         [Tooltip("Move object back to its starting position when drag is completed")]
-        [SerializeField] protected bool returnOnCompleted = true;
+        [FormerlySerializedAs("returnOnCompleted")]
+        [SerializeField] protected bool _returnOnCompleted = true;
 
         [Tooltip("Time object takes to return to its starting position")]
-        [SerializeField] protected float returnDuration = 1f;
+        [FormerlySerializedAs("returnDuration")]
+        [SerializeField] protected float _returnDuration = 1f;
 
         [Tooltip("Mouse texture to use when hovering mouse over object")]
-        [SerializeField] protected Texture2D hoverCursor;
+        [FormerlySerializedAs("hoverCursor")]
+        [SerializeField] protected Texture2D _hoverCursor;
 
-        [Tooltip("Use the UI Event System to check for drag events. Clicks that hit an overlapping UI object will be ignored. Camera must have a PhysicsRaycaster component, or a Physics2DRaycaster for 2D colliders.")]
-        [SerializeField] protected bool useEventSystem;
+        [Tooltip("Use the UI Event System to check for drag events. Clicks that hit " +
+            "an overlapping UI object will be ignored. Camera must have a " +
+            "PhysicsRaycaster component, or a Physics2DRaycaster for 2D colliders.")]
+        [FormerlySerializedAs("useEventSystem")]
+        [SerializeField] protected bool _useEventSystem;
 
-        [SerializeField] protected bool beingDragged;
+        [FormerlySerializedAs("beingDragged")]
+        [SerializeField] protected bool _beingDragged;
 
         public virtual bool BeingDragged
         {
-            get { return beingDragged; }
-            set { beingDragged = value; }
+            get { return _beingDragged; }
+            set { _beingDragged = value; }
         }
 
         protected Vector3 startingPosition;
@@ -61,7 +75,7 @@ namespace AtMycelia.Amanita
 
         public void UnregisterHandler(DragCompleted handler)
         {
-            if(dragCompletedHandlers.Contains(handler))
+            if (dragCompletedHandlers.Contains(handler))
             {
                 dragCompletedHandlers.Remove(handler);
             }
@@ -70,8 +84,10 @@ namespace AtMycelia.Amanita
 
         protected virtual void LateUpdate()
         {
-            // iTween will sometimes override the object position even if it should only be affecting the scale, rotation, etc.
-            // To make sure this doesn't happen, we force the position change to happen in LateUpdate.
+            // iTween will sometimes override the object position even if
+            // it should only be affecting the scale, rotation, etc.
+            // To make sure this doesn't happen, we force the position
+            // change to happen in LateUpdate.
             if (updatePosition)
             {
                 transform.position = newPosition;
@@ -81,7 +97,7 @@ namespace AtMycelia.Amanita
 
         protected virtual void OnTriggerEnter2D(Collider2D other) 
         {
-            if (!dragEnabled)
+            if (!_dragEnabled)
             {
                 return;
             }
@@ -93,7 +109,7 @@ namespace AtMycelia.Amanita
 
         protected virtual void OnTriggerExit2D(Collider2D other) 
         {
-            if (!dragEnabled)
+            if (!_dragEnabled)
             {
                 return;
             }
@@ -105,7 +121,7 @@ namespace AtMycelia.Amanita
 
         protected virtual void DoBeginDrag()
         {
-            beingDragged = true;
+            _beingDragged = true;
 
             // Offset the object so that the drag is anchored to the exact point where the user clicked it
 
@@ -126,7 +142,7 @@ namespace AtMycelia.Amanita
 
         protected virtual void DoDrag()
         {
-            if (!dragEnabled)
+            if (!_dragEnabled)
             {
                 return;
             }
@@ -147,7 +163,7 @@ namespace AtMycelia.Amanita
 
         protected virtual void DoEndDrag()
         {
-            if (!dragEnabled)
+            if (!_dragEnabled)
             {
                 return;
             }
@@ -173,28 +189,28 @@ namespace AtMycelia.Amanita
             {
                 eventDispatcher.Raise(new DragCancelled.DragCancelledEvent(this));
 
-                if (returnOnCancelled)
+                if (_returnOnCancelled)
                 {
                     Tweener.TweenPosition(gameObject.transform, gameObject.transform.position,
-                    startingPosition, returnDuration);
+                    startingPosition, _returnDuration);
                     //LeanTween.move(gameObject, startingPosition, returnDuration).setEase(LeanTweenType.easeOutExpo);
                 }
             }
-            else if (returnOnCompleted)
+            else if (_returnOnCompleted)
             {
                 Tweener.TweenPosition(gameObject.transform, gameObject.transform.position,
-                    startingPosition, returnDuration);
+                    startingPosition, _returnDuration);
                 //LeanTween.move(gameObject, startingPosition, returnDuration).setEase(LeanTweenType.easeOutExpo);
             }
 
-            beingDragged = false;
+            _beingDragged = false;
         }
 
         private DefaultTweenAdapter Tweener => HyphlowRuntimeSysAssets.S.TweenAdapter;
 
         protected virtual void DoPointerEnter()
         {
-            ChangeCursor(hoverCursor);
+            ChangeCursor(_hoverCursor);
         }
 
         protected virtual void DoPointerExit()
@@ -204,7 +220,7 @@ namespace AtMycelia.Amanita
 
         protected virtual void ChangeCursor(Texture2D cursorTexture)
         {
-            if (!dragEnabled)
+            if (!_dragEnabled)
             {
                 return;
             }
@@ -216,7 +232,7 @@ namespace AtMycelia.Amanita
 
         protected virtual void OnMouseDown()
         {
-            if (!useEventSystem)
+            if (!_useEventSystem)
             {
                 DoBeginDrag();
             }
@@ -224,7 +240,7 @@ namespace AtMycelia.Amanita
 
         protected virtual void OnMouseDrag()
         {
-            if (!useEventSystem)
+            if (!_useEventSystem)
             {
                 DoDrag();
             }
@@ -232,7 +248,7 @@ namespace AtMycelia.Amanita
 
         protected virtual void OnMouseUp()
         {
-            if (!useEventSystem)
+            if (!_useEventSystem)
             {
                 DoEndDrag();
             }
@@ -240,7 +256,7 @@ namespace AtMycelia.Amanita
 
         protected virtual void OnMouseEnter()
         {
-            if (!useEventSystem)
+            if (!_useEventSystem)
             {
                 DoPointerEnter();
             }
@@ -248,7 +264,7 @@ namespace AtMycelia.Amanita
         
         protected virtual void OnMouseExit()
         {
-            if (!useEventSystem)
+            if (!_useEventSystem)
             {
                 DoPointerExit();
             }
@@ -262,7 +278,7 @@ namespace AtMycelia.Amanita
         /// Is object drag and drop enabled.
         /// </summary>
         /// <value><c>true</c> if drag enabled; otherwise, <c>false</c>.</value>
-        public virtual bool DragEnabled { get { return dragEnabled; } set { dragEnabled = value; } }
+        public virtual bool DragEnabled { get { return _dragEnabled; } set { _dragEnabled = value; } }
 
         #endregion
 
@@ -270,7 +286,7 @@ namespace AtMycelia.Amanita
 
         public void OnBeginDrag(PointerEventData eventData)
         {
-            if (useEventSystem)
+            if (_useEventSystem)
             {
                 DoBeginDrag();
             }
@@ -282,7 +298,7 @@ namespace AtMycelia.Amanita
 
         public void OnDrag(PointerEventData eventData)
         {
-            if (useEventSystem)
+            if (_useEventSystem)
             {
                 DoDrag();
             }
@@ -294,7 +310,7 @@ namespace AtMycelia.Amanita
 
         public void OnEndDrag(PointerEventData eventData)
         {
-            if (useEventSystem)
+            if (_useEventSystem)
             {
                 DoEndDrag();
             }
@@ -306,7 +322,7 @@ namespace AtMycelia.Amanita
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            if (useEventSystem)
+            if (_useEventSystem)
             {
                 DoPointerEnter();
             }
@@ -318,7 +334,7 @@ namespace AtMycelia.Amanita
 
         public void OnPointerExit(PointerEventData eventData)
         {
-            if (useEventSystem)
+            if (_useEventSystem)
             {
                 DoPointerExit();
             }

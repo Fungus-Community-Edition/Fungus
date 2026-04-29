@@ -69,6 +69,7 @@ namespace AtMycelia.Hyphlow
                     break;
                 case GetSet.Set:
                     Vector3 newVal = new Vector3(_x.Value, _y.Value, _z.Value);
+                    Debug.Log($"Setting vector3 to {newVal}");
                     _vec3Var.SetValue(newVal);
                     break;
                 default:

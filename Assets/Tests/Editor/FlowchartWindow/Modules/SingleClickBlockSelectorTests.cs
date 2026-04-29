@@ -130,6 +130,7 @@ namespace VScriptingTests.FlowchartWindow.Modules
             syncer.OnBlockCreated(block);
 
             Assert.That(flowchart.SelectedBlock, Is.EqualTo(block));
+            Assert.That(block.IsSelected, Is.True);
         }
 
         private sealed class DummyCommand : Command

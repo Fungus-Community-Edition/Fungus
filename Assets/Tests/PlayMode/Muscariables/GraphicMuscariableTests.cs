@@ -70,7 +70,7 @@ namespace VScriptingTests.MuscariableTests.DataOnly
             colVar.Init();
 
             Color captured = default;
-            colVar.OnValueChanged += c => captured = c;
+            colVar.OnValueChanged += c => captured = (Color)c.BoxedValue;
 
             var c1 = new Color(0.1f, 0.2f, 0.3f, 0.4f);
             colVar.Value = c1;
@@ -124,7 +124,7 @@ namespace VScriptingTests.MuscariableTests.DataOnly
             v.Init();
 
             Sprite captured = null;
-            v.OnValueChanged += s => captured = s;
+            v.OnValueChanged += s => captured = s.BoxedValue as Sprite;
 
             v.BoxedValue = firstSprite;
             Assert.AreEqual(firstSprite, v.BoxedValue);
@@ -183,7 +183,7 @@ namespace VScriptingTests.MuscariableTests.DataOnly
             texVar.Init();
 
             Texture captured = null;
-            texVar.OnValueChanged += t => captured = t;
+            texVar.OnValueChanged += t => captured = t.BoxedValue as Texture;
 
             texVar.Value = firstTex;
             Assert.AreEqual(firstTex, texVar.Value);
@@ -293,7 +293,7 @@ namespace VScriptingTests.MuscariableTests.DataOnly
             animVar.Init();
 
             Animator captured = null;
-            animVar.OnValueChanged += a => captured = a;
+            animVar.OnValueChanged += a => captured = a.BoxedValue as Animator;
 
             animVar.Value = firstAnimator;
             Assert.AreEqual(firstAnimator, animVar.Value);

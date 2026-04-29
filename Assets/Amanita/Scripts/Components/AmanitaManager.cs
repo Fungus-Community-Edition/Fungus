@@ -1,5 +1,5 @@
 ﻿using AtMycelia.SaveSys;
-using AtMycelia.Hyphlow.Tweening;
+using AtMycelia.AmaniTween;
 using FullSerializer;
 using Lorekeeper;
 using System.Collections.Generic;
@@ -130,6 +130,7 @@ namespace AtMycelia.Amanita
             }
 
             AmanitaManager manager = Instantiate(prefab);
+            manager.name = prefab.name; // Remove "(Clone)" from the name for cleanliness
             return manager;
         }
 

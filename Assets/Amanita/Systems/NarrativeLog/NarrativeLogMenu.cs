@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using AtMycelia.Hyphlow;
 using AtMycelia.Amanita.DialogueSys;
 using AtMycelia.Hyphlow.Sys;
-using AtMycelia.Hyphlow.Tweening;
+using AtMycelia.AmaniTween;
 
 namespace AtMycelia.Amanita.UI.Legacy
 {

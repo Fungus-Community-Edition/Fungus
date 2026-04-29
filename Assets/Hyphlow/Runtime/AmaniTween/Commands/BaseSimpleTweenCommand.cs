@@ -1,9 +1,11 @@
 using AtMycelia.Hyphlow.Sys;
 using UnityEngine;
+using System.Collections.Generic;
+using AtMycelia.Hyphlow;
 
-namespace AtMycelia.Hyphlow.Tweening.VScripting
+namespace AtMycelia.AmaniTween.VScripting
 {
-    public abstract class BaseSimpleTweenCommand : Command, ITweenCommand
+    public abstract partial class BaseSimpleTweenCommand : Command, ITweenCommand
     {
         [Tooltip("The time in seconds the animation will take to complete")]
         [SerializeField] protected FloatData _duration = new FloatData(1f);
@@ -53,6 +55,8 @@ namespace AtMycelia.Hyphlow.Tweening.VScripting
         public override void OnEnter()
         {
             base.OnEnter();
+            _allTargets.Clear();
+            RegisterAllTargets();
             if (!AreTargetsValid())
             {
                 string warningMessage = $"{GetType().Name} on {gameObject.name}'s {ParentBlock.BlockName} Block " +
@@ -72,8 +76,27 @@ namespace AtMycelia.Hyphlow.Tweening.VScripting
             WaitOrContinueAsAppropriate();
         }
 
+        /// <summary>
+        /// A list of all the objects that the tween is targeting. Used for stopping and/or executing
+        /// tweens as needed.
+        /// </summary>
+        protected IList<object> _allTargets = new List<object>();
+
+        /// <summary>
+        /// To be overridden by subclasses to add all tween targets to the _allTargets list.
+        /// Assume that when this func starts executing, the _allTargets list is empty.
+        /// </summary>
+        protected abstract void RegisterAllTargets();
         protected abstract bool AreTargetsValid();
-        protected abstract void StopAllTweens();
+        protected virtual void StopAllTweens()
+        {
+            TweenManager manager = TweenManager.S;
+            for (int i = 0; i < _allTargets.Count; i++)
+            {
+                object target = _allTargets[i];
+                manager.KillAllOn(target, false);
+            }
+        }
 
         protected ITweenHandle _ourTween;
 
@@ -104,5 +127,25 @@ namespace AtMycelia.Hyphlow.Tweening.VScripting
             base.DelayedOnValidate();
             ValidateTweener();
         }
+
+        #region Editor-only conveniences
+        public float DurationFloat
+        {
+            get => _duration;
+            set => _duration.Value = value;
+        }
+
+        public bool StopPreviousTweensBool
+        {
+            get => _stopPreviousTweens;
+            set => _stopPreviousTweens.Value = value;
+        }
+
+        public bool WaitUntilFinishedBool
+        {
+            get => _waitUntilFinished;
+            set => _waitUntilFinished.Value = value;
+        }
+        #endregion
     }
 }

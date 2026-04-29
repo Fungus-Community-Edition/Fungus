@@ -1,31 +1,8 @@
-using System;
 using System.Reflection;
-using AtMycelia.Amanita;
 using UnityEngine;
 using UnityEngine.Serialization;
-
-using UnityEngine.Scripting.APIUpdating;
-
 namespace AtMycelia.Hyphlow
 {
-    /// <summary>
-    /// Attribute class for Fungus event handlers.
-    /// </summary>
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
-    public class EventHandlerInfoAttribute : Attribute
-    {
-        public EventHandlerInfoAttribute(string category, string eventHandlerName, string helpText)
-        {
-            this.Category = category;
-            this.EventHandlerName = eventHandlerName;
-            this.HelpText = helpText;
-        }
-        
-        public string Category { get; set; }
-        public string EventHandlerName { get; set; }
-        public string HelpText { get; set; }
-    }
-
     /// <summary>
     /// A Block may have an associated Event Handler which starts executing commands when
     /// a specific event occurs. 
@@ -38,40 +15,43 @@ namespace AtMycelia.Hyphlow
     [RequireComponent(typeof(Flowchart))]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
-    public class EventHandler : MonoBehaviour, ISerializationCallbackReceiver
-    {   
+    public class EventHandler : MonoBehaviour, ISerializationCallbackReceiver, IBackwardsCompatibilityApplier
+    {
         [HideInInspector]
         [FormerlySerializedAs("parentSequence")]
-        [SerializeField] protected Block parentBlock;
+        [FormerlySerializedAs("parentBlock")]
+        [SerializeField] protected Block _parentBlock;
 
-        [Tooltip("If true, the flowchart window will not auto select the Block when the Event Handler fires. Affects Editor only.")]
-        [SerializeField] protected bool suppressBlockAutoSelect = false;
+        [Tooltip("If true, the flowchart window will not auto select the Block when the Event " +
+            "Handler fires. Affects Editor only.")]
+        [FormerlySerializedAs("suppressBlockAutoSelect")]
+        [SerializeField] protected bool _suppressBlockAutoSelect = false;
 
         protected virtual void Awake()
         {
-            fChart = GetComponent<Flowchart>();
+            _fChart = GetComponent<Flowchart>();
         }
 
         #region Public members
-        
+
         /// <summary>
         /// The parent Block which owns this Event Handler.
         /// </summary>
         public virtual Block ParentBlock
         {
-            get => parentBlock;
+            get => _parentBlock;
             set
             {
-                parentBlock = value;
-                fChart = null;
-                if (parentBlock != null)
+                _parentBlock = value;
+                _fChart = null;
+                if (_parentBlock != null)
                 {
-                    fChart = parentBlock.GetFlowchart();
+                    _fChart = _parentBlock.GetFlowchart();
                 }
             }
         }
 
-        protected Flowchart fChart;
+        protected Flowchart _fChart;
         /// <summary>
         /// The Event Handler should call this method in response to the relevant event occurring.
         /// </summary>
@@ -88,17 +68,17 @@ namespace AtMycelia.Hyphlow
             }
 
             //if somehow the flowchart is invalid or has been disabled we don't want to continue
-            if (fChart == null || !this.gameObject.activeInHierarchy || !fChart.isActiveAndEnabled)
+            if (_fChart == null || !this.gameObject.activeInHierarchy || !_fChart.isActiveAndEnabled)
             {
                 return false;
             }
 
-            if (suppressBlockAutoSelect)
+            if (_suppressBlockAutoSelect)
             {
                 ParentBlock.SuppressNextAutoSelection = true;
             }
 
-            return fChart.ExecuteBlock(ParentBlock);
+            return _fChart.ExecuteBlock(ParentBlock);
         }
 
         /// <summary>
@@ -117,8 +97,6 @@ namespace AtMycelia.Hyphlow
             {
                 return;
             }
-
-            _eventDispatcher = FindFirstObjectByType<EventDispatcher>();
 
             if (ToggleSubsOnlyInRuntime && Application.IsPlaying(this))
             {
@@ -161,8 +139,14 @@ namespace AtMycelia.Hyphlow
 
         protected virtual void OnDisable()
         {
-            ToggleSubs(false);
-            _eventDispatcher = null;
+            if (ToggleSubsOnlyInRuntime && Application.IsPlaying(this))
+            {
+                ToggleSubs(false);
+            }
+            else if (!ToggleSubsOnlyInRuntime)
+            {
+                ToggleSubs(false);
+            }
         }
 
         protected virtual void OnValidate()
@@ -173,15 +157,15 @@ namespace AtMycelia.Hyphlow
             }
             // Seems that when this is set to execute in edit mode, OnValidate can be called
             // before Awake does. Thus, we need to ensure fChart is assigned.
-            if (fChart == null)
+            if (_fChart == null)
             {
-                fChart = GetComponent<Flowchart>();
+                _fChart = GetComponent<Flowchart>();
             }
         }
 
         public virtual void OnBeforeSerialize()
         {
-            
+
         }
 
         public virtual void OnAfterDeserialize()
@@ -204,10 +188,20 @@ namespace AtMycelia.Hyphlow
         }
         protected virtual EventDispatcher EventDispatcher
         {
-            get => _eventDispatcher;
+            get
+            {
+                HyphlowManager manager = HyphlowManager.S;
+                if (manager == null)
+                {
+                    return null;
+                }
+                return manager.EventDispatcher;
+            }
         }
 
-        private EventDispatcher _eventDispatcher;
+        public virtual void ApplyBackwardsCompatibility()
+        {
 
+        }
     }
 }

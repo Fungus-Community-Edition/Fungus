@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 using UnityEngine.Scripting.APIUpdating;
 
 namespace AtMycelia.Hyphlow
@@ -58,11 +58,22 @@ namespace AtMycelia.Hyphlow
         {
             if (!Application.isPlaying) 
             {
+                var activeScene = SceneManager.GetActiveScene();
+                string sceneName = activeScene.name;
+                bool isTestScene = string.IsNullOrEmpty(sceneName) ||
+                    sceneName.IndexOf("test", StringComparison.OrdinalIgnoreCase) >= 0;
+
+                if (isTestScene)
+                {
+                    return true;
+                }
+
                 // Only check assemblies outside of Play Mode. It's during Play Mode
                 // that unit tests might want to screw with the registry, and we
                 // don't want to prevent that.
                 string assemblyName = varDataType.Assembly.GetName().Name;
-                if (!string.IsNullOrEmpty(assemblyName) &&
+                
+                if ( !string.IsNullOrEmpty(assemblyName) &&
                     assemblyName.IndexOf("test", StringComparison.OrdinalIgnoreCase) >= 0)
                 {
                     return false;

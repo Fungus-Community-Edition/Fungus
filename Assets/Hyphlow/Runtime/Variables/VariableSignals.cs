@@ -3,7 +3,7 @@ using UnityEngine.Scripting.APIUpdating;
 
 namespace AtMycelia.Hyphlow
 {
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public static class VariableSignals 
     {
         public static Action<IVariable> PreValueChange = delegate { };
@@ -13,6 +13,13 @@ namespace AtMycelia.Hyphlow
         /// is obvious.
         /// </summary>
         public static Action<IVariable, object> PostValueChange = delegate { };
+
+        public static Action<IVariable> VariableAdded = delegate { };
+        public static Action<IVariable> VariableRemoved = delegate { };
+
+#if UNITY_EDITOR
+        public static Action<IVariable> EditorValueChange = delegate { };
+#endif
 
     }
 }

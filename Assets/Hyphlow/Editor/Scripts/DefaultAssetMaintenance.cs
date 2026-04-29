@@ -1,7 +1,7 @@
 using AtMycelia.Hyphlow.Sys;
 using UnityEditor;
 using UnityEngine;
-using AtMycelia.Hyphlow.Tweening;
+using AtMycelia.AmaniTween;
 
 namespace AtMycelia.Hyphlow.EditorUtils
 {
@@ -18,6 +18,15 @@ namespace AtMycelia.Hyphlow.EditorUtils
             AssemblyReloadEvents.afterAssemblyReload += DoTheEnsuring;
         }
 
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        public static void InitInEditor()
+        {
+            // This is to help make sure that the Singletons aren't lost for too long.
+#if UNITY_EDITOR
+            DoTheEnsuring();
+#endif
+        }
+
         private static void DoTheEnsuring()
         {
             Debug.Log($"Doing default asset maintenance...");
@@ -29,6 +38,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
         public static HyphlowRuntimeSysAssets EnsureHyphlowRuntimeSysAssets()
         {
             HyphlowRuntimeSysAssets assets = HyphlowRuntimeSysAssets.S;
+
             if (assets == null)
             {
                 var all = Resources.LoadAll<HyphlowRuntimeSysAssets>("");

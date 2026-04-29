@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using UnityEditor;
 using System.Linq;
-using AtMycelia.Amanita;
 
 namespace AtMycelia.Hyphlow.EditorUtils
 {

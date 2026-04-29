@@ -1,34 +1,42 @@
 using UnityEngine;
-
 using UnityEngine.Scripting.APIUpdating;
+using UnityEngine.Serialization;
 
 namespace AtMycelia.Hyphlow
 {
     /// <summary>
-    /// Store Input.GetKey in a variable. Supports an optional Negative key input. A negative value will be overridden by a positive one, they do not add.
+    /// Store Input.GetKey in a variable. Supports an optional Negative key input. A negative 
+    /// value will be overridden by a positive one, they do not add.
     /// </summary>
     [CommandInfo("Input",
                  "GetKey",
-                 "Store Input.GetKey in a variable. Supports an optional Negative key input. A negative value will be overridden by a positive one, they do not add.")]
+                 "Store Input.GetKey in a variable. Supports an optional Negative key input. A " +
+                "negative value will be overridden by a positive one, they do not add.")]
     [AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class GetKey : Command
     {
         [SerializeField]
-        protected KeyCode keyCode = KeyCode.None;
+        [FormerlySerializedAs("keyCode")]
+        protected KeyCode _keyCode = KeyCode.None;
 
-        [Tooltip("Optional, secondary or negative keycode. For booleans will also set to true, for int and float will set to -1.")]
+        [Tooltip("Optional, secondary or negative keycode. For booleans will also set to true, " +
+            "for int and float will set to -1.")]
         [SerializeField]
-        protected KeyCode keyCodeNegative = KeyCode.None;
+        [FormerlySerializedAs("keyCodeNegative")]
+        protected KeyCode _keyCodeNegative = KeyCode.None;
 
         [SerializeField]
+        [FormerlySerializedAs("keyCodeName")]
         [Tooltip("Only used if KeyCode is KeyCode.None, expects a name of the key to use.")]
-        protected StringData keyCodeName = new StringData(string.Empty);
+        protected StringData _keyCodeName = new StringData(string.Empty);
 
         [SerializeField]
-        [Tooltip("Optional, secondary or negative keycode. For booleans will also set to true, for int and float will set to -1." +
-            "Only used if KeyCode is KeyCode.None, expects a name of the key to use.")]
-        protected StringData keyCodeNameNegative = new StringData(string.Empty);
+        [FormerlySerializedAs("keyCodeNameNegative")]
+        [Tooltip("Optional, secondary or negative keycode. For booleans will also set to true, " +
+            "for int and float will set to -1. Only used if KeyCode is KeyCode.None, expects " +
+            "a name of the key to use.")]
+        protected StringData _keyCodeNameNegative = new StringData(string.Empty);
 
         public enum InputKeyQueryType
         {
@@ -38,67 +46,80 @@ namespace AtMycelia.Hyphlow
         }
 
         [Tooltip("Do we want an Input.GetKeyDown, GetKeyUp or GetKey")]
+        [FormerlySerializedAs("keyQueryType")]
         [SerializeField]
         protected InputKeyQueryType keyQueryType = InputKeyQueryType.State;
 
         [Tooltip("Will store true or false or 0 or 1 depending on type. Sets true or -1 for negative key values.")]
         [SerializeField]
-        [VariableProperty(typeof(FloatVariable), typeof(BooleanVariable), typeof(IntegerVariable))]
-        protected Variable outValue;
+        [ContentTypeConstraint(typeof(int), typeof(float), typeof(bool))]
+        protected VariableReference _outValue = new VariableReference();
 
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            _variableDataCache.Add(keyCodeName);
-            _variableDataCache.Add(keyCodeNameNegative);
+            _variableDataCache.Add(_keyCodeName);
+            _variableDataCache.Add(_keyCodeNameNegative);
         }
 
         public override void OnEnter()
         {
-            FillOutValue(0);
-
-            if (keyCodeNegative != KeyCode.None)
+            if (_outValue.Variable == null)
             {
-                DoKeyCode(keyCodeNegative, -1);
-            }
-            else if (!string.IsNullOrEmpty(keyCodeNameNegative))
-            {
-                DoKeyName(keyCodeNameNegative, -1);
+                Debug.LogError($"GetKey Command on Flowchart {this.name}, Block {ParentBlock.BlockName} at " +
+                    $"index {CommandIndex} has no variable set to store the result.", this);
+                Continue();
+                return;
             }
 
+            int valToSet = 0;
 
-            if (keyCode != KeyCode.None)
+            if (_keyCodeNegative != KeyCode.None)
             {
-                DoKeyCode(keyCode, 1);
+                DoKeyCode(_keyCodeNegative, -1, ref valToSet);
             }
-            else if (!string.IsNullOrEmpty(keyCodeName))
+            else if (!string.IsNullOrEmpty(_keyCodeNameNegative))
             {
-                DoKeyName(keyCodeName, 1);
+                DoKeyName(_keyCodeNameNegative, -1, ref valToSet);
             }
+
+            if (_keyCode != KeyCode.None)
+            {
+                DoKeyCode(_keyCode, 1, ref valToSet);
+            }
+            else if (!string.IsNullOrEmpty(_keyCodeName))
+            {
+                DoKeyName(_keyCodeName, 1, ref valToSet);
+            }
+
+            _outValue.SetValue(valToSet);
+            Debug.Log($"Filling out value {valToSet} in variable {_outValue.VarKey} for GetKey command on " +
+                $"Flowchart {this.name}, Block {ParentBlock.BlockName} at index " +
+                $"{CommandIndex}. The out value is: {_outValue.Variable.BoxedValue}", this);
 
             Continue();
         }
 
-        private void DoKeyCode(KeyCode key, int trueVal)
+        private void DoKeyCode(KeyCode key, int trueVal, ref int valToSet)
         {
             switch (keyQueryType)
             {
                 case InputKeyQueryType.Down:
                     if (Input.GetKeyDown(key))
                     {
-                        FillOutValue(trueVal);
+                        valToSet = trueVal;
                     }
                     break;
                 case InputKeyQueryType.Up:
                     if (Input.GetKeyUp(key))
                     {
-                        FillOutValue(trueVal);
+                        valToSet = trueVal;
                     }
                     break;
                 case InputKeyQueryType.State:
                     if (Input.GetKey(key))
                     {
-                        FillOutValue(trueVal);
+                        valToSet = trueVal;
                     }
                     break;
                 default:
@@ -106,26 +127,26 @@ namespace AtMycelia.Hyphlow
             }
         }
 
-        private void DoKeyName(string key, int trueVal)
+        private void DoKeyName(string key, int trueVal, ref int valToSet)
         {
             switch (keyQueryType)
             {
                 case InputKeyQueryType.Down:
                     if (Input.GetKeyDown(key))
                     {
-                        FillOutValue(trueVal);
+                        valToSet = trueVal;
                     }
                     break;
                 case InputKeyQueryType.Up:
                     if (Input.GetKeyUp(key))
                     {
-                        FillOutValue(trueVal);
+                        valToSet = trueVal;
                     }
                     break;
                 case InputKeyQueryType.State:
                     if (Input.GetKey(key))
                     {
-                        FillOutValue(trueVal);
+                        valToSet = trueVal;
                     }
                     break;
                 default:
@@ -133,38 +154,18 @@ namespace AtMycelia.Hyphlow
             }
         }
 
-        private void FillOutValue(int v)
-        {
-            FloatVariable fvar = outValue as FloatVariable;
-            if (fvar != null)
-            {
-                fvar.Value = v;
-                return;
-            }
-
-            BooleanVariable bvar = outValue as BooleanVariable;
-            if (bvar != null)
-            {
-                bvar.Value = v == 0 ? false : true;
-                return;
-            }
-
-            IntegerVariable ivar = outValue as IntegerVariable;
-            if (ivar != null)
-            {
-                ivar.Value = v;
-                return;
-            }
-        }
+        
 
         public override string GetSummary()
         {
-            if (outValue == null)
+            if (_outValue.Variable == null)
             {
                 return "Error: no outvalue set";
             }
 
-            return (keyCode != KeyCode.None ? keyCode.ToString() : keyCodeName) + " in " + outValue.Key;
+            string keyCodeStr = _keyCode != KeyCode.None ? _keyCode.ToString() : _keyCodeName;
+            string result = $"{keyCodeStr} in {_outValue.VarKey}";
+            return result;
         }
 
         public override Color GetButtonColor()
@@ -174,13 +175,28 @@ namespace AtMycelia.Hyphlow
 
         public override bool HasReference(Variable variable)
         {
-            if (ReferenceEquals(keyCodeName.VarRef, variable) || 
-                outValue == variable || 
-                ReferenceEquals(keyCodeNameNegative.VarRef, variable))
-                return true;
+            bool result = base.HasReference(variable) || 
+                ReferenceEquals(_keyCodeName.VarRef, variable) ||
+                ReferenceEquals(_outValue.Variable, variable) ||
+                ReferenceEquals(_keyCodeNameNegative.VarRef, variable);
 
-            return false;
+            return result;
         }
 
+        public override void ApplyBackwardsCompatibility()
+        {
+            base.ApplyBackwardsCompatibility();
+            if (_oldOutValue != null)
+            {
+                _outValue.Variable = _oldOutValue;
+                _oldOutValue = null;
+            }
+
+        }
+
+        [HideInInspector]
+        [FormerlySerializedAs("outValue")]
+        [VariableProperty(typeof(FloatVariable), typeof(BooleanVariable), typeof(IntegerVariable))]
+        protected Variable _oldOutValue;
     }
 }

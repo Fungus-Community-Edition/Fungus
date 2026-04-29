@@ -68,7 +68,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
         {
             if (inspectorInstance != null)
             {
-                inspectorInstance.block = null;
+                inspectorInstance._block = null;
             }
 
             if (flowchart != null)
@@ -106,12 +106,12 @@ namespace AtMycelia.Hyphlow.EditorUtils
             BlockInspector inspector = EnsureInspector();
 
             bool inspectorIsActive = Selection.activeObject == inspector;
-            bool inspectorAlreadyShowing = inspector.block == block;
+            bool inspectorAlreadyShowing = inspector._block == block;
 
             if (!inspectorAlreadyShowing)
             {
                 flowchart.ClearSelectedCommands();
-                inspector.block = block;
+                inspector._block = block;
 
                 if (block.ActiveCommand != null)
                 {

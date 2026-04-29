@@ -1,8 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
-using AtMycelia.Amanita.Myceliaudio;
 using AtMycelia.Amanita.DialogueSys;
-using AtMycelia.Audio;
+using UnityEngine.Serialization;
 
 namespace AtMycelia.Amanita
 {
@@ -22,242 +21,191 @@ namespace AtMycelia.Amanita
     /// </summary>
     public class WriterAudio : MonoBehaviour, IWriterListener
     {
-
-        [SerializeField] protected int voiceOverAudioTrack = 128;
-        [SerializeField] protected int effectAudioTrack = 129;
-        [SerializeField] protected int beepAudioTrack = 130;
-        [SerializeField] protected int inputAudioTrack = 131;
-        // ^We want beeps to be on a different track than the other sound effects so we can have both
-        // playing at the same time.
+        [Tooltip("Volume level of writing sound effects")]
+        [Range(0, 1)]
+        [FormerlySerializedAs("volume")]
+        [SerializeField] protected float _volume = 1f;
 
         [Tooltip("Loop the audio when in Sound Effect mode. Has no effect in Beeps mode.")]
-        [SerializeField] protected bool loop = true;
+        [FormerlySerializedAs("loop")]
+        [SerializeField] protected bool _loop = true;
+
+        // If none is specifed then we use any AudioSource on the gameobject, and if that doesn't exist we create one.
+        [Tooltip("AudioSource to use for playing sound effects. If none is selected then one will be created.")]
+        [FormerlySerializedAs("targetAudioSource")]
+        [SerializeField] protected AudioSource _targetAudioSource;
 
         [Tooltip("Type of sound effect to play when writing text")]
-        [SerializeField] protected AudioMode audioMode = AudioMode.Beeps;
+        [FormerlySerializedAs("audioMode")]
+        [SerializeField] protected AudioMode _audioMode = AudioMode.Beeps;
 
-        [Tooltip("List of beeps to randomly select when playing beep sound effects. Will play maximum of one beep per character, with only one beep playing at a time.")]
-        [SerializeField] protected List<AudioClip> beepSounds = new List<AudioClip>();
+        [Tooltip("List of beeps to randomly select when playing beep sound effects. Will play maximum of " +
+            "one beep per character, with only one beep playing at a time.")]
+        [FormerlySerializedAs("beepSounds")]
+        [SerializeField] protected List<AudioClip> _beepSounds = new List<AudioClip>();
 
         [Tooltip("Long playing sound effect to play when writing text")]
-        [SerializeField] protected AudioClip soundEffect;
+        [FormerlySerializedAs("soundEffect")]
+        [SerializeField] protected AudioClip _soundEffect;
 
         [Tooltip("Sound effect to play on user input (e.g. a click)")]
-        [SerializeField] protected AudioClip inputSound;
+        [FormerlySerializedAs("inputSound")]
+        [SerializeField] protected AudioClip _inputSound;
+
+        protected float _targetVolume = 0f;
 
         // When true, a beep will be played on every written character glyph
-        protected bool playBeeps;
+        protected bool _playBeeps;
 
         // True when a voiceover clip is playing
-        protected bool playingVoiceover = false;
+        protected bool _playingVoiceover = false;
 
-        protected AudioSource lastUsedAudioSource;
-        protected SayDialog attachedSayDialog;
+        protected AudioSource _lastUsedAudioSource;
+        protected SayDialog _attachedSayDialog;
 
         // Time when current beep will have finished playing
-        protected float whenBeepDonePlaying;
+        protected float _nextBeepTime;
 
-        [Tooltip("If true, legacy voiceover logic used and any audio clips will be played through the targetAudioSource," +
-            " same one that sfx and beeps are played through.")]
-        [SerializeField] protected bool useLegacyAudioLogic = false;
+        protected bool _useLegacyAudioLogic = true;
+
+        protected virtual AudioSource VoiceOverAudioSource
+        {
+            get
+            {
+                return _targetAudioSource;
+            }
+        }
+
+        protected virtual AudioSource EffectAudioSource
+        {
+            get
+            {
+                return _targetAudioSource;
+            }
+        }
 
         public float GetSecondsRemaining()
         {
-            int eitherDoneOrNotPlaying = 0;
-            float result = eitherDoneOrNotPlaying;
-
-            if (playingVoiceover)
+            if (_playingVoiceover)
             {
-                //bool playingVoiceClipRightNow = AudioSystem.S.GetIsPlaying(TrackGroup.Voice, voiceOverAudioTrack);
-                // ^For some reason, this can be true even when the clip is done playing. Hence why instead of 
-                // checking whether the clip is playing, we check if the clip is null.
-
-                AudioClip voiceClip = AudioSystem.S.GetClipPlayingAt(TrackGroup.Voice, voiceOverAudioTrack);
-                float howFarAlong = AudioSystem.S.GetMainTime(TrackGroup.Voice, voiceOverAudioTrack);
-
-                if (voiceClip != null)
-                {
-                    result = voiceClip.length - howFarAlong;
-                }
+                return _targetAudioSource.isPlaying ? _targetAudioSource.clip.length - _targetAudioSource.time : 0f;
             }
-
-            return result;
+            else
+            {
+                return 0F;
+            }
         }
 
         protected virtual void SetAudioMode(AudioMode mode)
         {
-            audioMode = mode;
+            _audioMode = mode;
         }
 
         protected virtual void Awake()
         {
-            PrepAudioArgs();
-            attachedSayDialog = GetComponent<SayDialog>();
+            // Need to do this in Awake rather than Start due to init order issues
+            _targetAudioSource = GetComponent<AudioSource>();
+            _targetAudioSource.volume = 0f;
+            _attachedSayDialog = GetComponent<SayDialog>();
         }
 
-        protected virtual void PrepAudioArgs()
+        protected virtual void Play(AudioClip audioClip)
         {
-            playVoiceOver = new()
-            {
-                Track = voiceOverAudioTrack,
-                TrackGroup = TrackGroup.Voice,
-                MainClip = null, // We expect this to be set in Play()
-                Loop = false,
-            };
-
-            playBeepSfx = new()
-            {
-                Track = beepAudioTrack,
-                TrackGroup = TrackGroup.SoundFX,
-                MainClip = GetRandomBeep(),
-                Loop = false,
-            };
-
-            playInputSfx = new()
-            {
-                Track = inputAudioTrack,
-                TrackGroup = TrackGroup.SoundFX,
-                MainClip = inputSound,
-                Loop = false,
-            };
-
-            playOtherSfx = new()
-            {
-                Track = effectAudioTrack,
-                TrackGroup = TrackGroup.SoundFX,
-                MainClip = soundEffect,
-                Loop = loop,
-            };
-        }
-
-        protected PlayAudioArgs playVoiceOver, playBeepSfx, playInputSfx, playOtherSfx;
-
-        protected virtual AudioClip GetRandomBeep()
-        {
-            if (beepSounds.Count == 0)
-            {
-                return null;
-            }
-            int index = Random.Range(0, beepSounds.Count);
-            return beepSounds[index];
-        }
-
-        protected virtual void Play(AudioClip voiceOverClip)
-        {
-            bool weHaveSfxOrVoiceClipToPlay = voiceOverClip != null || soundEffect != null;
-            bool weHaveBeepsToPlay = beepSounds.Count > 0;
-            if ((audioMode == AudioMode.SoundEffect && weHaveSfxOrVoiceClipToPlay) ||
-                (audioMode == AudioMode.Beeps && !weHaveBeepsToPlay))
+            if (EffectAudioSource == null ||
+                (_audioMode == AudioMode.SoundEffect && _soundEffect == null && audioClip == null) ||
+                (_audioMode == AudioMode.Beeps && _beepSounds.Count == 0))
             {
                 return;
             }
 
-            playingVoiceover = false;
+            _lastUsedAudioSource = EffectAudioSource;
 
-            if (voiceOverClip != null)
+            _playingVoiceover = false;
+            _lastUsedAudioSource.volume = 0f;
+            _targetVolume = _volume;
+
+            if (audioClip != null)
             {
                 // Voice over clip provided
-                playVoiceOver.Loop = loop;
-                AudioSystem.S.SetTrackVol(TrackGroup.Voice, playVoiceOver.Track, normalAudibility);
-                AudioSystem.S.Play(playVoiceOver);
+                _lastUsedAudioSource.clip = audioClip;
+                _lastUsedAudioSource.loop = _loop;
+                _lastUsedAudioSource.Play();
             }
-            else if (audioMode == AudioMode.SoundEffect &&
-                     soundEffect != null)
+            else if (_audioMode == AudioMode.SoundEffect &&
+                     _soundEffect != null)
             {
                 // Use sound effects defined in WriterAudio
-                playOtherSfx.Loop = loop;
-                AudioSystem.S.Play(playOtherSfx);
+                _lastUsedAudioSource.clip = _soundEffect;
+                _lastUsedAudioSource.loop = _loop;
+                _lastUsedAudioSource.Play();
             }
-            else if (audioMode == AudioMode.Beeps)
+            else if (_audioMode == AudioMode.Beeps)
             {
                 // Use beeps defined in WriterAudio
-                playBeeps = true;
+                _lastUsedAudioSource.clip = null;
+                _lastUsedAudioSource.loop = false;
+                _playBeeps = true;
             }
         }
 
         protected virtual void Pause()
         {
-            if (lastUsedAudioSource == null)
+            if (_lastUsedAudioSource == null)
             {
                 return;
             }
 
-            // To avoid an audible click we'd otherwise get if we called audioSource.Stop()
-            SetTrackVolsTo(silent);
-        }
-
-        protected static int silent = 0;
-
-        protected virtual void SetTrackVolsTo(float newVol)
-        {
-            AudioSystem.S.SetTrackVol(TrackGroup.Voice, voiceOverAudioTrack, newVol);
-            AudioSystem.S.SetTrackVol(TrackGroup.SoundFX, effectAudioTrack, newVol);
-            AudioSystem.S.SetTrackVol(TrackGroup.SoundFX, beepAudioTrack, newVol);
-            AudioSystem.S.SetTrackVol(TrackGroup.SoundFX, inputAudioTrack, newVol);
+            // There's an audible click if you call audioSource.Pause() so instead just drop the volume to 0.
+            _targetVolume = 0f;
         }
 
         protected virtual void Stop()
         {
-            if (lastUsedAudioSource == null)
+            if (_lastUsedAudioSource == null)
             {
                 return;
             }
 
-            SetTrackVolsTo(silent);
-            SetTrackLooping(false);
+            // There's an audible click if you call audioSource.Stop() so instead we just switch off
+            // looping and let the audio stop automatically at the end of the clip
+            _targetVolume = 0f;
+            _lastUsedAudioSource.loop = false;
+            _playBeeps = false;
+            _playingVoiceover = false;
 
-            playBeeps = false;
-            playingVoiceover = false;
-        }
-
-        protected virtual void SetTrackLooping(bool loop)
-        {
-            // No need for this. If we want something to play with or without looping,
-            // we can easily just let the AudioSystem know
-            //AudioSystem.S.SetLoop(TrackGroup.Voice, voiceOverAudioTrack, loop);
-            //AudioSystem.S.SetLoop(TrackGroup.SoundFX, effectAudioTrack, loop);
-            //AudioSystem.S.SetLoop(TrackGroup.SoundFX, beepAudioTrack, loop);
-            //AudioSystem.S.SetLoop(TrackGroup.SoundFX, inputAudioTrack, loop);
+            //TODO force speaking character to stop
         }
 
         protected virtual void Resume()
         {
-            if (lastUsedAudioSource == null)
+            if (_lastUsedAudioSource == null)
             {
                 return;
             }
 
-            SetTrackVolsTo(normalAudibility);
+            _targetVolume = _volume;
         }
-
-        protected static float normalAudibility = 100f;
-        // ^Remember, the actual volume a track is playing at is anchored by the group it is
-        // assigned to. Thus, setting this to 100f means that the track will play at whatever
-        // volume the group is set to. This is the default value for all tracks, so it should
-        // be safe to use.
 
         protected virtual void Update()
         {
-            //if (lastUsedAudioSource != null)
-            //    lastUsedAudioSource.volume = Mathf.MoveTowards(lastUsedAudioSource.volume, targetVolume, Time.deltaTime * 5f);
-            // ^Seems that in the orig, we tried going for a fade effect. Best cut this out for now and later decide 
-            // at what point we should start doing the fading (since doing it every frame like in the orig is a bit overkill)
+            if (_lastUsedAudioSource != null)
+                _lastUsedAudioSource.volume = Mathf.MoveTowards(_lastUsedAudioSource.volume, _targetVolume, Time.deltaTime * 5f);
         }
 
         #region IWriterListener implementation
 
         public virtual void OnInput()
         {
-            if (playInputSfx.MainClip != null)
+            if (_inputSound != null)
             {
-                // Assumes we're playing a 2D sound, which Myceliaudio does by default
-                AudioSystem.S.Play(playInputSfx);
+                // Assumes we're playing a 2D sound
+                AudioSource.PlayClipAtPoint(_inputSound, Vector3.zero);
             }
         }
 
         public virtual void OnStartWritingNewText(AudioClip audioClip)
         {
-            if (playingVoiceover)
+            if (_playingVoiceover)
             {
                 return;
             }
@@ -266,7 +214,7 @@ namespace AtMycelia.Amanita
 
         public virtual void OnPause()
         {
-            if (playingVoiceover) // Since at the time of this writing, we don't intend to support pausing voiceovers
+            if (_playingVoiceover)
             {
                 return;
             }
@@ -275,7 +223,7 @@ namespace AtMycelia.Amanita
 
         public virtual void OnResume()
         {
-            if (playingVoiceover)
+            if (_playingVoiceover)
             {
                 return;
             }
@@ -292,28 +240,30 @@ namespace AtMycelia.Amanita
 
         public virtual void OnGlyphWritten()
         {
-            if (playingVoiceover || AudioSystem.S == null)
+            if (_playingVoiceover)
             {
                 return;
-                // If AudioSystem.S is null, chances are that it's because the application is shutting down
             }
 
-            if (playBeeps && beepSounds.Count > 0)
+            if (_playBeeps && _beepSounds.Count > 0)
             {
-                bool playingBeepsRightNow = AudioSystem.S.GetIsPlaying(TrackGroup.SoundFX, beepAudioTrack);
-                if (!playingBeepsRightNow)
+                _lastUsedAudioSource = EffectAudioSource;
+
+                if (!_lastUsedAudioSource.isPlaying)
                 {
-                    bool lastBeepDonePlaying = whenBeepDonePlaying < Time.realtimeSinceStartup;
-                    if (lastBeepDonePlaying)
+                    if (_nextBeepTime < Time.realtimeSinceStartup)
                     {
-                        AudioClip beepToUse = GetRandomBeep();
-                        playBeepSfx.MainClip = beepToUse;
-                        playBeepSfx.Loop = false;
-                        AudioSystem.S.Play(playBeepSfx);
-                        //
-                        float extend = (float)beepToUse.PreciseLength();
-                        whenBeepDonePlaying = Time.realtimeSinceStartup + extend;
-                        
+                        _lastUsedAudioSource.clip = _beepSounds[Random.Range(0, _beepSounds.Count)];
+
+                        if (_lastUsedAudioSource.clip != null)
+                        {
+                            _lastUsedAudioSource.loop = false;
+                            _targetVolume = _volume;
+                            _lastUsedAudioSource.Play();
+
+                            float extend = _lastUsedAudioSource.clip.length;
+                            _nextBeepTime = Time.realtimeSinceStartup + extend;
+                        }
                     }
                 }
             }
@@ -321,11 +271,20 @@ namespace AtMycelia.Amanita
 
         public virtual void OnVoiceover(AudioClip voiceoverClip)
         {
-            playingVoiceover = true;
+            if (VoiceOverAudioSource == null)
+            {
+                return;
+            }
 
-            playVoiceOver.Loop = false;
-            playVoiceOver.MainClip = voiceoverClip;
-            AudioSystem.S.Play(playVoiceOver);
+            _playingVoiceover = true;
+
+            _lastUsedAudioSource = VoiceOverAudioSource;
+
+            _lastUsedAudioSource.volume = _volume;
+            _targetVolume = _volume;
+            _lastUsedAudioSource.loop = false;
+            _lastUsedAudioSource.clip = voiceoverClip;
+            _lastUsedAudioSource.Play();
         }
 
         public void OnAllWordsWritten()
@@ -334,4 +293,6 @@ namespace AtMycelia.Amanita
 
         #endregion
     }
+
+
 }

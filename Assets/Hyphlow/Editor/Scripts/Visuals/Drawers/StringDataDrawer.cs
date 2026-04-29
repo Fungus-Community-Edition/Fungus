@@ -81,14 +81,14 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 return;
             }
 
-            var literalValueProp = varDataProp.FindPropertyRelative("value");
-            var backingVarRefProp = varDataProp.FindPropertyRelative("backingVarRef");
+            var literalValueProp = varDataProp.FindPropertyRelative("_value");
+            var backingVarRefProp = varDataProp.FindPropertyRelative("_backingVarRef");
             if (backingVarRefProp == null)
             {
                 EditorGUI.EndProperty();
                 return;
             }
-            var itemIdProp = backingVarRefProp.FindPropertyRelative("itemId");
+            var itemIdProp = backingVarRefProp.FindPropertyRelative("_itemId");
 
             Rect labelRect, valueRect, popupRect, fieldRect;
             int prevIndent;
@@ -180,7 +180,8 @@ namespace AtMycelia.Hyphlow.EditorUtils
                         Vector2 scrollPosition = GetScrollPosition(varDataProp.propertyPath);
                         Rect viewRect = new Rect(0f, 0f, valueRect.width - 1f, contentHeight);
                         scrollPosition = GUI.BeginScrollView(valueRect, scrollPosition, viewRect, false, true);
-                        newValue = EditorGUI.TextArea(new Rect(0f, 0f, viewRect.width, contentHeight), currentValue, textAreaStyle);
+                        newValue = EditorGUI.TextArea(new Rect(0f, 0f, viewRect.width, contentHeight), 
+                            currentValue, textAreaStyle);
                         GUI.EndScrollView();
                         SetScrollPosition(varDataProp.propertyPath, scrollPosition);
                     }
@@ -212,7 +213,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
             {
                 if (backingVarRefProp != null)
                 {
-                    SerializedProperty owningFcProp = backingVarRefProp.FindPropertyRelative("owningSource");
+                    SerializedProperty owningFcProp = backingVarRefProp.FindPropertyRelative("_owningSource");
                     if (owningFcProp != null && owningFcProp.objectReferenceValue != null)
                     {
                         var fc = owningFcProp.objectReferenceValue as Flowchart;
@@ -366,14 +367,10 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 IVariable chosenNow = orderedVars[selectedIndex];
                 bool choseLiteralValue = chosenNow == null;
 
-                SerializedProperty owningFcProp = backingVarRefProp.FindPropertyRelative("legacyOwningFc");
-                SerializedProperty owningVsaProp = backingVarRefProp.FindPropertyRelative("legacyOwningVsa");
-                SerializedProperty ownerProp = backingVarRefProp.FindPropertyRelative("owningSource");
+                SerializedProperty ownerProp = backingVarRefProp.FindPropertyRelative("_owningSource");
 
                 if (choseLiteralValue)
                 {
-                    owningFcProp.objectReferenceValue = null;
-                    owningVsaProp.objectReferenceValue = null;
                     ownerProp.objectReferenceValue = localFlowchart;
                     itemIdProp.intValue = Variable.InvalidID;
                 }
@@ -381,8 +378,6 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 {
                     var vOwner = chosenNow.Owner;
 
-                    owningFcProp.objectReferenceValue = null;
-                    owningVsaProp.objectReferenceValue = null;
                     ownerProp.objectReferenceValue = vOwner as UnityObj;
                     itemIdProp.intValue = chosenNow.ItemId;
                 }
@@ -407,7 +402,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 return minLines;
             }
 
-            SerializedProperty literalValueProp = varDataProp.FindPropertyRelative("value");
+            SerializedProperty literalValueProp = varDataProp.FindPropertyRelative("_value");
             string currentValue = literalValueProp != null ? literalValueProp.stringValue : string.Empty;
 
             GUIStyle textAreaStyle = new GUIStyle(EditorStyles.textArea)

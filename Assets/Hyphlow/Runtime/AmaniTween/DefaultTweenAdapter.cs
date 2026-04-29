@@ -4,7 +4,7 @@ using UnityEngine.UI;
 using UnityObj = UnityEngine.Object;
 using UnityRandom = UnityEngine.Random;
 
-namespace AtMycelia.Hyphlow.Tweening
+namespace AtMycelia.AmaniTween
 {
     public class DefaultTweenAdapter : ScriptableObject, ITransformTweenAdapter, IGeneralTweenAdapter<Vector2>,
         IGeneralTweenAdapter<Vector3>, IGeneralTweenAdapter<float>, IGeneralTweenAdapter<int>,
@@ -533,7 +533,7 @@ namespace AtMycelia.Hyphlow.Tweening
         /// </summary>
         public ITweenHandle FadeVolume(AudioSource target, float targVal, float duration)
         {
-            var tween = TweenAudioSourceVolume(target, target.volume, targVal, duration);
+            var tween = TweenAudioSourceVolume(target, target.volume * 100, targVal, duration);
             return DefaultTweenHandle.From(tween);
         }
 

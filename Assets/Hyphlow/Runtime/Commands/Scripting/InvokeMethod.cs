@@ -105,13 +105,13 @@ namespace AtMycelia.Hyphlow
             if (componentType == null)
             {
                 Debug.LogError($"Could not find type with assembly name: {targetComponentAssemblyName} " +
-                    $"for method: {targetMethod}");
+                    $"for method: {targetMethod}", this);
                 return;
             }
 
             if (TargetObject == null)
             {
-                Debug.LogError($"TargetObject is not assigned for method: {targetMethod}");
+                Debug.LogError($"TargetObject is not assigned for method: {targetMethod}", this);
                 return;
             }
 

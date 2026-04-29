@@ -15,7 +15,7 @@ namespace AtMycelia.Amanita
 {
     public static class EventSystemEnsurer
     {
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void EnsureOnRuntimeLoad()
         {
             EnsureEventSystem();
@@ -62,7 +62,7 @@ namespace AtMycelia.Amanita
             {
                 return;
             }
-
+            Debug.Log("Ensured EventSystem");
             GameObject esGo = new GameObject("EventSystem");
             esGo.AddComponent<EventSystem>();
 

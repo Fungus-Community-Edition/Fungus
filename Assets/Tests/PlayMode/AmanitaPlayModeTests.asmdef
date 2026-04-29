@@ -9,11 +9,13 @@
         "AtMycelia.Amanita.Core",
         "Amanita.Core.Editor",
         "Unity.InputSystem",
-        "AtMycelia.Common",
         "AtMycelia.Marasmius.Core",
         "AtMycelia.Hyphlow.Core",
         "AtMycelia.MarasmiusHyphlowInt.Core",
-        "AtMycelia.MarasmiusMyceliaudioInt.Core"
+        "AtMycelia.Hyphlowceliaudio.Core",
+        "AtMycelia.Myceliaudio.Core",
+        "AtMycelia.Myceliasmius.Core",
+        "AtMycelia.Common.Core"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

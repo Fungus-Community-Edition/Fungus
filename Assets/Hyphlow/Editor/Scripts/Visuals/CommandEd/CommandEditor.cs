@@ -47,6 +47,17 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 return;
 
             reorderableLists = new Dictionary<string, ReorderableList>();
+
+            var targetCommand = target as Command;
+            if (targetCommand == null)
+            {
+                return;
+            }
+            Flowchart fc = targetCommand.GetFlowchart();
+            if (fc != null)
+            {
+                VariableRegistryService.RebuildAll(fc);
+            }
         }
 
         public virtual void DrawCommandInspectorGUI()

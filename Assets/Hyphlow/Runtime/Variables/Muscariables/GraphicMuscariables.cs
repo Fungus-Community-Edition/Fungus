@@ -36,6 +36,15 @@ namespace AtMycelia.Hyphlow
             return Value != null ? Value.GetHashCode() : 0;
         }
 
+        protected override void ApplyLegacyDataOnAfterDeserialize()
+        {
+            if (!string.IsNullOrEmpty(value))
+            {
+                _value = value;
+            }
+            base.ApplyLegacyDataOnAfterDeserialize();
+        }
+
     }
 
     [System.Serializable]
