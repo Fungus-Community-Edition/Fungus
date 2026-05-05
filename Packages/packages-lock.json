@@ -1,5 +1,15 @@
 {
   "dependencies": {
+    "com.ateliermycelia.hyphlow": {
+      "version": "https://github.com/Atelier-Mycelia/Hyphlow.git?path=Assets/Hyphlow",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.unity.textmeshpro": "3.0.6",
+        "com.ateliermycelia.unityutils": "1.1.0"
+      },
+      "hash": "d426b54cbee147bd7b02e3d3a35b7cb3213c93a1"
+    },
     "com.ateliermycelia.myceliaudio": {
       "version": "https://github.com/Atelier-Mycelia/Myceliaudio.git?path=Packages/com.ateliermycelia.myceliaudio",
       "depth": 0,

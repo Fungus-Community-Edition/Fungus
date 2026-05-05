@@ -34,15 +34,15 @@ namespace VScriptingTests.CommandEditorOperations
             toDestroyOnTearDown.Add(vsa);
             ForceVariablesListNull(vsa);
 
-            VariableRegistryConfig config = DefaultAssetMaintenance.EnsureVariableRegistryConfig();
-            if (config == null)
+            var configs = DefaultAssetMaintenance.EnsureVariableRegistryConfigs();
+            if (configs == null || configs.Count == 0)
             {
                 Assert.Ignore("VariableRegistryConfig could not be ensured. Skipping editor draw test.");
                 return;
             }
 
             IReadOnlyList<VariableSourceAsset> previousSources = VariableRegistryService.GlobalSources.ToList();
-            config.SetGlobalSources(previousSources.Concat(new[] { vsa }).ToList());
+            configs[0].SetGlobalSources(previousSources.Concat(new[] { vsa }).ToList());
             VariableRegistryService.RebuildAll();
 
             Type playAudioType = typeof(MA_PlayAudio);
@@ -96,7 +96,7 @@ namespace VScriptingTests.CommandEditorOperations
                     UnityObj.DestroyImmediate(editor);
                 }
 
-                config.SetGlobalSources(previousSources.ToList());
+                configs[0].SetGlobalSources(previousSources.ToList());
                 VariableRegistryService.RebuildAll();
 
                 UnityObj.DestroyImmediate(vsa);

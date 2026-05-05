@@ -15,7 +15,6 @@ MonoBehaviour:
   _includeInSaves: 1
   _uniqueId: 0d4feeae-7e82-42a5-b48d-108dfbab7778
   _alwaysKeepGuid: 1
-  variables: []
   _varManager:
     _muscariables:
     - rid: 6177420756002537546
