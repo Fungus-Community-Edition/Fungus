@@ -8,7 +8,7 @@
         "com.unity.textmeshpro": "3.0.6",
         "com.ateliermycelia.unityutils": "1.1.0"
       },
-      "hash": "d426b54cbee147bd7b02e3d3a35b7cb3213c93a1"
+      "hash": "6b658584db1ae44a71c6b30fbc4e059573a1816d"
     },
     "com.ateliermycelia.myceliaudio": {
       "version": "https://github.com/Atelier-Mycelia/Myceliaudio.git?path=Packages/com.ateliermycelia.myceliaudio",
@@ -18,7 +18,7 @@
         "com.unity.textmeshpro": "3.0.6",
         "com.ateliermycelia.unityutils": "1.0.2"
       },
-      "hash": "2c8bf6b6e3486288c00e1c8c64dafddf48b30bb0"
+      "hash": "b960c0f7353e4628d66f6203cf9c98c5d4679be0"
     },
     "com.ateliermycelia.unityassemblymigrator": {
       "version": "file:com.ateliermycelia.mycomigrator",
@@ -33,7 +33,7 @@
       "dependencies": {
         "com.unity.textmeshpro": "3.0.6"
       },
-      "hash": "830276e35b17ac23342d40d54f4e98b445abf9fa"
+      "hash": "32d451c6856c05b526f1ebfe5d699ec8e1fc0932"
     },
     "com.unity.2d.sprite": {
       "version": "1.0.0",

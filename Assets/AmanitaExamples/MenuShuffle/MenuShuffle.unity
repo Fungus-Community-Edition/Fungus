@@ -747,52 +747,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1130461600}
   m_CullTransparentMesh: 1
---- !u!1 &1226317641
-GameObject:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1226317643}
-  - component: {fileID: 1226317642}
-  m_Layer: 0
-  m_Name: _FungusState
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1226317642
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1226317641}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 61dddfdc5e0e44ca298d8f46f7f5a915, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  selectedFlowchart: {fileID: 1755499606}
-  lastSelectedFc: {fileID: 0}
---- !u!4 &1226317643
-Transform:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1226317641}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1248790851
 GameObject:
   m_ObjectHideFlags: 0
@@ -1224,18 +1178,18 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 1
-  blockName: Menu 1
-  description: 
-  eventHandler: {fileID: 1755499609}
-  commandList:
+  _itemId: 1
+  _blockName: Menu 1
+  _description: 
+  _eventHandler: {fileID: 1755499609}
+  _commandList:
   - {fileID: 1755499640}
   - {fileID: 1755499636}
   - {fileID: 1755499632}
   - {fileID: 1755499611}
   - {fileID: 1755499607}
-  includeInSaves: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &1755499609
 MonoBehaviour:
@@ -1324,15 +1278,15 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 34
-  blockName: D
-  description: 
-  eventHandler: {fileID: 0}
-  commandList:
+  _itemId: 34
+  _blockName: D
+  _description: 
+  _eventHandler: {fileID: 0}
+  _commandList:
   - {fileID: 1755499631}
   - {fileID: 1755499613}
-  includeInSaves: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &1755499613
 MonoBehaviour:
@@ -1391,11 +1345,11 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 10
-  blockName: Menu 2
-  description: 
-  eventHandler: {fileID: 0}
-  commandList:
+  _itemId: 10
+  _blockName: Menu 2
+  _description: 
+  _eventHandler: {fileID: 0}
+  _commandList:
   - {fileID: 1755499627}
   - {fileID: 1755499623}
   - {fileID: 1755499619}
@@ -1405,8 +1359,8 @@ MonoBehaviour:
   - {fileID: 1755499649}
   - {fileID: 1755499647}
   - {fileID: 1755499648}
-  includeInSaves: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &1755499615
 MonoBehaviour:
@@ -1465,15 +1419,15 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 37
-  blockName: H
-  description: 
-  eventHandler: {fileID: 0}
-  commandList:
+  _itemId: 37
+  _blockName: H
+  _description: 
+  _eventHandler: {fileID: 0}
+  _commandList:
   - {fileID: 1755499618}
   - {fileID: 1755499617}
-  includeInSaves: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &1755499617
 MonoBehaviour:
@@ -1713,15 +1667,15 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 36
-  blockName: G
-  description: 
-  eventHandler: {fileID: 0}
-  commandList:
+  _itemId: 36
+  _blockName: G
+  _description: 
+  _eventHandler: {fileID: 0}
+  _commandList:
   - {fileID: 1755499622}
   - {fileID: 1755499621}
-  includeInSaves: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &1755499621
 MonoBehaviour:
@@ -1961,15 +1915,15 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 35
-  blockName: F
-  description: 
-  eventHandler: {fileID: 0}
-  commandList:
+  _itemId: 35
+  _blockName: F
+  _description: 
+  _eventHandler: {fileID: 0}
+  _commandList:
   - {fileID: 1755499626}
   - {fileID: 1755499625}
-  includeInSaves: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &1755499625
 MonoBehaviour:
@@ -2209,15 +2163,15 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 12
-  blockName: E
-  description: 
-  eventHandler: {fileID: 0}
-  commandList:
+  _itemId: 12
+  _blockName: E
+  _description: 
+  _eventHandler: {fileID: 0}
+  _commandList:
   - {fileID: 1755499630}
   - {fileID: 1755499629}
-  includeInSaves: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &1755499629
 MonoBehaviour:
@@ -2601,15 +2555,15 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 33
-  blockName: C
-  description: 
-  eventHandler: {fileID: 0}
-  commandList:
+  _itemId: 33
+  _blockName: C
+  _description: 
+  _eventHandler: {fileID: 0}
+  _commandList:
   - {fileID: 1755499635}
   - {fileID: 1755499634}
-  includeInSaves: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &1755499634
 MonoBehaviour:
@@ -2849,15 +2803,15 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 32
-  blockName: B
-  description: 
-  eventHandler: {fileID: 0}
-  commandList:
+  _itemId: 32
+  _blockName: B
+  _description: 
+  _eventHandler: {fileID: 0}
+  _commandList:
   - {fileID: 1755499639}
   - {fileID: 1755499638}
-  includeInSaves: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &1755499638
 MonoBehaviour:
@@ -3097,15 +3051,15 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 2
-  blockName: A
-  description: 
-  eventHandler: {fileID: 0}
-  commandList:
+  _itemId: 2
+  _blockName: A
+  _description: 
+  _eventHandler: {fileID: 0}
+  _commandList:
   - {fileID: 1755499643}
   - {fileID: 1755499642}
-  includeInSaves: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &1755499642
 MonoBehaviour:
@@ -3678,7 +3632,6 @@ SceneRoots:
   - {fileID: 1726345443}
   - {fileID: 1755499610}
   - {fileID: 275029864}
-  - {fileID: 1226317643}
   - {fileID: 1745642869}
   - {fileID: 653651522}
   - {fileID: 36199558}

@@ -307,11 +307,11 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 10
-  blockName: Start
-  description: 
-  eventHandler: {fileID: 16019651}
-  commandList:
+  _itemId: 10
+  _blockName: Start
+  _description: 
+  _eventHandler: {fileID: 16019651}
+  _commandList:
   - {fileID: 16019656}
   - {fileID: 16019650}
   - {fileID: 16019647}
@@ -322,8 +322,8 @@ MonoBehaviour:
   - {fileID: 16019628}
   - {fileID: 16019627}
   - {fileID: 16019625}
-  includeInSaves: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &16019627
 MonoBehaviour:
@@ -861,9 +861,9 @@ MonoBehaviour:
   targetView: {fileID: 953757}
   waitUntilFinished: 0
   targetCamera: {fileID: 637969838}
-  orthoSizeTweener: {fileID: 11400000, guid: 2456e8060d1222e4cac681fb832cd207, type: 2}
-  posTweener: {fileID: 11400000, guid: 2456e8060d1222e4cac681fb832cd207, type: 2}
-  rotTweener: {fileID: 11400000, guid: 2456e8060d1222e4cac681fb832cd207, type: 2}
+  orthoSizeTweener: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
+  posTweener: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
+  rotTweener: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
 --- !u!114 &16019647
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1029,10 +1029,10 @@ MonoBehaviour:
   fadeColor: {r: 0, g: 0, b: 0, a: 1}
   fadeTexture: {fileID: 0}
   targetCamera: {fileID: 637969838}
-  fadeTweener: {fileID: 11400000, guid: 2456e8060d1222e4cac681fb832cd207, type: 2}
-  orthoSizeTweener: {fileID: 11400000, guid: 2456e8060d1222e4cac681fb832cd207, type: 2}
-  posTweener: {fileID: 11400000, guid: 2456e8060d1222e4cac681fb832cd207, type: 2}
-  rotTweener: {fileID: 11400000, guid: 2456e8060d1222e4cac681fb832cd207, type: 2}
+  fadeTweener: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
+  orthoSizeTweener: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
+  posTweener: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
+  rotTweener: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
 --- !u!114 &16019651
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1500,37 +1500,6 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -10}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &975464276
-GameObject:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 975464278}
-  m_Layer: 0
-  m_Name: _FungusState
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &975464278
-Transform:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 975464276}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2043,7 +2012,6 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 637969839}
-  - {fileID: 975464278}
   - {fileID: 1496739718}
   - {fileID: 115669580}
   - {fileID: 544268548}

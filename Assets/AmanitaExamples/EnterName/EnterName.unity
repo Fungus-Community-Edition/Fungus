@@ -277,10 +277,8 @@ MonoBehaviour:
     has entered their name using
     the Set Interactable command.'
   uiModel:
-    _selectedBlocks:
-    - {fileID: 163283984}
-    _selectedCommands:
-    - {fileID: 163283986}
+    _selectedBlocks: []
+    _selectedCommands: []
     _owner: {fileID: 163283982}
     <ScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
@@ -347,19 +345,19 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 1
-  blockName: ReadText
-  description: Handles user clicking the ok button
-  eventHandler: {fileID: 163283990}
-  commandList:
+  _itemId: 1
+  _blockName: ReadText
+  _description: Handles user clicking the ok button
+  _eventHandler: {fileID: 163283990}
+  _commandList:
   - {fileID: 163283999}
   - {fileID: 163283998}
   - {fileID: 163283997}
   - {fileID: 163283994}
   - {fileID: 163283986}
   - {fileID: 163283988}
-  includeInSaves: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _loadPriority: 0
   suppressAllAutoSelections: 1
 --- !u!114 &163283985
 MonoBehaviour:
@@ -701,16 +699,16 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 5
-  blockName: Start
-  description: 
-  eventHandler: {fileID: 163283993}
-  commandList:
+  _itemId: 5
+  _blockName: Start
+  _description: 
+  _eventHandler: {fileID: 163283993}
+  _commandList:
   - {fileID: 163283996}
   - {fileID: 163283991}
   - {fileID: 163283995}
-  includeInSaves: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _loadPriority: 0
   suppressAllAutoSelections: 1
 --- !u!114 &163283993
 MonoBehaviour:
@@ -1033,16 +1031,16 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 13
-  blockName: End Edit
-  description: 'Handles user pressing
+  _itemId: 13
+  _blockName: End Edit
+  _description: 'Handles user pressing
 
     enter after typing in name'
-  eventHandler: {fileID: 163284001}
-  commandList:
+  _eventHandler: {fileID: 163284001}
+  _commandList:
   - {fileID: 163284000}
-  includeInSaves: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _loadPriority: 0
   suppressAllAutoSelections: 1
 --- !u!114 &163284003
 MonoBehaviour:
@@ -1782,37 +1780,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 749435734}
   m_CullTransparentMesh: 0
---- !u!1 &974633902
-GameObject:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 974633904}
-  m_Layer: 0
-  m_Name: _FungusState
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &974633904
-Transform:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 974633902}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1229749171
 GameObject:
   m_ObjectHideFlags: 0
@@ -2146,7 +2113,6 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 163283987}
-  - {fileID: 974633904}
   - {fileID: 723295653}
   - {fileID: 1538358644}
   - {fileID: 708657495}

@@ -538,37 +538,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   m_MaxRayIntersections: 0
---- !u!1 &299700058
-GameObject:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 299700060}
-  m_Layer: 0
-  m_Name: _FungusState
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &299700060
-Transform:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 299700058}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &349486054
 GameObject:
   m_ObjectHideFlags: 0
@@ -1545,15 +1514,15 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 17
-  blockName: Drag Completed
-  description: 
-  eventHandler: {fileID: 2019116681}
-  commandList:
+  _itemId: 17
+  _blockName: Drag Completed
+  _description: 
+  _eventHandler: {fileID: 2019116681}
+  _commandList:
   - {fileID: 2019116672}
   - {fileID: 2019116704}
-  includeInSaves: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &2019116672
 MonoBehaviour:
@@ -1680,15 +1649,15 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 16
-  blockName: Drag Exited
-  description: 
-  eventHandler: {fileID: 2019116684}
-  commandList:
+  _itemId: 16
+  _blockName: Drag Exited
+  _description: 
+  _eventHandler: {fileID: 2019116684}
+  _commandList:
   - {fileID: 2019116679}
   - {fileID: 2019116709}
-  includeInSaves: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &2019116681
 MonoBehaviour:
@@ -1749,16 +1718,16 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 15
-  blockName: Drag Entered
-  description: 
-  eventHandler: {fileID: 2019116686}
-  commandList:
+  _itemId: 15
+  _blockName: Drag Entered
+  _description: 
+  _eventHandler: {fileID: 2019116686}
+  _commandList:
   - {fileID: 2019116682}
   - {fileID: 2019116712}
   - {fileID: 2019116710}
-  includeInSaves: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &2019116684
 MonoBehaviour:
@@ -1802,15 +1771,15 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 14
-  blockName: Drag Cancelled
-  description: 
-  eventHandler: {fileID: 2019116673}
-  commandList:
+  _itemId: 14
+  _blockName: Drag Cancelled
+  _description: 
+  _eventHandler: {fileID: 2019116673}
+  _commandList:
   - {fileID: 2019116674}
   - {fileID: 2019116705}
-  includeInSaves: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &2019116686
 MonoBehaviour:
@@ -1854,15 +1823,15 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 13
-  blockName: Drag Start
-  description: 
-  eventHandler: {fileID: 2019116678}
-  commandList:
+  _itemId: 13
+  _blockName: Drag Start
+  _description: 
+  _eventHandler: {fileID: 2019116678}
+  _commandList:
   - {fileID: 2019116675}
   - {fileID: 2019116703}
-  includeInSaves: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!4 &2019116689
 Transform:
@@ -1915,14 +1884,14 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 18
-  blockName: Object Clicked 1
-  description: 
-  eventHandler: {fileID: 2019116692}
-  commandList:
+  _itemId: 18
+  _blockName: Object Clicked 1
+  _description: 
+  _eventHandler: {fileID: 2019116692}
+  _commandList:
   - {fileID: 2019116707}
-  includeInSaves: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &2019116694
 MonoBehaviour:
@@ -1944,14 +1913,14 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 19
-  blockName: Object Clicked 2
-  description: 
-  eventHandler: {fileID: 2019116696}
-  commandList:
+  _itemId: 19
+  _blockName: Object Clicked 2
+  _description: 
+  _eventHandler: {fileID: 2019116696}
+  _commandList:
   - {fileID: 2019116711}
-  includeInSaves: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &2019116696
 MonoBehaviour:
@@ -2023,14 +1992,14 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 20
-  blockName: Start
-  description: 
-  eventHandler: {fileID: 2019116699}
-  commandList:
+  _itemId: 20
+  _blockName: Start
+  _description: 
+  _eventHandler: {fileID: 2019116699}
+  _commandList:
   - {fileID: 2019116697}
-  includeInSaves: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &2019116699
 MonoBehaviour:
@@ -2176,7 +2145,7 @@ MonoBehaviour:
     _value: 0.1
     floatRef: {fileID: 0}
     floatVal: 0
-  _tweenerSO: {fileID: 11400000, guid: 2456e8060d1222e4cac681fb832cd207, type: 2}
+  _tweenerSO: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
   _stopPreviousTweens:
     _backingVarRef:
       _itemId: 0
@@ -2244,7 +2213,7 @@ MonoBehaviour:
     _value: 1
     floatRef: {fileID: 0}
     floatVal: 0
-  _tweenerSO: {fileID: 11400000, guid: 2456e8060d1222e4cac681fb832cd207, type: 2}
+  _tweenerSO: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
   _stopPreviousTweens:
     _backingVarRef:
       _itemId: 0
@@ -2312,7 +2281,7 @@ MonoBehaviour:
     _value: 0.1
     floatRef: {fileID: 0}
     floatVal: 0
-  _tweenerSO: {fileID: 11400000, guid: 2456e8060d1222e4cac681fb832cd207, type: 2}
+  _tweenerSO: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
   _stopPreviousTweens:
     _backingVarRef:
       _itemId: 0
@@ -2380,7 +2349,7 @@ MonoBehaviour:
     _value: 1
     floatRef: {fileID: 0}
     floatVal: 0
-  _tweenerSO: {fileID: 11400000, guid: 2456e8060d1222e4cac681fb832cd207, type: 2}
+  _tweenerSO: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
   _stopPreviousTweens:
     _backingVarRef:
       _itemId: 0
@@ -2456,7 +2425,7 @@ MonoBehaviour:
     _value: 1
     floatRef: {fileID: 0}
     floatVal: 0
-  _tweenerSO: {fileID: 11400000, guid: 2456e8060d1222e4cac681fb832cd207, type: 2}
+  _tweenerSO: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
   _stopPreviousTweens:
     _backingVarRef:
       _itemId: 0
@@ -2523,7 +2492,7 @@ MonoBehaviour:
     _value: 1
     floatRef: {fileID: 0}
     floatVal: 0
-  _tweenerSO: {fileID: 11400000, guid: 2456e8060d1222e4cac681fb832cd207, type: 2}
+  _tweenerSO: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
   _stopPreviousTweens:
     _backingVarRef:
       _itemId: 0
@@ -2590,7 +2559,7 @@ MonoBehaviour:
     _value: 1
     floatRef: {fileID: 0}
     floatVal: 0
-  _tweenerSO: {fileID: 11400000, guid: 2456e8060d1222e4cac681fb832cd207, type: 2}
+  _tweenerSO: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
   _stopPreviousTweens:
     _backingVarRef:
       _itemId: 0
@@ -2842,7 +2811,6 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 268187672}
-  - {fileID: 299700060}
   - {fileID: 2135880372}
   - {fileID: 442175927}
   - {fileID: 1192690129}
