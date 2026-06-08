@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using AtMycelia;
 
 namespace General
 {
@@ -96,9 +97,11 @@ namespace General
             var newVar = new IntMuscariable { Key = "score" };
 
             // Take the current variables from the source as a List<Muscariable>
-            IList<IVariable> varsFetched = _source.GetVarsByType<Muscariable>().Cast<IVariable>().ToList();
+            IList<IntMuscariable> varsFetched = new List<IntMuscariable>();
+            var rawVarsByType = _source.GetVarsByType<IntMuscariable>();
+            //_source.GetVarsByType<IntMuscariable>().Cast<IntMuscariable>().ToList();
 
-            string result = UniqueKeyGenerator.GetUniqueKeyFor(newVar.Key, varsFetched, newVar);
+            string result = UniqueKeyGenerator.GetUniqueKeyFor(newVar.Key, (IReadOnlyList<IntMuscariable>)varsFetched, newVar);
 
             // Expect next available suffix to be "score3"
             Assert.AreEqual("score3", result);
@@ -137,14 +140,15 @@ namespace General
         public void HandlesNullEntriesAndNullKeysInGroup()
         {
             // Build a list that contains null entries and a variable with null Key
-            IList<IVariable> list = new List<IVariable>
+            IList<IntMuscariable> list = new List<IntMuscariable>
             {
                 null,
                 new IntMuscariable { Key = null }
             };
 
             // Should not throw and should return the suggested key unchanged
-            string result = UniqueKeyGenerator.GetUniqueKeyFor("uniqueName", list, null);
+            string result = UniqueKeyGenerator.GetUniqueKeyFor<IntMuscariable>("uniqueName", 
+                (IReadOnlyList<IntMuscariable>)list, null);
 
             Assert.AreEqual("uniqueName", result);
         }

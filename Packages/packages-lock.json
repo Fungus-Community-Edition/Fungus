@@ -1,24 +1,23 @@
 {
   "dependencies": {
     "com.ateliermycelia.hyphlow": {
-      "version": "https://github.com/Atelier-Mycelia/Hyphlow.git?path=Assets/Hyphlow",
+      "version": "file:E:/Github/_AtelierMycelia/Hyphlow/Assets/Hyphlow",
       "depth": 0,
-      "source": "git",
+      "source": "local",
       "dependencies": {
         "com.unity.textmeshpro": "3.0.6",
-        "com.ateliermycelia.unityutils": "1.1.0"
-      },
-      "hash": "6b658584db1ae44a71c6b30fbc4e059573a1816d"
+        "com.ateliermycelia.unityutils": "1.1.0",
+        "com.unity.inputsystem": "1.7.0"
+      }
     },
     "com.ateliermycelia.myceliaudio": {
-      "version": "https://github.com/Atelier-Mycelia/Myceliaudio.git?path=Packages/com.ateliermycelia.myceliaudio",
+      "version": "file:E:/Github/_AtelierMycelia/Myceliaudio/Packages/com.ateliermycelia.myceliaudio",
       "depth": 0,
-      "source": "git",
+      "source": "local",
       "dependencies": {
         "com.unity.textmeshpro": "3.0.6",
         "com.ateliermycelia.unityutils": "1.0.2"
-      },
-      "hash": "b960c0f7353e4628d66f6203cf9c98c5d4679be0"
+      }
     },
     "com.ateliermycelia.unityassemblymigrator": {
       "version": "file:com.ateliermycelia.mycomigrator",
@@ -27,13 +26,12 @@
       "dependencies": {}
     },
     "com.ateliermycelia.unityutils": {
-      "version": "https://github.com/Atelier-Mycelia/UnityUtils.git?path=Packages/com.ateliermycelia.unityutils",
+      "version": "file:E:/Github/_AtelierMycelia/UnityUtils/Assets/AtMyceliaCommonLib",
       "depth": 0,
-      "source": "git",
+      "source": "local",
       "dependencies": {
         "com.unity.textmeshpro": "3.0.6"
-      },
-      "hash": "32d451c6856c05b526f1ebfe5d699ec8e1fc0932"
+      }
     },
     "com.unity.2d.sprite": {
       "version": "1.0.0",

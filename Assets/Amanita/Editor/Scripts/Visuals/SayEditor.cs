@@ -5,7 +5,7 @@ using AtMycelia.Amanita;
 using AtMycelia.Amanita.DialogueSys.VScripting;
 using AtMycelia.Amanita.DialogueSys;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     [CustomEditor (typeof(Say))]
     public class SayEditor : CommandEditor

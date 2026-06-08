@@ -1,6 +1,6 @@
 using UnityEditor;
 using UnityEngine;
-using AtMycelia.Hyphlow.EditorUtils;
+using AtMycelia.Hyphlow.EditorExt;
 using AtMycelia.Amanita.DialogueSys.VScripting;
 
 namespace AtMycelia.Amanita.DialogueSys.EditorUtils

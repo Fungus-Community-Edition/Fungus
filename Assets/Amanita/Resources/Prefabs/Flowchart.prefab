@@ -46,18 +46,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a334fe2ffb574b3583ff3b18b4792d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  variableManager:
-    muscariables: []
-    legacyVariables: []
-    nextValidVarID: 1
-    isInitted: 1
+  _varManager: {fileID: 0}
+  _execManager: {fileID: 0}
+  _blockManager: {fileID: 0}
+  legacyVariableManager:
+    _muscariables: []
+    _legacyVariables: []
+    _nextValidVarID: 1
+    _isInitted: 1
   version: 1
-  legacyVariables: []
+  _legacyVariables: []
   _oldMuscariables: []
-  description: 
-  uiModel:
-    _selectedBlocks: []
-    _selectedCommands: []
+  _otherSettings: []
+  _flowchartSettings: {fileID: 0}
+  _description: 
+  _uiModel:
+    _selectedLegacyBlocks: []
+    _selectedLegacyCommands: []
     _owner: {fileID: 0}
     <ScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
@@ -71,30 +76,19 @@ MonoBehaviour:
       width: 0
       height: 0
     <SelectedCommandsStale>k__BackingField: 0
-  stepPause: 0
-  colorCommands: 1
-  hideComponents: 1
-  saveSelection: 1
-  showLineNumbers: 0
-  hideCommands: []
-  localizationId: 
-  _luaEnvironment: {fileID: 0}
-  luaBindingName: flowchart
-  includeInSaves: 1
-  saveBlocks: 1
-  saveVariables: 1
-  loadPriority: 0
-  alwaysKeepGuid: 1
-  _blockListCache: []
-  _commands: []
+  _includeInSaves: 1
+  _saveBlocks: 1
+  _saveVariables: 1
+  _loadPriority: 0
+  _alwaysKeepGuid: 1
   nextValidVarID: 1
-  uniqueId: 
+  _uniqueId: 
   references:
     version: 2
     RefIds: []
 --- !u!114 &11433304
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -112,13 +106,16 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 0
-  blockName: New Block
-  description: 
-  eventHandler: {fileID: 11462346}
-  commandList: []
-  includeInSaves: 1
-  loadPriority: 0
+  _scope: 1
+  _itemId: 0
+  _blockName: New Block
+  _description: 
+  _legacyEventHandler: {fileID: 11462346}
+  _legacyCommandList: []
+  _includeInSaves: 1
+  _loadPriority: 0
+  _owner: {fileID: 11430050}
+  _nextValidCommandId: 1
   suppressAllAutoSelections: 0
 --- !u!114 &11462346
 MonoBehaviour:
@@ -132,6 +129,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2f6487d21a03404cb21b245f0242e79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  parentBlock: {fileID: 11433304}
-  suppressBlockAutoSelect: 0
+  _parentMbBlock: {fileID: 11433304}
+  _parentBlockReference:
+    _itemId: 0
+    _owningSource: {fileID: 0}
+  _suppressBlockAutoSelect: 0
   waitForFrames: 1

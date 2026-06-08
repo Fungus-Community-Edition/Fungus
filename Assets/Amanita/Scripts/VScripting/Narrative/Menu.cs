@@ -1,5 +1,6 @@
 using AtMycelia.Hyphlow;
 using System.Collections.Generic;
+using System.Runtime.Remoting.Messaging;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 using UnityEngine.Serialization;
@@ -51,23 +52,25 @@ namespace AtMycelia.Amanita.DialogueSys.VScripting
                 MenuDialog.ActiveMenuDialog = setMenuDialog;
             }
 
-            bool hideOption = (hideIfVisited && targetBlock != null && targetBlock.GetExecutionCount() > 0) || hideThisOption.Value;
+            bool hideOption = (hideIfVisited && targetBlock != null && targetBlock.ExecutionCount > 0) || hideThisOption.Value;
 
             var menuDialog = MenuDialog.GetMenuDialog();
-                if (menuDialog != null)
-                {
-                    menuDialog.SetActive(true);
+            if (menuDialog != null)
+            {
+                menuDialog.SetActive(true);
 
-                    var flowchart = GetFlowchart();
-                    string displayText = flowchart.SubstituteVariables(text);
+                var flowchart = GetFlowchart();
+                var subber = StringVarSubstitutionService.Shared;
 
-                    menuDialog.AddOption(displayText, interactable, hideOption, targetBlock);
-                }
+                string displayText = subber.SubstituteVariables(text, flowchart);
+
+                menuDialog.AddOption(displayText, interactable, hideOption, targetBlock);
+            }
             
             Continue();
         }
 
-        public override void GetConnectedBlocks(ref List<Block> connectedBlocks)
+        public override void GetConnectedBlocks(ref IList<IBlock> connectedBlocks)
         {
             if (targetBlock != null)
             {
@@ -95,16 +98,17 @@ namespace AtMycelia.Amanita.DialogueSys.VScripting
             return CommandColors.Narrative;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return ReferenceEquals(interactable.VarRef, variable) || 
                 ReferenceEquals(hideThisOption.VarRef, variable) ||
                 base.HasReference(variable);
         }
 
-        public bool MayCallBlock(Block block)
+        public bool MayCallBlock(IBlock block)
         {
-            return block == targetBlock;
+            bool result = ReferenceEquals(block, targetBlock);
+            return result;
         }
 
         #endregion
@@ -129,7 +133,8 @@ namespace AtMycelia.Amanita.DialogueSys.VScripting
         public virtual string GetStringId()
         {
             // String id for Menu commands is MENU.<Localization Id>.<Command id>
-            return "MENU." + "." + itemId;
+            string result = $"MENU.{_itemId}";
+            return result;
         }
 
         #endregion
@@ -140,9 +145,22 @@ namespace AtMycelia.Amanita.DialogueSys.VScripting
         {
             base.RefreshVariableCache();
 
-            var f = GetFlowchart();
-            f.DetermineSubstituteVariables(text, referencedVariables);
+            if (ParentBlock == null)
+            {
+                // This might be getting called before this Command's ownership
+                // was cemented after assembly reload
+                return;
+            }
+            var fc = ParentBlock.ParentFlowchart;
+            if (fc == null)
+            {
+                return;
+            }
+            var subber = StringVarSubstitutionService.Shared;
+            subber.DetermineSubstitutionVariables(text, fc, _referencedVariables);
         }
+
+
 #endif
         #endregion Editor caches
     }

@@ -3,7 +3,7 @@ using System.IO;
 
 using UnityEditor.AssetImporters;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
 	[ScriptedImporter(1, "lua")]
 	public class LuaScriptedImporter : ScriptedImporter

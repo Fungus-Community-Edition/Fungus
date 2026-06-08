@@ -166,10 +166,11 @@ namespace AtMycelia.Amanita.DialogueSys.VScripting
         public virtual string GetStringId()
         {
             // String id for Write commands is WRITE.<Localization Id>.<Command id>
-            return "WRITE." + "." + itemId;
+            string result = $"WRITE.{_itemId}";
+            return result;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return ReferenceEquals(text.VarRef, variable) || 
                 ReferenceEquals(setAlpha.VarRef, variable) || 

@@ -89,7 +89,7 @@ namespace VScriptingTests.Commands
             bool continued = false;
             _command.StartedContinue += _ => continued = true;
 
-            _flowchart.StartCoroutine(_block.Execute());
+            _flowchart.ExecuteBlock(_block);
 
             Assert.IsTrue(continued, "Continue() should be called immediately when waitUntilFinished is false.");
 

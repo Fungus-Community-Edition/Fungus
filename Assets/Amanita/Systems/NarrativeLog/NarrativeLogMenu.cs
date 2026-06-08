@@ -79,14 +79,14 @@ namespace AtMycelia.Amanita.UI.Legacy
         protected virtual void OnEnable()
         {
             WriterSignals.OnWriterState += OnWriterState;
-            BlockSignals.OnBlockEnd += OnBlockEnd;
+            BlockSignals.BlockExecEnded += OnBlockEnd;
             NarrativeLog.OnNarrativeAdded += OnNarrativeAdded;
         }
                 
         protected virtual void OnDisable()
         {
             WriterSignals.OnWriterState -= OnWriterState;
-            BlockSignals.OnBlockEnd -= OnBlockEnd;
+            BlockSignals.BlockExecEnded -= OnBlockEnd;
             NarrativeLog.OnNarrativeAdded -= OnNarrativeAdded;
         }
 
@@ -114,7 +114,7 @@ namespace AtMycelia.Amanita.UI.Legacy
             UpdateNarrativeLogText();
         }
 
-        protected virtual void OnBlockEnd (Block block)
+        protected virtual void OnBlockEnd (IBlock block)
         {
             // At block end update to get the last line of the block
             bool defaultPreviousLines = previousLines;

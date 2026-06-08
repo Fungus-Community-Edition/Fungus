@@ -74,8 +74,8 @@ namespace SaveSystemTests
             yield return new WaitForSeconds(0.1f);
             // The block should be executed at this time
 
-            Block testBlock = flowchart.FindBlock("TestBlock");
-            bool blockExecuted = testBlock.IsExecuting();
+            IBlock testBlock = flowchart.GetBlock("TestBlock");
+            bool blockExecuted = testBlock.IsExecuting;
             Assert.IsTrue(blockExecuted, "FlowchartApplier did not apply the block states correctly.");
 
         }
@@ -156,7 +156,7 @@ namespace SaveSystemTests
 
             // Remove all Commands from the Block. Can't just be one, since the loading logic checks
             // for index when the one with the right ID isn't found. Fallbacks and all.
-            block.CommandList.Clear();
+            block.RemoveAllCommands();
 
             // Find the corresponding BlockSaveData in the save data
             var blockSave = flowchartSaveData.SavedBlocks

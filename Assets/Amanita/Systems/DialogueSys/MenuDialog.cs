@@ -152,7 +152,7 @@ namespace AtMycelia.Amanita.DialogueSys
 		/// </summary>
 		public static MenuDialog ActiveMenuDialog { get; set; }
 
-		protected virtual IEnumerator WaitForTimeout(float timeoutDuration, Block targetBlock)
+		protected virtual IEnumerator WaitForTimeout(float timeoutDuration, IBlock targetBlock)
 		{
 			float elapsedTime = 0;
 
@@ -178,7 +178,8 @@ namespace AtMycelia.Amanita.DialogueSys
 
 			if (targetBlock != null)
 			{
-				targetBlock.StartExecution();
+				Flowchart fc = targetBlock.ParentFlowchart;
+				fc.ExecuteBlock(targetBlock);
 			}
 		}
 
@@ -196,10 +197,11 @@ namespace AtMycelia.Amanita.DialogueSys
 
 		private SayDialogManager SDManager => SayDialogManager.S;
 
-		protected IEnumerator CallBlock(Block block)
+		protected IEnumerator CallBlock(IBlock block)
 		{
 			yield return new WaitForEndOfFrame();
-			block.StartExecution();
+			Flowchart fc = block.ParentFlowchart;
+			fc.ExecuteBlock(block);
 		}
 
 		protected IEnumerator CallAction(Action callback)
@@ -217,7 +219,7 @@ namespace AtMycelia.Amanita.DialogueSys
 		/// <param name="interactable">If false, the option is displayed but is not selectable.</param>
 		/// <param name="hideOption">If true, the option is not displayed but the menu knows that option can or did exist</param>
 		/// <param name="targetBlock">Block to execute when the option is selected.</param>
-		public virtual bool AddOption(string text, bool interactable, bool hideOption, Block targetBlock)
+		public virtual bool AddOption(string text, bool interactable, bool hideOption, IBlock targetBlock)
 		{
 			var block = targetBlock;
 			UnityEngine.Events.UnityAction action = delegate
@@ -285,7 +287,8 @@ namespace AtMycelia.Amanita.DialogueSys
 		/// <param name="interactable">If false, the option is displayed but is not selectable.</param>
 		/// <param name="hideOption">If true, the option is not displayed but the menu knows that option can or did exist</param>
 		/// <param name="action">Action attached to the button on the menu item</param>
-		private bool AddOption(string text, bool interactable, bool hideOption, UnityEngine.Events.UnityAction action)
+		private bool AddOption(string text, bool interactable, bool hideOption, 
+			UnityEngine.Events.UnityAction action)
 		{
 			if (nextOptionIndex >= CachedButtons.Length)
 			{
@@ -331,7 +334,7 @@ namespace AtMycelia.Amanita.DialogueSys
 		/// </summary>
 		/// <param name="duration">The duration during which the player can select an option.</param>
 		/// <param name="targetBlock">Block to execute if the player does not select an option in time.</param>
-		public virtual void ShowTimer(float duration, Block targetBlock)
+		public virtual void ShowTimer(float duration, IBlock targetBlock)
 		{
 			if (cachedSlider != null)
 			{

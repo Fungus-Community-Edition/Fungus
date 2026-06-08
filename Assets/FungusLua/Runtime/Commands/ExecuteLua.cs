@@ -203,9 +203,11 @@ namespace AtMycelia.Amanita.Lua.VScripting
             return CommandColors.Flow;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
-            return returnVariable == variable || base.HasReference(variable);
+            bool result = ReferenceEquals(returnVariable, variable) ||
+                base.HasReference(variable);
+            return result;
         }
 
         #endregion

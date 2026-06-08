@@ -45,7 +45,7 @@ namespace AtMycelia.Amanita.DialogueSys.VScripting
             Continue();
         }
 
-        public override void GetConnectedBlocks(ref List<Block> connectedBlocks)
+        public override void GetConnectedBlocks(ref IList<IBlock> connectedBlocks)
         {
             if (targetBlock != null)
             {
@@ -68,15 +68,16 @@ namespace AtMycelia.Amanita.DialogueSys.VScripting
             return CommandColors.Narrative;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return ReferenceEquals(_duration.VarRef, variable) ||
                 base.HasReference(variable);
         }
 
-        public bool MayCallBlock(Block block)
+        public bool MayCallBlock(IBlock block)
         {
-            return block == targetBlock;
+            bool result = ReferenceEquals(block, targetBlock);
+            return result;
         }
         
         #endregion

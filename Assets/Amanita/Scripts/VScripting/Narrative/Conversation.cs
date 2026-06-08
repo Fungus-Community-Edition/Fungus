@@ -34,7 +34,7 @@ namespace AtMycelia.Amanita.DialogueSys.VScripting
 
         protected virtual IEnumerator DoConversation()
         {
-            var flowchart = GetFlowchart();
+            var flowchart = GetFlowchart(); 
             string subbedText = flowchart.SubstituteVariables(conversationText.Value);
 
             conversationManager.ClearPrev = clearPrevious;
@@ -64,7 +64,7 @@ namespace AtMycelia.Amanita.DialogueSys.VScripting
             return CommandColors.Narrative;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return ReferenceEquals(clearPrevious.VarRef, variable) || 
                 ReferenceEquals(waitForInput.VarRef, variable) || 
@@ -82,12 +82,7 @@ namespace AtMycelia.Amanita.DialogueSys.VScripting
         {
             base.RefreshVariableCache();
 
-            var f = GetFlowchart();
-
-            if (!string.IsNullOrEmpty(conversationText.Value))
-            {
-                f.DetermineSubstituteVariables(conversationText, referencedVariables);
-            }
+            
         }
 
 #endif

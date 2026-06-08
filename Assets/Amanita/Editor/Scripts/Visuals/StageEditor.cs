@@ -3,7 +3,7 @@ using UnityEngine;
 using AtMycelia.Amanita.DialogueSys;
 using AtMycelia.Amanita.DialogueSys.VScripting;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     [CustomEditor (typeof(ControlStage))]
     public class StageEditor : CommandEditor

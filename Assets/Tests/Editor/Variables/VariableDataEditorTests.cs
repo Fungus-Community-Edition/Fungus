@@ -88,7 +88,7 @@ namespace VScriptingTests.VariableOperations
             var varManagerComponent = _flowchart.GetComponent<VariableManagerComponent>();
             Assert.IsNotNull(varManagerComponent, "VariableManagerComponent not found on Flowchart.");
 
-            var intVar = varManagerComponent.AddNewVariableOfContentType<int>("Health", 123, VariableScope.Private);
+            var intVar = varManagerComponent.AddNewVariableOfContentType<int>("Health", 123, AccessScope.Private);
             Assert.IsNotNull(intVar, "Failed to create muscariable for test.");
             Assert.Greater(intVar.ItemId, 0, "Muscariable ItemId should be assigned.");
 

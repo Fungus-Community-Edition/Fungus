@@ -4,9 +4,9 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using AtMycelia.Hyphlow;
-using AtMycelia.Hyphlow.EditorUtils;
-using AtMycelia.Hyphlow.EditorUtils.FcWindow;
-using FcWindow = AtMycelia.Hyphlow.EditorUtils.FcWindow.FlowchartWindow;
+using AtMycelia.Hyphlow.EditorExt;
+using AtMycelia.Hyphlow.EditorExt.FcWindow;
+using FcWindow = AtMycelia.Hyphlow.EditorExt.FcWindow.FlowchartWindow;
 
 namespace VScriptingTests.FCWindowOperations.Integration
 {
@@ -85,7 +85,7 @@ namespace VScriptingTests.FCWindowOperations.Integration
 
         private void HandleMouseUp(Event e, bool allowEmptySpaceClick = true)
         {
-            Block blockHit = ctx.Interaction.BlockHitInLastMouseDown;
+            IBlock blockHit = ctx.Interaction.BlockHitInLastMouseDown;
             if (blockHit != null)
             {
                 singleSelectionHandler.OnBlockClicked(blockHit, e);
@@ -130,7 +130,7 @@ namespace VScriptingTests.FCWindowOperations.Integration
             HandleMouseUp(mouseReleased);
 
             // Expect exactly that block to be selected
-            Block blockWeExpect = blocks[blockIndex];
+            IBlock blockWeExpect = blocks[blockIndex];
             string errorMessage = "Click on a single block did not make it so only that one is selected";
             CollectionAssert.AreEqual(
                 new[] { blockWeExpect },
@@ -148,7 +148,7 @@ namespace VScriptingTests.FCWindowOperations.Integration
         [Test, TestCaseSource(nameof(BlockIndices))]
         public virtual void MouseDown_EmptySpace_OneBlockSelected_Clears(int blockIndex)
         {
-            Block toSelect = blocks[blockIndex];
+            IBlock toSelect = blocks[blockIndex];
             flowchart.SelectedBlock = toSelect;
 
             mouseDown.mousePosition = emptySpace;
@@ -192,7 +192,7 @@ namespace VScriptingTests.FCWindowOperations.Integration
         [Test, TestCaseSource(nameof(BlockIndices))]
         public virtual void MouseUp_Empty_OneBlockSelectedByMarquee_SelectionStays(int blockIndex)
         {
-            Block toSelect = blocks[blockIndex];
+            IBlock toSelect = blocks[blockIndex];
             Vector2 blockPos = toSelect._NodeRect.position;
             Vector2 offset = SelectionBoxDragTrackerUitk.MinThreshold * 2;
 
@@ -209,7 +209,7 @@ namespace VScriptingTests.FCWindowOperations.Integration
         [Test]
         public virtual void MouseDown_OnNonSelected_SelectOnlyThat()
         {
-            Block toSelect = blocks[0];
+            IBlock toSelect = blocks[0];
             SimulateSingleBlockSelection(toSelect);
 
             toSelect = blocks[1];
@@ -224,7 +224,7 @@ namespace VScriptingTests.FCWindowOperations.Integration
         [Test, TestCaseSource(nameof(BlockIndices))]
         public virtual void MouseDown_OnAlreadySelected_SelectThatOneBlock(int blockIndex)
         {
-            Block toSelect = blocks[blockIndex];
+            IBlock toSelect = blocks[blockIndex];
 
             SimulateSingleBlockSelection(toSelect);
 
@@ -239,7 +239,7 @@ namespace VScriptingTests.FCWindowOperations.Integration
             Assert.IsTrue(noClear, errorMessage);
         }
 
-        protected void SimulateSingleBlockSelection(Block toSelect, bool controlClick = false)
+        protected void SimulateSingleBlockSelection(IBlock toSelect, bool controlClick = false)
         {
             mouseDown.control = controlClick;
             mouseReleased.control = controlClick;
@@ -330,7 +330,7 @@ namespace VScriptingTests.FCWindowOperations.Integration
         [Test, TestCaseSource(nameof(BlockIndices))]
         public virtual void MouseUp_ResetsSelectionBox(int blockIndex)
         {
-            Block toSelect = blocks[blockIndex];
+            IBlock toSelect = blocks[blockIndex];
             SimulateSingleBlockSelection(toSelect);
             bool success = ctx.Interaction.SelectionBox.size == Vector2.zero;
             string errorMessage = "After selecting a block, mouse up should've reset the selection box";
@@ -340,10 +340,10 @@ namespace VScriptingTests.FCWindowOperations.Integration
         [Test]
         public void CtrlClick_OnSelected_DoesNotChangeSelection()
         {
-            Block firstBlock = blocks[0];
+            IBlock firstBlock = blocks[0];
             SimulateSingleBlockSelection(firstBlock);
 
-            Block secondBlock = blocks[1];
+            IBlock secondBlock = blocks[1];
             SimulateSingleBlockSelection(secondBlock, true);
 
             bool onlyFirstBlockSelected = flowchart.SelectedBlockCount == 1 &&
@@ -355,7 +355,7 @@ namespace VScriptingTests.FCWindowOperations.Integration
         [Test]
         public void CtrlClick_OnSelected_DoesNotDeselect()
         {
-            Block firstBlock = blocks[0];
+            IBlock firstBlock = blocks[0];
             SimulateSingleBlockSelection(firstBlock);
 
             SimulateSingleBlockSelection(firstBlock, true);

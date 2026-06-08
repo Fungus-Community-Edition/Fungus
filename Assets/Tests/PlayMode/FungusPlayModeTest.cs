@@ -11,19 +11,19 @@ namespace AtMycelia.Amanita.Tests
         [UnityTest]
         public IEnumerator Looping()
         {
-            yield return Hyphlow.EditorUtils.TestUtils.RunPrefabFlowchartTests("LoopTest", true, 200);
+            yield return Hyphlow.EditorExt.TestUtils.RunPrefabFlowchartTests("LoopTest", true, 200);
         }
 
         [UnityTest]
         public IEnumerator ControlFlow()
         {
-            yield return Hyphlow.EditorUtils.TestUtils.RunPrefabFlowchartTests("FlowTest", true);
+            yield return Hyphlow.EditorExt.TestUtils.RunPrefabFlowchartTests("FlowTest", true);
         }
 
         [UnityTest]
         public IEnumerator VariableSets()
         {
-            yield return Hyphlow.EditorUtils.TestUtils.RunPrefabFlowchartTests("VarSetTest", true);
+            yield return Hyphlow.EditorExt.TestUtils.RunPrefabFlowchartTests("VarSetTest", true);
         }
     }
 }

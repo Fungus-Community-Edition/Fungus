@@ -1,9 +1,9 @@
 using UnityEditor;
 using UnityEngine;
 using AtMycelia.Hyphlow;
-using AtMycelia.Hyphlow.EditorUtils;
+using AtMycelia.Hyphlow.EditorExt;
 
-namespace AtMycelia.Amanita.DialogueSys.EditorUtils
+namespace AtMycelia.Amanita.DialogueSys.EditorExt
 {
     [CustomEditor (typeof(Portrait))]
     public class PortraitEditor : CommandEditor

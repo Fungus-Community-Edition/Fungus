@@ -152,7 +152,7 @@ BoxCollider:
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &114806254156403658
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -162,8 +162,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbd8c931f22994b9d90e2037fffaa770, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemId: 5
-  indentLevel: 0
+  _itemId: 5
+  _indentLevel: 0
   _targetGameObject:
     _backingVarRef:
       _itemId: 2
@@ -185,7 +185,7 @@ MonoBehaviour:
   targetGameObjectOLD: {fileID: 0}
 --- !u!114 &114775122841254552
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -195,11 +195,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebc295ba6aed8944fa3974a64f33cc42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemId: 4
-  indentLevel: 0
+  _itemId: 4
+  _indentLevel: 0
 --- !u!114 &114677516667119166
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -209,8 +209,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec422cd568a9c4a31ad7c36d0572b9da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemId: 3
-  indentLevel: 0
+  _itemId: 3
+  _indentLevel: 0
   _storyText:
     _backingVarRef:
       _itemId: 0
@@ -361,7 +361,7 @@ MonoBehaviour:
   _value: 0
 --- !u!114 &114442955185164142
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -371,8 +371,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb77d0ce495044f6e9feb91b31798e8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemId: 2
-  indentLevel: 0
+  _itemId: 2
+  _indentLevel: 0
   _setOperator: 0
   _anyVar:
     _varRef:
@@ -423,7 +423,7 @@ MonoBehaviour:
         booleanVal: 0
 --- !u!114 &114296271849496316
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -433,11 +433,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d07cf5e706b13a4eb0ae53386c30fbd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemId: 6
-  indentLevel: 0
+  _itemId: 6
+  _indentLevel: 0
 --- !u!114 &114408475763180490
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -455,18 +455,21 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 1
-  blockName: OnPlayerTouch
-  description: 
-  eventHandler: {fileID: 4521491715789075485}
-  commandList:
+  _scope: 1
+  _itemId: 1
+  _blockName: OnPlayerTouch
+  _description: 
+  _legacyEventHandler: {fileID: 4521491715789075485}
+  _legacyCommandList:
   - {fileID: 114296271849496316}
   - {fileID: 114442955185164142}
   - {fileID: 114677516667119166}
   - {fileID: 114775122841254552}
   - {fileID: 114806254156403658}
-  includeInSaves: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _loadPriority: 0
+  _owner: {fileID: 114126805715615206}
+  _nextValidCommandId: 1
   suppressAllAutoSelections: 0
 --- !u!114 &114126805715615206
 MonoBehaviour:
@@ -481,6 +484,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _varManager: {fileID: 8201218682589199852}
+  _execManager: {fileID: 0}
+  _blockManager: {fileID: 0}
   legacyVariableManager:
     _muscariables: []
     _legacyVariables: []
@@ -490,10 +495,11 @@ MonoBehaviour:
   _legacyVariables: []
   _oldMuscariables: []
   _otherSettings: []
-  description: 
-  uiModel:
-    _selectedBlocks: []
-    _selectedCommands: []
+  _flowchartSettings: {fileID: 0}
+  _description: 
+  _uiModel:
+    _selectedLegacyBlocks: []
+    _selectedLegacyCommands: []
     _owner: {fileID: 1247888977727998}
     <ScrollPos>k__BackingField: {x: 0, y: 5.227273}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
@@ -507,27 +513,13 @@ MonoBehaviour:
       width: 0
       height: 0
     <SelectedCommandsStale>k__BackingField: 1
-  stepPause: 0
-  colorCommands: 1
-  hideComponents: 1
-  saveSelection: 1
-  showLineNumbers: 0
-  hideCommands: []
-  includeInSaves: 1
-  saveBlocks: 1
-  saveVariables: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _saveBlocks: 1
+  _saveVariables: 1
+  _loadPriority: 0
   _alwaysKeepGuid: 1
-  _blockListCache:
-  - {fileID: 114408475763180490}
-  _commands:
-  - {fileID: 114806254156403658}
-  - {fileID: 114775122841254552}
-  - {fileID: 114677516667119166}
-  - {fileID: 114442955185164142}
-  - {fileID: 114296271849496316}
   nextValidVarID: 3
-  uniqueId: 31944b55-2c0e-491a-80a7-4245a8a31b87
+  _uniqueId: 
   references:
     version: 2
     RefIds: []
@@ -543,7 +535,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75662d9886485a9478179361e82eb7bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _parentBlock: {fileID: 114408475763180490}
+  _parentMbBlock: {fileID: 114408475763180490}
+  _parentBlockReference:
+    _itemId: 1
+    _owningSource: {fileID: 0}
   _suppressBlockAutoSelect: 0
   _tagFilter:
     _tagFilter:
@@ -604,7 +599,7 @@ MonoBehaviour:
         _itemId: 1
         scope: 0
         key: 
-        itemId: 0
+        itemID: 0
         value: {fileID: 0}
         _startValue: {fileID: 0}
         _value: {fileID: 1247888977727998}

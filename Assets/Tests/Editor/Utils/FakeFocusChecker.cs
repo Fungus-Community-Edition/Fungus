@@ -1,4 +1,4 @@
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     // Fake focus checker you use in all tests
     public class FakeFocusChecker : IFocusChecker

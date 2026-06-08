@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using AtMycelia.Hyphlow;
-using AtMycelia.Hyphlow.EditorUtils;
+using AtMycelia.Hyphlow.EditorExt;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
-using AtMycelia.Hyphlow.EditorUtils.FcWindow;
-using FcWindow = AtMycelia.Hyphlow.EditorUtils.FcWindow.FlowchartWindow;
+using AtMycelia.Hyphlow.EditorExt.FcWindow;
+using FcWindow = AtMycelia.Hyphlow.EditorExt.FcWindow.FlowchartWindow;
 
 namespace VScriptingTests.FlowchartWindow.Modules
 {
@@ -24,7 +24,7 @@ namespace VScriptingTests.FlowchartWindow.Modules
         [SetUp]
         public void SetUp()
         {
-            AtMycelia.Hyphlow.EditorUtils.TestUtils.ResetFlowchartWindowSingleton();
+            AtMycelia.Hyphlow.EditorExt.TestUtils.ResetFlowchartWindowSingleton();
             previousSelection = Selection.activeGameObject;
 
             flowchartObject = new GameObject("Flowchart_Test");
@@ -65,10 +65,10 @@ namespace VScriptingTests.FlowchartWindow.Modules
         [Test]
         public void OnBlockClicked_SelectsBlockAndClearsCommands()
         {
-            Block block = flowchart.CreateBlock(Vector2.zero);
-            Command command = flowchart.AddCommand<DummyCommand>(block);
+            IBlock block = flowchart.CreateBlock(Vector2.zero);
+            ICommand command = flowchart.AddCommand<DummyCommand>(block);
 
-            flowchart.SelectedCommands = new List<Command> { command };
+            flowchart.SelectedCommands = new List<ICommand> { command };
 
             Event dummyEvent = new Event();
             syncer.OnBlockClicked(block, dummyEvent);
@@ -80,11 +80,11 @@ namespace VScriptingTests.FlowchartWindow.Modules
         [Test]
         public void OnBlockClicked_WhenBlockAlreadySelected_DoesNotClearCommands()
         {
-            Block block = flowchart.CreateBlock(Vector2.zero);
-            Command command = flowchartObject.AddComponent<DummyCommand>();
+            IBlock block = flowchart.CreateBlock(Vector2.zero);
+            ICommand command = flowchartObject.AddComponent<DummyCommand>();
 
             flowchart.SelectedBlock = block;
-            flowchart.SelectedCommands = new List<Command> { command };
+            flowchart.SelectedCommands = new List<ICommand> { command };
 
             Event dummyEvent = new Event();
             syncer.OnBlockClicked(block, dummyEvent);
@@ -96,11 +96,11 @@ namespace VScriptingTests.FlowchartWindow.Modules
         [Test]
         public void OnBlockClicked_NullClearsSelectionAndCommands()
         {
-            Block block = flowchart.CreateBlock(Vector2.zero);
-            Command command = flowchartObject.AddComponent<DummyCommand>();
+            IBlock block = flowchart.CreateBlock(Vector2.zero);
+            ICommand command = flowchartObject.AddComponent<DummyCommand>();
 
             flowchart.SelectedBlock = block;
-            flowchart.SelectedCommands = new List<Command> { command };
+            flowchart.SelectedCommands = new List<ICommand> { command };
             Event dummyEvent = new Event();
             syncer.OnBlockClicked(null, dummyEvent);
 
@@ -111,7 +111,7 @@ namespace VScriptingTests.FlowchartWindow.Modules
         [Test]
         public void OnEmptySpaceClicked_ClearsSelectionAndSelectsFlowchartGameObject()
         {
-            Block block = flowchart.CreateBlock(Vector2.zero);
+            IBlock block = flowchart.CreateBlock(Vector2.zero);
             flowchart.SelectedBlock = block;
             Selection.activeGameObject = selectionObject;
 
@@ -125,7 +125,7 @@ namespace VScriptingTests.FlowchartWindow.Modules
         [Test]
         public void OnBlockCreated_SelectsBlock()
         {
-            Block block = flowchart.CreateBlock(Vector2.zero);
+            IBlock block = flowchart.CreateBlock(Vector2.zero);
 
             syncer.OnBlockCreated(block);
 

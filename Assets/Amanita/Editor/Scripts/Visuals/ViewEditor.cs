@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 using AtMycelia.Amanita.VScripting;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     [CanEditMultipleObjects]
     [CustomEditor (typeof(View))]

@@ -1,9 +1,10 @@
 using UnityEditor;
 using UnityEngine;
 using AmanitaMenu = AtMycelia.Amanita.DialogueSys.VScripting.Menu;
-using AtMycelia.Hyphlow.EditorUtils;
+using AtMycelia.Hyphlow.EditorExt;
+using AtMycelia.Hyphlow;
 
-namespace AtMycelia.Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorExt
 {
     [CustomEditor (typeof(AmanitaMenu))]
     public class MenuEditor : CommandEditor 
@@ -55,7 +56,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
                 var activeFlowchart = EditorSelectionTracker.ActiveFlowchart;
                 Vector2 pos = menuTarget.ParentBlock._NodeRect.position - Vector2.down * 60;
                 var newBlock = activeFlowchart.CreateBlock(pos);
-                targetBlockProp.objectReferenceValue = newBlock;
+                targetBlockProp.objectReferenceValue = newBlock as Block;
                 activeFlowchart.SelectedBlock = menuTarget.ParentBlock;
             }
             EditorGUILayout.EndHorizontal();
