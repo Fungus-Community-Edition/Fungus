@@ -59,6 +59,8 @@ GameObject:
   - component: {fileID: 1749631385722854176}
   - component: {fileID: 6444787969915162841}
   - component: {fileID: 8840997418231530571}
+  - component: {fileID: -797599674048495452}
+  - component: {fileID: -8498157153650015987}
   m_Layer: 0
   m_Name: TestFlowchart
   m_TagString: Untagged
@@ -94,8 +96,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _varManager: {fileID: 6444787969915162841}
-  _execManager: {fileID: 0}
-  _blockManager: {fileID: 0}
+  _execManager: {fileID: -8498157153650015987}
+  _blockManager: {fileID: -797599674048495452}
   legacyVariableManager:
     _muscariables: []
     _legacyVariables: []
@@ -308,7 +310,7 @@ MonoBehaviour:
   _parentMbBlock: {fileID: 3080362346236546621}
   _parentBlockReference:
     _itemId: 6
-    _owningSource: {fileID: 0}
+    _owningSource: {fileID: 5559651170823982952}
   _suppressBlockAutoSelect: 0
   waitForFrames: 1
 --- !u!114 &2182094343406819994
@@ -490,6 +492,46 @@ MonoBehaviour:
     floatRef: {fileID: 0}
     floatVal: 0
   durationOLD: 0
+--- !u!114 &-797599674048495452
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2918351469272193397}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e16732bba93198b4888a347765e3a8cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _blockManager:
+    _legacyBlocks: []
+    _nextValidBlockId: 1
+    _blockOwner: {fileID: 0}
+  _cachedFlowchart: {fileID: 0}
+--- !u!114 &-8498157153650015987
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2918351469272193397}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: efcfad39446ab494eaaa242a86e90bc7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _owner: {fileID: 0}
+  _manager:
+    _coroutineRunner: {fileID: 0}
+  _unityObjBlockManager: {fileID: 0}
+  _nonUnityObjBlockManager:
+    rid: -2
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!1 &4017282831232097748
 GameObject:
   m_ObjectHideFlags: 0

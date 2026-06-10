@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.TestTools.Utils; // for Vector3EqualityComparer
-using AtMycelia.AmaniTween;
+using AtMycelia.HyphaTween;
 
 namespace TweeningTests.BuiltinCompat
 {

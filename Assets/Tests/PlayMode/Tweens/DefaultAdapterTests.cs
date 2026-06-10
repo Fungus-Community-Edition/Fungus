@@ -1,6 +1,6 @@
 using AtMycelia.Amanita;
 using AtMycelia.Hyphlow.Sys;
-using AtMycelia.AmaniTween;
+using AtMycelia.HyphaTween;
 using NUnit.Framework;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;

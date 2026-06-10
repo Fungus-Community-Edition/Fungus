@@ -2,13 +2,47 @@
 using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
 using System.Collections.Generic;
-using AtMycelia.Hyphlow;
-using AtMycelia.Amanita.VScripting;
-using AtMycelia.Hyphlow.Sys;
-using AtMycelia.AmaniTween;
+using AtMycelia.HyphaTween;
 
 namespace AtMycelia.Amanita
 {
+    /// <summary>
+    /// Probe event raised by Draggable2D at drag end to let listeners decide if this drag
+    /// counts as completed.
+    /// </summary>
+    public sealed class DragEndProbeEvent
+    {
+        public DragEndProbeEvent(Draggable2D draggableObject, IEnumerable<Collider2D> overlappingTargets)
+        {
+            DraggableObject = draggableObject;
+            _overlappingTargets = overlappingTargets != null
+                ? new List<Collider2D>(overlappingTargets)
+                : new List<Collider2D>();
+        }
+
+        public Draggable2D DraggableObject { get; }
+
+        private readonly List<Collider2D> _overlappingTargets;
+
+        public IReadOnlyList<Collider2D> OverlappingTargets
+        {
+            get { return _overlappingTargets; }
+        }
+
+        public bool IsCompleted { get; private set; }
+
+        public Collider2D TargetCollider { get; private set; }
+
+        public void MarkCompleted(Collider2D targetCollider)
+        {
+            IsCompleted = true;
+            if (TargetCollider == null)
+            {
+                TargetCollider = targetCollider;
+            }
+        }
+    }
+
     /// <summary>
     /// Detects drag and drop interactions on a Game Object, and sends events to all 
     /// Flowchart event handlers in the scene.
@@ -65,22 +99,8 @@ namespace AtMycelia.Amanita
         protected Vector3 newPosition;
         protected Vector3 delta = Vector3.zero;
 
-        #region DragCompleted handlers
-        protected List<DragCompleted> dragCompletedHandlers = new List<DragCompleted>();
-
-        public void RegisterHandler(DragCompleted handler)
-        {
-            dragCompletedHandlers.Add(handler);
-        }
-
-        public void UnregisterHandler(DragCompleted handler)
-        {
-            if (dragCompletedHandlers.Contains(handler))
-            {
-                dragCompletedHandlers.Remove(handler);
-            }
-        }
-        #endregion
+        // Amanita-owned runtime drag semantics: what targets this draggable is currently over.
+        protected readonly HashSet<Collider2D> overlappingTargets = new HashSet<Collider2D>();
 
         protected virtual void LateUpdate()
         {
@@ -95,49 +115,57 @@ namespace AtMycelia.Amanita
             }
         }
 
-        protected virtual void OnTriggerEnter2D(Collider2D other) 
+        protected virtual void OnTriggerEnter2D(Collider2D other)
         {
             if (!_dragEnabled)
             {
                 return;
             }
 
-            var eventDispatcher = AmanitaManager.S.EventDispatcher;
+            if (_beingDragged && other != null)
+            {
+                overlappingTargets.Add(other);
+            }
 
-            eventDispatcher.Raise(new DragEntered.DragEnteredEvent(this, other));
+            var eventDispatcher = AmanitaManager.S.EventDispatcher;
+            eventDispatcher.Raise(new DragEnteredEvent(this, other));
         }
 
-        protected virtual void OnTriggerExit2D(Collider2D other) 
+        protected virtual void OnTriggerExit2D(Collider2D other)
         {
             if (!_dragEnabled)
             {
                 return;
             }
 
-            var eventDispatcher = AmanitaManager.S.EventDispatcher;
+            if (other != null)
+            {
+                overlappingTargets.Remove(other);
+            }
 
-            eventDispatcher.Raise(new DragExited.DragExitedEvent(this, other));
+            var eventDispatcher = AmanitaManager.S.EventDispatcher;
+            eventDispatcher.Raise(new DragExitedEvent(this, other));
         }
 
         protected virtual void DoBeginDrag()
         {
             _beingDragged = true;
+            overlappingTargets.Clear();
 
             // Offset the object so that the drag is anchored to the exact point where the user clicked it
-
 #if ENABLE_INPUT_SYSTEM
             var mousePos = UnityEngine.InputSystem.Mouse.current?.position.ReadValue() ?? Vector2.zero;
 #else
             var mousePos = Input.mousePosition;
 #endif
-            delta = Camera.main.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, 10f)) - transform.position;
+            var screenPoint = new Vector3(mousePos.x, mousePos.y, 10f);
+            delta = Camera.main.ScreenToWorldPoint(screenPoint) - transform.position;
             delta.z = 0f;
 
             startingPosition = transform.position;
 
             var eventDispatcher = AmanitaManager.S.EventDispatcher;
-
-            eventDispatcher.Raise(new DragStarted.DragStartedEvent(this));
+            eventDispatcher.Raise(new DragStartedEvent(this));
         }
 
         protected virtual void DoDrag()
@@ -156,7 +184,8 @@ namespace AtMycelia.Amanita
             float y = mousePos.y;
             float z = transform.position.z;
 
-            newPosition = Camera.main.ScreenToWorldPoint(new Vector3(x, y, 10f)) - delta;
+            var screenPoint = new Vector3(x, y, 10f);
+            newPosition = Camera.main.ScreenToWorldPoint(screenPoint) - delta;
             newPosition.z = z;
             updatePosition = true;
         }
@@ -169,44 +198,37 @@ namespace AtMycelia.Amanita
             }
 
             var eventDispatcher = AmanitaManager.S.EventDispatcher;
-            bool dragCompleted = false;
 
-            for (int i = 0; i < dragCompletedHandlers.Count; i++)
+            // Ask listeners (bridge layer) whether this drag should count as completed.
+            DragEndProbeEvent probeEvent = new DragEndProbeEvent(this, overlappingTargets);
+            eventDispatcher.Raise(probeEvent);
+
+            if (probeEvent.IsCompleted)
             {
-                var handler = dragCompletedHandlers[i];
-                if (handler != null && handler.DraggableObjects.Contains(this))
-                {
-                    if (handler.IsOverTarget())
-                    {
-                        dragCompleted = true;
+                eventDispatcher.Raise(new DragCompletedEvent(this));
 
-                        eventDispatcher.Raise(new DragCompleted.DragCompletedEvent(this));
-                    }
+                if (_returnOnCompleted)
+                {
+                    Tweener.TweenPosition(gameObject.transform, gameObject.transform.position,
+                        startingPosition, _returnDuration);
                 }
             }
-
-            if (!dragCompleted)
+            else
             {
-                eventDispatcher.Raise(new DragCancelled.DragCancelledEvent(this));
+                eventDispatcher.Raise(new DragCancelledEvent(this));
 
                 if (_returnOnCancelled)
                 {
                     Tweener.TweenPosition(gameObject.transform, gameObject.transform.position,
-                    startingPosition, _returnDuration);
-                    //LeanTween.move(gameObject, startingPosition, returnDuration).setEase(LeanTweenType.easeOutExpo);
+                        startingPosition, _returnDuration);
                 }
             }
-            else if (_returnOnCompleted)
-            {
-                Tweener.TweenPosition(gameObject.transform, gameObject.transform.position,
-                    startingPosition, _returnDuration);
-                //LeanTween.move(gameObject, startingPosition, returnDuration).setEase(LeanTweenType.easeOutExpo);
-            }
 
+            overlappingTargets.Clear();
             _beingDragged = false;
         }
 
-        private DefaultTweenAdapter Tweener => HyphlowRuntimeSysAssets.S.TweenAdapter;
+        private DefaultTweenAdapter Tweener => TweenManager.S.DefaultAdapter;
 
         protected virtual void DoPointerEnter()
         {
@@ -215,7 +237,7 @@ namespace AtMycelia.Amanita
 
         protected virtual void DoPointerExit()
         {
-            SetMouseCursor.ResetMouseCursor();
+            //SetMouseCursor.ResetMouseCursor();
         }
 
         protected virtual void ChangeCursor(Texture2D cursorTexture)
@@ -261,7 +283,7 @@ namespace AtMycelia.Amanita
                 DoPointerEnter();
             }
         }
-        
+
         protected virtual void OnMouseExit()
         {
             if (!_useEventSystem)

@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.ateliermycelia.hyphatween": "file:E:/Github/_AtelierMycelia/HyphaTween/Assets/HyphaTween",
     "com.ateliermycelia.hyphlow": "file:E:/Github/_AtelierMycelia/Hyphlow/Assets/Hyphlow",
     "com.ateliermycelia.myceliaudio": "file:E:/Github/_AtelierMycelia/Myceliaudio/Packages/com.ateliermycelia.myceliaudio",
     "com.ateliermycelia.unityutils": "file:E:/Github/_AtelierMycelia/UnityUtils/Assets/AtMyceliaCommonLib",

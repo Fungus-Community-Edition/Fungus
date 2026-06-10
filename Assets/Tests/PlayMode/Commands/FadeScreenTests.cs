@@ -4,7 +4,7 @@ using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
-using AtMycelia.Amanita.VScripting;
+using AtMycelia.Mycorrhiza;
 
 namespace VScriptingTests.Commands
 {

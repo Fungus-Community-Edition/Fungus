@@ -37,6 +37,8 @@ GameObject:
   - component: {fileID: 874316152228077432}
   - component: {fileID: 2718052440194111709}
   - component: {fileID: 7267401832665877940}
+  - component: {fileID: -4875859172292099387}
+  - component: {fileID: 4707018594091298075}
   m_Layer: 0
   m_Name: Door
   m_TagString: Untagged
@@ -1420,8 +1422,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _varManager: {fileID: 2718052440194111709}
-  _execManager: {fileID: 0}
-  _blockManager: {fileID: 0}
+  _execManager: {fileID: 4707018594091298075}
+  _blockManager: {fileID: -4875859172292099387}
   legacyVariableManager:
     _muscariables: []
     _legacyVariables: []
@@ -1476,7 +1478,7 @@ MonoBehaviour:
   _parentMbBlock: {fileID: 114882431458328084}
   _parentBlockReference:
     _itemId: 6
-    _owningSource: {fileID: 0}
+    _owningSource: {fileID: 114383920395763002}
   _suppressBlockAutoSelect: 0
   _tagFilter:
     _tagFilter:
@@ -1757,6 +1759,46 @@ MonoBehaviour:
   _oldWaitForClick: 1
   _oldStopVoiceover: 1
   _oldWaitForVO: 0
+--- !u!114 &-4875859172292099387
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1802049371907118}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e16732bba93198b4888a347765e3a8cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _blockManager:
+    _legacyBlocks: []
+    _nextValidBlockId: 1
+    _blockOwner: {fileID: 0}
+  _cachedFlowchart: {fileID: 0}
+--- !u!114 &4707018594091298075
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1802049371907118}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: efcfad39446ab494eaaa242a86e90bc7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _owner: {fileID: 0}
+  _manager:
+    _coroutineRunner: {fileID: 0}
+  _unityObjBlockManager: {fileID: 0}
+  _nonUnityObjBlockManager:
+    rid: -2
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!1 &1807841399872324
 GameObject:
   m_ObjectHideFlags: 0

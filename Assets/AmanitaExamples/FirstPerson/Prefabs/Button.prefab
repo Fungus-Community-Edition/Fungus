@@ -129,6 +129,8 @@ GameObject:
   - component: {fileID: 3354874841082550138}
   - component: {fileID: 4967441238045203939}
   - component: {fileID: 5946497391379537664}
+  - component: {fileID: -5701467544429340750}
+  - component: {fileID: 2049850488369020549}
   m_Layer: 0
   m_Name: Button
   m_TagString: Untagged
@@ -697,9 +699,9 @@ MonoBehaviour:
   _indentLevel: 0
   _targetBlockReference:
     _itemId: 1
-    _owningSource: {fileID: 0}
+    _owningSource: {fileID: 114726772774787118}
   _targetFlowchart: {fileID: 0}
-  _targetBlock: {fileID: 114338234726659852}
+  _targetBlock: {fileID: 0}
   _startLabel:
     _backingVarRef:
       _itemId: 0
@@ -1061,8 +1063,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _varManager: {fileID: 4967441238045203939}
-  _execManager: {fileID: 0}
-  _blockManager: {fileID: 0}
+  _execManager: {fileID: 2049850488369020549}
+  _blockManager: {fileID: -5701467544429340750}
   legacyVariableManager:
     _muscariables: []
     _legacyVariables: []
@@ -2309,7 +2311,7 @@ MonoBehaviour:
   _parentMbBlock: {fileID: 114328260454794762}
   _parentBlockReference:
     _itemId: 4
-    _owningSource: {fileID: 0}
+    _owningSource: {fileID: 114726772774787118}
   _suppressBlockAutoSelect: 0
   _tagFilter:
     _tagFilter:
@@ -2457,6 +2459,46 @@ MonoBehaviour:
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
     _value: {fileID: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+--- !u!114 &-5701467544429340750
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1766213715120214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e16732bba93198b4888a347765e3a8cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _blockManager:
+    _legacyBlocks: []
+    _nextValidBlockId: 1
+    _blockOwner: {fileID: 0}
+  _cachedFlowchart: {fileID: 0}
+--- !u!114 &2049850488369020549
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1766213715120214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: efcfad39446ab494eaaa242a86e90bc7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _owner: {fileID: 0}
+  _manager:
+    _coroutineRunner: {fileID: 0}
+  _unityObjBlockManager: {fileID: 0}
+  _nonUnityObjBlockManager:
+    rid: -2
   references:
     version: 2
     RefIds:

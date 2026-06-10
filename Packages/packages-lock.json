@@ -1,12 +1,21 @@
 {
   "dependencies": {
+    "com.ateliermycelia.hyphatween": {
+      "version": "file:E:/Github/_AtelierMycelia/HyphaTween/Assets/HyphaTween",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.ateliermycelia.unityutils": "1.2.2"
+      }
+    },
     "com.ateliermycelia.hyphlow": {
       "version": "file:E:/Github/_AtelierMycelia/Hyphlow/Assets/Hyphlow",
       "depth": 0,
       "source": "local",
       "dependencies": {
         "com.unity.textmeshpro": "3.0.6",
-        "com.ateliermycelia.unityutils": "1.1.0",
+        "com.ateliermycelia.unityutils": "1.2.2",
+        "com.ateliermycelia.hyphatween": "1.0.1",
         "com.unity.inputsystem": "1.7.0"
       }
     },

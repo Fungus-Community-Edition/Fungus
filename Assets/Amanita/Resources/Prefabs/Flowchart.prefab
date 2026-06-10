@@ -132,6 +132,6 @@ MonoBehaviour:
   _parentMbBlock: {fileID: 11433304}
   _parentBlockReference:
     _itemId: 0
-    _owningSource: {fileID: 0}
+    _owningSource: {fileID: 11430050}
   _suppressBlockAutoSelect: 0
   waitForFrames: 1

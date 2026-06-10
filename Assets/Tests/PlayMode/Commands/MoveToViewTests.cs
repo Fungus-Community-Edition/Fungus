@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.TestTools.Utils; // for equality comparers
 using AtMycelia.Amanita;
-using AtMycelia.Amanita.VScripting;
+using AtMycelia.Mycorrhiza;
 
 namespace VScriptingTests.Commands
 {

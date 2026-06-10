@@ -1,9 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using AtMycelia.Hyphlow;
 using AtMycelia.Amanita.DialogueSys;
-using AtMycelia.Hyphlow.Sys;
-using AtMycelia.AmaniTween;
+using AtMycelia.HyphaTween;
+using UnityEngine.Serialization;
 
 namespace AtMycelia.Amanita.UI.Legacy
 {
@@ -13,24 +12,30 @@ namespace AtMycelia.Amanita.UI.Legacy
     public class NarrativeLogMenu : MonoBehaviour 
     {
         [Tooltip("Contains the overall aesthetic of each entry.")]
-        [SerializeField] protected NarrativeLogEntryDisplay entryDisplayPrefab;
+        [FormerlySerializedAs("entryDisplayPrefab")]
+        [SerializeField] protected NarrativeLogEntryDisplay _entryDisplayPrefab;
 
         [Tooltip("Show the Narrative Log Menu")]
-        [SerializeField] protected bool showLog = true;
+        [FormerlySerializedAs("showLog")]
+        [SerializeField] protected bool _showLog = true;
 
         [Tooltip("Show previous lines instead of previous and current")]
-        [SerializeField] protected bool previousLines = true;
+        [FormerlySerializedAs("previousLines")]
+        [SerializeField] protected bool _previousLines = true;
 
         [Tooltip("A scrollable text field used for displaying conversation history.")]
-        [SerializeField] protected ScrollRect narrativeLogView;
+        [FormerlySerializedAs("narrativeLogView")]
+        [SerializeField] protected ScrollRect _narrativeLogView;
 
         [Tooltip("Limit characters to be shown in Narrative Log")]
-        [SerializeField] protected int maxCharacters = 10000;
+        [FormerlySerializedAs("maxCharacters")]
+        [SerializeField] protected int _maxCharacters = 10000;
 
         protected TextAdapter narLogViewtextAdapter = new TextAdapter();
         
         [Tooltip("The CanvasGroup containing the save menu buttons")]
-        [SerializeField] protected CanvasGroup narrativeLogMenuGroup;
+        [FormerlySerializedAs("narrativeLogMenuGroup")]
+        [SerializeField] protected CanvasGroup _narrativeLogMenuGroup;
 
         protected static bool narrativeLogActive = false;
         
@@ -38,9 +43,15 @@ namespace AtMycelia.Amanita.UI.Legacy
 
         protected static NarrativeLogMenu instance;
 
+        public bool PreviousLines
+        {
+            get => _previousLines;
+            set => _previousLines = value;
+        }
+
         protected virtual void Awake()
         {
-            if (showLog)
+            if (_showLog)
             {
                 // Only one instance of NarrativeLogMenu may exist
                 if (instance != null)
@@ -62,81 +73,77 @@ namespace AtMycelia.Amanita.UI.Legacy
                 this.enabled = false;
             }
 
-            narLogViewtextAdapter.InitFromGameObject(narrativeLogView.gameObject, true);
+            narLogViewtextAdapter.InitFromGameObject(_narrativeLogView.gameObject, true);
         }
 
         protected virtual void Start()
         {
             if (!narrativeLogActive)
             {
-                narrativeLogMenuGroup.alpha = 0f;
+                _narrativeLogMenuGroup.alpha = 0f;
             }
 
             //Clear up the lorem ipsum
-            UpdateNarrativeLogText();
+            UpdateVisuals();
         }
 
         protected virtual void OnEnable()
         {
-            WriterSignals.OnWriterState += OnWriterState;
-            BlockSignals.BlockExecEnded += OnBlockEnd;
-            NarrativeLog.OnNarrativeAdded += OnNarrativeAdded;
+            ToggleSubs(true);   
         }
-                
+              
+        protected virtual void ToggleSubs(bool on)
+        {
+            if (on)
+            {
+                WriterSignals.OnWriterState += OnWriterState;
+                NarrativeLog.OnNarrativeAdded += OnNarrativeAdded;
+            }
+            else
+            {
+                WriterSignals.OnWriterState -= OnWriterState;
+                NarrativeLog.OnNarrativeAdded -= OnNarrativeAdded;
+            }
+        }
+
         protected virtual void OnDisable()
         {
-            WriterSignals.OnWriterState -= OnWriterState;
-            BlockSignals.BlockExecEnded -= OnBlockEnd;
-            NarrativeLog.OnNarrativeAdded -= OnNarrativeAdded;
+            ToggleSubs(false);
         }
 
         protected virtual void OnNarrativeAdded(NarrativeLogEntry data)
         {
-            UpdateNarrativeLogText();
+            UpdateVisuals();
         }
 
         protected virtual void OnWriterState(Writer writer, WriterState writerState)
         {
             if (writerState == WriterState.Start)
             {
-                UpdateNarrativeLogText();
+                UpdateVisuals();
             }
-        }
-
-        protected virtual void OnSavePointLoaded(string savePointKey)
-        {
-            UpdateNarrativeLogText();
         }
 
         protected virtual void OnSaveReset()
         {
             AmanitaManager.S.NarrativeLog.Clear();
-            UpdateNarrativeLogText();
+            UpdateVisuals();
         }
 
-        protected virtual void OnBlockEnd (IBlock block)
+        public virtual void UpdateVisuals()
         {
-            // At block end update to get the last line of the block
-            bool defaultPreviousLines = previousLines;
-            previousLines = false;
-            UpdateNarrativeLogText();
-            previousLines = defaultPreviousLines;
-        }
-
-        protected void UpdateNarrativeLogText()
-        {
-            if (narrativeLogView.enabled)
+            if (_narrativeLogView.enabled)
             {
                 var prettyHistory = AmanitaManager.S.NarrativeLog.GetPrettyHistory();
 
-                if (prettyHistory.Length > maxCharacters)
+                if (prettyHistory.Length > _maxCharacters)
                 {
-                    prettyHistory = "... " + prettyHistory.Substring(prettyHistory.Length - maxCharacters, maxCharacters);
+                    prettyHistory = "... " + prettyHistory.Substring(prettyHistory.Length - _maxCharacters, _maxCharacters);
                 }
                 narLogViewtextAdapter.Text = prettyHistory;
 
                 Canvas.ForceUpdateCanvases();
-                narrativeLogView.verticalNormalizedPosition = 0f;
+                _narrativeLogView.verticalNormalizedPosition = 0f;
                 Canvas.ForceUpdateCanvases();
             }
         }
@@ -165,43 +172,31 @@ namespace AtMycelia.Amanita.UI.Legacy
                 _neoFadeTween = null;
             }
 
-            float targAlpha, duration = 0.2f;
+            float targAlpha = narrativeLogActive ? 
+                0 :
+                100;
             if (narrativeLogActive)
             {
                 // Switch menu off
-                //LeanTween.value(narrativeLogMenuGroup.gameObject, narrativeLogMenuGroup.alpha, 0f, .2f)
-                //    .setEase(LeanTweenType.easeOutQuint)
-                //    .setOnUpdate((t) => {
-                //    narrativeLogMenuGroup.alpha = t;
-                //}).setOnComplete(() => {
-                //    narrativeLogMenuGroup.alpha = 0f;
-                //});
-                targAlpha = 0f;
-                
+                DefaultTweener.FadeOpacity(_narrativeLogMenuGroup, 0, _logMenuFadeDur);
             }
             else
             {
                 // Switch menu on
-                //LeanTween.value(narrativeLogMenuGroup.gameObject, narrativeLogMenuGroup.alpha, 1f, .2f)
-                //    .setEase(LeanTweenType.easeOutQuint)
-                //    .setOnUpdate((t) => {
-                //    narrativeLogMenuGroup.alpha = t;
-                //}).setOnComplete(() => {
-                //    narrativeLogMenuGroup.alpha = 1f;
-                //});
-
-                targAlpha = 1;
+                DefaultTweener.FadeOpacity(_narrativeLogMenuGroup, 1, _logMenuFadeDur);
             }
 
-            _neoFadeTween = DefaultTweener.TweenBasic<float>(() => narrativeLogMenuGroup.alpha,
-                    (newAlpha) => narrativeLogMenuGroup.alpha = newAlpha,
-                    targAlpha, duration)
-                    .SetOnComplete(() => narrativeLogMenuGroup.alpha = targAlpha);
+            _neoFadeTween = DefaultTweener.TweenBasic(() => _narrativeLogMenuGroup.alpha,
+                    (newAlpha) => _narrativeLogMenuGroup.alpha = newAlpha,
+                    targAlpha, _logMenuFadeDur)
+                    .SetOnComplete(() => _narrativeLogMenuGroup.alpha = targAlpha);
 
             narrativeLogActive = !narrativeLogActive;
         }
 
-        private static DefaultTweenAdapter DefaultTweener => HyphlowRuntimeSysAssets.S.TweenAdapter;
+        private static readonly float _logMenuFadeDur = 0.2f;
+
+        private static DefaultTweenAdapter DefaultTweener => TweenManager.S.DefaultAdapter;
 
         #endregion
     }

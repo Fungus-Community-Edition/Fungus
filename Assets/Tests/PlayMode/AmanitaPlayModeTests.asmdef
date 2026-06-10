@@ -12,10 +12,11 @@
         "AtMycelia.Marasmius.Core",
         "AtMycelia.Hyphlow.Core",
         "AtMycelia.MarasmiusHyphlowInt.Core",
-        "AtMycelia.Hyphlowceliaudio.Core",
         "AtMycelia.Myceliaudio.Core",
         "AtMycelia.Myceliasmius.Core",
-        "AtMycelia.Common.Core"
+        "AtMycelia.Common.Core",
+        "AtMycelia.Mycorrhiza.Core",
+        "AtMycelia.HyphaTween.Core"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

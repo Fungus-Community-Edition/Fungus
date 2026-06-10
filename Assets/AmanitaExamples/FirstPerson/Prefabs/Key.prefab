@@ -106,6 +106,8 @@ GameObject:
   - component: {fileID: 114126805715615206}
   - component: {fileID: 4521491715789075485}
   - component: {fileID: 8201218682589199852}
+  - component: {fileID: 4762505333322578863}
+  - component: {fileID: -5727010621270045650}
   m_Layer: 0
   m_Name: Key
   m_TagString: Untagged
@@ -484,8 +486,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _varManager: {fileID: 8201218682589199852}
-  _execManager: {fileID: 0}
-  _blockManager: {fileID: 0}
+  _execManager: {fileID: -5727010621270045650}
+  _blockManager: {fileID: 4762505333322578863}
   legacyVariableManager:
     _muscariables: []
     _legacyVariables: []
@@ -538,7 +540,7 @@ MonoBehaviour:
   _parentMbBlock: {fileID: 114408475763180490}
   _parentBlockReference:
     _itemId: 1
-    _owningSource: {fileID: 0}
+    _owningSource: {fileID: 114126805715615206}
   _suppressBlockAutoSelect: 0
   _tagFilter:
     _tagFilter:
@@ -604,3 +606,43 @@ MonoBehaviour:
         _startValue: {fileID: 0}
         _value: {fileID: 1247888977727998}
         startValue: {fileID: 0}
+--- !u!114 &4762505333322578863
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1247888977727998}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e16732bba93198b4888a347765e3a8cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _blockManager:
+    _legacyBlocks: []
+    _nextValidBlockId: 1
+    _blockOwner: {fileID: 0}
+  _cachedFlowchart: {fileID: 0}
+--- !u!114 &-5727010621270045650
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1247888977727998}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: efcfad39446ab494eaaa242a86e90bc7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _owner: {fileID: 0}
+  _manager:
+    _coroutineRunner: {fileID: 0}
+  _unityObjBlockManager: {fileID: 0}
+  _nonUnityObjBlockManager:
+    rid: -2
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
