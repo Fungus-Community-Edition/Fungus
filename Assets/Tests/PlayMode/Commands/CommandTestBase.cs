@@ -18,7 +18,7 @@ public abstract class CommandTestBase<TCommand> where TCommand : Command
 
     protected GameObject _go;
     protected Flowchart _flowchart;
-    protected Block _block;
+    protected IBlock _block;
     protected TCommand _command;
 
     [SetUp]
@@ -29,8 +29,8 @@ public abstract class CommandTestBase<TCommand> where TCommand : Command
         _block = _flowchart.CreateBlock(Vector2.zero);
         _block.BlockName = "TestBlock";
 
-        _command = _block.gameObject.AddComponent<TCommand>();
-        _block.CommandList.Add(_command);
+        _command = _flowchart.gameObject.AddComponent<TCommand>() ;
+        _block.Add(_command, false);
 
         _cmdType = _command.GetType();
         ConfigureCommand(_command);

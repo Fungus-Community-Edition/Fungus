@@ -13,9 +13,8 @@ MonoBehaviour:
   m_Name: GlobalVariables
   m_EditorClassIdentifier: 
   _includeInSaves: 1
-  _uniqueId: 0d4feeae-7e82-42a5-b48d-108dfbab7778
+  _uniqueId: a4712a08-7273-4635-a9ec-299160bdcdc1
   _alwaysKeepGuid: 1
-  variables: []
   _varManager:
     _muscariables:
     - rid: 7903258335965610039
@@ -37,24 +36,39 @@ MonoBehaviour:
         _scope: 0
         _key: Naruto
         _itemId: 6
-        _value: Believe it! esytg
+        scope: 0
+        key: 
+        itemID: 0
+        value: 
         _startValue: 
+        _value: Believe it! esytg
+        startValue: 
     - rid: 7903258335965610040
       type: {class: StringMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         _scope: 0
         _key: OnePiece
         _itemId: 1
+        scope: 0
+        key: 
+        itemID: 0
+        value: 
+        _startValue: 
         _value: 'I will become the
 
           Pirate King!'
-        _startValue: 
+        startValue: 
     - rid: 7903258335965610041
       type: {class: StringMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         _scope: 0
         _key: Bleach
         _itemId: 2
+        scope: 0
+        key: 
+        itemID: 0
+        value: 
+        _startValue: 
         _value: 'Throwing away victory for the sake of manners is a cookie mistake.
           Captains don''t have the time to waste on that kind of thing.
 
@@ -63,28 +77,43 @@ MonoBehaviour:
           waste your time trying to play the good guy. No matter what debts you may
           owe, from the instant you find yourself on the battleground, both sides
           are evil.'
-        _startValue: 
+        startValue: 
     - rid: 7903258335965610042
       type: {class: IntMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         _scope: 0
         _key: meaningOfLife
         _itemId: 3
-        _value: 24
+        scope: 0
+        key: 
+        itemID: 0
+        value: 0
         _startValue: 0
+        _value: 24
+        startValue: 0
     - rid: 7903258335965610043
       type: {class: AudioClipMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         _scope: 0
         _key: cuteBgm
         _itemId: 4
-        _value: {fileID: 8300000, guid: c2b6a16176ef3b54d8b7aeca96c66316, type: 3}
+        scope: 0
+        key: 
+        itemID: 0
+        value: {fileID: 0}
         _startValue: {fileID: 0}
+        _value: {fileID: 8300000, guid: c2b6a16176ef3b54d8b7aeca96c66316, type: 3}
+        startValue: {fileID: 0}
     - rid: 7903258335965610044
       type: {class: FloatMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         _scope: 0
         _key: pi
         _itemId: 5
-        _value: 3.14159
+        scope: 0
+        key: 
+        itemID: 0
+        value: 0
         _startValue: 0
+        _value: 3.14159
+        startValue: 0

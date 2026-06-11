@@ -311,37 +311,6 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 862034980}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &428461409
-GameObject:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 428461411}
-  m_Layer: 0
-  m_Name: _FungusState
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &428461411
-Transform:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 428461409}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &494460559
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -549,18 +518,18 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 1
-  blockName: Intro
-  description: 
-  eventHandler: {fileID: 640305173}
-  commandList:
+  _itemId: 1
+  _blockName: Intro
+  _description: 
+  _eventHandler: {fileID: 640305173}
+  _commandList:
   - {fileID: 640305178}
   - {fileID: 640305196}
   - {fileID: 640305180}
   - {fileID: 640305179}
   - {fileID: 640305177}
-  includeInSaves: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &640305175
 MonoBehaviour:
@@ -868,11 +837,11 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 5
-  blockName: LeftStartingArea
-  description: 
-  eventHandler: {fileID: 0}
-  commandList:
+  _itemId: 5
+  _blockName: LeftStartingArea
+  _description: 
+  _eventHandler: {fileID: 0}
+  _commandList:
   - {fileID: 640305182}
   - {fileID: 640305186}
   - {fileID: 640305185}
@@ -885,8 +854,8 @@ MonoBehaviour:
   - {fileID: 640305184}
   - {fileID: 640305187}
   - {fileID: 640305193}
-  includeInSaves: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &640305182
 MonoBehaviour:
@@ -2174,7 +2143,7 @@ MonoBehaviour:
         _itemId: 4
         scope: 0
         key: 
-        itemId: 0
+        itemID: 0
         value: {fileID: 0}
         _startValue: {fileID: 1377282257}
         _value: {fileID: 1377282257}
@@ -2187,7 +2156,7 @@ MonoBehaviour:
         _itemId: 5
         scope: 0
         key: 
-        itemId: 0
+        itemID: 0
         value: {fileID: 0}
         _startValue: {fileID: 1674035076}
         _value: {fileID: 1674035076}
@@ -2200,7 +2169,7 @@ MonoBehaviour:
         _itemId: 6
         scope: 0
         key: 
-        itemId: 0
+        itemID: 0
         value: 0
         _startValue: 0
         _value: 0.5
@@ -2213,7 +2182,7 @@ MonoBehaviour:
         _itemId: 7
         scope: 0
         key: 
-        itemId: 0
+        itemID: 0
         value: {fileID: 0}
         _startValue: {fileID: 0}
         _value: {fileID: 874202393}
@@ -2241,7 +2210,7 @@ MonoBehaviour:
     _value: 1
     floatRef: {fileID: 0}
     floatVal: 0
-  _tweenerSO: {fileID: 11400000, guid: 2456e8060d1222e4cac681fb832cd207, type: 2}
+  _tweenerSO: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
   _stopPreviousTweens:
     _backingVarRef:
       _itemId: 0
@@ -3093,7 +3062,7 @@ MonoBehaviour:
     _value: 1
     floatRef: {fileID: 0}
     floatVal: 0
-  _tweenerSO: {fileID: 11400000, guid: 2456e8060d1222e4cac681fb832cd207, type: 2}
+  _tweenerSO: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
   _stopPreviousTweens:
     _backingVarRef:
       _itemId: 0
@@ -3627,7 +3596,7 @@ MonoBehaviour:
         _itemId: 3
         scope: 0
         key: 
-        itemId: 0
+        itemID: 0
         value: 0
         _startValue: 0
         _value: 1
@@ -3640,7 +3609,7 @@ MonoBehaviour:
         _itemId: 4
         scope: 0
         key: 
-        itemId: 0
+        itemID: 0
         value: {x: 0, y: 0, z: 0}
         _startValue: {x: 0, y: 0, z: 0}
         _value: {x: 0, y: 2, z: 0}
@@ -3921,15 +3890,15 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 1
-  blockName: ExitStartAreass
-  description: 
-  eventHandler: {fileID: 1788221415}
-  commandList:
+  _itemId: 1
+  _blockName: ExitStartAreass
+  _description: 
+  _eventHandler: {fileID: 1788221415}
+  _commandList:
   - {fileID: 1788221407}
   - {fileID: 1788221406}
-  includeInSaves: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &1788221410
 MonoBehaviour:
@@ -4107,7 +4076,7 @@ MonoBehaviour:
         _itemId: 2
         scope: 0
         key: 
-        itemId: 0
+        itemID: 0
         value: {fileID: 0}
         _startValue: {fileID: 0}
         _value: {fileID: 1788221405}
@@ -4770,7 +4739,6 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 1377282260}
-  - {fileID: 428461411}
   - {fileID: 1874215334}
   - {fileID: 799556141}
   - {fileID: 2066122662}

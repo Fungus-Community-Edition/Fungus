@@ -1,5 +1,4 @@
 ﻿using AtMycelia.SaveSys;
-using AtMycelia.AmaniTween;
 using FullSerializer;
 using Lorekeeper;
 using System.Collections.Generic;
@@ -285,7 +284,6 @@ namespace AtMycelia.Amanita
             if (_s == this)
             {
                 _s = null;
-                TweenManager.S = null;
             }
         }
 

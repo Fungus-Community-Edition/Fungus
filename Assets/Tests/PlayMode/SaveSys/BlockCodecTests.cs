@@ -14,7 +14,7 @@ namespace SaveSystemTests
         // Faster: this suite needs scene + flowchart + codecs, not the SaveSystem.
         protected override bool ReqSaveSystem => false;
 
-        protected Block block;
+        protected IBlock block;
         protected BlockSaveData blockSaveData = null;
 
         [SetUp]
@@ -23,7 +23,7 @@ namespace SaveSystemTests
             base.DoSetUp();
 
             // Prepare per-test block state now that base no longer calls subclass PrepScene
-            block = flowchart.FindBlock("TestBlock");
+            block = flowchart.GetBlock("TestBlock");
             Assert.IsNotNull(block, "TestBlock not found in Flowchart.");
             blockSaveData = blockSaveCodec.EncodeToSave(block);
         }
@@ -117,14 +117,14 @@ namespace SaveSystemTests
         public async Task EncodeToMultiSave_IncludeCorrectBlocks()
         {
             await Task.Delay(100);
-            IList<Block> allBlocks = flowchart.GetComponents<Block>();
-            IList<Block> whatShouldNOTBeIncluded = (from elem in allBlocks
-                                                    where !elem.IncludeInSaves || elem.IsExecuting()
+            IList<IBlock> allBlocks = flowchart.GetComponents<IBlock>();
+            IList<IBlock> whatShouldNOTBeIncluded = (from elem in allBlocks
+                                                    where !elem.IncludeInSaves || elem.IsExecuting
                                                     select elem).ToList();
             Assume.That(whatShouldNOTBeIncluded.Count > 0, $"Test scene needs at least one Block in Flowchart {flowchart.name} that should NOT be included");
 
-            IList<Block> whatShouldBeIncluded = (from elem in allBlocks
-                                                 where elem.IsExecuting()
+            IList<IBlock> whatShouldBeIncluded = (from elem in allBlocks
+                                                 where elem.IsExecuting
                                                  where elem.IncludeInSaves
                                                  select elem).ToList();
             Assume.That(whatShouldBeIncluded.Count > 0, $"Test scene needs at least one Block in Flowchart {flowchart.name} that SHOULD be included");
@@ -132,8 +132,8 @@ namespace SaveSystemTests
             IList<BlockSaveData> result = blockSaveCodec.EncodeToMultiSaves(flowchart);
             Assert.IsTrue(result.Count == whatShouldBeIncluded.Count, "Encoded the wrong amount of Blocks");
 
-            IList<ushort> idsThatShouldBeIncluded = whatShouldBeIncluded.Select(item => item.ItemId).ToList();
-            IList<ushort> resultIDs = result.Select(item => item.ItemId).ToList();
+            IList<byte> idsThatShouldBeIncluded = whatShouldBeIncluded.Select(item => item.ItemId).ToList();
+            IList<byte> resultIDs = result.Select(item => item.ItemId).ToList();
 
             bool onlyTheRightStuff = idsThatShouldBeIncluded.SequenceEqual(resultIDs);
             Assert.IsTrue(onlyTheRightStuff, "Encoded at least one Block that shouldn't have been included");
@@ -151,8 +151,8 @@ namespace SaveSystemTests
         public async Task EncodeToMultiSave_ExcludesBlocksWithIncludeInSavesFalse()
         {
             await Task.Delay(100);
-            IList<Block> allBlocks = flowchart.GetComponents<Block>();
-            var excludedBlocks = allBlocks.Where(b => !b.IncludeInSaves && b.IsExecuting()).ToList();
+            IList<IBlock> allBlocks = flowchart.GetComponents<Block>();
+            var excludedBlocks = allBlocks.Where(b => !b.IncludeInSaves && b.IsExecuting).ToList();
             Assume.That(excludedBlocks.Count > 0, "Test scene needs at least one executing Block with IncludeInSaves == false");
 
             IList<BlockSaveData> result = blockSaveCodec.EncodeToMultiSaves(flowchart);
@@ -166,8 +166,8 @@ namespace SaveSystemTests
         public async Task EncodeToMultiSave_ExcludesBlocksThatAreNotExecuting()
         {
             await Task.Delay(100);
-            IList<Block> allBlocks = flowchart.GetComponents<Block>();
-            var excludedBlocks = allBlocks.Where(b => b.IncludeInSaves && !b.IsExecuting()).ToList();
+            IList<IBlock> allBlocks = flowchart.GetComponents<Block>();
+            var excludedBlocks = allBlocks.Where(b => b.IncludeInSaves && !b.IsExecuting).ToList();
             Assume.That(excludedBlocks.Count > 0, "Test scene needs at least one non-executing Block with IncludeInSaves == true");
 
             IList<BlockSaveData> result = blockSaveCodec.EncodeToMultiSaves(flowchart);
@@ -181,8 +181,8 @@ namespace SaveSystemTests
         public async Task EncodeToMultiSave_IncludesOnlyBlocksWithIncludeInSavesTrueAndExecuting()
         {
             await Task.Delay(100);
-            IList<Block> allBlocks = flowchart.GetComponents<Block>();
-            var includedBlocks = allBlocks.Where(b => b.IncludeInSaves && b.IsExecuting()).ToList();
+            IList<IBlock> allBlocks = flowchart.GetComponents<Block>();
+            var includedBlocks = allBlocks.Where(b => b.IncludeInSaves && b.IsExecuting).ToList();
             Assume.That(includedBlocks.Count > 0, "Test scene needs at least one executing Block with IncludeInSaves == true");
 
             IList<BlockSaveData> result = blockSaveCodec.EncodeToMultiSaves(flowchart);

@@ -1,7 +1,6 @@
-using AtMycelia.AmaniTween;
+using AtMycelia.HyphaTween;
 using System;
 using System.Collections;
-using AtMycelia.Hyphlow.Sys;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -551,7 +550,7 @@ namespace AtMycelia.Amanita.DialogueSys
                 targetColor, duration);
         }
 
-        private static DefaultTweenAdapter DefaultTweener => HyphlowRuntimeSysAssets.S.TweenAdapter;
+        private static DefaultTweenAdapter DefaultTweener => TweenManager.S.DefaultAdapter;
 
         #region Overloads and Helpers
 

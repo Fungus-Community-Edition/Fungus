@@ -2,7 +2,7 @@
 using System;
 using UnityEditor;
 using UnityEngine;
-using AtMycelia.Hyphlow.EditorUtils;
+using AtMycelia.Hyphlow.EditorExt;
 
 namespace VScriptingTests.FCWindowOperations
 {

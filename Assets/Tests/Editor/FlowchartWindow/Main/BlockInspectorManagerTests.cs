@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using AtMycelia.Hyphlow;
-using AtMycelia.Hyphlow.EditorUtils;
+using AtMycelia.Hyphlow.EditorExt;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
@@ -13,7 +13,7 @@ namespace VScriptingTests.FlowchartWindow.Main
         private readonly IList<UnityObj> objectsToDestroy = new List<UnityObj>();
         private GameObject flowchartGo;
         private Flowchart flowchart;
-        private Block block;
+        private IBlock block;
 
         [SetUp]
         public void SetUp()
@@ -155,8 +155,8 @@ namespace VScriptingTests.FlowchartWindow.Main
         [Test]
         public void InspectorTargetChanged_FiresOnShowAndClear()
         {
-            IList<Block> received = new List<Block>();
-            void Handler(Block target) => received.Add(target);
+            IList<IBlock> received = new List<IBlock>();
+            void Handler(IBlock target) => received.Add(target);
 
             BlockInspectorManager.InspectorTargetChanged += Handler;
 

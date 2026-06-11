@@ -1,6 +1,6 @@
 #if UNITY_EDITOR
 using AtMycelia.Hyphlow;
-using AtMycelia.Hyphlow.EditorUtils;
+using AtMycelia.Hyphlow.EditorExt;
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
@@ -155,9 +155,9 @@ namespace VScriptingTests.FCWindowOperations
 
             var dummyCmd = _flowchartHolder.AddComponent<DummyCommand>();
             // Ensure it belongs logically to the block
-            if (!_firstBlock.CommandList.Contains(dummyCmd))
+            if (!_firstBlock.Contains(dummyCmd))
             {
-                _firstBlock.CommandList.Add(dummyCmd);
+                _firstBlock.Add(dummyCmd);
             }
 
             // Selection

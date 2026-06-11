@@ -1,7 +1,9 @@
 {
   "dependencies": {
-    "com.ateliermycelia.myceliaudio": "https://github.com/Atelier-Mycelia/Myceliaudio.git?path=Packages/com.ateliermycelia.myceliaudio",
-    "com.ateliermycelia.unityutils": "https://github.com/Atelier-Mycelia/UnityUtils.git?path=Packages/com.ateliermycelia.unityutils",
+    "com.ateliermycelia.hyphatween": "file:E:/Github/_AtelierMycelia/HyphaTween/Assets/HyphaTween",
+    "com.ateliermycelia.hyphlow": "file:E:/Github/_AtelierMycelia/Hyphlow/Assets/Hyphlow",
+    "com.ateliermycelia.myceliaudio": "file:E:/Github/_AtelierMycelia/Myceliaudio/Packages/com.ateliermycelia.myceliaudio",
+    "com.ateliermycelia.unityutils": "file:E:/Github/_AtelierMycelia/UnityUtils/Assets/AtMyceliaCommonLib",
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.ai.navigation": "2.0.9",
     "com.unity.ext.nunit": "2.0.5",

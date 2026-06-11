@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 using System.Collections;
-using AtMycelia.AmaniTween;
+using AtMycelia.HyphaTween;
 
 namespace AtMycelia.Amanita.DialogueSys
 {

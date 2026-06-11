@@ -2,7 +2,7 @@ using AtMycelia.Amanita;
 using UnityEditor;
 using UnityEngine;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     [CustomEditor (typeof(Character))]
     public class CharacterEditor : Editor

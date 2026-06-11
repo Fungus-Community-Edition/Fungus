@@ -174,8 +174,10 @@ namespace AtMycelia.SaveSys.VScripting
             bool literalSlotIndex = _slotIndex.RepresentingVar == false;
             if (literalSlotIndex && _slotIndex < SaveSystem.minSlotNumber)
             {
-                Debug.LogWarning($"LoadFromSlot Command on {this.gameObject.name}'s {this.ParentBlock?.name}: slot index cannot be less " +
-                    $"than {SaveSystem.minSlotNumber}. Resetting to {SaveSystem.minSlotNumber}.");
+                string logMessage = $"LoadFromSlot Command on {this.gameObject.name}'s" +
+                    $"{this.ParentBlock?.BlockName}: slot index of {_slotIndex.Value} is invalid. " +
+                    $"Resetting to {SaveSystem.minSlotNumber}.";
+                Debug.LogWarning(logMessage);
                 _slotIndex.Value = SaveSystem.minSlotNumber;
             }
             else

@@ -10,7 +10,7 @@ namespace AtMycelia.Amanita
     /// A Character that can be used in dialogue via the Say, Conversation and Portrait commands.
     /// </summary>
     [ExecuteInEditMode]
-    public class Character : MonoBehaviour, ILocalizable, IComparer<Character>
+    public class Character : MonoBehaviour, IComparer<Character>
     {
         [Tooltip("Character name as displayed in Say Dialog.")]
         [SerializeField] protected string nameText; // We need a separate name as the object name is used for character variations (e.g. "Smurf Happy", "Smurf Sad")

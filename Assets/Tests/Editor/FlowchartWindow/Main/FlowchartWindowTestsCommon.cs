@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using AtMycelia.Hyphlow;
-using AtMycelia.Hyphlow.EditorUtils;
+using AtMycelia.Hyphlow.EditorExt;
 
 namespace VScriptingTests.FCWindowOperations
 {
@@ -22,10 +22,10 @@ namespace VScriptingTests.FCWindowOperations
 
                 flowchart = host.Flowchart;
 
-                blocks = new List<Block>();
+                blocks = new List<IBlock>();
                 foreach (var pos in initBlockPositions)
                 {
-                    Block newBlock = host.CreateBlock(host.Flowchart, Vector2.zero);
+                    IBlock newBlock = host.CreateBlock(host.Flowchart, Vector2.zero);
                     newBlock.BlockName = $"Block @ {pos}";
                     newBlock._NodeRect = new Rect(pos, nodeSize);
                     blocks.Add(newBlock);
@@ -51,7 +51,7 @@ namespace VScriptingTests.FCWindowOperations
 
         protected FakeFlowchartHost host;
         protected Flowchart flowchart;
-        protected IList<Block> blocks;
+        protected IList<IBlock> blocks;
         protected static readonly IList<Vector2> initBlockPositions = new[] // In window space
         {
             new Vector2(10, 10),

@@ -1,6 +1,6 @@
 using AtMycelia.Amanita;
 using AtMycelia.Hyphlow;
-using AtMycelia.Hyphlow.EditorUtils;
+using AtMycelia.Hyphlow.EditorExt;
 using NUnit.Framework;
 using System;
 using System.Collections;
@@ -75,8 +75,8 @@ namespace VScriptingTests.VariableOperations
         [Test]
         public void VariableField_SelectsLocalVariable()
         {
-            var boolVar = _firstFc.AddNewMuscariable<bool, BoolMuscariable>("BoolVar", default, VariableScope.Private);
-            var floatVar = _firstFc.AddNewMuscariable<float, FloatMuscariable>("FloatVar", default, VariableScope.Private);
+            var boolVar = _firstFc.AddNewMuscariable<bool, BoolMuscariable>("BoolVar", default, AccessScope.Private);
+            var floatVar = _firstFc.AddNewMuscariable<float, FloatMuscariable>("FloatVar", default, AccessScope.Private);
 
             var (serialObj, holdsVar, _) = MakeHolder();
 
@@ -136,8 +136,8 @@ namespace VScriptingTests.VariableOperations
         [Test]
         public void VariableField_Filter_OnlyBooleanVars()
         {
-            var boolVar = _firstFc.AddNewMuscariable<bool, BoolMuscariable>("BoolVar", default, VariableScope.Private);
-            var floatVar = _firstFc.AddNewMuscariable<float, FloatMuscariable>("FloatVar", default, VariableScope.Private);
+            var boolVar = _firstFc.AddNewMuscariable<bool, BoolMuscariable>("BoolVar", default, AccessScope.Private);
+            var floatVar = _firstFc.AddNewMuscariable<float, FloatMuscariable>("FloatVar", default, AccessScope.Private);
 
             var (serialObj, holdsVar, _) = MakeHolder();
 
@@ -159,11 +159,11 @@ namespace VScriptingTests.VariableOperations
         public IEnumerator VariableField_IncludesPublicFromOtherFlowchart_ExcludesPrivate()
         {
             // Local
-            var localVar = _firstFc.AddNewMuscariable<bool, BoolMuscariable>("LocalBool", default, VariableScope.Private);
+            var localVar = _firstFc.AddNewMuscariable<bool, BoolMuscariable>("LocalBool", default, AccessScope.Private);
 
             // Remote public + private
-            var publicVar = _secondFc.AddNewMuscariable<bool, BoolMuscariable>("RemotePublic", default, VariableScope.Public);
-            var privateVar = _secondFc.AddNewMuscariable<int, IntMuscariable>("RemotePrivate", default, VariableScope.Private);
+            var publicVar = _secondFc.AddNewMuscariable<bool, BoolMuscariable>("RemotePublic", default, AccessScope.Public);
+            var privateVar = _secondFc.AddNewMuscariable<int, IntMuscariable>("RemotePrivate", default, AccessScope.Private);
 
             var (serialObj, holdsProp, _) = MakeHolder();
             yield return null; // Wait a frame to ensure FlowchartRegistry has registered both flowcharts.
@@ -183,7 +183,7 @@ namespace VScriptingTests.VariableOperations
         [Test]
         public void VariableField_DefaultOptionPresentAsFirstEntry()
         {
-            var boolVar = _firstFc.AddNewMuscariable<bool, BoolMuscariable>("BoolVar", default, VariableScope.Private);
+            var boolVar = _firstFc.AddNewMuscariable<bool, BoolMuscariable>("BoolVar", default, AccessScope.Private);
             var (serialObj, propWithVar, _) = MakeHolder();
 
             string defaultOption = "<Select>";

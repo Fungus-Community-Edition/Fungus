@@ -1,8 +1,6 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Scripting.APIUpdating;
-using AtMycelia.Amanita.VScripting;
-using AtMycelia.Hyphlow;
 using UnityEngine.Serialization;
 
 namespace AtMycelia.Amanita
@@ -48,7 +46,7 @@ namespace AtMycelia.Amanita
 
 			var eventDispatcher = AmanitaManager.S.EventDispatcher;
 
-			eventDispatcher.Raise(new ObjectClicked.ObjectClickedEvent(this));
+			eventDispatcher.Raise(new ObjectClickedEvent(this));
 		}
 
 		protected virtual void DoPointerEnter()
@@ -58,8 +56,6 @@ namespace AtMycelia.Amanita
 
 		protected virtual void DoPointerExit()
 		{
-			// Always reset the mouse cursor to be on the safe side
-			SetMouseCursor.ResetMouseCursor();
 		}
 
 		#region Legacy OnMouseX methods

@@ -20,7 +20,7 @@
         /// </summary>
         public static event MenuEndHandler OnMenuEnd;
         public delegate void MenuEndHandler(MenuDialog menu);
-        public static void DoMenuEnd(MenuDialog menu) { if (OnMenuEnd != null) OnMenuEnd(menu); }
+        public static void MenuStartedEnding(MenuDialog menu) { if (OnMenuEnd != null) OnMenuEnd(menu); }
         #endregion
     }
 }

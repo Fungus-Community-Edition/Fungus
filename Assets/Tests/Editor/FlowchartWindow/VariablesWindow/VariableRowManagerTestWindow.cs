@@ -10,9 +10,10 @@ using UnityRandom = UnityEngine.Random;
 using AtMycelia.Hyphlow;
 
 // Optional: avoid pulling conflicting types into the global scope
-using AtMycelia.Hyphlow.EditorUtils;
-using AtMycelia.EditorUtils;
+using AtMycelia.Hyphlow.EditorExt;
+using AtMycelia.EditorExt;
 using AtMycelia.Collections;
+using AtMycelia;
 
 // if you keep helpers here
 
@@ -229,7 +230,7 @@ namespace VScriptingTests.VariableOperations
             _vRowManager = null;
 
             // Load UXML
-            const string pathToUxml = HyphlowConstants.PathToVariableDisplayEditorUxml;
+            string pathToUxml = HyphlowConstants.PathToVariableDisplayEditorUxml;
             if (_variableTemplate == null)
             {
                 _variableTemplate = Resources.Load<VisualTreeAsset>(pathToUxml);
@@ -438,7 +439,7 @@ namespace VScriptingTests.VariableOperations
                     var desired = $"var_{var.GetType().Name}_{Guid.NewGuid().ToString("N").Substring(0, 6)}";
                     try
                     {
-                        var.Key = UniqueKeyGenerator.GetUniqueKeyFor(desired, (IList<IVariable>)_flowchart.Variables);
+                        var.Key = UniqueKeyGenerator.GetUniqueKeyFor<IVariable>(desired, (IReadOnlyList<IVariable>)_flowchart.Variables);
                     }
                     catch
                     {
@@ -679,13 +680,13 @@ namespace VScriptingTests.VariableOperations
             {
                 if (_colliderThreeDObjects.Count < _cacheCapacity)
                 {
-                    var colliderThreeDsFound = go.GetComponentsInChildren<Collider>();
+                    IList<Collider> colliderThreeDsFound = go.GetComponentsInChildren<Collider>();
                     _colliderThreeDObjects.AddRange(colliderThreeDsFound, _cacheCapacity);
                 }
 
                 if (_colliderTwoDObjects.Count < _cacheCapacity)
                 {
-                    var colliderTwoDsFound = go.GetComponentsInChildren<Collider2D>();
+                    IList<Collider2D> colliderTwoDsFound = go.GetComponentsInChildren<Collider2D>();
                     _colliderTwoDObjects.AddRange(colliderTwoDsFound, _cacheCapacity);
                 }
 

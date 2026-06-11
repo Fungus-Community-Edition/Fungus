@@ -58,7 +58,7 @@ namespace AtMycelia.Amanita.Lua.VScripting
 			}
 
 			// Cache a descriptive name to use in Lua error messages
-			friendlyName = GetLocationIdentifier();
+			friendlyName = LocationIdentifier;
 
 			Flowchart flowchart = GetFlowchart();
 			FlowchartLuaSettings flowchartLuaSettings = flowchart != null ? flowchart.GetComponent<FlowchartLuaSettings>() : null;

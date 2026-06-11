@@ -1,0 +1,11 @@
+fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Plugins/Hyphlowceliaudio/Editor/AtMycelia.Hyphlowceliaudio.Editor.asmdef.meta
+guid: 7b81f07cc965fc04f89e0876e87790e8
+========
+guid: 3db52cd1b01ef53418c86a519ccb29c2
+>>>>>>>> editorTooling:Assets/Mycorrhiza/Editor/AtMycelia.Mycorrhiza.Editor.asmdef.meta
+AssemblyDefinitionImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

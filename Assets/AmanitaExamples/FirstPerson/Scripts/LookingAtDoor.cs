@@ -54,7 +54,8 @@ namespace AtMycelia.Amanita.Examples
 
             if (gazeCounter >= gazeTime && curCounter <= gazeTime && !_isCompleteBool.GetValue<bool>())
             {
-                runBlockWhenGazed.Execute();
+                Flowchart fc = runBlockWhenGazed.BlockOwner as Flowchart;
+                fc.ExecuteBlock(runBlockWhenGazed.Block);
                 _hasGazedBool.SetValue(true);
             }
         }

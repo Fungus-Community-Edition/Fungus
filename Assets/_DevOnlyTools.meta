@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Amanita_LegacyCollection/Editor/Resources/UIToolkitTemplates/CustomFields.meta
+guid: 10c4f65c6afe0a4488330232b1f4f783
+========
 guid: 2961eafd3a0d1b542a785b9dcf23ac95
+>>>>>>>> editorTooling:Assets/_DevOnlyTools.meta
 folderAsset: yes
 DefaultImporter:
   externalObjects: {}

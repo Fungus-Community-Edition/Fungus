@@ -1,5 +1,5 @@
 using AtMycelia.Hyphlow;
-using AtMycelia.Hyphlow.EditorUtils;
+using AtMycelia.Hyphlow.EditorExt;
 using AtMycelia.Hyphlow.RuntimeTesting;
 using NUnit.Framework;
 using System;
@@ -56,7 +56,7 @@ namespace VScriptingTests.FCWindowOperations
         public IEnumerator NoCommandInfoAttribute_EarlyReturn_NoReorderableLists()
         {
             var cmd = _host.AddComponent<NoInfoCommand>();
-            _block.CommandList.Add(cmd);
+            _block.Add(cmd);
 
             _editor = Editor.CreateEditor(cmd, typeof(CommandEditor)) as CommandEditor;
             Assert.NotNull(_editor, "Failed to create CommandEditor.");
@@ -115,7 +115,7 @@ namespace VScriptingTests.FCWindowOperations
         protected virtual void EarlySetupWithDummyArrayCommand()
         {
             _dummyArrayCommand = _host.AddComponent<DummyArrayCommand>();
-            _block.CommandList.Add(_dummyArrayCommand);
+            _block.Add(_dummyArrayCommand);
             _editor = Editor.CreateEditor(_dummyArrayCommand, typeof(CommandEditor)) as CommandEditor;
             Assert.NotNull(_editor, "Failed to create CommandEditor (DummyArrayCommand).");
         }

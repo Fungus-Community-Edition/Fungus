@@ -1,5 +1,5 @@
 using AtMycelia.Hyphlow;
-using AtMycelia.Hyphlow.EditorUtils;
+using AtMycelia.Hyphlow.EditorExt;
 using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,7 +10,7 @@ using System.Reflection;
 using System;
 using UnityObj = UnityEngine.Object;
 using System.Linq;
-using AtMycelia.EditorUtils;
+using AtMycelia.EditorExt;
 using AtMycelia;
 
 namespace VScriptingTests.VariableOperations

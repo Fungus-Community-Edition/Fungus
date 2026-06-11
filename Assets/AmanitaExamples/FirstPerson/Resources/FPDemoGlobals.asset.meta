@@ -1,9 +1,5 @@
 fileFormatVersion: 2
-<<<<<<<< HEAD:Assets/Resources/AtMycelia/Tweening/DefaultTweenAdapter.asset.meta
-guid: 2456e8060d1222e4cac681fb832cd207
-========
 guid: a988e823023c7d047b7b8f39d55935fb
->>>>>>>> editorTooling:Assets/FungusExamples/FirstPerson/Resources/FPDemoGlobals.asset.meta
 NativeFormatImporter:
   externalObjects: {}
   mainObjectFileID: 11400000

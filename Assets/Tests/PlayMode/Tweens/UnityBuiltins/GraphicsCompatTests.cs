@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
 using UnityEngine.TestTools.Utils;
-using AtMycelia.AmaniTween;
+using AtMycelia.HyphaTween;
 
 namespace TweeningTests.BuiltinCompat
 {

@@ -3,8 +3,8 @@ using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
 using AtMycelia.Hyphlow;
-using AtMycelia.Hyphlow.EditorUtils;
-using AtMycelia.Hyphlow.EditorUtils.FcWindow;
+using AtMycelia.Hyphlow.EditorExt;
+using AtMycelia.Hyphlow.EditorExt.FcWindow;
 using UnityEngine.UIElements;
 
 namespace VScriptingTests.FCWindowOperations
@@ -27,12 +27,12 @@ namespace VScriptingTests.FCWindowOperations
                 selectedStyleSheet = config.SelectedBlockStyleSheet;
             }
 
-            public readonly List<Block> CreatedFor = new List<Block>();
-            public readonly List<(Block Block, BlockButton Button, float Zoom)> UpdateCalls
-                = new List<(Block, BlockButton, float)>();
-            public readonly Dictionary<Block, BlockButton> CreatedButtons = new Dictionary<Block, BlockButton>();
+            public readonly List<IBlock> CreatedFor = new List<IBlock>();
+            public readonly List<(IBlock Block, BlockButton Button, float Zoom)> UpdateCalls
+                = new List<(IBlock, BlockButton, float)>();
+            public readonly Dictionary<IBlock, BlockButton> CreatedButtons = new Dictionary<IBlock, BlockButton>();
 
-            public BlockButton CreateButton(Block block)
+            public BlockButton CreateButton(IBlock block)
             {
                 CreatedFor.Add(block);
                 var button = new BlockButton(new BlockGraphicsGenerator());
@@ -41,7 +41,7 @@ namespace VScriptingTests.FCWindowOperations
                 return button;
             }
 
-            public void UpdateButton(BlockButton button, Block block, float zoom)
+            public void UpdateButton(BlockButton button, IBlock block, float zoom)
             {
                 UpdateCalls.Add((block, button, zoom));
             }
@@ -49,8 +49,8 @@ namespace VScriptingTests.FCWindowOperations
 
         FlowchartContext _flowchartCtx;
         FakeFlowchartHost _host;
-        Block _insideBlock;
-        Block _outsideBlock;
+        IBlock _insideBlock;
+        IBlock _outsideBlock;
         FakeDrawer _drawer;
         BlockRenderer _renderer;
 
@@ -121,13 +121,14 @@ namespace VScriptingTests.FCWindowOperations
             // Assert: update calls use the same button created for each block
             foreach (var pair in _drawer.CreatedButtons)
             {
-                Block block = pair.Key;
+                IBlock block = pair.Key;
                 BlockButton createdButton = pair.Value;
 
                 bool found = _drawer.UpdateCalls.Any(c =>
                     ReferenceEquals(c.Block, block) && ReferenceEquals(c.Button, createdButton));
 
-                Assert.IsTrue(found, $"Expected update calls for block '{block.BlockName}' to use its created button.");
+                Assert.IsTrue(found, $"Expected update calls for block '{block.BlockName}' " +
+                    $"to use its created button.");
             }
         }
     }
