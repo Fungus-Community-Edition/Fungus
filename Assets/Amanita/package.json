@@ -1,0 +1,15 @@
+{
+  "name": "com.ateliermycelia.amanita",
+  "version": "1.0.2",
+  "displayName": "Amanita",
+  "description": "A suite of storytelling-oriented systems. Dialogue, portrait-management, etc.",
+  "unity": "2022.3",
+  "author": {
+    "name": "Atelier Mycelia"
+  },
+  "dependencies": {
+    "com.ateliermycelia.commonlib": "1.3.1",
+    "com.ateliermycelia.hyphatween": "1.0.1"
+  },
+  "_fingerprint": "9a0608bf91a9ab6c1da4b4a39f70f4c09564db64"
+}

@@ -12,7 +12,8 @@ namespace AtMycelia.Amanita.SaveSys
         [SerializeField] protected string blockName = string.Empty;
         [SerializeField] protected byte itemId = 0;
         [SerializeField] protected byte activeCommandId = 0;
-        [SerializeField] protected byte activeCommandIndex = 0;
+        [SerializeField] protected sbyte activeCommandIndex = 0;
+
         public virtual byte ItemId
         {
             get => itemId;
@@ -29,7 +30,7 @@ namespace AtMycelia.Amanita.SaveSys
             get => activeCommandId;
             set => activeCommandId = value;
         }
-        public virtual byte ActiveCommandIndex
+        public virtual sbyte ActiveCommandIndex
         {
             get => activeCommandIndex;
             set => activeCommandIndex = value;

@@ -1,23 +1,34 @@
 {
   "dependencies": {
-    "com.ateliermycelia.hyphatween": {
-      "version": "file:E:/Github/_AtelierMycelia/HyphaTween/Assets/HyphaTween",
+    "com.ateliermycelia.commonlib": {
+      "version": "https://github.com/Atelier-Mycelia/CommonLib.git?path=Assets/AtMyceliaCommonLib",
       "depth": 0,
-      "source": "local",
+      "source": "git",
       "dependencies": {
-        "com.ateliermycelia.unityutils": "1.2.2"
-      }
+        "com.unity.textmeshpro": "3.0.6"
+      },
+      "hash": "b83654d6c07e7d7c2413358c24d5eaa1d09428f5"
+    },
+    "com.ateliermycelia.hyphatween": {
+      "version": "https://github.com/Atelier-Mycelia/HyphaTween.git?path=Assets/HyphaTween",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.ateliermycelia.commonlib": "1.3.1"
+      },
+      "hash": "e5fea3829e317eba31633dc4930182c25d0c46ee"
     },
     "com.ateliermycelia.hyphlow": {
-      "version": "file:E:/Github/_AtelierMycelia/Hyphlow/Assets/Hyphlow",
+      "version": "https://github.com/Atelier-Mycelia/Hyphlow.git?path=Assets/Hyphlow#develop",
       "depth": 0,
-      "source": "local",
+      "source": "git",
       "dependencies": {
         "com.unity.textmeshpro": "3.0.6",
-        "com.ateliermycelia.unityutils": "1.2.2",
+        "com.ateliermycelia.commonlib": "1.3.1",
         "com.ateliermycelia.hyphatween": "1.0.1",
         "com.unity.inputsystem": "1.7.0"
-      }
+      },
+      "hash": "273ba16f623dcd90a0ee80780a59ae26deeb03c0"
     },
     "com.ateliermycelia.myceliaudio": {
       "version": "file:E:/Github/_AtelierMycelia/Myceliaudio/Packages/com.ateliermycelia.myceliaudio",
@@ -33,14 +44,6 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {}
-    },
-    "com.ateliermycelia.unityutils": {
-      "version": "file:E:/Github/_AtelierMycelia/UnityUtils/Assets/AtMyceliaCommonLib",
-      "depth": 0,
-      "source": "local",
-      "dependencies": {
-        "com.unity.textmeshpro": "3.0.6"
-      }
     },
     "com.unity.2d.sprite": {
       "version": "1.0.0",

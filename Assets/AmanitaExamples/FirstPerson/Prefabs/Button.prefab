@@ -1132,21 +1132,28 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _itemId: 17
   _indentLevel: 0
-  text: A secret
-  description: 
-  targetBlock: {fileID: 114047401655285550}
-  hideIfVisited: 0
-  interactable:
+  _text:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    _value: 1
-    booleanRef: {fileID: 0}
-    booleanVal: 0
-  setMenuDialog: {fileID: 0}
-  hideThisOption:
+    _value: A secret
+    stringRef: {fileID: 0}
+    stringVal: 
+  _description:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _value: 
+    stringRef: {fileID: 0}
+    stringVal: 
+  _targetBlock:
+    _itemId: 3
+    _owningSource: {fileID: 114726772774787118}
+  _hideIfVisited:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
@@ -1155,6 +1162,29 @@ MonoBehaviour:
     _value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
+  _interactable:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _value: 1
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _setMenuDialog: {fileID: 0}
+  _hideThisOption:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _descriptionOld: 
+  _textOld: 
+  _targetBlockOld: {fileID: 0}
+  _hideIfVisitedOld: 0
 --- !u!114 &114046083664822752
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1169,21 +1199,28 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _itemId: 16
   _indentLevel: 0
-  text: Humility
-  description: 
-  targetBlock: {fileID: 114849816561376966}
-  hideIfVisited: 0
-  interactable:
+  _text:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    _value: 1
-    booleanRef: {fileID: 0}
-    booleanVal: 0
-  setMenuDialog: {fileID: 0}
-  hideThisOption:
+    _value: Humility
+    stringRef: {fileID: 0}
+    stringVal: 
+  _description:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _value: 
+    stringRef: {fileID: 0}
+    stringVal: 
+  _targetBlock:
+    _itemId: 2
+    _owningSource: {fileID: 114726772774787118}
+  _hideIfVisited:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
@@ -1192,6 +1229,29 @@ MonoBehaviour:
     _value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
+  _interactable:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _value: 1
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _setMenuDialog: {fileID: 0}
+  _hideThisOption:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _descriptionOld: 
+  _textOld: 
+  _targetBlockOld: {fileID: 0}
+  _hideIfVisitedOld: 0
 --- !u!114 &114526323181970208
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1206,21 +1266,28 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _itemId: 15
   _indentLevel: 0
-  text: Virtue
-  description: 
-  targetBlock: {fileID: 114849816561376966}
-  hideIfVisited: 0
-  interactable:
+  _text:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    _value: 1
-    booleanRef: {fileID: 0}
-    booleanVal: 0
-  setMenuDialog: {fileID: 0}
-  hideThisOption:
+    _value: Virtue
+    stringRef: {fileID: 0}
+    stringVal: 
+  _description:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _value: 
+    stringRef: {fileID: 0}
+    stringVal: 
+  _targetBlock:
+    _itemId: 2
+    _owningSource: {fileID: 114726772774787118}
+  _hideIfVisited:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
@@ -1229,6 +1296,29 @@ MonoBehaviour:
     _value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
+  _interactable:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _value: 1
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _setMenuDialog: {fileID: 0}
+  _hideThisOption:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _descriptionOld: 
+  _textOld: 
+  _targetBlockOld: {fileID: 0}
+  _hideIfVisitedOld: 0
 --- !u!114 &114318582739202538
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1243,21 +1333,28 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _itemId: 14
   _indentLevel: 0
-  text: A clue
-  description: 
-  targetBlock: {fileID: 114849816561376966}
-  hideIfVisited: 0
-  interactable:
+  _text:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    _value: 1
-    booleanRef: {fileID: 0}
-    booleanVal: 0
-  setMenuDialog: {fileID: 0}
-  hideThisOption:
+    _value: A clue
+    stringRef: {fileID: 0}
+    stringVal: 
+  _description:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _value: 
+    stringRef: {fileID: 0}
+    stringVal: 
+  _targetBlock:
+    _itemId: 2
+    _owningSource: {fileID: 114726772774787118}
+  _hideIfVisited:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
@@ -1266,6 +1363,29 @@ MonoBehaviour:
     _value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
+  _interactable:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _value: 1
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _setMenuDialog: {fileID: 0}
+  _hideThisOption:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _descriptionOld: 
+  _textOld: 
+  _targetBlockOld: {fileID: 0}
+  _hideIfVisitedOld: 0
 --- !u!114 &114433774958341198
 MonoBehaviour:
   m_ObjectHideFlags: 2
