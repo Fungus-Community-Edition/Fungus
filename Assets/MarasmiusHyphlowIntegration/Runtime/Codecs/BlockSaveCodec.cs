@@ -67,7 +67,8 @@ namespace AtMycelia.Amanita.SaveSys
             // We assume that the Block was indeed executing at this point.
             byte itemId = toCreateFrom.ItemId;
             string blockName = toCreateFrom.BlockName;
-            byte activeCommandId = 0, activeCommandIndex = 0;
+            byte activeCommandId = 0;
+            sbyte activeCommandIndex = 0;
 
             if (toCreateFrom.ActiveCommand != null && toCreateFrom.ActiveCommand.ReexecutableOnLoad)
             {

@@ -20,7 +20,7 @@ public class DefaultAdapterTests : MonoBehaviour
         _adapter = DefaultTweener; 
     }
 
-    private static DefaultTweenAdapter DefaultTweener => HyphlowRuntimeSysAssets.S.TweenAdapter;
+    private static DefaultTweenAdapter DefaultTweener => DefaultTweenAdapter.S;
     protected GameObject _testGo;
     protected AmanitaManager manager;
 

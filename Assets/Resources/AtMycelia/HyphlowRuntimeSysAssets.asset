@@ -13,4 +13,6 @@ MonoBehaviour:
   m_Name: HyphlowRuntimeSysAssets
   m_EditorClassIdentifier: 
   _tweenAdapter: {fileID: 11400000, guid: 205d2e716ba16374ab23457f380c7ea6, type: 2}
-  _variableRegistryConfigs: []
+  _variableRegistryConfigs:
+  - {fileID: 11400000, guid: 8e694f6035ec5224894c57b315476d14, type: 2}
+  - {fileID: 11400000, guid: 35eae69d44a536b488fcdefd58cfcea1, type: 2}
