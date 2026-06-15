@@ -130,13 +130,14 @@ GameObject:
   - component: {fileID: 349764834}
   - component: {fileID: 349764833}
   - component: {fileID: 349764837}
-  - component: {fileID: 349764836}
   - component: {fileID: 349764835}
   - component: {fileID: 349764838}
   - component: {fileID: 349764839}
   - component: {fileID: 349764841}
   - component: {fileID: 349764840}
   - component: {fileID: 349764842}
+  - component: {fileID: 349764844}
+  - component: {fileID: 349764843}
   m_Layer: 0
   m_Name: ScreenFades
   m_TagString: Untagged
@@ -157,6 +158,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _varManager: {fileID: 349764842}
+  _execManager: {fileID: 349764843}
+  _blockManager: {fileID: 349764844}
   legacyVariableManager:
     _muscariables: []
     _legacyVariables: []
@@ -166,10 +169,12 @@ MonoBehaviour:
   _legacyVariables: []
   _oldMuscariables: []
   _otherSettings: []
-  description: 
-  uiModel:
-    _selectedBlocks: []
-    _selectedCommands: []
+  _flowchartSettings: {fileID: 0}
+  _description: 
+  _uiModel:
+    _selectedLegacyBlocks:
+    - {fileID: 349764837}
+    _selectedLegacyCommands: []
     _owner: {fileID: 349764832}
     <ScrollPos>k__BackingField: {x: 0, y: 7.5349655}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
@@ -183,26 +188,13 @@ MonoBehaviour:
       width: 0
       height: 0
     <SelectedCommandsStale>k__BackingField: 1
-  stepPause: 0
-  colorCommands: 1
-  hideComponents: 1
-  saveSelection: 1
-  showLineNumbers: 0
-  hideCommands: []
-  includeInSaves: 1
-  saveBlocks: 1
-  saveVariables: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _saveBlocks: 1
+  _saveVariables: 1
+  _loadPriority: 0
   _alwaysKeepGuid: 1
-  _blockListCache:
-  - {fileID: 349764837}
-  _commands:
-  - {fileID: 349764835}
-  - {fileID: 349764839}
-  - {fileID: 349764841}
-  - {fileID: 349764840}
   nextValidVarID: 6
-  uniqueId: 3aa29c02-1e8c-424a-b6ae-fde9c9bf8509
+  _uniqueId: 0a1980c7-79cf-4673-b58c-16b4e49815a2
   references:
     version: 2
     RefIds: []
@@ -233,8 +225,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 207aecf668a0345388087ccf522f9957, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemId: 4
-  indentLevel: 0
+  _itemId: 4
+  _indentLevel: 0
   _duration:
     _backingVarRef:
       _itemId: 1
@@ -286,24 +278,6 @@ MonoBehaviour:
   _oldWaitUntilFinished: 1
   _oldFadeColor: {r: 0, g: 0, b: 0, a: 1}
   _oldFadeTexture: {fileID: 0}
---- !u!114 &349764836
-MonoBehaviour:
-  m_ObjectHideFlags: 2
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 349764832}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 705fa1ac97df74e3a84ff952ffd923f1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _scope: 0
-  _key: dur
-  _itemId: 1
-  oldItemID: 0
-  _owner: {fileID: 349764833}
-  _value: 1.5
 --- !u!114 &349764837
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -324,17 +298,20 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
+  _scope: 1
   _itemId: 1
   _blockName: Init
   _description: 
-  _eventHandler: {fileID: 349764838}
-  _commandList:
+  _legacyEventHandler: {fileID: 349764838}
+  _legacyCommandList:
   - {fileID: 349764835}
   - {fileID: 349764839}
   - {fileID: 349764840}
   - {fileID: 349764841}
   _includeInSaves: 1
   _loadPriority: 0
+  _owner: {fileID: 349764833}
+  _nextValidCommandId: 1
   suppressAllAutoSelections: 0
 --- !u!114 &349764838
 MonoBehaviour:
@@ -348,7 +325,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2f6487d21a03404cb21b245f0242e79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _parentBlock: {fileID: 349764837}
+  _parentMbBlock: {fileID: 349764837}
+  _parentBlockReference:
+    _itemId: 1
+    _owningSource: {fileID: 349764833}
   _suppressBlockAutoSelect: 0
   waitForFrames: 3
 --- !u!114 &349764839
@@ -363,8 +343,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 207aecf668a0345388087ccf522f9957, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemId: 2
-  indentLevel: 0
+  _itemId: 2
+  _indentLevel: 0
   _duration:
     _backingVarRef:
       _itemId: 1
@@ -428,8 +408,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 207aecf668a0345388087ccf522f9957, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemId: 5
-  indentLevel: 0
+  _itemId: 5
+  _indentLevel: 0
   _duration:
     _backingVarRef:
       _itemId: 1
@@ -493,8 +473,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 207aecf668a0345388087ccf522f9957, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemId: 3
-  indentLevel: 0
+  _itemId: 3
+  _indentLevel: 0
   _duration:
     _backingVarRef:
       _itemId: 1
@@ -565,14 +545,27 @@ MonoBehaviour:
     - rid: 3688519675510521926
     - rid: 3688519675510521927
     - rid: 3688519675510521928
-    _legacyVariables:
-    - {fileID: 349764836}
+    - rid: 588464476277964805
+    _legacyVariables: []
     _nextValidVarID: 1
     _isInitted: 1
   _cachedFlowchart: {fileID: 349764833}
   references:
     version: 2
     RefIds:
+    - rid: 588464476277964805
+      type: {class: FloatMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        _scope: 0
+        _key: dur
+        _itemId: 1
+        scope: 0
+        key: 
+        itemID: 0
+        value: 0
+        _startValue: 0
+        _value: 1.5
+        startValue: 0
     - rid: 3688519675510521925
       type: {class: FloatMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
@@ -625,6 +618,47 @@ MonoBehaviour:
         _startValue: {r: 0, g: 0, b: 0, a: 0}
         _value: {r: 0.8679245, g: 0.1514774, b: 0.7912634, a: 1}
         startValue: {r: 0, g: 0, b: 0, a: 0}
+--- !u!114 &349764843
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 349764832}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: efcfad39446ab494eaaa242a86e90bc7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _owner: {fileID: 349764833}
+  _manager:
+    _coroutineRunner: {fileID: 349764833}
+  _unityObjBlockManager: {fileID: 349764844}
+  _nonUnityObjBlockManager:
+    rid: -2
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+--- !u!114 &349764844
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 349764832}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e16732bba93198b4888a347765e3a8cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _blockManager:
+    _legacyBlocks:
+    - {fileID: 349764837}
+    _nextValidBlockId: 1
+    _blockOwner: {fileID: 349764833}
+  _cachedFlowchart: {fileID: 349764833}
 --- !u!1 &709131380
 GameObject:
   m_ObjectHideFlags: 0
