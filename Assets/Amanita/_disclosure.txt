@@ -1,0 +1,1 @@
+There is at least one ai-generated picture used in the demos. Their file names should have "aiGen" in them so you can tell them apart from the rest.

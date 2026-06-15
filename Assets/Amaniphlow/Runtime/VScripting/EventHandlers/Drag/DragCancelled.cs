@@ -34,6 +34,12 @@ namespace AtMycelia.Amaniphlow
 			}
 			else
 			{
+				// It's possible that the EventDispatcher has been nulled by this point 
+				// (shutdown process and all), so...
+				if (EventDispatcher == null)
+				{
+					return;
+				}
 				EventDispatcher.RemoveListener<DragCancelledEvent>(OnDragCancelledEvent);
 			}
 		}

@@ -32,7 +32,8 @@ namespace AtMycelia.Amanita
         private static GameObject CreateOurRoot()
         {
             GameObject result = null;
-            var prefab = Resources.Load<GameObject>(OurRootPrefabPath);
+            AmanitaManager manager;
+            var prefab = Resources.Load<AmanitaManager>(OurRootPrefabPath);
 
             if (prefab == null)
             {
@@ -43,7 +44,9 @@ namespace AtMycelia.Amanita
             }
             else
             {
-                result = UnityObj.Instantiate(prefab);
+                manager = UnityObj.Instantiate(prefab);
+                manager.Init();
+                result = manager.gameObject;
                 result.name = prefab.name;
                 UnityObj.DontDestroyOnLoad(result);
             }

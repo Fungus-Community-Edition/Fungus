@@ -175,6 +175,8 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 76a1572c73453431aacb9f1f816e1fed, type: 3}
   - {fileID: 21300000, guid: f333ca7fd8eb149dcb68ec768620a88b, type: 3}
   - {fileID: 21300000, guid: 1bf14d6bc24f540c49d36bec5f86a48a, type: 3}
+  - {fileID: -8155491687521774885, guid: 944286e7c5879464d8f9b8c7fbd77fb3, type: 3}
+  - {fileID: -1725255749170265279, guid: 36db12bbb184b534ea975dce9249e253, type: 3}
   _textures:
   - {fileID: 2800000, guid: 78bc8db714c3749cc8bd8c0b7e525b85, type: 3}
   - {fileID: 2800000, guid: 22eb050bacf8c401ca8503e24bff3570, type: 3}
@@ -290,6 +292,8 @@ MonoBehaviour:
   - {fileID: 28268798066460806, guid: 2e498d1c8094910479dc3e1b768306a4, type: 2}
   - {fileID: 28684132378477856, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   - {fileID: 2800000, guid: dffef66376be4fa480fb02b19edbe903, type: 3}
+  - {fileID: 2800000, guid: 944286e7c5879464d8f9b8c7fbd77fb3, type: 3}
+  - {fileID: 2800000, guid: 36db12bbb184b534ea975dce9249e253, type: 3}
   _renderTextures: []
   _cubemaps: []
   _materials: []
