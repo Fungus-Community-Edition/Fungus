@@ -29,7 +29,6 @@ namespace VScriptingTests.VariableOperations
             // Give it a name - this is the key part
             testScene.name = "TestScene_VariableRowPersistence";
 
-            ammieManager = AmanitaManager.EnsureExists();
 
             _firstFcHolder = new GameObject("Flowchart_A");
             _secondFcHolder = new GameObject("Flowchart_B");

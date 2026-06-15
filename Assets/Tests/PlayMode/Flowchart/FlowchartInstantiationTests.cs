@@ -30,7 +30,6 @@ namespace VScriptingTests.FlowchartLifecycle
         public void Setup()
         {
             FlowchartRegistry.EnsureInitialized(true);
-            AmanitaManager.EnsureExists();
             AmanitaManager.S.Init();
             fcHolder = new GameObject("TestFlowchart_InstantiationTestHolder");
             toDestroyOnTearDown.Add(fcHolder);

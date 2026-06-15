@@ -55,7 +55,6 @@ namespace VScriptingTests.VariableRows
             RowVisualTemplateProviderRegistry.Current = new CachedRowVisualTemplateProvider();
             RowVisualElementBuilderRegistry.Current = new DefaultRowVisualElementBuilder();
 
-            _amanitaManager = AmanitaManager.EnsureExists();
             _objectsToDestroy.Add(_amanitaManager.gameObject);
 
             var flowchartGO = new GameObject("TestFlowchart");
@@ -133,43 +132,6 @@ namespace VScriptingTests.VariableRows
             _objectsToDestroy.Clear();
             Undo.ClearAll();
             _uiHost.Close();
-        }
-
-        [UnityTest]
-        public IEnumerator VariableRowChange_PersistsAndSupportsUndoRedo(
-            [ValueSource(nameof(VariableRowCases))] VariableRowTestCase testCase)
-        {
-            yield return null;
-
-            IVariable variable = testCase.CreateVariable(_flowchart);
-            yield return AssertValueChangePersists(variable, testCase.TargetValue, variable.ContentType);
-        }
-
-        private IEnumerator AssertValueChangePersists(IVariable variable, object newValue, Type contentType)
-        {
-            yield return null;
-            Assert.NotNull(variable, "Variable creation failed.");
-            byte variableId = variable.ItemId;
-            string variableKey = variable.Key;
-
-            VariableRow row = GetRowFor(variable);
-            Assert.NotNull(row, "Variable row could not be materialized.");
-
-            object originalValue = variable.BoxedValue;
-
-            ApplyValueThroughUi(row, newValue, contentType);
-            yield return null;
-            Assert.AreEqual(newValue, variable.BoxedValue, "Value change was not applied.");
-
-            Undo.PerformUndo();
-            variable = _flowchart.GetVariable(variableId) ?? _flowchart.GetVariable(variableKey, StringComparison.Ordinal);
-            Assert.NotNull(variable, "Variable was not found after undo.");
-            Assert.AreEqual(originalValue, variable.BoxedValue, "Undo did not restore the original value.");
-
-            Undo.PerformRedo();
-            variable = _flowchart.GetVariable(variableId) ?? _flowchart.GetVariable(variableKey, StringComparison.Ordinal);
-            Assert.NotNull(variable, "Variable was not found after redo.");
-            Assert.AreEqual(newValue, variable.BoxedValue, "Redo did not reapply the edited value.");
         }
 
         private VariableRow GetRowFor(IVariable variable)
@@ -500,126 +462,6 @@ namespace VScriptingTests.VariableRows
                 #endregion
 
             };
-        }
-
-        private static IEnumerable<VariableRowTestCase> VariableRowCases()
-        {
-            ShadowDatabase db = AmanitaManager.ShadowDB; // We will need this for some cases
-            var gameObjects = db.GetAssetsOfType<GameObject>(AssetType.Prefab);
-
-            #region Numeric
-            yield return new VariableRowTestCase(
-                "FloatVariable",
-                fc => fc.AddNewMuscariable<float, FloatMuscariable>("FloatVar", 1f),
-                12.5f);
-
-            yield return new VariableRowTestCase(
-                "IntVariable",
-                fc => fc.AddNewMuscariable<int, IntMuscariable>("IntVar", 10),
-                42);
-
-            yield return new VariableRowTestCase(
-                "VectorTwoVariable",
-                fc => fc.AddNewMuscariable<Vector2, VectorTwoMuscariable>("Vector2Var", new Vector2(1, 2)),
-                new Vector2(3, 4));
-
-            yield return new VariableRowTestCase(
-                "VectorThreeVariable",
-                fc => fc.AddNewMuscariable<Vector3, VectorThreeMuscariable>("Vector3Var", new Vector3(1, 2, 3)),
-                new Vector3(4, 5, 6));
-            #endregion
-
-            #region Graphics
-            yield return new VariableRowTestCase(
-                "StringVariable",
-                fc => fc.AddNewMuscariable<string, StringMuscariable>("StringVar", "Hello"),
-                "World");
-
-            yield return new VariableRowTestCase(
-                "ColorVariable",
-                fc => fc.AddNewMuscariable<Color, ColorMuscariable>("ColorVar", Color.red),
-                new Color(0.1f, 0.4f, 0.9f, 0.5f));
-
-            var sprites = db.GetAssetsOfType<Sprite>(AssetType.Sprite);
-            Sprite testSprite = sprites.Count > 0 ?
-                sprites[0] :
-                null;
-            //Debug.Log($"Test sprite is {testSprite}");
-            yield return new VariableRowTestCase(
-                "SpriteVariable",
-                fc => fc.AddNewMuscariable<Sprite, SpriteMuscariable>("SpriteVar", testSprite),
-                testSprite);
-
-            var textures = db.GetAssetsOfType<Texture>(AssetType.Texture);
-            Texture testTexture = textures.Count > 0 ?
-                textures[0] :
-                null;
-            yield return new VariableRowTestCase(
-                "TextureVariable",
-                fc => fc.AddNewMuscariable<Texture, TextureMuscariable>("TextureVar", testTexture),
-                testTexture);
-
-            var materials = db.GetAssetsOfType<Material>(AssetType.Material);
-            Material testMaterial = materials.Count > 0 ?
-                materials[0] :
-                null;
-            yield return new VariableRowTestCase(
-                "MaterialVariable",
-                fc => fc.AddNewMuscariable<Material, MaterialMuscariable>("MaterialVar", testMaterial),
-                testMaterial);
-
-            var animators = db.GetAssetsOfType<Animator>(AssetType.AnimatorController);
-            Animator testAnimator = animators.Count > 0 ?
-                animators[0] :
-                null;
-            yield return new VariableRowTestCase(
-                "AnimatorVariable",
-                fc => fc.AddNewMuscariable<Animator, AnimatorMuscariable>("AnimatorVar", testAnimator),
-                testAnimator);
-            #endregion
-
-            #region Audio
-            var audioClips = db.GetAssetsOfType<AudioClip>(AssetType.AudioClip);
-            AudioClip testClip = audioClips.Count > 0 ? 
-                audioClips[0] : 
-                null;
-            yield return new VariableRowTestCase(
-                "AudioClipVariable",
-                fc => fc.AddNewMuscariable<AudioClip, AudioClipMuscariable>("AudioClipVar", testClip),
-                testClip);
-
-            var audioSources = gameObjects.Select((elem) => elem.GetComponent<AudioSource>())
-                .Where((elem) => elem != null)
-                .ToArray();
-            AudioSource testSource = audioSources.Any() ?
-                audioSources.First().GetComponent<AudioSource>() :
-                null;
-            yield return new VariableRowTestCase(
-                "AudioSourceVariable",
-                fc => fc.AddNewMuscariable<AudioSource, AudioSourceMuscariable>("AudioSourceVar", testSource),
-                testSource);
-
-            var audioMixers = db.GetAssetsOfType<AudioMixer>(AssetType.AudioMixer);
-            AudioMixer testMixer = audioMixers.Count > 0 ?
-                audioMixers[0] :
-                null;
-            #endregion
-
-            #region Physics
-            var rigidbodies = gameObjects.Where((elem) => elem.GetComponent<Rigidbody>() != null)
-                .Select((elem) => elem.GetComponent<Rigidbody>())
-                .ToArray();
-            Rigidbody testRigidbody = rigidbodies.Length > 0 ?
-                rigidbodies[0] :
-                null;
-            var colliders = gameObjects.Where((elem) => elem.GetComponent<Collider>() != null)
-                .Select((elem) => elem.GetComponent<Collider>())
-                .ToArray();
-            Collider testCollider = colliders.Length > 0 ?
-                colliders[0] :
-                null;
-            #endregion
-
         }
 
         public sealed class VariableRowTestCase

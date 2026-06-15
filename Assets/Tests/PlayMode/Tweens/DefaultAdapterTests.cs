@@ -16,7 +16,6 @@ public class DefaultAdapterTests : MonoBehaviour
     public virtual void SetUp()
     {
         _testGo = new GameObject("TweenTestGO");
-        manager = AmanitaManager.EnsureExists();
         _adapter = DefaultTweener; 
     }
 

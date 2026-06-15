@@ -1,5 +1,4 @@
 ﻿using FullSerializer;
-using Lorekeeper;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -26,113 +25,8 @@ namespace AtMycelia.Amanita
         volatile static AmanitaManager _s;  // The keyword "volatile" is friendly to multi-threading.
         private static readonly object _ensureLock = new object();
 
-        public static ShadowDatabase ShadowDB
-        {
-            get
-            {
-                EnsureShadowDbAvailable();
-                return _shadowDb;
-            }
-            private set
-            {
-                _shadowDb = value;
-            }
-        }
-
-        private static void EnsureShadowDbAvailable()
-        {
-            if (_shadowDb != null)
-            {
-                return;
-            }
-            _shadowDb = Resources.Load<ShadowDatabase>("ShadowDatabase"); // We expect Lorekeeper to have placed it here.
-            if (_shadowDb == null)
-            {
-                Debug.LogError("ShadowDatabase asset not found in Resources/ShadowDatabase.");
-            }
-        }
-
-        private static ShadowDatabase _shadowDb;
-
-        /// <summary>
-        /// Ensure a single AmanitaManager instance exists in the scene (robust to edit-mode and concurrent calls).
-        /// When there are any Flowcharts in the scene editor, there should also be an AmanitaManager in that same scene.
-        /// </summary>
-        public static AmanitaManager EnsureExists()
-        {
-            // Fast path
-            lock (_ensureLock)
-            { 
-                // Double-check after taking the lock
-                if (_s != null)
-                {
-                    _s.Init();
-                    return _s;
-                }
-
-                _s = FindFirstObjectByType<AmanitaManager>(FindObjectsInactive.Include);
-                if (_s != null)
-                {
-                    _s.gameObject.SetActive(true);
-                    _s.Init();
-                    return _s;
-                }
-
-                bool needToCreateNewOne = _s == null;
-                AmanitaManager newlyInstantiated = null;
-                if (needToCreateNewOne)
-                {
-                    newlyInstantiated = CreateNewManager();
-                }
-
-                // After creating, re-scan to ensure we didn't race with another instantiation.
-                if (!Application.isPlaying)
-                {
-#if UNITY_EDITOR
-                    // Note: FindObjectsOfTypeAll includes stuff in the scene AND project files, even in edit mode.
-                    var postAll = Resources.FindObjectsOfTypeAll<AmanitaManager>()
-                        .Where((elem) => !EditorUtility.IsPersistent(elem.gameObject) && elem != 
-                        newlyInstantiated && elem != null);
-                    // ^This Where clause is so we skip project files. Apparently, FindFirstObjectByType can miss
-                    // stuff in the scene.
-
-                    // Prefer an existing one that is not the newly instantiated one
-                    AmanitaManager keeper = postAll.FirstOrDefault();
-                    if (keeper != null)
-                    {
-                        // Another instance won the race. Thus...
-                        DestroyImmediate(newlyInstantiated.gameObject);
-                        _s = keeper;
-                        _s.Init();
-                        return _s;
-                    }
-#endif
-                }
-
-                // Otherwise keep the instantiated one
-                _s = newlyInstantiated;
-                _s.Init();
-                return _s;
-            }
-        }
-
-        private static AmanitaManager CreateNewManager()
-        {
-            AmanitaManager prefab = Resources.Load<AmanitaManager>(_pathToPrefab);
-            if (prefab == null)
-            {
-                string errorMessage = $"AmanitaManager prefab not found at Resources/{_pathToPrefab}. " +
-                    $"Please ensure it exists and is located there.";
-                Debug.LogError(errorMessage);
-                return null;
-            }
-
-            AmanitaManager manager = Instantiate(prefab);
-            manager.name = prefab.name; // Remove "(Clone)" from the name for cleanliness
-            return manager;
-        }
-
-        private static readonly string _pathToPrefab = "Runtime/Prefabs/AmanitaManager"; // Relative to Resources
+        private static readonly string _pathToPrefab = "Runtime/Prefabs/AmanitaManager"; 
+        // ^Relative to Resources
 
         public void Init()
         {
@@ -152,9 +46,6 @@ namespace AtMycelia.Amanita
             }
 
             _s = this;
-
-            EnsureShadowDbAvailable();
-
             PrepSubmodules();
         }
 

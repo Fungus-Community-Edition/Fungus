@@ -33,7 +33,6 @@ namespace VScriptingTests.VariableOperations
                 stringVar.Value = initStringVarValue;
             }
 
-            manager = AmanitaManager.EnsureExists();
             fcHolder = new GameObject("Flowchart");
             flowchart = fcHolder.AddComponent<Flowchart>();
             VariableTypeDiscovery.DiscoverAndRegister();

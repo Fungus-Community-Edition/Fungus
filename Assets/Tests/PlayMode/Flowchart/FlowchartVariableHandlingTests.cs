@@ -42,7 +42,6 @@ namespace VScriptingTests.FlowchartLifecycle
         [SetUp]
         public virtual void DoSetUp()
         {
-            AmanitaManager.EnsureExists();
             fChartHolder = new GameObject("Flowchart_VariableHandlingTestHolder");
             fChart = fChartHolder.AddComponent<Flowchart>();
             fChart.AlwaysKeepGuid = false;
@@ -75,7 +74,6 @@ namespace VScriptingTests.FlowchartLifecycle
         [UnityTest]
         public IEnumerator ClearVariables_EmptiesAllInternalLists()
         {
-            AmanitaManager.EnsureExists();
             fChartHolder.SetActive(true);
             yield return null;
 
@@ -127,7 +125,6 @@ namespace VScriptingTests.FlowchartLifecycle
         [UnityTest]
         public IEnumerator AddedVariables_GetUniqueNonClashingItemIds()
         {
-            AmanitaManager.EnsureExists();
             yield return null;
 
             var varManager = fChart.GetComponent<VariableManagerComponent>();
@@ -167,7 +164,6 @@ namespace VScriptingTests.FlowchartLifecycle
         [UnityTest]
         public IEnumerator Variables_Init_IsCalledAtLeastOnce()
         {
-            AmanitaManager.EnsureExists();
             TestIntMuscariable.InitCalls = 0;
 
             yield return null;

@@ -85,19 +85,9 @@ public class AmanitaManagerTests
         activeManager = null;
     }
 
-    private IEnumerator CreateManagerAsync()
-    {
-        activeManager = AmanitaManager.EnsureExists();
-        Assert.IsNotNull(activeManager, "EnsureExists should return a valid AmanitaManager instance.");
-
-        yield return null;
-        yield return null;
-    }
-
     [UnityTest]
     public IEnumerator Duplicate_Managers_Destroy_Themselves()
     {
-        yield return CreateManagerAsync();
         Assert.IsNotNull(AmanitaManager.S, "Primary AmanitaManager instance was not initialized.");
 
         var prefab = Resources.Load<AmanitaManager>(AmanitaConstants.PathToAmanitaManagerPrefab);
@@ -110,16 +100,5 @@ public class AmanitaManagerTests
         Assert.IsTrue(duplicate == null, "Duplicate AmanitaManager should self-destruct when another instance already exists.");
     }
 
-    [UnityTest]
-    public IEnumerator ShadowDatabaseAsset_IsAvailable()
-    {
-        yield return CreateManagerAsync();
-
-        var loadedDb = AmanitaManager.ShadowDB;
-        Assert.IsNotNull(loadedDb, "ShadowDatabase asset should be available via AmanitaManager.ShadowDB.");
-
-        var directResource = Resources.Load<ShadowDatabase>("ShadowDatabase");
-        Assert.IsNotNull(directResource, "ShadowDatabase asset is missing from Resources/ShadowDatabase.");
-    }
 
 }

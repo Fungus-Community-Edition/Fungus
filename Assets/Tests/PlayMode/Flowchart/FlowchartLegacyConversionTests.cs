@@ -37,7 +37,6 @@ namespace VScriptingTests
         [SetUp]
         public void Setup()
         {
-            AmanitaManager.EnsureExists();
             toDestroyInTearDown.Clear();
             toDestroyInTearDown.Add(AmanitaManager.S.gameObject);
         }
