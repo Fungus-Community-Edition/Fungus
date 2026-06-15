@@ -15,8 +15,8 @@
         "AtMycelia.Myceliaudio.Core",
         "AtMycelia.Myceliasmius.Core",
         "AtMycelia.Common.Core",
-        "AtMycelia.Mycorrhiza.Core",
-        "AtMycelia.HyphaTween.Core"
+        "AtMycelia.HyphaTween.Core",
+        "AtMycelia.Amaniphlow.Core"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
