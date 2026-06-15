@@ -5,7 +5,6 @@ using UnityEngine;
 using UnityObj = UnityEngine.Object;
 using Type = System.Type;
 using System.Reflection;
-using AtMycelia.SaveSys;
 
 /// <summary>
 /// Generic base for testing Flowchart commands with different tween adapters.
@@ -45,7 +44,6 @@ public abstract class CommandTestBase<TCommand> where TCommand : Command
     {
         UnityObj.DestroyImmediate(_go);
         _go = null;
-        SaveSystem.ResetStaticsForTest();
         Flowchart.ResetStaticsForTest();
     }
 

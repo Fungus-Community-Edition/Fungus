@@ -124,16 +124,6 @@ namespace AtMycelia.Amanita.DialogueSys
 
         protected virtual void Awake()
         {
-            if (shakerSO == null)
-            {
-                shakerSO = TweenManager.S.DefaultAdapter;
-            }
-            posShaker = shakerSO as IPositionShaker;
-            if (posShaker == null)
-            {
-                Debug.LogWarning("ShakerSO does not implement IPositionShaker");
-            }
-
             GameObject go = targetTextObject;
             if (go == null)
             {
@@ -167,6 +157,16 @@ namespace AtMycelia.Amanita.DialogueSys
 
         protected virtual void Start()
         {
+            if (shakerSO == null)
+            {
+                shakerSO = TweenManager.S.DefaultAdapter;
+            }
+            posShaker = shakerSO as IPositionShaker;
+            if (posShaker == null)
+            {
+                Debug.LogWarning("ShakerSO does not implement IPositionShaker");
+            }
+
             if (forceRichText)
             {
                 textAdapter.ForceRichText();

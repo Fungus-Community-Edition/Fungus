@@ -7,7 +7,6 @@ using UnityObject = UnityEngine.Object;
 using UnityEngine.EventSystems;
 using AtMycelia.Hyphlow;
 using AtMycelia.Amanita;
-using AtMycelia.SaveSys;
 
 namespace VScriptingTests.MuscariableTests
 {
@@ -40,22 +39,6 @@ namespace VScriptingTests.MuscariableTests
                 if (AmanitaManager.S != ammyManager)
                     Debug.LogError("AmanitaManager.S was not set correctly!");
 
-                SaveStorageSettings storageSettings = ScriptableObject.CreateInstance<SaveStorageSettings>();
-                storageSettings.RelativePath = "TestSaves";
-
-                SaveWriter saveWriter = ScriptableObject.CreateInstance<SaveWriter>();
-                SaveReader saveReader = ScriptableObject.CreateInstance<SaveReader>();
-                saveWriter.StorageSettings = saveReader.StorageSettings = storageSettings;
-
-                var testInstaller = new TestSaveSystemInstaller
-                {
-                    StorageSettings = storageSettings,
-                    SaveReaderOverride = saveReader,
-                    SaveWriterOverride = saveWriter
-                };
-
-                SaveSystemBootstrapper.Installer = testInstaller;
-                SaveSystemBootstrapper.InstallContext = null;
             }
 
             if (ReqSceneLoad)
@@ -68,8 +51,6 @@ namespace VScriptingTests.MuscariableTests
 
         protected virtual void ResetSingletonStatics()
         {
-            SaveSystem.ResetStaticsForTest();
-            SaveSystemBootstrapper.ResetStaticsForTest();
             Flowchart.ResetStaticsForTest();
             AmanitaManager.ResetStaticsForTest();
         }

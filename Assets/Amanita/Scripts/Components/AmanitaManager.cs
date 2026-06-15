@@ -1,5 +1,4 @@
-﻿using AtMycelia.SaveSys;
-using FullSerializer;
+﻿using FullSerializer;
 using Lorekeeper;
 using System.Collections.Generic;
 using System.Linq;
@@ -133,7 +132,7 @@ namespace AtMycelia.Amanita
             return manager;
         }
 
-        private static readonly string _pathToPrefab = "Prefabs/AmanitaManager"; // Relative to Resources
+        private static readonly string _pathToPrefab = "Runtime/Prefabs/AmanitaManager"; // Relative to Resources
 
         public void Init()
         {
@@ -254,11 +253,6 @@ namespace AtMycelia.Amanita
         public EventDispatcher EventDispatcher { get; private set; }
 
         /// <summary>
-        /// Gets the save manager singleton instance.
-        /// </summary>
-        public SaveManager SaveManager { get; private set; }
-
-        /// <summary>
         /// Gets the history manager singleton instance.
         /// </summary>
         public NarrativeLog NarrativeLog { get; private set; }
@@ -367,18 +361,7 @@ namespace AtMycelia.Amanita
 
         private void ToggleSubs(bool on)
         {
-            if (on)
-            {
-                SaveSysSignals.SaveLoaded += OnSaveSlotLoaded;
-            }
-            else
-            {
-                SaveSysSignals.SaveLoaded -= OnSaveSlotLoaded;
-            }
-        }
-
-        private void OnSaveSlotLoaded(CompositeSaveData saveData)
-        {
+            // No-op for now
         }
 
 #if UNITY_EDITOR
