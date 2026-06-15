@@ -12,9 +12,10 @@ namespace AtMycelia.Amanita.DialogueSys
     [AddComponentMenu("Amanita/Dialogue System/Say Dialog Manager")]
     public class SayDialogManager : MonoBehaviour, IAmanitaManagerSubmodule
     {
-        [SerializeField] private int orderIndex = 0;
-        [SerializeField] private Transform holdsSayDialogs;
-        public int OrderIndex => orderIndex;
+        [SerializeField] private int _orderIndex = 0;
+        [SerializeField] private Transform _holdsSayDialogs;
+        [SerializeField] private SayDialog _baseSayDialogPrefab;
+        public int OrderIndex => _orderIndex;
         
         public void Init()
         {
@@ -32,28 +33,30 @@ namespace AtMycelia.Amanita.DialogueSys
 
             s = this;
 
-            if (holdsSayDialogs == null)
+            if (_holdsSayDialogs == null)
             {
                 GameObject holderGo = new GameObject("Say Dialogs");
                 holderGo.transform.SetParent(this.transform, false);
-                holdsSayDialogs = holderGo.transform;
+                _holdsSayDialogs = holderGo.transform;
             }
             #endregion
 
             RegisterSayDialogs();
             void RegisterSayDialogs()
             {
-                sayDialogsInScene.Clear();
-                activeSayDialogs.Clear();
+                _sayDialogsInScene.Clear();
+                _activeSayDialogs.Clear();
 
+                var baseDialog = Instantiate(_baseSayDialogPrefab, _holdsSayDialogs);
                 var foundDialogs = FindObjectsByType<SayDialog>(FindObjectsSortMode.None).ToList();
-                sayDialogsInScene.AddRange(foundDialogs);
+
+                _sayDialogsInScene.AddRange(foundDialogs);
 
                 foreach (var found in foundDialogs)
                 {
                     if (found.gameObject.activeInHierarchy)
                     {
-                        activeSayDialogs.Add(found);
+                        _activeSayDialogs.Add(found);
                     }
                 }
             }
@@ -61,20 +64,20 @@ namespace AtMycelia.Amanita.DialogueSys
             GatherSayDialogs();
             void GatherSayDialogs()
             {
-                for (int i = sayDialogsInScene.Count - 1; i >= 0; i--)
+                for (int i = _sayDialogsInScene.Count - 1; i >= 0; i--)
                 {
-                    var sd = sayDialogsInScene.ElementAt(i);
-                    if (sd == null)
+                    var dialogEl = _sayDialogsInScene.ElementAt(i);
+                    if (dialogEl == null)
                     {
-                        sayDialogsInScene.Remove(sd);
+                        _sayDialogsInScene.Remove(dialogEl);
                     }
 
-                    sd.transform.SetParent(holdsSayDialogs, false);
+                    dialogEl.transform.SetParent(_holdsSayDialogs, false);
                 }
             }
 
-            activeSayDialogsRO = new ReadOnlyHashSet<SayDialog>(activeSayDialogs);
-            sayDialogsInSceneRO = new ReadOnlyHashSet<SayDialog>(sayDialogsInScene);
+            _activeSayDialogsRO = new ReadOnlyHashSet<SayDialog>(_activeSayDialogs);
+            _sayDialogsInSceneRO = new ReadOnlyHashSet<SayDialog>(_sayDialogsInScene);
             IsFullyInitted = true;
         }
 
@@ -90,29 +93,31 @@ namespace AtMycelia.Amanita.DialogueSys
         // We're using HashSets instead of lists to:
         // 1. Prevent duplicates automatically.
         // 2. Speed up lookups if needed.
-        private readonly HashSet<SayDialog> sayDialogsInScene = new HashSet<SayDialog>();
-        private readonly HashSet<SayDialog> activeSayDialogs = new HashSet<SayDialog>();
+        private readonly HashSet<SayDialog> _sayDialogsInScene = new HashSet<SayDialog>();
+        private readonly HashSet<SayDialog> _activeSayDialogs = new HashSet<SayDialog>();
         
         // ^Might want to have multiple active say dialogs in future for split-screen
         // or multiple characters talking simultaneously. Think
         // Paper Mario: The Thousand-Year Door.
-        private IReadOnlyHashSet<SayDialog> activeSayDialogsRO;
+        private IReadOnlyHashSet<SayDialog> _activeSayDialogsRO;
 
         public IReadOnlyHashSet<SayDialog> SayDialogsInScene
         {
-            get => sayDialogsInSceneRO;
+            get => _sayDialogsInSceneRO;
         }
         
-        private IReadOnlyHashSet<SayDialog> sayDialogsInSceneRO;
+        private IReadOnlyHashSet<SayDialog> _sayDialogsInSceneRO;
 
         /// <summary>
-        /// Returns an existing instance of the specified SayDialog prefab if one exists; otherwise, creates a new
-        /// instance and returns it.
+        /// Returns an existing instance of the specified SayDialog prefab if one exists;
+        /// otherwise, creates a new instance and returns it.
         /// </summary>
-        /// <remarks>If a new SayDialog instance is created, it is added to the internal collection and an
-        /// event is raised to signal its creation. Subsequent calls with the same prefab will return the same
-        /// instance.</remarks>
-        /// <param name="prefab">The SayDialog prefab to retrieve or instantiate. Cannot be null.</param>
+        /// <remarks>If a new SayDialog instance is created, it is added to the internal 
+        /// collection and an event is raised to signal its creation. Subsequent calls 
+        /// with the same prefab will return the same instance.</remarks>
+        /// <param name="prefab">The SayDialog prefab to retrieve or instantiate. Cannot 
+        /// be null.
+        /// </param>
         public SayDialog GetOrCreateSD(SayDialog prefab)
         {
             if (prefabToInstanceMap.TryGetValue(prefab, out SayDialog existingInstance))
@@ -125,13 +130,13 @@ namespace AtMycelia.Amanita.DialogueSys
 
         public SayDialog CreateSD(SayDialog prefab)
         {
-            SayDialog newSD = Instantiate(prefab, holdsSayDialogs);
+            SayDialog newSD = Instantiate(prefab, _holdsSayDialogs);
             newSD.name = prefab.name;
-            sayDialogsInScene.Add(newSD);
-            DialogueSysSignals.SayDialogMadeFromPrefab.Invoke(prefab, newSD); // This should add to the map
+            _sayDialogsInScene.Add(newSD);
+            DialogueSysSignals.SayDialogMadeFromPrefab.Invoke(prefab, newSD); 
+            // ^This should add to the map
             return newSD;
         }
-
 
         protected virtual void OnEnable()
         {
@@ -156,18 +161,18 @@ namespace AtMycelia.Amanita.DialogueSys
 
         private void OnSayDialogEnabled(SayDialog dialog)
         {
-            activeSayDialogs.Add(dialog);
+            _activeSayDialogs.Add(dialog);
 
             // Make sure it is parented to the holder
-            if (dialog.transform.parent != holdsSayDialogs)
+            if (dialog.transform.parent != _holdsSayDialogs)
             {
-                dialog.transform.SetParent(holdsSayDialogs, false);
+                dialog.transform.SetParent(_holdsSayDialogs, false);
             }
         }
 
         private void OnSayDialogDisabled(SayDialog dialog)
         {
-            activeSayDialogs.Remove(dialog);
+            _activeSayDialogs.Remove(dialog);
         }
 
         private void OnSayDialogMadeFromPrefab(SayDialog prefab, SayDialog instance)
@@ -175,14 +180,15 @@ namespace AtMycelia.Amanita.DialogueSys
             prefabToInstanceMap[prefab] = instance;
         }
 
-        private readonly IDictionary<SayDialog, SayDialog> prefabToInstanceMap = new Dictionary<SayDialog, SayDialog>();
+        private readonly IDictionary<SayDialog, SayDialog> prefabToInstanceMap = 
+            new Dictionary<SayDialog, SayDialog>();
 
         /// <summary>
         /// These are the Say Dialogs that are currently enabled in the scene.
         /// </summary>
         public IReadOnlyHashSet<SayDialog> ActiveSayDialogs
         {
-            get => activeSayDialogsRO;
+            get => _activeSayDialogsRO;
         }
 
         protected virtual void OnDisable()
@@ -204,9 +210,9 @@ namespace AtMycelia.Amanita.DialogueSys
                     return mainSayDialog;
                 }
 
-                if (sayDialogsInScene.Count > 0)
+                if (_sayDialogsInScene.Count > 0)
                 {
-                    mainSayDialog = sayDialogsInScene.First();
+                    mainSayDialog = _sayDialogsInScene.First();
                     return mainSayDialog;
                 }
 
@@ -216,7 +222,7 @@ namespace AtMycelia.Amanita.DialogueSys
                 {
                     mainSayDialog = Instantiate(prefab);
                     mainSayDialog.name = prefab.name;
-                    mainSayDialog.transform.SetParent(holdsSayDialogs, false);
+                    mainSayDialog.transform.SetParent(_holdsSayDialogs, false);
                 }
 
                 return mainSayDialog;

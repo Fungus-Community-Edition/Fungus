@@ -21,13 +21,14 @@ namespace AtMycelia.Amaniphlow.EditorExt
         {
             base.OnEnable();
 
-            textProp = serializedObject.FindProperty("text");
-            descriptionProp = serializedObject.FindProperty("description");
-            targetBlockProp = serializedObject.FindProperty("targetBlock");
-            hideIfVisitedProp = serializedObject.FindProperty("hideIfVisited");
-            interactableProp = serializedObject.FindProperty("interactable");
-            setMenuDialogProp = serializedObject.FindProperty("setMenuDialog");
-            hideThisOptionProp = serializedObject.FindProperty("hideThisOption");
+            // Updated to the new VariableData-backed field names used by Menu
+            textProp = serializedObject.FindProperty("_text");
+            descriptionProp = serializedObject.FindProperty("_description");
+            targetBlockProp = serializedObject.FindProperty("_targetBlock");
+            hideIfVisitedProp = serializedObject.FindProperty("_hideIfVisited");
+            interactableProp = serializedObject.FindProperty("_interactable");
+            setMenuDialogProp = serializedObject.FindProperty("_setMenuDialog");
+            hideThisOptionProp = serializedObject.FindProperty("_hideThisOption");
         }
         
         public override void DrawCommandGUI()
@@ -40,28 +41,21 @@ namespace AtMycelia.Amaniphlow.EditorExt
             
             serializedObject.Update();
             
+            // VariableData fields (e.g. StringData, BooleanData) are serialized objects;
+            // showing the property will expose the value/variable fields as appropriate.
             EditorGUILayout.PropertyField(textProp);
-
             EditorGUILayout.PropertyField(descriptionProp);
 
             EditorGUILayout.BeginHorizontal();
-            BlockEditor.BlockField(targetBlockProp,
-                                   new GUIContent("Target Block", "Block to call when option is selected"), 
-                                   new GUIContent("<None>"), 
-                                   flowchart);
-            const int popupWidth = 17;
-            if (targetBlockProp.objectReferenceValue == null && GUILayout.Button("+",GUILayout.MaxWidth(popupWidth)))
-            {
-                var menuTarget = (AmanitaMenu)target;
-                var activeFlowchart = EditorSelectionTracker.ActiveFlowchart;
-                Vector2 pos = menuTarget.ParentBlock._NodeRect.position - Vector2.down * 60;
-                var newBlock = activeFlowchart.CreateBlock(pos);
-                targetBlockProp.objectReferenceValue = newBlock as Block;
-                activeFlowchart.SelectedBlock = menuTarget.ParentBlock;
-            }
+            // Draw the BlockReference using the existing BlockField helper.
+            EditorGUILayout.PropertyField(targetBlockProp, new GUIContent("Target Block"));
+
+            BlockReference blockRef = targetBlockProp != null ? 
+                targetBlockProp.boxedValue as BlockReference: 
+                null;
+            IBlock blockTargeted = blockRef.Block;
+
             EditorGUILayout.EndHorizontal();
-
-
 
             EditorGUILayout.PropertyField(hideIfVisitedProp);
             EditorGUILayout.PropertyField(interactableProp);

@@ -61,7 +61,7 @@ namespace AtMycelia.Amanita
             void FetchSubmodules()
             {
                 CameraManager = GetComponentInChildren<CameraManager>();
-                EventDispatcher = GetComponentInChildren<EventDispatcher>();
+                EventDispatcher = gameObject.GetOrAddComponent<EventDispatcher>();
                 NarrativeLog = GetComponentInChildren<NarrativeLog>();
             }
 

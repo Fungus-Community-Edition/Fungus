@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
 using UnityEngine.UI;
-using System.Linq;
+using UnityEngine.Serialization;
 
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
@@ -17,9 +17,11 @@ namespace AtMycelia.Amanita.DialogueSys.UI
     {
 #if ENABLE_LEGACY_INPUT_MANAGER
         [SerializeField] protected bool useAxes = true;
-        [Tooltip("In response to any of these axes, this will make sure there's one button selected in the menu dialog.")]
+        [Tooltip("In response to any of these axes, this will make sure there's " +
+            "one button selected in the menu dialog.")]
         [SerializeField]
-        protected string[] inputAxes = new string[]
+        [FormerlySerializedAs("inputAxes")]
+        protected string[] _inputAxes = new string[]
         {
             "Horizontal",
             "Vertical"
@@ -27,16 +29,18 @@ namespace AtMycelia.Amanita.DialogueSys.UI
 #endif
 #if ENABLE_INPUT_SYSTEM
         [SerializeField] protected bool useActions = true;
-        [Tooltip("In response to any of these actions, this will make sure there's one button selected in the menu dialog.")]
-        [SerializeField] protected InputActionReference[] inputActions = new InputActionReference[0];
+        [Tooltip("In response to any of these actions, this will make sure there's " +
+            "one button selected in the menu dialog.")]
+        [FormerlySerializedAs("inputActions")]
+        [SerializeField] protected InputActionReference[] _inputActions = new InputActionReference[0];
 #endif
 
         protected virtual void Awake()
         {
-            menuDialog = GetComponent<MenuDialog>();
+            _menuDialog = GetComponent<MenuDialog>();
         }
 
-        protected MenuDialog menuDialog;
+        protected MenuDialog _menuDialog;
 
         protected virtual void OnEnable()
         {
@@ -51,34 +55,26 @@ namespace AtMycelia.Amanita.DialogueSys.UI
         protected virtual void ToggleForNewInputSys(bool on)
         {
 #if ENABLE_INPUT_SYSTEM
-            if (on)
+            for (int i = 0; i < _inputActions.Length; i++)
             {
-                EnableAndListenForInputActions();
-
-                void EnableAndListenForInputActions()
+                var actionRef = _inputActions[i];
+                if (actionRef == null || actionRef.action == null)
                 {
-                    foreach (InputActionReference actionRef in inputActions)
-                    {
-                        if (actionRef != null && actionRef.action != null)
-                        {
-                            actionRef.action.Enable();
-                            actionRef.action.performed += OnActionPerformed;
-                        }
-                    }
+                    string logMessage = $"MenuDialogInput on {gameObject.name} has an " +
+                        $"element in its input actions array that is null or has a null " +
+                        $"action reference. Please fix or remove this element.";
+                    Debug.LogWarning(logMessage, this);
+                    continue;
                 }
-            }
-            else
-            {
-                UNlistenForInput();
-                void UNlistenForInput()
+
+                if (on)
                 {
-                    foreach (InputActionReference actionRef in inputActions)
-                    {
-                        if (actionRef != null && actionRef.action != null)
-                        {
-                            actionRef.action.performed -= OnActionPerformed;
-                        }
-                    }
+                    actionRef.action.Enable();
+                    actionRef.action.performed += OnActionPerformed;
+                }
+                else
+                {
+                    actionRef.action.performed -= OnActionPerformed;
                 }
             }
 #endif
@@ -87,37 +83,92 @@ namespace AtMycelia.Amanita.DialogueSys.UI
 #if ENABLE_INPUT_SYSTEM
         protected virtual void OnActionPerformed(InputAction.CallbackContext context)
         {
+            if (!ShouldRespondToInput)
+            {
+                return;
+            }
             EnsureOneOptionIsSelected();
         }
 #endif
 
         protected virtual void EnsureOneOptionIsSelected()
         {
-            bool anyOptionsSelected = CachedButtons.Any
-                (
-                option => option.gameObject.activeInHierarchy
-                && option.interactable &&
-                EventSystem.current.currentSelectedGameObject == option.gameObject
-                );
-
-            if (!anyOptionsSelected)
+            if (CachedButtons == null || CachedButtons.Count == 0)
             {
-                Button toSelect = CachedButtons.FirstOrDefault(option => option.gameObject.activeInHierarchy && 
-                option.interactable);
-
-                if (toSelect != null)
-                {
-                    EventSystem.current.SetSelectedGameObject(toSelect.gameObject);
-                }
+                return;
             }
+
+            bool anyOptionsSelected = IsAnyOptionSelectedAmong(CachedButtons);
+
+            if (anyOptionsSelected)
+            {
+                return;
+            }
+
+            Button toSelect = FindFirstActiveAndInteractableAmong(CachedButtons);
+            if (toSelect == null)
+            {
+                string logMessage = $"MenuDialogInput on {gameObject.name} was triggered to " +
+                    $"ensure an option is selected, but no active and interactable options " +
+                    $"were found among the cached buttons.";
+                Debug.LogWarning(logMessage, this);
+                return;
+            }
+
+            toSelect.Select();
         }
 
-        protected virtual IList<Button> CachedButtons
+        protected virtual IReadOnlyList<Button> CachedButtons
         {
             get
             {
-                return menuDialog.CachedButtons;
+                return _menuDialog.CachedButtons;
             }
+        }
+
+        protected virtual bool IsAnyOptionSelectedAmong(IReadOnlyList<Button> buttons)
+        {
+            bool result = false;
+            for (int i = 0; i < buttons.Count; i++)
+            {
+                Button option = buttons[i];
+                if (option == null)
+                {
+                    continue;
+                }
+
+                if (option.gameObject.activeInHierarchy && option.interactable)
+                {
+                    if (EventSystem.current != null && EventSystem.current.currentSelectedGameObject == option.gameObject)
+                    {
+                        result = true;
+                        break;
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        protected virtual Button FindFirstActiveAndInteractableAmong(IReadOnlyList<Button> buttons)
+        {
+            Button result = null;
+            for (int i = 0; i < buttons.Count; i++)
+            {
+                Button option = buttons[i];
+                if (option == null)
+                {
+                    continue;
+                }
+
+                bool foundIt = option.gameObject.activeInHierarchy && option.interactable;
+                if (foundIt)
+                {
+                    result = option;
+                    break;
+                }
+            }
+            return result;
         }
 
         protected virtual void OnDisable()
@@ -133,7 +184,12 @@ namespace AtMycelia.Amanita.DialogueSys.UI
 
         protected virtual void HandleResponseToInputAxes()
         {
-            foreach (string inputAxisEl in inputAxes)
+            if (!ShouldRespondToInput)
+            {
+                return;
+            }
+
+            foreach (string inputAxisEl in _inputAxes)
             {
                 bool inputDetected = Input.GetAxis(inputAxisEl) != 0;
                 if (inputDetected)
@@ -143,6 +199,8 @@ namespace AtMycelia.Amanita.DialogueSys.UI
                 }
             }
         }
+
+        protected virtual bool ShouldRespondToInput => _menuDialog.VisibleButtons.Count > 0;
 #endif
     }
 }

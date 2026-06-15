@@ -13,36 +13,50 @@ namespace AtMycelia.Amanita
     public class Character : MonoBehaviour, IComparer<Character>
     {
         [Tooltip("Character name as displayed in Say Dialog.")]
-        [SerializeField] protected string nameText; // We need a separate name as the object name is used for character variations (e.g. "Smurf Happy", "Smurf Sad")
+        [FormerlySerializedAs("nameText")]
+        [SerializeField] protected string _nameText; 
+        // ^We need a separate name as the object name is used for
+        // character variations (e.g. "Smurf Happy", "Smurf Sad")
 
         [Tooltip("Color to display the character name in Say Dialog.")]
-        [SerializeField] protected Color nameColor = Color.white;
+        [FormerlySerializedAs("nameColor")]
+        [SerializeField] protected Color _nameColor = Color.white;
 
         [Tooltip("Sound effect to play when this character is speaking.")]
-        [SerializeField] protected AudioClip soundEffect;
+        [FormerlySerializedAs("soundEffect")]
+        [SerializeField] protected AudioClip _soundEffect;
 
         [Tooltip("List of portrait images that can be displayed for this character.")]
-        [SerializeField] protected List<Sprite> portraits;
+        [FormerlySerializedAs("portraits")]
+        [SerializeField] protected List<Sprite> _portraits;
 
         [Tooltip("Direction that portrait sprites face.")]
-        [SerializeField] protected FacingDirection portraitsFace;
+        [FormerlySerializedAs("portraitsFace")]
+        [SerializeField] protected FacingDirection _portraitsFace;
 
-        [Tooltip("Sets the active Say dialog with a reference to a Say Dialog object in the scene. This Say Dialog will be used whenever the character speaks.")]
-        [SerializeField] protected SayDialog setSayDialog;
+        [Tooltip("Sets the active Say dialog with a reference to a Say Dialog object in " +
+            "the scene. This Say Dialog will be used whenever the character speaks.")]
+        [FormerlySerializedAs("setSayDialog")]
+        [SerializeField] protected SayDialog _setSayDialog;
 
         [FormerlySerializedAs("notes")]
         [TextArea(5,10)]
-        [SerializeField] protected string description;
+        [FormerlySerializedAs("description")]
+        [SerializeField] protected string _description;
 
-        [Tooltip("Optional, AudioSource to be used for effects and 'beeps' for this Character.")]
-        [SerializeField] protected AudioSource effectAudioSource;
+        [Tooltip("Optional, AudioSource to be used for effects and 'beeps' for " +
+            "this Character. (Deprecated)")]
+        [FormerlySerializedAs("effectAudioSource")]
+        [SerializeField] protected AudioSource _effectAudioSource;
 
-        [Tooltip("Optional, AudioSource to be used for voice over AudioClips for this Character.")]
-        [SerializeField] protected AudioSource voiceAudioSource;
+        [Tooltip("Optional, AudioSource to be used for voice over AudioClips for " +
+            "this Character. (Deprecated)")]
+        [FormerlySerializedAs("voiceAudioSource")]
+        [SerializeField] protected AudioSource _voiceAudioSource;
 
-        protected PortraitState portaitState = new PortraitState();
+        protected PortraitState _portraitState = new PortraitState();
 
-        protected static List<Character> activeCharacters = new List<Character>();
+        protected static List<Character> _activeCharacters = new List<Character>();
 
         /// <summary>
         /// Currently display profile sprite for this character.
@@ -52,16 +66,16 @@ namespace AtMycelia.Amanita
 
         protected virtual void OnEnable()
         {
-            if (!activeCharacters.Contains(this))
+            if (!_activeCharacters.Contains(this))
             {
-                activeCharacters.Add(this);
-                activeCharacters.Sort(this);
+                _activeCharacters.Add(this);
+                _activeCharacters.Sort(this);
             }
         }
 
         protected virtual void OnDisable()
         {
-            activeCharacters.Remove(this);
+            _activeCharacters.Remove(this);
         }
 
         #region Public members
@@ -69,62 +83,77 @@ namespace AtMycelia.Amanita
         /// <summary>
         /// Gets the list of active characters.
         /// </summary>
-        public static List<Character> ActiveCharacters { get { return activeCharacters; } }
+        public static List<Character> ActiveCharacters => _activeCharacters;
 
         /// <summary>
         /// Character name as displayed in Say Dialog.
         /// </summary>
-        public virtual string NameText { get { return nameText; } }
+        public virtual string NameText => _nameText;
 
         /// <summary>
         /// Color to display the character name in Say Dialog.
         /// </summary>
-        public virtual Color NameColor { get { return nameColor; } set { nameColor = value; } }
+        public virtual Color NameColor 
+        { 
+            get { return _nameColor; } 
+            set { _nameColor = value; } 
+        }
 
         /// <summary>
         /// Sound effect to play when this character is speaking.
         /// </summary>
         /// <value>The sound effect.</value>
-        public virtual AudioClip SoundEffect { get { return soundEffect; } set { soundEffect = value; } }
+        public virtual AudioClip SoundEffect 
+        { 
+            get { return _soundEffect; } 
+            set { _soundEffect = value; } 
+        }
 
         /// <summary>
         /// List of portrait images that can be displayed for this character.
         /// </summary>
-        public virtual List<Sprite> Portraits { get { return portraits; } }
+        public virtual List<Sprite> Portraits => _portraits;
 
         /// <summary>
         /// Direction that portrait sprites face.
         /// </summary>
-        public virtual FacingDirection PortraitsFace { get { return portraitsFace; } }
+        public virtual FacingDirection PortraitsFace => _portraitsFace;
 
         /// <summary>
         /// Current display state of this character's portrait.
         /// </summary>
         /// <value>The state.</value>
-        public virtual PortraitState State { get { return portaitState; } }
+        public virtual PortraitState State => _portraitState;
 
         /// <summary>
         /// Sets the active Say dialog with a reference to a Say Dialog object or a prefab. 
         /// This Say Dialog will be used whenever the character speaks.
         /// </summary>
-        public virtual SayDialog SetSayDialog { get { return setSayDialog; } }
+        public virtual SayDialog SetSayDialog  => _setSayDialog;
 
-        public virtual AudioSource VoiceAudioSource { get { return voiceAudioSource; } set { voiceAudioSource = value; } }
+        public virtual AudioSource VoiceAudioSource
+        { 
+            get { return _voiceAudioSource; } 
+            set { _voiceAudioSource = value; } 
+        }
 
-        public virtual AudioSource EffectAudioSource { get { return effectAudioSource; } set { effectAudioSource = value; } }
+        public virtual AudioSource EffectAudioSource 
+        { 
+            get { return _effectAudioSource; } 
+            set { _effectAudioSource = value; } 
+        }
 
         public virtual GameObject SayDialogGameObject
         {
             get
             {
-                return setSayDialog.gameObject;
+                return _setSayDialog.gameObject;
             }
             set
             {
-                var sd = value.GetComponent<SayDialog>();
-                if (sd != null)
+                if (value.TryGetComponent<SayDialog>(out var sd))
                 {
-                    setSayDialog = sd;
+                    _setSayDialog = sd;
                 }
             }
         }
@@ -135,7 +164,8 @@ namespace AtMycelia.Amanita
         public string GetObjectName() { return gameObject.name; }
 
         /// <summary>
-        /// Returns true if the character name starts with the specified string. Case insensitive.
+        /// Returns true if the character name starts with the specified 
+        /// string. Case insensitive.
         /// </summary>
         public virtual bool NameStartsWith(string matchString)
         {
@@ -143,30 +173,31 @@ namespace AtMycelia.Amanita
             return name.StartsWith(matchString, StringComparison.CurrentCultureIgnoreCase)
                 || nameText.StartsWith(matchString, StringComparison.CurrentCultureIgnoreCase);
 #else
-            return name.StartsWith(matchString, true, System.Globalization.CultureInfo.CurrentCulture)
-                || NameText.StartsWith(matchString, true, System.Globalization.CultureInfo.CurrentCulture);
+            return name.StartsWith(matchString, true, CultureInfo.CurrentCulture)
+                || NameText.StartsWith(matchString, true, CultureInfo.CurrentCulture);
 #endif
         }
 
         /// <summary>
-        /// Returns true if the character name is a complete match to the specified string. Case insensitive.
+        /// Returns true if the character name is a complete match to the specified 
+        /// string. Case insensitive.
         /// </summary>
         public virtual bool NameMatch(string matchString)
         {
             return string.Compare(name, matchString, true, CultureInfo.CurrentCulture) == 0
-                || string.Compare(nameText, matchString, true, CultureInfo.CurrentCulture) == 0;
+                || string.Compare(_nameText, matchString, true, CultureInfo.CurrentCulture) == 0;
         }
 
-        public int Compare(Character x, Character y)
+        public int Compare(Character firstChar, Character secondChar)
         {
-            if (x == y)
+            if (firstChar == secondChar)
                 return 0;
-            if (y == null)
+            if (secondChar == null)
                 return 1;
-            if (x == null)
+            if (firstChar == null)
                 return -1;
 
-            return x.name.CompareTo(y.name);
+            return firstChar.name.CompareTo(secondChar.name);
         }
 
         /// <summary>
@@ -180,11 +211,18 @@ namespace AtMycelia.Amanita
                 return null;
             }
 
-            for (int i = 0; i < portraits.Count; i++)
+            for (int i = 0; i < _portraits.Count; i++)
             {
-                if (portraits[i] != null && string.Compare(portraits[i].name, portraitString, true) == 0)
+                var currentPortrait = _portraits[i];
+                if (currentPortrait == null)
                 {
-                    return portraits[i];
+                    continue;
+                }
+
+                bool matchesName = string.Compare(currentPortrait.name, portraitString, true) == 0;
+                if (matchesName)
+                {
+                    return _portraits[i];
                 }
             }
             return null;
@@ -194,34 +232,26 @@ namespace AtMycelia.Amanita
 
         #region ILocalizable implementation
 
-        public virtual string GetStandardText()
-        {
-            return NameText;
-        }
-
+        public virtual string StandardText => NameText;
+        
         public virtual void SetStandardText(string standardText)
         {
-            nameText = standardText;
+            _nameText = standardText;
         }
 
-        public virtual string GetDescription()
-        {
-            return description;
-        }
+        public virtual string GetDescription => _description;
+        
 
-        public virtual string GetStringId()
-        {
-            // String id for character names is CHARACTER.<Character Name>
-            return "CHARACTER." + NameText;
-        }
+        public virtual string StringId => "CHARACTER." + NameText;
+        // String id for character names is CHARACTER.<Character Name>
 
         #endregion
 
         protected virtual void OnValidate()
         {
-            if (portraits != null && portraits.Count > 1)
+            if (_portraits != null && _portraits.Count > 1)
             {
-                portraits.Sort(PortraitUtil.PortraitCompareTo);
+                _portraits.Sort(PortraitUtil.PortraitCompareTo);
             }
         }
     }

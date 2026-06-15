@@ -914,6 +914,8 @@ GameObject:
   - component: {fileID: 1755499613}
   - component: {fileID: 1755499612}
   - component: {fileID: 1755499614}
+  - component: {fileID: 1755499616}
+  - component: {fileID: 1755499615}
   m_Layer: 0
   m_Name: Flowchart
   m_TagString: Untagged
@@ -934,6 +936,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _varManager: {fileID: 1755499614}
+  _execManager: {fileID: 1755499615}
+  _blockManager: {fileID: 1755499616}
   legacyVariableManager:
     _muscariables: []
     _legacyVariables: []
@@ -943,11 +947,14 @@ MonoBehaviour:
   _legacyVariables: []
   _oldMuscariables: []
   _otherSettings: []
-  description: 
-  uiModel:
-    _selectedBlocks: []
-    _selectedCommands: []
-    _owner: {fileID: 0}
+  _flowchartSettings: {fileID: 0}
+  _description: 
+  _uiModel:
+    _selectedLegacyBlocks:
+    - {fileID: 1755499608}
+    _selectedLegacyCommands:
+    - {fileID: 1755499607}
+    _owner: {fileID: 1755499605}
     <ScrollPos>k__BackingField: {x: 0, y: 5.227273}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesExpanded>k__BackingField: 0
@@ -960,26 +967,13 @@ MonoBehaviour:
       width: 0
       height: 0
     <SelectedCommandsStale>k__BackingField: 1
-  stepPause: 0
-  colorCommands: 1
-  hideComponents: 1
-  saveSelection: 1
-  showLineNumbers: 0
-  hideCommands: []
-  includeInSaves: 1
-  saveBlocks: 1
-  saveVariables: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _saveBlocks: 1
+  _saveVariables: 1
+  _loadPriority: 0
   _alwaysKeepGuid: 1
-  _blockListCache:
-  - {fileID: 1755499608}
-  _commands:
-  - {fileID: 1755499607}
-  - {fileID: 0}
-  - {fileID: 1755499613}
-  - {fileID: 1755499612}
   nextValidVarID: 1
-  uniqueId: 
+  _uniqueId: 
   references:
     version: 2
     RefIds: []
@@ -995,8 +989,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f608b8c9fb3044200aac956492d8d586, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemId: 1
-  indentLevel: 0
+  _itemId: 1
+  _indentLevel: 0
   conversationText:
     _backingVarRef:
       _itemId: 0
@@ -1090,16 +1084,19 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
+  _scope: 1
   _itemId: 1
   _blockName: Start
   _description: 
-  _eventHandler: {fileID: 1755499609}
-  _commandList:
+  _legacyEventHandler: {fileID: 1755499609}
+  _legacyCommandList:
   - {fileID: 1755499613}
   - {fileID: 1755499607}
   - {fileID: 1755499612}
   _includeInSaves: 1
   _loadPriority: 0
+  _owner: {fileID: 1755499606}
+  _nextValidCommandId: 1
   suppressAllAutoSelections: 0
 --- !u!114 &1755499609
 MonoBehaviour:
@@ -1113,7 +1110,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2f6487d21a03404cb21b245f0242e79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _parentBlock: {fileID: 1755499608}
+  _parentMbBlock: {fileID: 1755499608}
+  _parentBlockReference:
+    _itemId: 1
+    _owningSource: {fileID: 1755499606}
   _suppressBlockAutoSelect: 0
   waitForFrames: 1
 --- !u!4 &1755499610
@@ -1125,7 +1125,7 @@ Transform:
   m_GameObject: {fileID: 1755499605}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1143,10 +1143,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea6e8f632db87477eb750446b28d73a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemId: 4
-  indentLevel: 0
-  commenterName: 
-  commentText: Example using Conversation function in Lua
+  _itemId: 4
+  _indentLevel: 0
+  _commenterName: 
+  _commentText: Example using Conversation function in Lua
 --- !u!114 &1755499613
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1159,10 +1159,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea6e8f632db87477eb750446b28d73a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemId: 3
-  indentLevel: 0
-  commenterName: 
-  commentText: Example using Conversation Command
+  _itemId: 3
+  _indentLevel: 0
+  _commenterName: 
+  _commentText: Example using Conversation Command
 --- !u!114 &1755499614
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1185,6 +1185,47 @@ MonoBehaviour:
   references:
     version: 2
     RefIds: []
+--- !u!114 &1755499615
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1755499605}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: efcfad39446ab494eaaa242a86e90bc7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _owner: {fileID: 1755499606}
+  _manager:
+    _coroutineRunner: {fileID: 1755499606}
+  _unityObjBlockManager: {fileID: 1755499616}
+  _nonUnityObjBlockManager:
+    rid: -2
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+--- !u!114 &1755499616
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1755499605}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e16732bba93198b4888a347765e3a8cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _blockManager:
+    _legacyBlocks:
+    - {fileID: 1755499608}
+    _nextValidBlockId: 1
+    _blockOwner: {fileID: 1755499606}
+  _cachedFlowchart: {fileID: 1755499606}
 --- !u!1 &1816979883
 GameObject:
   m_ObjectHideFlags: 0

@@ -1077,7 +1077,7 @@ MonoBehaviour:
     _value: 1
     floatRef: {fileID: 0}
     floatVal: 0
-  _tweenerSO: {fileID: 11400000, guid: 205d2e716ba16374ab23457f380c7ea6, type: 2}
+  _tweenerSO: {fileID: 11400000, guid: ba33009a0d242e04f871510c7e88f11e, type: 2}
   _startMode: 1
   _relativity: 2
   _repeats:
@@ -1184,7 +1184,7 @@ MonoBehaviour:
     _value: 1
     floatRef: {fileID: 0}
     floatVal: 0
-  _tweenerSO: {fileID: 11400000, guid: 205d2e716ba16374ab23457f380c7ea6, type: 2}
+  _tweenerSO: {fileID: 11400000, guid: ba33009a0d242e04f871510c7e88f11e, type: 2}
   _stopPreviousTweens:
     _backingVarRef:
       _itemId: 0

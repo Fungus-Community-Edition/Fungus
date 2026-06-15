@@ -69,20 +69,6 @@ namespace AtMycelia.Hyphlow.EditorExt
             EditorGUILayout.SelectableLabel(tagsText, GUI.skin.GetStyle("HelpBox"), GUILayout.MinHeight(pixelHeight));
         }
         
-        protected SerializedProperty characterProp;
-        protected SerializedProperty portraitProp;
-        protected SerializedProperty storyTextProp;
-        protected SerializedProperty descriptionProp;
-        protected SerializedProperty voiceOverClipProp;
-        protected SerializedProperty showAlwaysProp;
-        protected SerializedProperty showCountProp;
-        protected SerializedProperty extendPreviousProp;
-        protected SerializedProperty fadeWhenDoneProp;
-        protected SerializedProperty waitForClickProp;
-        protected SerializedProperty stopVoiceoverProp;
-        protected SerializedProperty setSayDialogProp;
-        protected SerializedProperty waitForVOProp;
-
         public override void OnEnable()
         {
             base.OnEnable();
@@ -94,19 +80,19 @@ namespace AtMycelia.Hyphlow.EditorExt
                 // they will be drawn with the appropriate VariableProperty
                 // attribute handling (dropdowns for variables, fields for constants)
 
-                characterProp = serializedObject.FindProperty("_character");
-                portraitProp = serializedObject.FindProperty("_portrait");
-                storyTextProp = serializedObject.FindProperty("_storyText");
-                descriptionProp = serializedObject.FindProperty("_description");
-                voiceOverClipProp = serializedObject.FindProperty("_voiceOverClip");
-                showAlwaysProp = serializedObject.FindProperty("_showAlways");
-                showCountProp = serializedObject.FindProperty("_showCount");
-                extendPreviousProp = serializedObject.FindProperty("_extendPrevious");
-                fadeWhenDoneProp = serializedObject.FindProperty("_fadeWhenDone");
-                waitForClickProp = serializedObject.FindProperty("_waitForClick");
-                stopVoiceoverProp = serializedObject.FindProperty("_stopVoiceover");
-                setSayDialogProp = serializedObject.FindProperty("_setSayDialog");
-                waitForVOProp = serializedObject.FindProperty("_waitForVO");
+                _characterProp = serializedObject.FindProperty("_character");
+                _portraitProp = serializedObject.FindProperty("_portrait");
+                _storyTextProp = serializedObject.FindProperty("_storyText");
+                _descriptionProp = serializedObject.FindProperty("_description");
+                _voiceOverClipProp = serializedObject.FindProperty("_voiceOverClip");
+                _showAlwaysProp = serializedObject.FindProperty("_showAlways");
+                _showCountProp = serializedObject.FindProperty("_showCount");
+                _extendPreviousProp = serializedObject.FindProperty("_extendPrevious");
+                _fadeWhenDoneProp = serializedObject.FindProperty("_fadeWhenDone");
+                _waitForClickProp = serializedObject.FindProperty("_waitForClick");
+                _stopVoiceoverProp = serializedObject.FindProperty("_stopVoiceover");
+                _setSayDialogProp = serializedObject.FindProperty("_setSayDialog");
+                _waitForVOProp = serializedObject.FindProperty("_waitForVO");
             }
 
             if (blackTex == null)
@@ -114,20 +100,21 @@ namespace AtMycelia.Hyphlow.EditorExt
                 blackTex = CustomGUI.CreateBlackTexture();
             }
 
-            
         }
 
-        private static void UpdateGuiContentMembers()
-        {
-            _tagHelpContent ??= new GUIContent("Tag Help", "View available tags");
-            _tagHelpStyle ??= new GUIStyle(EditorStyles.miniButton);
-
-            _portraitLabelContent ??= new GUIContent("Portrait",
-            "Portrait representing speaking character");
-            _noneGuiContent ??= new GUIContent("<None>");
-            _voiceClipLabelContent ??= new GUIContent("Voice Over Clip",
-            "Voice over audio to play when the text is displayed");
-        }
+        protected SerializedProperty _characterProp;
+        protected SerializedProperty _portraitProp;
+        protected SerializedProperty _storyTextProp;
+        protected SerializedProperty _descriptionProp;
+        protected SerializedProperty _voiceOverClipProp;
+        protected SerializedProperty _showAlwaysProp;
+        protected SerializedProperty _showCountProp;
+        protected SerializedProperty _extendPreviousProp;
+        protected SerializedProperty _fadeWhenDoneProp;
+        protected SerializedProperty _waitForClickProp;
+        protected SerializedProperty _stopVoiceoverProp;
+        protected SerializedProperty _setSayDialogProp;
+        protected SerializedProperty _waitForVOProp;
 
         private static GUIContent _tagHelpContent;
         private static GUIStyle _tagHelpStyle;
@@ -147,7 +134,7 @@ namespace AtMycelia.Hyphlow.EditorExt
             UpdateGuiContentMembers();
 
             bool showPortraits = false;
-            EditorGUILayout.PropertyField(characterProp);
+            EditorGUILayout.PropertyField(_characterProp);
 
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.PrefixLabel(" ");
@@ -167,7 +154,7 @@ namespace AtMycelia.Hyphlow.EditorExt
 
             if (showPortraits) 
             {
-                DrawPortraitField(portraitProp, _portraitLabelContent, 
+                DrawPortraitField(_portraitProp, _portraitLabelContent, 
                     _noneGuiContent, sayBeingDrawn.Character.Portraits);
             }
             else
@@ -200,18 +187,18 @@ namespace AtMycelia.Hyphlow.EditorExt
 
             }
 
-            EditorGUILayout.PropertyField(storyTextProp);
+            EditorGUILayout.PropertyField(_storyTextProp);
 
-            EditorGUILayout.PropertyField(descriptionProp);
-            EditorGUILayout.PropertyField(extendPreviousProp);
+            EditorGUILayout.PropertyField(_descriptionProp);
+            EditorGUILayout.PropertyField(_extendPreviousProp);
 
-            EditorGUILayout.PropertyField(voiceOverClipProp, _voiceClipLabelContent);
+            EditorGUILayout.PropertyField(_voiceOverClipProp, _voiceClipLabelContent);
 
-            EditorGUILayout.PropertyField(showAlwaysProp);
-            BooleanData showAlwaysData = showAlwaysProp.boxedValue as BooleanData;
+            EditorGUILayout.PropertyField(_showAlwaysProp);
+            BooleanData showAlwaysData = _showAlwaysProp.boxedValue as BooleanData;
             if (!showAlwaysData.Value)
             {
-                EditorGUILayout.PropertyField(showCountProp);
+                EditorGUILayout.PropertyField(_showCountProp);
             }
 
             GUIStyle centeredLabel = new GUIStyle(EditorStyles.label);
@@ -223,11 +210,11 @@ namespace AtMycelia.Hyphlow.EditorExt
             rightButton.fontSize = 10;
             rightButton.font = EditorStyles.toolbarButton.font;
 
-            EditorGUILayout.PropertyField(fadeWhenDoneProp);
-            EditorGUILayout.PropertyField(waitForClickProp);
-            EditorGUILayout.PropertyField(stopVoiceoverProp);
-            EditorGUILayout.PropertyField(setSayDialogProp);
-            EditorGUILayout.PropertyField(waitForVOProp);
+            EditorGUILayout.PropertyField(_fadeWhenDoneProp);
+            EditorGUILayout.PropertyField(_waitForClickProp);
+            EditorGUILayout.PropertyField(_stopVoiceoverProp);
+            EditorGUILayout.PropertyField(_setSayDialogProp);
+            EditorGUILayout.PropertyField(_waitForVOProp);
             
             if (showPortraits && sayBeingDrawn.Portrait != null)
             {
@@ -244,17 +231,32 @@ namespace AtMycelia.Hyphlow.EditorExt
             serializedObject.ApplyModifiedProperties();
         }
 
-        private static void DrawPortraitField(SerializedProperty portraitProperty, GUIContent label, GUIContent nullLabel, 
-            List<Sprite> portraits)
+        private static void UpdateGuiContentMembers()
+        {
+            _tagHelpContent ??= new GUIContent("Tag Help", "View available tags");
+            _tagHelpStyle ??= new GUIStyle(EditorStyles.miniButton);
+
+            _portraitLabelContent ??= new GUIContent("Portrait",
+            "Portrait representing speaking character");
+            _noneGuiContent ??= new GUIContent("<None>");
+            _voiceClipLabelContent ??= new GUIContent("Voice Over Clip",
+            "Voice over audio to play when the text is displayed");
+        }
+
+        private static void DrawPortraitField(SerializedProperty portraitProperty, 
+            GUIContent label, GUIContent nullLabel, List<Sprite> portraits)
         {
             if (portraitProperty == null)
             {
                 return;
             }
 
-            SerializedProperty literalValueProperty = portraitProperty.FindPropertyRelative("value");
-            if (literalValueProperty == null || literalValueProperty.propertyType != SerializedPropertyType.ObjectReference)
+            SerializedProperty literalValueProperty = portraitProperty.FindPropertyRelative("_value");
+            if (literalValueProperty == null || 
+                literalValueProperty.propertyType != SerializedPropertyType.ObjectReference)
             {
+                Debug.LogError("Error: Could not find expected literal value property " +
+                    "for portrait field, drawing default object field");
                 ObjectField(portraitProperty, label, nullLabel, portraits);
                 return;
             }
@@ -302,30 +304,33 @@ namespace AtMycelia.Hyphlow.EditorExt
 
         private static void ClearPortraitVariableReference(SerializedProperty portraitProperty)
         {
-            SerializedProperty backingVarRefProperty = portraitProperty.FindPropertyRelative("backingVarRef");
+            SerializedProperty backingVarRefProperty = 
+                portraitProperty.FindPropertyRelative("_backingVarRef");
             if (backingVarRefProperty == null)
             {
                 return;
             }
 
-            SerializedProperty itemIdProperty = backingVarRefProperty.FindPropertyRelative("itemId");
+            SerializedProperty itemIdProperty = backingVarRefProperty.FindPropertyRelative("_itemId");
             if (itemIdProperty != null)
             {
                 itemIdProperty.intValue = 0;
             }
 
-            SetObjectReferenceToNull(backingVarRefProperty, "owningSource");
-            SetObjectReferenceToNull(backingVarRefProperty, "legacyOwningFc");
-            SetObjectReferenceToNull(backingVarRefProperty, "legacyOwningVsa");
+            SetObjectReferenceToNull(backingVarRefProperty, "_owningSource");
+            SetObjectReferenceToNull(backingVarRefProperty, "_legacyOwningFc");
+            SetObjectReferenceToNull(backingVarRefProperty, "_legacyOwningVsa");
 
-            SerializedProperty legacyVarRefProperty = portraitProperty.FindPropertyRelative("spriteRef");
+            SerializedProperty legacyVarRefProperty = 
+                portraitProperty.FindPropertyRelative("spriteRef");
             if (legacyVarRefProperty != null)
             {
                 legacyVarRefProperty.objectReferenceValue = null;
             }
         }
 
-        private static void SetObjectReferenceToNull(SerializedProperty parentProperty, string childPropertyName)
+        private static void SetObjectReferenceToNull(SerializedProperty parentProperty, 
+            string childPropertyName)
         {
             SerializedProperty childProperty = parentProperty.FindPropertyRelative(childPropertyName);
             if (childProperty != null)
@@ -333,8 +338,6 @@ namespace AtMycelia.Hyphlow.EditorExt
                 childProperty.objectReferenceValue = null;
             }
         }
-
-        
 
     }    
 }

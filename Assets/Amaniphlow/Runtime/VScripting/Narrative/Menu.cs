@@ -45,7 +45,11 @@ namespace AtMycelia.Amanita.DialogueSys.VScripting
 
         #region Public members
 
-        public MenuDialog SetMenuDialog  { get { return _setMenuDialog; } set { _setMenuDialog = value; } }
+        public MenuDialog SetMenuDialog
+        {
+            get { return _setMenuDialog; }
+            set { _setMenuDialog = value; }
+        }
 
         public override void OnEnter()
         {
@@ -67,10 +71,10 @@ namespace AtMycelia.Amanita.DialogueSys.VScripting
                 var flowchart = ParentBlock.ParentFlowchart;
                 var subber = StringVarSubstitutionService.Shared;
 
-                string displayText = subber.SubstituteVariables(_textOld, flowchart);
+                string displayText = subber.SubstituteVariables(_text, flowchart);
 
                 menuDialog.AddOption(displayText, _interactable, hideOption, 
-                    () => flowchart.ExecuteBlock(_targetBlockOld));
+                    () => flowchart.ExecuteBlock(_targetBlock.Block));
             }
             
             Continue();
@@ -78,9 +82,9 @@ namespace AtMycelia.Amanita.DialogueSys.VScripting
 
         public override void GetConnectedBlocks(ref IList<IBlock> connectedBlocks)
         {
-            if (_targetBlockOld != null)
+            if (_targetBlock != null && _targetBlock.Block != null)
             {
-                connectedBlocks.Add(_targetBlockOld);
+                connectedBlocks.Add(_targetBlock.Block);
             }       
         }
 
@@ -96,7 +100,7 @@ namespace AtMycelia.Amanita.DialogueSys.VScripting
                 return "Error: No button text selected";
             }
 
-            string result = $"{_text.Value} : {_targetBlockOld.BlockName}";
+            string result = $"{_text.Value} : {_targetBlock.Block.BlockName}";
             return result;
         }
 
@@ -115,7 +119,7 @@ namespace AtMycelia.Amanita.DialogueSys.VScripting
 
         public bool MayCallBlock(IBlock block)
         {
-            bool result = ReferenceEquals(block, _targetBlockOld);
+            bool result = ReferenceEquals(block, _targetBlock.Block);
             return result;
         }
 
@@ -125,17 +129,17 @@ namespace AtMycelia.Amanita.DialogueSys.VScripting
 
         public virtual string GetStandardText()
         {
-            return _textOld;
+            return _text;
         }
 
         public virtual void SetStandardText(string standardText)
         {
-            _textOld = standardText;
+            _text.Value = standardText;
         }
         
         public virtual string GetDescription()
         {
-            return _descriptionOld;
+            return _description;
         }
         
         public virtual string GetStringId()
@@ -165,7 +169,7 @@ namespace AtMycelia.Amanita.DialogueSys.VScripting
                 return;
             }
             var subber = StringVarSubstitutionService.Shared;
-            subber.DetermineSubstitutionVariables(_textOld, fc, _referencedVariables);
+            subber.DetermineSubstitutionVariables(_text, fc, _referencedVariables);
         }
 
 #endif
