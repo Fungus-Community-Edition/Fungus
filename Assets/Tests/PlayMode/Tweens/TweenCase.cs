@@ -1,4 +1,4 @@
-using AtMycelia.AmaniTween;
+using AtMycelia.HyphaTween;
 using System;
 using UnityEngine;
 

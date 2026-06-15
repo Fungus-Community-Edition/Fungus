@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using System.Text;
-using AtMycelia.Hyphlow;
 
 namespace AtMycelia.Amanita.DialogueSys
 {
@@ -40,7 +39,7 @@ namespace AtMycelia.Amanita.DialogueSys
         public bool ClearPrev { get; set; }
         public bool WaitForInput { get; set; }
         public bool FadeDone { get; set; }
-        public FloatData WaitForSeconds { get; internal set; }
+        public float WaitForSeconds { get; internal set; }
 
         public ConversationManager()
         {

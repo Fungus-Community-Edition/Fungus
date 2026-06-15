@@ -1,29 +1,50 @@
 {
   "dependencies": {
-    "com.ateliermycelia.myceliaudio": {
-      "version": "https://github.com/Atelier-Mycelia/Myceliaudio.git?path=Packages/com.ateliermycelia.myceliaudio",
+    "com.ateliermycelia.commonlib": {
+      "version": "https://github.com/Atelier-Mycelia/CommonLib.git?path=Assets/AtMyceliaCommonLib",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.unity.textmeshpro": "3.0.6"
+      },
+      "hash": "b83654d6c07e7d7c2413358c24d5eaa1d09428f5"
+    },
+    "com.ateliermycelia.hyphatween": {
+      "version": "https://github.com/Atelier-Mycelia/HyphaTween.git?path=Assets/HyphaTween",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.ateliermycelia.commonlib": "1.3.1"
+      },
+      "hash": "e5fea3829e317eba31633dc4930182c25d0c46ee"
+    },
+    "com.ateliermycelia.hyphlow": {
+      "version": "https://github.com/Atelier-Mycelia/Hyphlow.git?path=Assets/Hyphlow#develop",
       "depth": 0,
       "source": "git",
       "dependencies": {
         "com.unity.textmeshpro": "3.0.6",
-        "com.ateliermycelia.unityutils": "1.0.2"
+        "com.ateliermycelia.commonlib": "1.3.1",
+        "com.ateliermycelia.hyphatween": "1.0.1",
+        "com.unity.inputsystem": "1.7.0"
       },
-      "hash": "2c8bf6b6e3486288c00e1c8c64dafddf48b30bb0"
+      "hash": "273ba16f623dcd90a0ee80780a59ae26deeb03c0"
+    },
+    "com.ateliermycelia.myceliaudio": {
+      "version": "https://github.com/Atelier-Mycelia/Myceliaudio.git?path=Assets/Myceliaudio#develop",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.unity.textmeshpro": "3.0.6",
+        "com.ateliermycelia.commonlib": "1.3.1"
+      },
+      "hash": "a98e136628f6d3bf6e693899ef267119e2443296"
     },
     "com.ateliermycelia.unityassemblymigrator": {
       "version": "file:com.ateliermycelia.mycomigrator",
       "depth": 0,
       "source": "embedded",
       "dependencies": {}
-    },
-    "com.ateliermycelia.unityutils": {
-      "version": "https://github.com/Atelier-Mycelia/UnityUtils.git?path=Packages/com.ateliermycelia.unityutils",
-      "depth": 0,
-      "source": "git",
-      "dependencies": {
-        "com.unity.textmeshpro": "3.0.6"
-      },
-      "hash": "830276e35b17ac23342d40d54f4e98b445abf9fa"
     },
     "com.unity.2d.sprite": {
       "version": "1.0.0",

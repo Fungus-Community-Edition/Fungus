@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     public static class GenerateEverythingMenuItem
     {
@@ -25,19 +25,19 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
                 EventHandler newHandler = newGO.AddComponent(eventHandlerType) as EventHandler;
                 newHandler.ParentBlock = block;
-                block._EventHandler = newHandler;
+                block.EventHandler = newHandler;
             }
 
             //reset head
             blockPos = new Vector2(200, 0);
 
             //adding a block for each category, fill it with its commands
-            var blockComCats = new Dictionary<string, Block>();
+            var blockComCats = new Dictionary<string, IBlock>();
             foreach (var commandType in TypeCache.GetTypesWithAttribute<CommandInfoAttribute>())
             {
                 var commandTypeAttr = commandType.GetCustomAttributes(typeof(CommandInfoAttribute), false)[0] as CommandInfoAttribute;
 
-                blockComCats.TryGetValue(commandTypeAttr.Category, out Block targetBlock);
+                blockComCats.TryGetValue(commandTypeAttr.Category, out IBlock targetBlock);
                 if (targetBlock == null)
                 {
                     targetBlock = flow.CreateBlock(blockPos);
@@ -50,20 +50,12 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
                 var newCommand = newGO.AddComponent(commandType) as Command;
                 newCommand.ParentBlock = targetBlock;
-                newCommand.ItemId = flow.NextItemId();
 
                 // Let command know it has just been added to the block
                 newCommand.OnCommandAdded(targetBlock);
-                targetBlock.CommandList.Add(newCommand);
+                targetBlock.Add(newCommand, false);
             }
 
-            //add all variable types
-            foreach (var varType in TypeCache.GetTypesWithAttribute<VariableInfoAttribute>())
-            {
-                Variable newVariable = newGO.AddComponent(varType) as Variable;
-                newVariable.Key = UniqueKeyGenerator.GetUniqueKeyFor(varType.Name, (IList<IVariable>)flow.Variables);
-                flow.AddVariable(newVariable);
-            }
         }
     }
 

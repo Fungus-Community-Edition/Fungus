@@ -4,17 +4,40 @@ using System.Collections;
 using UnityEngine.EventSystems;
 using System.Linq;
 using System;
-using AtMycelia.Hyphlow;
+using UnityEngine.Serialization;
+using System.Collections.Generic;
 
 namespace AtMycelia.Amanita.DialogueSys
 {
 	/// <summary>
 	/// Presents multiple choice buttons to the players.
+	/// 
+	/// Notes:
+	/// - This class is UI-first and hyphlow-free. If a `buttonPrefab` is assigned, MenuDialog
+	///   will instantiate buttons from that prefab at runtime and manage them dynamically.
+	/// - For backwards compatibility, if no `buttonPrefab` is assigned the MenuDialog will
+	///   continue to use any buttons present as children (cachedButtons).
+	/// - Clients may add options with a callback Action. The hyphlow bridge (Mycorrhiza)
+	///   should provide helpers that attach Blocks to callbacks.
 	/// </summary>
 	public class MenuDialog : MonoBehaviour
 	{
+		[Tooltip("Button prefab used when creating menu options at runtime. If null, any " +
+			"buttons present in the scene as children will be used.")]
+		[SerializeField] protected Button _buttonPrefab;
+
 		[Tooltip("Automatically select the first interactable button when the menu is shown.")]
-		[SerializeField] protected bool autoSelectFirstButton = false;
+		[FormerlySerializedAs("autoSelectFirstButton")]
+		[SerializeField] protected bool _autoSelectFirstButton = false;
+
+		/// <summary>
+		/// Set or change the button prefab at runtime. Existing dynamic buttons are preserved.
+		/// </summary>
+		public virtual Button ButtonPrefab
+		{
+			get { return _buttonPrefab; }
+			set { _buttonPrefab = value; }
+		}
 
 		protected virtual void Awake()
 		{
@@ -23,12 +46,14 @@ namespace AtMycelia.Amanita.DialogueSys
 
 			void GetRequiredComponents()
 			{
+				// Cache any buttons that already exist as children (backwards compat).
 				Button[] optionButtons = GetComponentsInChildren<Button>();
 				cachedButtons = optionButtons;
 
 				Slider timeoutSlider = GetComponentInChildren<Slider>();
 				cachedSlider = timeoutSlider;
 			}
+
 			void AvoidAutoDisablingButtonsInEditor()
 			{
 				if (Application.isPlaying)
@@ -38,11 +63,13 @@ namespace AtMycelia.Amanita.DialogueSys
 			}
 		}
 
+		protected Slider cachedSlider;
+		public virtual Slider CachedSlider { get { return cachedSlider; } }
+
+		// Backwards-compatible cached buttons (existing prefab that contains a fixed set of buttons).
 		protected Button[] cachedButtons;
 		public virtual Button[] CachedButtons { get { return cachedButtons; } }
-		
-		protected Slider cachedSlider;
-		
+
 		/// <summary>
 		/// Clear all displayed options in the Menu Dialog.
 		/// </summary>
@@ -52,27 +79,58 @@ namespace AtMycelia.Amanita.DialogueSys
 
 			// If something was shown, notify that we are ending
 			if (nextOptionIndex != 0)
-				MenuSignals.DoMenuEnd(this);
+			{
+				MenuSignals.MenuStartedEnding(this);
+			}
 
 			nextOptionIndex = 0;
 
 			StopListeningForClicks();
 			ReorderAndHideOptions();
 			HideSlider();
+		}
 
-			void StopListeningForClicks()
+		private void StopListeningForClicks()
+		{
+			// Remove listeners from dynamic buttons
+			for (int i = 0; i < dynamicButtons.Count; i++)
 			{
-				for (int i = 0; i < CachedButtons.Length; i++)
+				var buttonEl = dynamicButtons[i];
+				if (buttonEl != null)
 				{
-					var button = CachedButtons[i];
-					button.onClick.RemoveAllListeners();
+					buttonEl.onClick.RemoveAllListeners();
+					Destroy(buttonEl.gameObject);
 				}
 			}
-			void ReorderAndHideOptions()
+
+			dynamicButtons.Clear();
+
+			// Also strip listeners from any cached (legacy) buttons
+			if (cachedButtons != null)
 			{
-				for (int i = 0; i < CachedButtons.Length; i++)
+				for (int i = 0; i < cachedButtons.Length; i++)
 				{
-					var button = CachedButtons[i];
+					var button = cachedButtons[i];
+					if (button != null)
+					{
+						button.onClick.RemoveAllListeners();
+					}
+				}
+			}
+		}
+
+		// Dynamically created buttons when using _buttonPrefab
+		protected readonly List<Button> dynamicButtons = new List<Button>();
+
+		private void ReorderAndHideOptions()
+		{
+			// Hide dynamic buttons — they have been destroyed in StopListeningForClicks.
+			// Hide and reset legacy cached buttons
+			if (cachedButtons != null)
+			{
+				for (int i = 0; i < cachedButtons.Length; i++)
+				{
+					var button = cachedButtons[i];
 					if (button != null)
 					{
 						button.transform.SetSiblingIndex(i);
@@ -80,16 +138,18 @@ namespace AtMycelia.Amanita.DialogueSys
 					}
 				}
 			}
-			void HideSlider()
-			{
-				Slider timeoutSlider = CachedSlider;
-				if (timeoutSlider != null)
-				{
-					timeoutSlider.gameObject.SetActive(false);
-				}
-			}
-			
 		}
+
+		private void HideSlider()
+		{
+			Slider timeoutSlider = CachedSlider;
+			if (timeoutSlider != null)
+			{
+				timeoutSlider.gameObject.SetActive(false);
+			}
+		}
+
+		
 
 		private int nextOptionIndex;
 
@@ -99,14 +159,6 @@ namespace AtMycelia.Amanita.DialogueSys
 			// To fix this we just need to force a canvas update when the object is enabled.
 			Canvas.ForceUpdateCanvases();
 		}
-
-		#region Public members
-
-		/// <summary>
-		/// A cached slider object used for the timer in the menu dialog.
-		/// </summary>
-		/// <value>The cached slider.</value>
-		public virtual Slider CachedSlider { get { return cachedSlider; } }
 
 		/// <summary>
 		/// Sets the active state of the Menu Dialog gameobject.
@@ -152,109 +204,11 @@ namespace AtMycelia.Amanita.DialogueSys
 		/// </summary>
 		public static MenuDialog ActiveMenuDialog { get; set; }
 
-		protected virtual IEnumerator WaitForTimeout(float timeoutDuration, Block targetBlock)
-		{
-			float elapsedTime = 0;
-
-			Slider timeoutSlider = CachedSlider;
-
-			while (elapsedTime < timeoutDuration)
-			{
-				if (timeoutSlider != null)
-				{
-					float t = 1f - elapsedTime / timeoutDuration;
-					timeoutSlider.value = t;
-				}
-
-				elapsedTime += Time.deltaTime;
-
-				yield return null;
-			}
-
-			Clear();
-			gameObject.SetActive(false);
-
-			HideSayDialog();
-
-			if (targetBlock != null)
-			{
-				targetBlock.StartExecution();
-			}
-		}
-
 		/// <summary>
-		/// Hides any currently displayed Say Dialog.
-		/// </summary>
-		public virtual void HideSayDialog()
-		{
-			var sayDialog = SDManager.MainSayDialog;
-			if (sayDialog != null)
-			{
-				sayDialog.FadeWhenDone = true;
-			}
-		}
-
-		private SayDialogManager SDManager => SayDialogManager.S;
-
-		protected IEnumerator CallBlock(Block block)
-		{
-			yield return new WaitForEndOfFrame();
-			block.StartExecution();
-		}
-
-		protected IEnumerator CallAction(Action callback)
-		{
-			yield return new WaitForEndOfFrame();
-			callback?.Invoke();
-		}
-
-		/// <summary>
-		/// Adds the option to the list of displayed options. Calls a Block when selected.
+		/// Adds the option to the list of displayed options. Calls a callback when selected.
 		/// Will cause the Menu dialog to become visible if it is not already visible.
+		/// This is the canonical method for clients (hyphlow bridge will adapt Blocks -> Actions).
 		/// </summary>
-		/// <returns><c>true</c>, if the option was added successfully.</returns>
-		/// <param name="text">The option text to display on the button.</param>
-		/// <param name="interactable">If false, the option is displayed but is not selectable.</param>
-		/// <param name="hideOption">If true, the option is not displayed but the menu knows that option can or did exist</param>
-		/// <param name="targetBlock">Block to execute when the option is selected.</param>
-		public virtual bool AddOption(string text, bool interactable, bool hideOption, Block targetBlock)
-		{
-			var block = targetBlock;
-			UnityEngine.Events.UnityAction action = delegate
-			{
-				EventSystem.current.SetSelectedGameObject(null);
-				StopAllCoroutines();
-				// Stop timeout
-				Clear();
-				HideSayDialog();
-				if (block != null)
-				{
-					var flowchart = block.GetFlowchart();
-					gameObject.SetActive(false);
-					// Use a coroutine to call the block on the next frame
-					// Have to use the Flowchart gameobject as the MenuDialog is now inactive
-					flowchart.StartCoroutine(CallBlock(block));
-				}
-			};
-
-			return AddOption(text, interactable, hideOption, action);
-		}
-
-		/// <summary>
-		/// Adds the option to the list of displayed options, calls a callback when selected.
-		/// Will cause the Menu dialog to become visible if it is not already visible.
-		/// </summary>
-		/// <returns><c>true</c>, if the option was added successfully.</returns>
-		public virtual bool AddOption(string text, bool interactable, Action callback)
-		{
-			return AddOption(text, interactable, false, callback);
-		}
-
-		/// <summary>
-		/// Adds the option to the list of displayed options, calls a callback when selected.
-		/// Will cause the Menu dialog to become visible if it is not already visible.
-		/// </summary>
-		/// <returns><c>true</c>, if the option was added successfully.</returns>
 		public virtual bool AddOption(string text, bool interactable, bool hideOption, Action callback)
 		{
 			if (!gameObject.activeSelf)
@@ -268,83 +222,114 @@ namespace AtMycelia.Amanita.DialogueSys
 				StopAllCoroutines();
 				// Stop timeout
 				Clear();
-				HideSayDialog();
 				// Use a coroutine to call the callback on the next frame
 				StartCoroutine(CallAction(localCallback));
 			};
 
-			return AddOption(text, interactable, hideOption, action);
+			return AddOptionInternal(text, interactable, hideOption, action);
 		}
 
 		/// <summary>
-		/// Adds the option to the list of displayed options. Calls a Block when selected.
-		/// Will cause the Menu dialog to become visible if it is not already visible.
+		/// Internal add option implementation.
+		/// Instantiates from _buttonPrefab when available; otherwise uses legacy cached buttons.
+		/// Returns true on success.
 		/// </summary>
-		/// <returns><c>true</c>, if the option was added successfully.</returns>
-		/// <param name="text">The option text to display on the button.</param>
-		/// <param name="interactable">If false, the option is displayed but is not selectable.</param>
-		/// <param name="hideOption">If true, the option is not displayed but the menu knows that option can or did exist</param>
-		/// <param name="action">Action attached to the button on the menu item</param>
-		private bool AddOption(string text, bool interactable, bool hideOption, UnityEngine.Events.UnityAction action)
+		private bool AddOptionInternal(string text, bool interactable, bool hideOption, 
+			UnityEngine.Events.UnityAction action)
 		{
-			if (nextOptionIndex >= CachedButtons.Length)
-			{
-				Debug.LogWarning("Unable to add menu item, not enough buttons: " + text);
-				return false;
-			}
-			//if first option notify that a menu has started
-			if(nextOptionIndex == 0)
-				MenuSignals.DoMenuStart(this);
+			Button buttonToUse = null;
+			int optionIndex = nextOptionIndex;
 
-			var button = cachedButtons[nextOptionIndex];
-			
-			//move forward for next call
+			// Try dynamic prefab mode first
+			if (_buttonPrefab != null)
+			{
+				try
+				{
+					Button newBtn = Instantiate(_buttonPrefab, this.transform);
+					newBtn.gameObject.SetActive(true);
+					dynamicButtons.Add(newBtn);
+					buttonToUse = newBtn;
+					// Ensure sibling order for consistent keyboard navigation
+					newBtn.transform.SetSiblingIndex(optionIndex);
+				}
+				catch (Exception ex)
+				{
+					Debug.LogError("MenuDialog: Failed to instantiate button prefab: " + ex.Message);
+					return false;
+				}
+			}
+			else
+			{
+				// Legacy behaviour: use cached buttons array
+				if (cachedButtons == null || optionIndex >= cachedButtons.Length)
+				{
+					Debug.LogWarning("Unable to add menu item, not enough buttons: " + text);
+					return false;
+				}
+				buttonToUse = cachedButtons[optionIndex];
+				if (buttonToUse == null)
+				{
+					Debug.LogWarning("Unable to add menu item, cached button is null: " + text);
+					return false;
+				}
+				buttonToUse.gameObject.SetActive(true);
+			}
+
+			// move forward for next call
 			nextOptionIndex++;
 
-			//don't need to set anything on it
+			// don't need to set anything on it
 			if (hideOption)
-				return true;
-
-			button.gameObject.SetActive(true);
-			button.interactable = interactable;
-			if (interactable && autoSelectFirstButton && !cachedButtons.Select(x => x.gameObject).Contains(EventSystem.current.currentSelectedGameObject))
 			{
-				EventSystem.current.SetSelectedGameObject(button.gameObject);
+				// keep internal state consistent but don't display
+				buttonToUse.gameObject.SetActive(false);
+				return true;
+			}
+
+			Button btn = buttonToUse;
+			btn.interactable = interactable;
+
+			// Optionally auto-select the first interactable button
+			if (interactable && _autoSelectFirstButton)
+			{
+				if (!cachedButtons?.Select(x => x.gameObject).Contains(EventSystem.current.currentSelectedGameObject) ?? true)
+				{
+					EventSystem.current.SetSelectedGameObject(btn.gameObject);
+				}
 			}
 
 			TextAdapter textAdapter = new TextAdapter();
-			textAdapter.InitFromGameObject(button.gameObject, true);
+			textAdapter.InitFromGameObject(btn.gameObject, true);
 			if (textAdapter.HasTextObject())
 			{
 				text = TextVariationHandler.SelectVariations(text);
-
 				textAdapter.Text = text;
 			}
 
-			button.onClick.AddListener(action);
-			
+			// Wrap action so callers get the button and index
+			UnityEngine.Events.UnityAction wrappedAction = delegate
+			{
+				action?.Invoke();
+				try
+				{
+					OptionClicked?.Invoke(btn, optionIndex);
+				}
+				catch (Exception) { }
+			};
+
+			btn.onClick.AddListener(wrappedAction);
+
+			// Ensure GameObject active (in case cached button)
+			btn.gameObject.SetActive(true);
+
 			return true;
 		}
 
 		/// <summary>
-		/// Show a timer during which the player can select an option. Calls a Block when the timer expires.
+		/// Event fired when any menu option is clicked.
+		/// Parameters: (Button clickedButton, int optionIndex)
 		/// </summary>
-		/// <param name="duration">The duration during which the player can select an option.</param>
-		/// <param name="targetBlock">Block to execute if the player does not select an option in time.</param>
-		public virtual void ShowTimer(float duration, Block targetBlock)
-		{
-			if (cachedSlider != null)
-			{
-				cachedSlider.gameObject.SetActive(true);
-				gameObject.SetActive(true);
-				StopAllCoroutines();
-				StartCoroutine(WaitForTimeout(duration, targetBlock));
-			}
-			else
-			{
-				Debug.LogWarning("Unable to show timer, no slider set");
-			}
-		}
+		public event Action<Button, int> OptionClicked = delegate { };
 
 		/// <summary>
 		/// Show a timer during which the player can select an option. Calls a callback when the timer expires.
@@ -378,7 +363,6 @@ namespace AtMycelia.Amanita.DialogueSys
 
 			Clear();
 			gameObject.SetActive(false);
-			HideSayDialog();
 
 			callback?.Invoke();
 		}
@@ -398,27 +382,62 @@ namespace AtMycelia.Amanita.DialogueSys
 		{
 			get {
 				int count = 0;
-				for (int i = 0; i < cachedButtons.Length; i++)
+
+				// count dynamic buttons
+				for (int i = 0; i < dynamicButtons.Count; i++)
 				{
-					var button = cachedButtons[i];
-					if (button.gameObject.activeSelf)
+					var b = dynamicButtons[i];
+					if (b != null && b.gameObject.activeSelf) count++;
+				}
+
+				// count legacy cached visible buttons
+				if (cachedButtons != null)
+				{
+					for (int i = 0; i < cachedButtons.Length; i++)
 					{
-						count++;
+						var button = cachedButtons[i];
+						if (button != null && button.gameObject.activeSelf) count++;
 					}
 				}
+
 				return count;
 			}
 		}
 
 		/// <summary>
-		/// Shuffle the parent order of the cached buttons, allows for randomising button order, buttons are auto reordered when cleared
+		/// Shuffle the parent order of the cached buttons and dynamic buttons,
+		/// allows for randomising button order. Buttons are auto reordered when cleared.
 		/// </summary>
 		public void Shuffle(System.Random r)
 		{
-			for (int i = 0; i < CachedButtons.Length; i++)
+			// shuffle dynamic buttons
+			for (int i = 0; i < dynamicButtons.Count; i++)
 			{
-				CachedButtons[i].transform.SetSiblingIndex(r.Next(CachedButtons.Length));
+				if (dynamicButtons[i] != null)
+				{
+					dynamicButtons[i].transform.SetSiblingIndex(r.Next(dynamicButtons.Count));
+				}
 			}
+
+			// shuffle cached buttons
+			if (cachedButtons != null)
+			{
+				for (int i = 0; i < cachedButtons.Length; i++)
+				{
+					if (cachedButtons[i] != null)
+					{
+						cachedButtons[i].transform.SetSiblingIndex(r.Next(cachedButtons.Length));
+					}
+				}
+			}
+		}
+
+		#region Helpers
+
+		protected IEnumerator CallAction(Action callback)
+		{
+			yield return new WaitForEndOfFrame();
+			callback?.Invoke();
 		}
 
 		#endregion

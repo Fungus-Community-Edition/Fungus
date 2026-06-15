@@ -1,8 +1,7 @@
 using UnityEngine;
-using AtMycelia.AmaniTween;
+using AtMycelia.HyphaTween;
 using System.Collections.Generic;
 using System.Linq;
-using AtMycelia.Hyphlow.Sys;
 
 namespace AtMycelia.Amanita
 {
@@ -148,7 +147,7 @@ namespace AtMycelia.Amanita
             }
         }
 
-        private DefaultTweenAdapter DefaultTweener => HyphlowRuntimeSysAssets.S.TweenAdapter;
+        private DefaultTweenAdapter DefaultTweener => TweenManager.S.DefaultAdapter;
 
         /// <summary>
         /// Plays a sound effect once, at the specified volume.

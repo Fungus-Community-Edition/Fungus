@@ -419,50 +419,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1085130771}
   m_CullTransparentMesh: 0
---- !u!1 &1226317641
-GameObject:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1226317643}
-  - component: {fileID: 1226317642}
-  m_Layer: 0
-  m_Name: _FungusState
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1226317642
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1226317641}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 61dddfdc5e0e44ca298d8f46f7f5a915, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!4 &1226317643
-Transform:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1226317641}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1290383786
 GameObject:
   m_ObjectHideFlags: 0
@@ -1177,18 +1133,18 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 1
-  blockName: Start
-  description: 
-  eventHandler: {fileID: 1755499609}
-  commandList:
+  _itemId: 1
+  _blockName: Start
+  _description: 
+  _eventHandler: {fileID: 1755499609}
+  _commandList:
   - {fileID: 1755499614}
   - {fileID: 1755499613}
   - {fileID: 1755499612}
   - {fileID: 1755499611}
   - {fileID: 1755499607}
-  includeInSaves: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &1755499609
 MonoBehaviour:
@@ -1883,5 +1839,4 @@ SceneRoots:
   - {fileID: 1726345443}
   - {fileID: 2073331544}
   - {fileID: 1755499610}
-  - {fileID: 1226317643}
   - {fileID: 1290383790}

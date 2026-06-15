@@ -13,9 +13,8 @@ MonoBehaviour:
   m_Name: SoundFX
   m_EditorClassIdentifier: 
   _includeInSaves: 1
-  _uniqueId: 0d4feeae-7e82-42a5-b48d-108dfbab7778
+  _uniqueId: 438a06a9-70e5-4b92-9202-d9b761b048ca
   _alwaysKeepGuid: 1
-  variables: []
   _varManager:
     _muscariables:
     - rid: 6177420756002537546

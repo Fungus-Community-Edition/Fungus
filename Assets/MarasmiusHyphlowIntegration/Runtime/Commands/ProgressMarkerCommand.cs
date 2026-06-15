@@ -26,8 +26,9 @@ namespace AtMycelia.SaveSys.VScripting
             SetOrder
         }
 
-        protected virtual void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             actionHandlers[PMCAction.Register] = HandleRegistration;
             actionHandlers[PMCAction.Unregister] = HandleDeregistration;
             actionHandlers[PMCAction.SetOrder] = HandleSettingOrder;

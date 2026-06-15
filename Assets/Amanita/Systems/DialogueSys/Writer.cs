@@ -4,8 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Globalization;
-using AtMycelia.AmaniTween;
-using AtMycelia.Hyphlow.Sys;
+using AtMycelia.HyphaTween;
 
 namespace AtMycelia.Amanita.DialogueSys
 {
@@ -127,7 +126,7 @@ namespace AtMycelia.Amanita.DialogueSys
         {
             if (shakerSO == null)
             {
-                shakerSO = HyphlowRuntimeSysAssets.S.TweenAdapter;
+                shakerSO = TweenManager.S.DefaultAdapter;
             }
             posShaker = shakerSO as IPositionShaker;
             if (posShaker == null)

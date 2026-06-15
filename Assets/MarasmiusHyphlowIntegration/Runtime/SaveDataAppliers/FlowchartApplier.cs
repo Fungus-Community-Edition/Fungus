@@ -137,10 +137,10 @@ namespace AtMycelia.Amanita.SaveSys
                 // Thus, this is a safe time to remove any GameStarted event handlers,
                 // making sure they don�t get triggered prematurely.
                 var gameStartedBlocks = flowchart.GetComponents<Block>()
-                    .Where(blockEl => blockEl._EventHandler is GameStarted);
+                    .Where(blockEl => blockEl.EventHandler is GameStarted);
                 foreach (var blockEl in gameStartedBlocks)
                 {
-                    blockEl._EventHandler = null;
+                    blockEl.EventHandler = null;
                 }
             }
 
@@ -183,7 +183,7 @@ namespace AtMycelia.Amanita.SaveSys
             {
                 foreach (BlockSaveData blockSave in saveData.SavedBlocks)
                 {
-                    Block blockToApplyTo = FindTheRightBlock(flowchart, blockSave);
+                    IBlock blockToApplyTo = FindTheRightBlock(flowchart, blockSave);
 
                     if (blockToApplyTo == null)
                     {
@@ -191,13 +191,13 @@ namespace AtMycelia.Amanita.SaveSys
                         continue;
                     }
 
-                    bool blockWasExecuting = blockSave.ActiveCommandIndex != -1;
+                    bool blockWasExecuting = blockSave.ActiveCommandIndex != 0;
                     if (blockWasExecuting)
                     {
-                        Command commandToApplyTo = blockToApplyTo.FindCommandByID(blockSave.ActiveCommandId);
+                        ICommand commandToApplyTo = blockToApplyTo.GetCommandWithId(blockSave.ActiveCommandId);
                         if (commandToApplyTo == null)
                         {
-                            commandToApplyTo = blockToApplyTo.FindCommandByIndex(blockSave.ActiveCommandIndex); 
+                            commandToApplyTo = blockToApplyTo.GetCommandAtIndex(blockSave.ActiveCommandIndex); 
                         }
 
                         bool stillNothing = commandToApplyTo == null;
@@ -212,9 +212,14 @@ namespace AtMycelia.Amanita.SaveSys
                     }
                 }
 
-                static Block FindTheRightBlock(Flowchart fc, BlockSaveData blockSave)
+                static IBlock FindTheRightBlock(Flowchart fc, BlockSaveData blockSave)
                 {
-                    return fc.FindBlockByItemId(blockSave.ItemId) ?? fc.FindBlock(blockSave.BlockName);
+                    IBlock result = fc.GetBlock(blockSave.ItemId);
+                    if (result == null)
+                    {
+                        result = fc.GetBlock(blockSave.BlockName);
+                    }
+                    return result;
                 }
             }
         }

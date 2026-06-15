@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using AtMycelia.Collections;
 
@@ -57,29 +56,57 @@ namespace AtMycelia.SaveSys.EditorUtils
 
         private void PopulateReaderTypes()
         {
-            var readers = SaveReaderTypeRegistry.Types
-                .Where(readerType => !readerType.Name.Contains("Test") && !readerType.Name.Contains("Dummy") &&
-                            ScriptableObjType.IsAssignableFrom(readerType) &&
-                            ReaderInterface.IsAssignableFrom(readerType))
-                .ToList();
+            IList<Type> readers = new List<Type>();
+            var typesInReg = SaveReaderTypeRegistry.Types;
+            for (int i = 0; i < typesInReg.Count; i++)
+            {
+                Type readerType = typesInReg[i];
+                bool shouldIgnore = readerType.Name.Contains("Test") || readerType.Name.Contains("Dummy") ||
+                                !ScriptableObjType.IsAssignableFrom(readerType) ||
+                                !ReaderInterface.IsAssignableFrom(readerType);
+                if (shouldIgnore)
+                {
+                    continue;
+                }
+                readers.Add(readerType);
+            }
+
             _validReaderTypes.AddRange(readers);
         }
 
         private void PopulateWriterTypes()
         {
-            var writers = SaveWriterTypeRegistry.Types
-                .Where(writerType => !writerType.Name.Contains("Test") && !writerType.Name.Contains("Dummy") &&
-                            ScriptableObjType.IsAssignableFrom(writerType) &&
-                            WriterInterface.IsAssignableFrom(writerType))
-                .ToList();
+            IList<Type> writers = new List<Type>();
+            var typesInReg = SaveWriterTypeRegistry.Types;
+            for (int i = 0; i < typesInReg.Count; i++)
+            {
+                Type writerType = typesInReg[i];
+                bool shouldIgnore = writerType.Name.Contains("Test") || writerType.Name.Contains("Dummy") ||
+                                !ScriptableObjType.IsAssignableFrom(writerType) ||
+                                !WriterInterface.IsAssignableFrom(writerType);
+                if (shouldIgnore)
+                {
+                    continue;
+                }
+                writers.Add(writerType);
+            }
             _validWriterTypes.AddRange(writers);
         }
 
         private void PopulateMainApplierTypesAndChoices()
         {
-            List<Type> appliers = SaveDataApplierTypeRegistry.Types
-                .Where(IsValidApplierType)
-                .ToList();
+            IList<Type> appliers = new List<Type>();
+            var typesInReg = SaveDataApplierTypeRegistry.Types;
+            for (int i = 0; i < typesInReg.Count; i++)
+            {
+                Type applierType = typesInReg[i];
+                bool shouldIgnore = !IsValidApplierType(applierType);
+                if (shouldIgnore)
+                {
+                    continue;
+                }
+                appliers.Add(applierType);
+            }
 
             _validMainApplierTypes.AddRange(appliers);
 
@@ -107,11 +134,21 @@ namespace AtMycelia.SaveSys.EditorUtils
 
         private void PopulateMainCodecTypesAndChoices()
         {
-            List<Type> codecs = SaveDataCodecTypeRegistry.Types
-                .Where(codecType => !codecType.Name.Contains("Test") && !codecType.Name.Contains("Dummy") &&
-                            ScriptableObjType.IsAssignableFrom(codecType) &&
-                            CodecInterface.IsAssignableFrom(codecType))
-                .ToList();
+            IList<Type> codecs = new List<Type>();
+            var typesInReg = SaveDataCodecTypeRegistry.Types;
+            for (int i = 0; i < typesInReg.Count; i++)
+            {
+                Type codecType = typesInReg[i];
+                bool shouldIgnore = codecType.Name.Contains("Test") || codecType.Name.Contains("Dummy") ||
+                                !ScriptableObjType.IsAssignableFrom(codecType) ||
+                                !CodecInterface.IsAssignableFrom(codecType);
+                if (shouldIgnore)
+                {
+                    continue;
+                }
+                codecs.Add(codecType);
+            }
+
             _validCodecTypes.AddRange(codecs);
 
             foreach (var codecType in _validCodecTypes)

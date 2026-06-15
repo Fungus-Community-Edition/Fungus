@@ -144,7 +144,7 @@ namespace SaveSystemTests
         {
             yield return new WaitForSeconds(0.1f); // Wait for the flowchart to initialize
             flowchartSaveData = flowchartSaveCodec.EncodeToSave(flowchart);
-            IList<Block> blocksToSave = (from elem in flowchart.GetExecutingBlocks()
+            IList<IBlock> blocksToSave = (from elem in flowchart.GetExecutingBlocks()
                                          where elem.IncludeInSaves
                                          select elem).ToList();
 

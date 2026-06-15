@@ -2,9 +2,10 @@
 using System.Reflection;
 using NUnit.Framework;
 using UnityEngine;
-using AtMycelia.Hyphlow.EditorUtils;
+using AtMycelia.Hyphlow.EditorExt;
 using Block = AtMycelia.Hyphlow.Block;
-using AtMycelia.Hyphlow.EditorUtils.FcWindow;
+using AtMycelia.Hyphlow.EditorExt.FcWindow;
+using AtMycelia.Hyphlow;
 
 namespace VScriptingTests.FCWindowOperations
 {
@@ -53,7 +54,7 @@ namespace VScriptingTests.FCWindowOperations
         public void OnBlockSelected_UpdatesLastSelection()
         {
             // Arrange
-            Block selectedBlock = blocks[0];
+            IBlock selectedBlock = blocks[0];
 
             // Act
             _renderer.OnBlockSelected(selectedBlock);
@@ -63,14 +64,14 @@ namespace VScriptingTests.FCWindowOperations
             IList<Block> lastBlocksSelected = GetPrivateField<IList<Block>>(_renderer, "lastBlocksSelected");
 
             Assert.AreSame(selectedBlock, lastSelectedBlock);
-            CollectionAssert.AreEqual(new Block[] { selectedBlock }, lastBlocksSelected);
+            CollectionAssert.AreEqual(new IBlock[] { selectedBlock }, lastBlocksSelected);
         }
 
         [Test]
         public void OnMultiBlocksSelected_TracksSelectionList()
         {
             // Arrange
-            IList<Block> selectedBlocks = new List<Block> { blocks[0], blocks[1] };
+            IList<IBlock> selectedBlocks = new List<IBlock> { blocks[0], blocks[1] };
 
             // Act
             _renderer.OnMultiBlocksSelected(selectedBlocks);

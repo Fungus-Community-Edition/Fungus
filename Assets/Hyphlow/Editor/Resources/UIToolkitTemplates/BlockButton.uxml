@@ -1,9 +1,0 @@
-<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
-    <Style src="project://database/Assets/Amanita/Editor/Resources/Stylesheets/BlockStyle.uss?fileID=7433441132597879392&amp;guid=c5370193fd94e934294ae6a43a009150&amp;type=3#BlockStyle" />
-    <ui:VisualElement class="block-root">
-        <ui:Label name="EventHandlerName" class="block-event-handler-label block-event-handler-label-hidden" />
-        <ui:Button name="ClickableArea" selectable="true" class="fill-whole-parent block-button">
-            <ui:Label text="New Block" name="BlockName" class="fill-whole-parent block-label" />
-        </ui:Button>
-    </ui:VisualElement>
-</ui:UXML>

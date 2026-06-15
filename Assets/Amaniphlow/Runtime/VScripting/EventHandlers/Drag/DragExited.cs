@@ -1,0 +1,162 @@
+using System.Collections.Generic;
+using System.Linq;
+using AtMycelia.Hyphlow;
+using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
+using AtMycelia.Amanita;
+
+namespace AtMycelia.Amaniphlow
+{
+	/// <summary>
+	/// The block will execute when the player is dragging an object which stops touching the target object.
+	///
+	/// ExecuteAlways used to get the Compatibility that we need, use of ISerializationCallbackReceiver is error prone
+	/// when used on Unity controlled objects as it runs on threads other than main thread.
+	/// </summary>
+	[EventHandlerInfo("Sprite",
+					  "Drag Exited",
+					  "The block will execute when the player is dragging an object which " +
+					  "stops touching the target object.")]
+	[AddComponentMenu("")]
+	[ExecuteInEditMode]
+	[MovedFrom("AtMycelia.Amaniphlow.EventHandlers")]
+	public class DragExited : EventHandler, ISerializationCallbackReceiver
+	{
+		[VariableProperty(typeof(GameObjectVariable))]
+		[SerializeField] protected GameObjectVariable draggableRef;
+
+		[VariableProperty(typeof(GameObjectVariable))]
+		[SerializeField] protected GameObjectVariable targetRef;
+
+		[Tooltip("Draggable object to listen for drag events on")]
+		[HideInInspector]
+		[SerializeField] protected Draggable2D draggableObject;
+
+		[SerializeField] protected List<Draggable2D> draggableObjects;
+
+		[Tooltip("Drag target object to listen for drag events on")]
+		[HideInInspector]
+		[SerializeField] protected Collider2D targetObject;
+
+		[SerializeField] protected List<Collider2D> targetObjects;
+
+		protected override void ToggleSubs(bool on)
+		{
+			base.ToggleSubs(on);
+			if (Application.isPlaying)
+			{
+				if (on)
+				{
+					EventDispatcher.AddListener<DragExitedEvent>(OnDragExitedEvent);
+				}
+				else
+				{
+					EventDispatcher.RemoveListener<DragExitedEvent>(OnDragExitedEvent);
+				}
+			}
+		}
+
+		protected virtual void OnDragExitedEvent(DragExitedEvent evt)
+		{
+			OnDragExited(evt.DraggableObject, evt.TargetCollider);
+		}
+
+		#region Compatibility
+
+		void ISerializationCallbackReceiver.OnAfterDeserialize()
+		{
+		}
+
+		void ISerializationCallbackReceiver.OnBeforeSerialize()
+		{
+		}
+
+		protected override void Awake()
+		{
+			base.Awake();
+
+			//add any dragableobject already present to list for backwards compatability
+			if (draggableObject != null)
+			{
+				if (!draggableObjects.Contains(draggableObject))
+				{
+					draggableObjects.Add(draggableObject);
+				}
+			}
+
+			if (targetObject != null)
+			{
+				if (!targetObjects.Contains(targetObject))
+				{
+					targetObjects.Add(targetObject);
+				}
+			}
+			draggableObject = null;
+			targetObject = null;
+		}
+
+		#endregion Compatibility
+
+		/// <summary>
+		/// Called by the Draggable2D object when the drag exits from the targetObject.
+		/// </summary>
+		public virtual void OnDragExited(Draggable2D draggableObject, Collider2D targetObject)
+		{
+			if (draggableObject.BeingDragged &&
+				this.targetObjects != null && this.draggableObjects != null &&
+				this.draggableObjects.Contains(draggableObject) &&
+				this.targetObjects.Contains(targetObject))
+			{
+				if (draggableRef != null)
+				{
+					draggableRef.Value = draggableObject.gameObject;
+				}
+				if (targetRef != null)
+				{
+					targetRef.Value = targetObject.gameObject;
+				}
+				ExecuteBlock();
+			}
+		}
+
+		public override string GetSummary()
+		{
+			if (draggableObjects.Count(x => x != null) == 0)
+			{
+				return "Error: no draggable objects assigned.";
+			}
+			if (targetObjects.Count(x => x != null) == 0)
+			{
+				return "Error: no target objects assigned.";
+			}
+
+			string summary = "Draggable: ";
+			if (this.draggableObjects != null && this.draggableObjects.Count != 0)
+			{
+				for (int i = 0; i < this.draggableObjects.Count; i++)
+				{
+					if (draggableObjects[i] != null)
+					{
+						summary += draggableObjects[i].name + ",";
+					}
+				}
+			}
+
+			summary += "\nTarget: ";
+			if (this.targetObjects != null && this.targetObjects.Count != 0)
+			{
+				for (int i = 0; i < this.targetObjects.Count; i++)
+				{
+					if (targetObjects[i] != null)
+					{
+						summary += targetObjects[i].name + ",";
+					}
+				}
+			}
+
+			return summary;
+		}
+
+		protected override EventDispatcher EventDispatcher => AmanitaManager.S.EventDispatcher;
+	}
+}

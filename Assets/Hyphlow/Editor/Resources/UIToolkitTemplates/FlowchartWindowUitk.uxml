@@ -1,7 +1,0 @@
-<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
-    <ui:Template name="VariableDisplayEditor" src="project://database/Assets/Amanita/Editor/Resources/UIToolkitTemplates/VariableDisplayEditor.uxml?fileID=9197481963319205126&amp;guid=43fc496ae8989fe449ddd9c69138ed9b&amp;type=3#VariableDisplayEditor" />
-    <Style src="project://database/Assets/Amanita/Editor/Resources/Stylesheets/FlowchartWindowUitkStyles.uss?fileID=7433441132597879392&amp;guid=8340b1f05d46190479b897e9255525ca&amp;type=3#FlowchartWindowUitkStyles" />
-    <ui:Label text="Label" picking-mode="Ignore" name="FcNameLabel" triple-click-selects-line="false" double-click-selects-word="false" class="fcNameLabel" style="-unity-text-align: upper-right;" />
-    <ui:Label text="Zoom:" name="ZoomLabel" double-click-selects-word="false" triple-click-selects-line="false" class="zoom-label" />
-    <ui:Instance template="VariableDisplayEditor" name="VarDisplay" class="var-display-editor" />
-</ui:UXML>

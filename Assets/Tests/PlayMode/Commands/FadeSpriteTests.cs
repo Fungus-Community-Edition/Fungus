@@ -3,7 +3,7 @@ using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
-using AtMycelia.Amanita.VScripting;
+using AtMycelia.Amaniphlow;
 
 namespace VScriptingTests.Commands
 {
@@ -61,13 +61,13 @@ namespace VScriptingTests.Commands
 
             bool continued = false;
             _command.StartedContinue += OnFadeStartedContinue;
-            void OnFadeStartedContinue(Command c)
+            void OnFadeStartedContinue(ICommand c)
             {
                 continued = true;
                 _command.StartedContinue -= OnFadeStartedContinue;
             }
 
-            _flowchart.StartCoroutine(_block.Execute());
+            _flowchart.ExecuteBlock(_block);
 
             // Continue should be called immediately
             Assert.IsTrue(continued, "Continue() should be called immediately when waitUntilFinished is false.");

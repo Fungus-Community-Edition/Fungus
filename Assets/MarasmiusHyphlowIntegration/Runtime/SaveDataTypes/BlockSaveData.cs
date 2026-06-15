@@ -10,10 +10,11 @@ namespace AtMycelia.Amanita.SaveSys
     public class BlockSaveData : SaveData
     {
         [SerializeField] protected string blockName = string.Empty;
-        [SerializeField] protected ushort itemId = 0;
-        [SerializeField] protected int activeCommandId = -1;
-        [SerializeField] protected int activeCommandIndex = -1;
-        public virtual ushort ItemId
+        [SerializeField] protected byte itemId = 0;
+        [SerializeField] protected byte activeCommandId = 0;
+        [SerializeField] protected sbyte activeCommandIndex = 0;
+
+        public virtual byte ItemId
         {
             get => itemId;
             set => itemId = value;
@@ -24,12 +25,12 @@ namespace AtMycelia.Amanita.SaveSys
             set => blockName = value;
         }
 
-        public virtual int ActiveCommandId
+        public virtual byte ActiveCommandId
         {
             get => activeCommandId;
             set => activeCommandId = value;
         }
-        public virtual int ActiveCommandIndex
+        public virtual sbyte ActiveCommandIndex
         {
             get => activeCommandIndex;
             set => activeCommandIndex = value;
@@ -44,8 +45,8 @@ namespace AtMycelia.Amanita.SaveSys
         {
             ItemId = 0,
             BlockName = "Null",
-            ActiveCommandId = -1,
-            ActiveCommandIndex = -1
+            ActiveCommandId = 0,
+            ActiveCommandIndex = 0
         };
     }
 }

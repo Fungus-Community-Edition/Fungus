@@ -5,8 +5,8 @@ using UnityEditor;
 using UnityEngine;
 using UnityObject = UnityEngine.Object;
 using AtMycelia.Hyphlow;
-using AtMycelia.Hyphlow.EditorUtils;
-using AtMycelia.Hyphlow.EditorUtils.FcWindow;
+using AtMycelia.Hyphlow.EditorExt;
+using AtMycelia.Hyphlow.EditorExt.FcWindow;
 
 namespace VScriptingTests.FCWindowOperations
 {
@@ -29,7 +29,7 @@ namespace VScriptingTests.FCWindowOperations
                     for (int i = 0; i < blocksInFlowchart.Count; i++)
                     {
                         Vector2 initPos = initBlockPositions[i];
-                        Block block = blocksInFlowchart[i];
+                        IBlock block = blocksInFlowchart[i];
                         Rect blockRect = block._NodeRect;
                         blockRect.position = initPos;
                         blockRect.size = blockSize;
@@ -101,7 +101,7 @@ namespace VScriptingTests.FCWindowOperations
         protected GameObject fcHolder;
         protected Flowchart flowchart;
         protected readonly Vector2 initScrollPos = Vector2.zero;
-        protected IList<Block> blocksInFlowchart;
+        protected IList<IBlock> blocksInFlowchart;
         protected static readonly IList<Vector2> initBlockPositions = new List<Vector2>()
         {
             new Vector2(0.14f, 0.14f),
@@ -166,7 +166,7 @@ namespace VScriptingTests.FCWindowOperations
             handler.OnLeftMouseDown(mouseDownInfo);
 
             var interaction = fcContext.Interaction;
-            Block expectedBlock = blocksInFlowchart[0];
+            IBlock expectedBlock = blocksInFlowchart[0];
             Assert.AreEqual(expectedBlock, interaction.BlockHitInLastMouseDown, 
                 "Expected a hit on the block under the cursor.");
             Assert.IsNull(interaction.RootBlockToDrag, "Drag state should not start on mouse down.");
@@ -192,7 +192,7 @@ namespace VScriptingTests.FCWindowOperations
 
             handler.OnLeftMouseDown(info);
 
-            Block blockHit = blocksInFlowchart[blockIndex];
+            IBlock blockHit = blocksInFlowchart[blockIndex];
             var interaction = fcContext.Interaction;
             Assert.AreEqual(blockHit, interaction.BlockHitInLastMouseDown, 
                 $"Block #{blockIndex} should be registered as the hit block.");
@@ -259,7 +259,7 @@ namespace VScriptingTests.FCWindowOperations
 
             for (int i = 0; i < blocksInFlowchart.Count; i++)
             {
-                Block currentBlock = blocksInFlowchart[i];
+                IBlock currentBlock = blocksInFlowchart[i];
                 Vector2 prevPos = initBlockPositions[i];
                 Vector2 actualPos = currentBlock._NodeRect.position;
 
@@ -273,7 +273,7 @@ namespace VScriptingTests.FCWindowOperations
 
         protected virtual void SimulateDraggingBlockAtIndex(int blockIndex)
         {
-            Block toDrag = blocksInFlowchart[blockIndex];
+            IBlock toDrag = blocksInFlowchart[blockIndex];
             flowchart.AddToSelection(toDrag);
 
             var interaction = fcContext.Interaction;

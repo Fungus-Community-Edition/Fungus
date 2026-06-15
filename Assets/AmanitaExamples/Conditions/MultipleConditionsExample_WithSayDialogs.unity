@@ -120,37 +120,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &125528928
-GameObject:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 125528930}
-  m_Layer: 0
-  m_Name: _FungusState
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &125528930
-Transform:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 125528928}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &285094500
 GameObject:
   m_ObjectHideFlags: 0
@@ -544,11 +513,11 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 1
-  blockName: If Example
-  description: 
-  eventHandler: {fileID: 1292574164}
-  commandList:
+  _itemId: 1
+  _blockName: If Example
+  _description: 
+  _eventHandler: {fileID: 1292574164}
+  _commandList:
   - {fileID: 1292574163}
   - {fileID: 1292574170}
   - {fileID: 1292574174}
@@ -557,8 +526,8 @@ MonoBehaviour:
   - {fileID: 1292574168}
   - {fileID: 1292574172}
   - {fileID: 1292574185}
-  includeInSaves: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &1292574166
 MonoBehaviour:
@@ -1926,17 +1895,17 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 12
-  blockName: While Example
-  description: 
-  eventHandler: {fileID: 0}
-  commandList:
+  _itemId: 12
+  _blockName: While Example
+  _description: 
+  _eventHandler: {fileID: 0}
+  _commandList:
   - {fileID: 1292574184}
   - {fileID: 1292574183}
   - {fileID: 1292574187}
   - {fileID: 1292574181}
-  includeInSaves: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &1292574187
 MonoBehaviour:
@@ -2124,6 +2093,5 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 285094503}
-  - {fileID: 125528930}
   - {fileID: 1292574167}
   - {fileID: 1677222591}

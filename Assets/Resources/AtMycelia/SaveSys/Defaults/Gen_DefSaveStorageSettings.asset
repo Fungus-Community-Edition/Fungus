@@ -16,5 +16,5 @@ MonoBehaviour:
   numberFormat: D2
   fileExtension: save
   directoryType: 1
-  relativePath: Saves/
+  relativePath: /Saves/
   expectEncryption: 0

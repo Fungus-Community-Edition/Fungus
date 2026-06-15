@@ -8,6 +8,7 @@ using UnityEngine;
 using AtMycelia.SaveSys.VScripting;
 using AtMycelia.SaveSys;
 using AtMycelia.Amanita.SaveSys;
+using AtMycelia;
 
 namespace SaveSystemTests
 {
@@ -511,7 +512,7 @@ namespace SaveSystemTests
             }
         }
 
-        private static Block CreateSaveLoadedBlock(Flowchart flow, string blockName, string[] markerIds)
+        private static IBlock CreateSaveLoadedBlock(Flowchart flow, string blockName, string[] markerIds)
         {
             // Create Block
             var block = flow.CreateBlock(Vector2.zero);
@@ -520,13 +521,13 @@ namespace SaveSystemTests
             // Add SaveLoaded EventHandler
             var handler = flow.gameObject.AddComponent<SaveLoadedEvent>();
             handler.ParentBlock = block;
-            block._EventHandler = handler;
+            block.EventHandler = handler;
 
             // Create StringMuscariables for marker IDs and assign into handler.markerIDs via reflection
             var vars = new List<IVariable<string>>();
             foreach (var id in markerIds)
             {
-                string varKey = UniqueKeyGenerator.GetUniqueKeyFor($"PM_{id}", (IList<IVariable>)flow.Variables);
+                string varKey = UniqueKeyGenerator.GetUniqueKeyFor<IVariable>($"PM_{id}", flow.Variables);
                 var stringVar = flow.AddNewMuscariable<string, StringMuscariable>(varKey, id);
                 vars.Add(stringVar);
             }
@@ -539,15 +540,15 @@ namespace SaveSystemTests
             return block;
         }
 
-        private static void AddRecordCommand(Flowchart flow, Block block, string label)
+        private static void AddRecordCommand(Flowchart flow, IBlock block, string label)
         {
             var cmd = flow.AddCommand<RecordOrderCommand>(block);
             cmd.Label = label;
             cmd.OnCommandAdded(block);
-            block.CommandList.Add(cmd);
+            block.Add(cmd, false);
         }
 
-        private static Block CreatePlainBlock(Flowchart flow, string blockName)
+        private static IBlock CreatePlainBlock(Flowchart flow, string blockName)
         {
             var block = flow.CreateBlock(Vector2.zero);
             block.BlockName = blockName;
@@ -556,16 +557,15 @@ namespace SaveSystemTests
 
         private static ProgressMarkerCommand AddProgressMarkerCommand(
             Flowchart flow,
-            Block block,
+            IBlock block,
             ProgressMarkerCommand.PMCAction action,
             string id,
             int order)
         {
             var command = flow.gameObject.AddComponent<ProgressMarkerCommand>();
             command.ParentBlock = block;
-            command.ItemId = flow.NextItemId();
-            command.OnCommandAdded(block);
-            block.CommandList.Add(command);
+            block.Add(command, true);
+            
 
             var flags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
             var type = typeof(ProgressMarkerCommand);

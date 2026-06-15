@@ -79,7 +79,7 @@ namespace AtMycelia.SaveSys
                 {
                     string marker = allMarkers[i];
                     byte[] markerBytes = Encoding.GetBytes(marker);
-                    if (originalBytes.EndsWith(markerBytes))
+                    if (originalBytes.EndsWith(markerBytes as IList<byte>))
                     {
                         matchedMarkerBytes = markerBytes;
                         break;
@@ -173,7 +173,7 @@ namespace AtMycelia.SaveSys
             {
                 string marker = allMarkers[i];
                 byte[] markerBytes = Encoding.GetBytes(marker);
-                if (bytes.EndsWith(markerBytes))
+                if (bytes.EndsWith(markerBytes as IList<byte>))
                 {
                     return true;
                 }

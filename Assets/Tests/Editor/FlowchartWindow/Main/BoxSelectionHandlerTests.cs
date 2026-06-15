@@ -2,7 +2,7 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using AtMycelia.Hyphlow.EditorUtils;
+using AtMycelia.Hyphlow.EditorExt;
 using AtMycelia.Hyphlow;
 
 namespace VScriptingTests.FCWindowOperations
@@ -39,7 +39,7 @@ namespace VScriptingTests.FCWindowOperations
         }
 
         protected Flowchart flowchart;
-        protected IList<Block> blocks;
+        protected IList<IBlock> blocks;
         protected readonly Vector2[] initNodePositions =
         {
             new Vector2(10, 10),
