@@ -12,5 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f62e7fcdc8add74eacd53b6dd5ae5f7, type: 3}
   m_Name: VariableRegistryConfig
   m_EditorClassIdentifier: 
-  _globalSources:
-  - {fileID: 11400000, guid: a988e823023c7d047b7b8f39d55935fb, type: 2}
+  _globalSources: []

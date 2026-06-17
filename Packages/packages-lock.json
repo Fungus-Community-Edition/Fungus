@@ -18,17 +18,6 @@
       },
       "hash": "e5fea3829e317eba31633dc4930182c25d0c46ee"
     },
-    "com.ateliermycelia.hyphlow": {
-      "version": "file:E:/Github/_AtelierMycelia/Hyphlow/Assets/Hyphlow",
-      "depth": 0,
-      "source": "local",
-      "dependencies": {
-        "com.unity.textmeshpro": "3.0.6",
-        "com.ateliermycelia.commonlib": "1.3.1",
-        "com.ateliermycelia.hyphatween": "1.0.1",
-        "com.unity.inputsystem": "1.7.0"
-      }
-    },
     "com.ateliermycelia.myceliaudio": {
       "version": "https://github.com/Atelier-Mycelia/Myceliaudio.git?path=Assets/Myceliaudio#develop",
       "depth": 0,

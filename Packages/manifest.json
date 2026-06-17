@@ -2,7 +2,6 @@
   "dependencies": {
     "com.ateliermycelia.commonlib": "https://github.com/Atelier-Mycelia/CommonLib.git?path=Assets/AtMyceliaCommonLib",
     "com.ateliermycelia.hyphatween": "https://github.com/Atelier-Mycelia/HyphaTween.git?path=Assets/HyphaTween",
-    "com.ateliermycelia.hyphlow": "file:E:/Github/_AtelierMycelia/Hyphlow/Assets/Hyphlow",
     "com.ateliermycelia.myceliaudio": "https://github.com/Atelier-Mycelia/Myceliaudio.git?path=Assets/Myceliaudio#develop",
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.ai.navigation": "2.0.9",

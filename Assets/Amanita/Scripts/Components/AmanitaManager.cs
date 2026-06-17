@@ -1,14 +1,8 @@
-﻿using FullSerializer;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityObj = UnityEngine.Object;
 #if ENABLE_INPUT_SYSTEM
 using AtMycelia.Amanita.DialogueSys;
-#endif
-
-#if UNITY_EDITOR
-using UnityEditor;
 #endif
 
 namespace AtMycelia.Amanita
@@ -18,16 +12,6 @@ namespace AtMycelia.Amanita
     /// </summary>
     public sealed class AmanitaManager : MonoBehaviour, ITearDownResponder
     {
-        [SerializeField, HideInInspector] private GameObject tweenAnchorHolder;
-
-        public static fsSerializer DefaultSerializer { get; } = new fsSerializer();
-
-        volatile static AmanitaManager _s;  // The keyword "volatile" is friendly to multi-threading.
-        private static readonly object _ensureLock = new object();
-
-        private static readonly string _pathToPrefab = "Runtime/Prefabs/AmanitaManager"; 
-        // ^Relative to Resources
-
         public void Init()
         {
             if (IsFullyInitted ||
@@ -48,6 +32,8 @@ namespace AtMycelia.Amanita
             _s = this;
             PrepSubmodules();
         }
+
+        volatile static AmanitaManager _s;  // The keyword "volatile" is friendly to multi-threading.
 
         public bool IsFullyInitted
         {
@@ -82,20 +68,6 @@ namespace AtMycelia.Amanita
             if (CameraManager != null)
             {
                 CameraManager.ApplyConfig(AmanitaConfigResolver.ResolveCameraManagerConfig());
-            }
-        }
-
-        private void EnsureTweenAnchorHolder()
-        {
-            if (tweenAnchorHolder == null)
-            {
-                tweenAnchorHolder = new GameObject("TweenAnchorHolder");
-                tweenAnchorHolder.transform.SetParent(this.transform, false);
-#if UNITY_EDITOR
-                tweenAnchorHolder.hideFlags = HideFlags.HideAndDontSave;
-#else
-                tweenAnchorHolder.hideFlags = HideFlags.HideInInspector;
-#endif
             }
         }
 
@@ -172,68 +144,6 @@ namespace AtMycelia.Amanita
             }
         }
 
-        /// <summary>
-        /// Return an existing anchor GameObject for the given adapter (Unity object),
-        /// or create one as a child of the manager. Anchor lifetime follows the manager.
-        /// </summary>
-        public GameObject GetOrCreateAnchorFor(UnityObj unityObj)
-        {
-            if (unityObj == null) return null;
-
-            EnsureTweenAnchorHolder();
-
-            int key = unityObj.GetInstanceID();
-
-            // Try dictionary first (fast path)
-            if (_adapterAnchors.TryGetValue(key, out var existing) && existing != null)
-                return existing;
-
-            // Try to find by deterministic name (useful across domain reloads)
-            string anchorName = $"{unityObj.GetType().Name}_AdapterAnchor_{key}";
-            Transform found = tweenAnchorHolder.transform.Find(anchorName);
-            if (found != null && found.gameObject != null)
-            {
-                _adapterAnchors[key] = found.gameObject;
-                return found.gameObject;
-            }
-
-            // Create new anchor
-            GameObject anchor = new GameObject(anchorName);
-            anchor.transform.SetParent(tweenAnchorHolder.transform, false);
-
-#if UNITY_EDITOR
-            anchor.hideFlags = HideFlags.HideAndDontSave;
-#else
-            anchor.hideFlags = HideFlags.HideInInspector;
-#endif
-
-            _adapterAnchors[key] = anchor;
-            return anchor;
-        }
-
-        /// <summary>
-        /// Remove and destroy anchor for given adapter (if any).
-        /// </summary>
-        public void RemoveAnchorFor(UnityObj unityObj)
-        {
-            if (unityObj == null) return;
-            int key = unityObj.GetInstanceID();
-            if (_adapterAnchors.TryGetValue(key, out var go) && go != null)
-            {
-#if UNITY_EDITOR
-                if (Application.isPlaying)
-                    Destroy(go);
-                else
-                    DestroyImmediate(go);
-#else
-                Destroy(go);
-#endif
-            }
-            _adapterAnchors.Remove(key);
-        }
-
-        // replaced the old list with a dictionary keyed by adapter instance id
-        private readonly Dictionary<int, GameObject> _adapterAnchors = new Dictionary<int, GameObject>();
         private void OnValidate()
         {
             // OnValidate gets called on the prefab in response to Resources.Load(), so...
