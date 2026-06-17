@@ -28,7 +28,7 @@ MonoBehaviour:
     - rid: 7589700243315228869
       type: {class: AudioClipMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
-        _scope: 0
+        _scope: 2
         _key: theFacilityBgm
         _itemId: 1
         scope: 0
