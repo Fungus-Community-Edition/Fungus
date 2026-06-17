@@ -8,7 +8,7 @@ namespace AtMycelia.Amanita
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void EnsureHyphaTweenHierarchy()
         {
-            if (OurRoot != null)
+            if (Root != null)
             {
                 return;
             }
@@ -16,7 +16,7 @@ namespace AtMycelia.Amanita
             RootBootstrapper.EnsureRoot();
             var atMyceliaRoot = RootBootstrapper.Root;
 
-            OurRoot = CreateOurRoot();
+            Root = CreateOurRoot();
 
             ValidateRoot(out bool success);
             if (!success)
@@ -24,10 +24,10 @@ namespace AtMycelia.Amanita
                 return;
             }
 
-            OurRoot.transform.SetParent(atMyceliaRoot.transform);
+            Root.transform.SetParent(atMyceliaRoot.transform);
         }
 
-        private static GameObject OurRoot { get; set; }
+        public static GameObject Root { get; private set; }
 
         private static GameObject CreateOurRoot()
         {
@@ -54,11 +54,11 @@ namespace AtMycelia.Amanita
             return result;
         }
 
-        private const string OurRootPrefabPath = "Runtime/Prefabs/AmanitaManager";
+        private const string OurRootPrefabPath = "Runtime/Prefabs/Amanita";
 
         private static void ValidateRoot(out bool success)
         {
-            OurRoot.TryGetComponent<AmanitaManager>(out var manager);
+            Root.TryGetComponent<AmanitaManager>(out var manager);
             success = manager != null;
             if (manager == null)
             {

@@ -26,9 +26,12 @@ namespace AtMycelia.Amanita.DialogueSys
 			"buttons present in the scene as children will be used.")]
 		[SerializeField] protected Button _buttonPrefab;
 
+		[SerializeField] protected Transform _buttonHolder;
+
 		[Tooltip("Automatically select the first interactable button when the menu is shown.")]
 		[FormerlySerializedAs("autoSelectFirstButton")]
 		[SerializeField] protected bool _autoSelectFirstButton = false;
+		[SerializeField] protected bool _logMessages = true;
 
 		/// <summary>
 		/// Set or change the button prefab at runtime. Existing dynamic buttons are preserved.
@@ -48,10 +51,10 @@ namespace AtMycelia.Amanita.DialogueSys
 			{
 				// Cache any buttons that already exist as children (backwards compat).
 				Button[] optionButtons = GetComponentsInChildren<Button>();
-				cachedButtons = optionButtons;
+				_cachedButtons = optionButtons;
 
 				Slider timeoutSlider = GetComponentInChildren<Slider>();
-				cachedSlider = timeoutSlider;
+				_cachedSlider = timeoutSlider;
 			}
 
 			void AvoidAutoDisablingButtonsInEditor()
@@ -63,12 +66,12 @@ namespace AtMycelia.Amanita.DialogueSys
 			}
 		}
 
-		protected Slider cachedSlider;
-		public virtual Slider CachedSlider { get { return cachedSlider; } }
+		protected Slider _cachedSlider;
+		public virtual Slider CachedSlider { get { return _cachedSlider; } }
 
 		// Backwards-compatible cached buttons (existing prefab that contains a fixed set of buttons).
-		protected Button[] cachedButtons;
-		public virtual Button[] CachedButtons { get { return cachedButtons; } }
+		protected Button[] _cachedButtons;
+		public virtual IReadOnlyList<Button> CachedButtons { get { return _cachedButtons; } }
 
 		/// <summary>
 		/// Clear all displayed options in the Menu Dialog.
@@ -78,24 +81,25 @@ namespace AtMycelia.Amanita.DialogueSys
 			StopAllCoroutines();
 
 			// If something was shown, notify that we are ending
-			if (nextOptionIndex != 0)
+			if (_nextOptionIndex != 0)
 			{
 				MenuSignals.MenuStartedEnding(this);
 			}
 
-			nextOptionIndex = 0;
+			_nextOptionIndex = 0;
 
 			StopListeningForClicks();
 			ReorderAndHideOptions();
 			HideSlider();
+			_visibleButtons.Clear();
 		}
 
 		private void StopListeningForClicks()
 		{
 			// Remove listeners from dynamic buttons
-			for (int i = 0; i < dynamicButtons.Count; i++)
+			for (int i = 0; i < _dynamicButtons.Count; i++)
 			{
-				var buttonEl = dynamicButtons[i];
+				var buttonEl = _dynamicButtons[i];
 				if (buttonEl != null)
 				{
 					buttonEl.onClick.RemoveAllListeners();
@@ -103,14 +107,14 @@ namespace AtMycelia.Amanita.DialogueSys
 				}
 			}
 
-			dynamicButtons.Clear();
+			_dynamicButtons.Clear();
 
 			// Also strip listeners from any cached (legacy) buttons
-			if (cachedButtons != null)
+			if (_cachedButtons != null)
 			{
-				for (int i = 0; i < cachedButtons.Length; i++)
+				for (int i = 0; i < _cachedButtons.Length; i++)
 				{
-					var button = cachedButtons[i];
+					var button = _cachedButtons[i];
 					if (button != null)
 					{
 						button.onClick.RemoveAllListeners();
@@ -120,17 +124,17 @@ namespace AtMycelia.Amanita.DialogueSys
 		}
 
 		// Dynamically created buttons when using _buttonPrefab
-		protected readonly List<Button> dynamicButtons = new List<Button>();
+		protected readonly List<Button> _dynamicButtons = new List<Button>();
 
 		private void ReorderAndHideOptions()
 		{
 			// Hide dynamic buttons — they have been destroyed in StopListeningForClicks.
 			// Hide and reset legacy cached buttons
-			if (cachedButtons != null)
+			if (_cachedButtons != null)
 			{
-				for (int i = 0; i < cachedButtons.Length; i++)
+				for (int i = 0; i < _cachedButtons.Length; i++)
 				{
-					var button = cachedButtons[i];
+					var button = _cachedButtons[i];
 					if (button != null)
 					{
 						button.transform.SetSiblingIndex(i);
@@ -149,9 +153,7 @@ namespace AtMycelia.Amanita.DialogueSys
 			}
 		}
 
-		
-
-		private int nextOptionIndex;
+		private int _nextOptionIndex;
 
 		protected virtual void OnEnable()
 		{
@@ -184,20 +186,27 @@ namespace AtMycelia.Amanita.DialogueSys
 
 				if (ActiveMenuDialog == null)
 				{
-					// Auto spawn a menu dialog object from the prefab
-					GameObject prefab = Resources.Load<GameObject>("Prefabs/MenuDialog");
-					if (prefab != null)
+					SpawnAndUseDefault();
+					static void SpawnAndUseDefault()
 					{
-						GameObject go = Instantiate(prefab) as GameObject;
-						go.SetActive(false);
-						go.name = "MenuDialog";
-						ActiveMenuDialog = go.GetComponent<MenuDialog>();
+						GameObject prefab = Resources.Load<GameObject>(_pathToPrefab);
+						if (prefab != null)
+						{
+							GameObject go = Instantiate(prefab);
+							go.SetActive(false);
+							go.name = prefab.name;
+							ActiveMenuDialog = go.GetComponent<MenuDialog>();
+							var amanitaRoot = AmanitaRuntimeBootstrapper.Root;
+							go.transform.SetParent(amanitaRoot.transform, false);
+						}
 					}
 				}
 			}
 
 			return ActiveMenuDialog;
 		}
+
+		protected static readonly string _pathToPrefab = "Runtime/Prefabs/MenuDialog";
 
 		/// <summary>
 		/// Currently active Menu Dialog used to display Menu options
@@ -209,24 +218,23 @@ namespace AtMycelia.Amanita.DialogueSys
 		/// Will cause the Menu dialog to become visible if it is not already visible.
 		/// This is the canonical method for clients (hyphlow bridge will adapt Blocks -> Actions).
 		/// </summary>
-		public virtual bool AddOption(string text, bool interactable, bool hideOption, Action callback)
+		public virtual bool AddOption(string text, bool interactable,
+			bool hideOption, Action callback)
 		{
-			if (!gameObject.activeSelf)
-			{
-				gameObject.SetActive(true);
-			}
-
 			Action localCallback = callback;
-			UnityEngine.Events.UnityAction action = delegate
+			void UpdatedCallback()
 			{
 				StopAllCoroutines();
-				// Stop timeout
-				Clear();
-				// Use a coroutine to call the callback on the next frame
-				StartCoroutine(CallAction(localCallback));
-			};
+				// ^Stops timeout
 
-			return AddOptionInternal(text, interactable, hideOption, action);
+				Clear();
+				// ^Since we want the menu cleared as soon as the option is chosen.
+
+				// Use a coroutine to call the callback on the next frame
+				StartCoroutine(CallActionAfterOneFrame(localCallback));
+			}
+
+			return AddOptionInternal(text, interactable, hideOption, UpdatedCallback);
 		}
 
 		/// <summary>
@@ -237,46 +245,76 @@ namespace AtMycelia.Amanita.DialogueSys
 		private bool AddOptionInternal(string text, bool interactable, bool hideOption, 
 			UnityEngine.Events.UnityAction action)
 		{
-			Button buttonToUse = null;
-			int optionIndex = nextOptionIndex;
+			Button buttonToUse = GetFirstINactiveButton();
+			int optionIndex = _nextOptionIndex;
+			string logMessage;
 
-			// Try dynamic prefab mode first
-			if (_buttonPrefab != null)
+			if (buttonToUse != null)
+			{
+				if (_logMessages)
+				{
+					logMessage = "MenuDialog: Reusing existing button for option: " + text;
+					Debug.Log(logMessage);
+				}
+
+				// Ensure sibling order for consistent keyboard navigation
+				buttonToUse.transform.SetSiblingIndex(optionIndex);
+			}
+
+			if (buttonToUse == null && _buttonPrefab != null)
 			{
 				try
 				{
-					Button newBtn = Instantiate(_buttonPrefab, this.transform);
+					Button newBtn = Instantiate(_buttonPrefab, _buttonHolder);
 					newBtn.gameObject.SetActive(true);
-					dynamicButtons.Add(newBtn);
+					_dynamicButtons.Add(newBtn);
 					buttonToUse = newBtn;
 					// Ensure sibling order for consistent keyboard navigation
-					newBtn.transform.SetSiblingIndex(optionIndex);
+					_buttonHolder.SetSiblingIndex(optionIndex);
 				}
 				catch (Exception ex)
 				{
-					Debug.LogError("MenuDialog: Failed to instantiate button prefab: " + ex.Message);
+					if (_logMessages)
+					{
+						logMessage = "MenuDialog: Failed to instantiate button prefab " +
+							"for option: " + text;
+						Debug.LogWarning(logMessage);
+					}
 					return false;
 				}
 			}
 			else
 			{
 				// Legacy behaviour: use cached buttons array
-				if (cachedButtons == null || optionIndex >= cachedButtons.Length)
+				if (_cachedButtons == null || optionIndex >= _cachedButtons.Length)
 				{
-					Debug.LogWarning("Unable to add menu item, not enough buttons: " + text);
+					if (_logMessages)
+					{
+						logMessage = "MenuDialog: Unable to add menu item, not " +
+							"enough buttons: " + text;
+						Debug.LogWarning(logMessage);
+					}
 					return false;
 				}
-				buttonToUse = cachedButtons[optionIndex];
+				buttonToUse = _cachedButtons[optionIndex];
 				if (buttonToUse == null)
 				{
-					Debug.LogWarning("Unable to add menu item, cached button is null: " + text);
+					if (_logMessages)
+					{
+						logMessage = "MenuDialog: Unable to add menu item, cached " +
+							"button is null: " + text;
+						Debug.LogWarning(logMessage);
+					}
 					return false;
 				}
 				buttonToUse.gameObject.SetActive(true);
+				
 			}
 
+			_visibleButtons.Add(buttonToUse);
+
 			// move forward for next call
-			nextOptionIndex++;
+			_nextOptionIndex++;
 
 			// don't need to set anything on it
 			if (hideOption)
@@ -288,22 +326,11 @@ namespace AtMycelia.Amanita.DialogueSys
 
 			Button btn = buttonToUse;
 			btn.interactable = interactable;
-
-			// Optionally auto-select the first interactable button
-			if (interactable && _autoSelectFirstButton)
-			{
-				if (!cachedButtons?.Select(x => x.gameObject).Contains(EventSystem.current.currentSelectedGameObject) ?? true)
-				{
-					EventSystem.current.SetSelectedGameObject(btn.gameObject);
-				}
-			}
-
-			TextAdapter textAdapter = new TextAdapter();
-			textAdapter.InitFromGameObject(btn.gameObject, true);
-			if (textAdapter.HasTextObject())
+			_textAdapter.InitFromGameObject(btn.gameObject, true);
+			if (_textAdapter.HasTextObject())
 			{
 				text = TextVariationHandler.SelectVariations(text);
-				textAdapter.Text = text;
+				_textAdapter.Text = text;
 			}
 
 			// Wrap action so callers get the button and index
@@ -323,6 +350,40 @@ namespace AtMycelia.Amanita.DialogueSys
 			btn.gameObject.SetActive(true);
 
 			return true;
+		}
+
+		public virtual IReadOnlyList<Button> VisibleButtons { get { return _visibleButtons; } }
+        private readonly List<Button> _visibleButtons = new List<Button>();
+		private readonly TextAdapter _textAdapter = new TextAdapter();
+
+		protected virtual Button GetFirstINactiveButton()
+		{
+			Button result = null;
+			// Check dynamic buttons first
+			for (int i = 0; i < _dynamicButtons.Count; i++)
+			{
+				var buttonEl = _dynamicButtons[i];
+				if (buttonEl != null && buttonEl.gameObject.activeSelf)
+				{
+					result = buttonEl;
+					break;
+				}
+			}
+
+			if (result == null && _cachedButtons != null)
+			{
+				for (int i = 0; i < _cachedButtons.Length; i++)
+				{
+					var button = _cachedButtons[i];
+					if (button != null && button.gameObject.activeSelf)
+					{
+						result = button;
+						break;
+					}
+				}
+			}
+
+			return result;
 		}
 
 		/// <summary>
@@ -384,18 +445,18 @@ namespace AtMycelia.Amanita.DialogueSys
 				int count = 0;
 
 				// count dynamic buttons
-				for (int i = 0; i < dynamicButtons.Count; i++)
+				for (int i = 0; i < _dynamicButtons.Count; i++)
 				{
-					var b = dynamicButtons[i];
+					var b = _dynamicButtons[i];
 					if (b != null && b.gameObject.activeSelf) count++;
 				}
 
 				// count legacy cached visible buttons
-				if (cachedButtons != null)
+				if (_cachedButtons != null)
 				{
-					for (int i = 0; i < cachedButtons.Length; i++)
+					for (int i = 0; i < _cachedButtons.Length; i++)
 					{
-						var button = cachedButtons[i];
+						var button = _cachedButtons[i];
 						if (button != null && button.gameObject.activeSelf) count++;
 					}
 				}
@@ -411,22 +472,22 @@ namespace AtMycelia.Amanita.DialogueSys
 		public void Shuffle(System.Random r)
 		{
 			// shuffle dynamic buttons
-			for (int i = 0; i < dynamicButtons.Count; i++)
+			for (int i = 0; i < _dynamicButtons.Count; i++)
 			{
-				if (dynamicButtons[i] != null)
+				if (_dynamicButtons[i] != null)
 				{
-					dynamicButtons[i].transform.SetSiblingIndex(r.Next(dynamicButtons.Count));
+					_dynamicButtons[i].transform.SetSiblingIndex(r.Next(_dynamicButtons.Count));
 				}
 			}
 
 			// shuffle cached buttons
-			if (cachedButtons != null)
+			if (_cachedButtons != null)
 			{
-				for (int i = 0; i < cachedButtons.Length; i++)
+				for (int i = 0; i < _cachedButtons.Length; i++)
 				{
-					if (cachedButtons[i] != null)
+					if (_cachedButtons[i] != null)
 					{
-						cachedButtons[i].transform.SetSiblingIndex(r.Next(cachedButtons.Length));
+						_cachedButtons[i].transform.SetSiblingIndex(r.Next(_cachedButtons.Length));
 					}
 				}
 			}
@@ -434,7 +495,7 @@ namespace AtMycelia.Amanita.DialogueSys
 
 		#region Helpers
 
-		protected IEnumerator CallAction(Action callback)
+		protected IEnumerator CallActionAfterOneFrame(Action callback)
 		{
 			yield return new WaitForEndOfFrame();
 			callback?.Invoke();

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1195367437289545555}
   - component: {fileID: 5188742647640079216}
   m_Layer: 0
-  m_Name: AmanitaManager
+  m_Name: Amanita
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
