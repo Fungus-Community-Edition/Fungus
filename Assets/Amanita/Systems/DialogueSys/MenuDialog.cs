@@ -1,8 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
-using UnityEngine.EventSystems;
-using System.Linq;
 using System;
 using UnityEngine.Serialization;
 using System.Collections.Generic;
@@ -353,7 +351,7 @@ namespace AtMycelia.Amanita.DialogueSys
 		}
 
 		public virtual IReadOnlyList<Button> VisibleButtons { get { return _visibleButtons; } }
-        private readonly List<Button> _visibleButtons = new List<Button>();
+		private readonly List<Button> _visibleButtons = new List<Button>();
 		private readonly TextAdapter _textAdapter = new TextAdapter();
 
 		protected virtual Button GetFirstINactiveButton()
