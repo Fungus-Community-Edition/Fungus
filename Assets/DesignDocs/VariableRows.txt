@@ -1,7 +1,0 @@
-In the visual scripting system, both the Flowchart Window and Flowchart Inspector have what we call a Variables Panel. It's where users can add, remove, or change variables tied to a Flowchart. On the visual side of things, each variable is displayed in its own row. Each variable type (IntMuscariable, ColorMuscariable, etc) has a corresponding RowVisualHandler implementation (IntRowVisualHandler, ColorRowVisualHandler, etc).
-
-Said implementations (as their names suggest) handle displaying the values of their assigned variables. Based on their RowVisualHandlerAttributes, they choose a uxml template asset in the project (for example, ColorVariableRow.uxml), instantiate a Root VisualElement of it, and then hook up logic to said VisualElement's fields. You can see how this works in the RowVisualHandler.cs source file.
-
-For variable types where the base setup isn't enough (for example: float and int), their RVH subclasses can override methods such as RegisterVisualElements and ToggleValueChangeSubs, adjusting the plumbing as needed. Take a look at the NumericVisualRowHandlers.cs file to see how that works for those cases.
-
-Now, let's move on to the VariableRow class. These are what listen for changes to the visuals, signaling them to the appropriate listeners through the AmanitaEditorSignals class. Through their Variable properties, they let their RVHs know what variables they should work off of. 
