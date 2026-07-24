@@ -500,5 +500,30 @@ namespace AtMycelia.Amanita.DialogueSys
 		}
 
 		#endregion
+
+		protected virtual void OnValidate()
+		{
+			#region Ensure Root Scale is Valid
+			// This is to compensate for a serialization issue in Unity 6.0
+			// where the local scale (in the yaml) can be (0, 0, 0), 
+			// which makes Unity 2022.3 freeze upon trying to open or 
+			// instantiate the prefab. 
+			var root = transform; // We assume we are on the root transform here
+
+			if (root != null)
+			{
+				Vector3 localScale = root.localScale;
+				bool invalidScale = Mathf.Approximately(localScale.x, 0f) ||
+					Mathf.Approximately(localScale.y, 0f) ||
+					Mathf.Approximately(localScale.z, 0f);
+
+				if (invalidScale)
+				{
+					root.localScale = Vector3.one;
+				}
+			}
+			#endregion
+		}
+
 	}    
 }
