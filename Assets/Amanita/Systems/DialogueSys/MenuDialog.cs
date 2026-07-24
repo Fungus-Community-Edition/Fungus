@@ -361,7 +361,7 @@ namespace AtMycelia.Amanita.DialogueSys
 			for (int i = 0; i < _dynamicButtons.Count; i++)
 			{
 				var buttonEl = _dynamicButtons[i];
-				if (buttonEl != null && buttonEl.gameObject.activeSelf)
+				if (buttonEl != null && !buttonEl.gameObject.activeSelf)
 				{
 					result = buttonEl;
 					break;
@@ -373,7 +373,7 @@ namespace AtMycelia.Amanita.DialogueSys
 				for (int i = 0; i < _cachedButtons.Length; i++)
 				{
 					var button = _cachedButtons[i];
-					if (button != null && button.gameObject.activeSelf)
+					if (button != null && !button.gameObject.activeSelf)
 					{
 						result = button;
 						break;
