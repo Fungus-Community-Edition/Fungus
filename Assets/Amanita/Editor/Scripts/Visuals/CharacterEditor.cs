@@ -1,72 +1,83 @@
-using AtMycelia.Amanita;
 using UnityEditor;
 using UnityEngine;
 
-namespace AtMycelia.Hyphlow.EditorExt
+namespace AtMycelia.Amanita.EditorExt
 {
     [CustomEditor (typeof(Character))]
     public class CharacterEditor : Editor
     {
-        protected SerializedProperty nameTextProp;
-        protected SerializedProperty nameColorProp;
-        protected SerializedProperty soundEffectProp;
-        protected SerializedProperty portraitsProp;
-        protected SerializedProperty portraitsFaceProp;
-        protected SerializedProperty descriptionProp;
-        protected SerializedProperty setSayDialogProp;
-        protected SerializedProperty effectAudioSourceProp;
-        protected SerializedProperty voiceAudioSourceProp;
-
         protected virtual void OnEnable()
         {
-            nameTextProp = serializedObject.FindProperty ("nameText");
-            nameColorProp = serializedObject.FindProperty ("nameColor");
-            soundEffectProp = serializedObject.FindProperty ("soundEffect");
-            portraitsProp = serializedObject.FindProperty ("portraits");
-            portraitsFaceProp = serializedObject.FindProperty ("portraitsFace");
-            descriptionProp = serializedObject.FindProperty ("description");
-            setSayDialogProp = serializedObject.FindProperty("setSayDialog");
-            effectAudioSourceProp = serializedObject.FindProperty("effectAudioSource");
-            voiceAudioSourceProp = serializedObject.FindProperty("voiceAudioSource");
+            _nameTextProp = serializedObject.FindProperty ("_nameText");
+            _nameColorProp = serializedObject.FindProperty ("_nameColor");
+            _soundEffectProp = serializedObject.FindProperty ("_soundEffect");
+            _portraitsProp = serializedObject.FindProperty ("_portraits");
+            _portraitsFaceProp = serializedObject.FindProperty ("_portraitsFace");
+            _descriptionProp = serializedObject.FindProperty ("_description");
+            _setSayDialogProp = serializedObject.FindProperty("_setSayDialog");
+            _effectAudioSourceProp = serializedObject.FindProperty("_effectAudioSource");
+            _voiceAudioSourceProp = serializedObject.FindProperty("_voiceAudioSource");
         }
+
+        protected SerializedProperty _nameTextProp;
+        protected SerializedProperty _nameColorProp;
+        protected SerializedProperty _soundEffectProp;
+        protected SerializedProperty _portraitsProp;
+        protected SerializedProperty _portraitsFaceProp;
+        protected SerializedProperty _descriptionProp;
+        protected SerializedProperty _setSayDialogProp;
+        protected SerializedProperty _effectAudioSourceProp;
+        protected SerializedProperty _voiceAudioSourceProp;
 
         public override void OnInspectorGUI() 
         {
             serializedObject.Update();
 
-            Character t = target as Character;
+            Character chara = target as Character;
             EditorGUI.BeginChangeCheck();
 
-            EditorGUILayout.PropertyField(nameTextProp, new GUIContent("Name Text", "Name of the character display in the dialog"));
-            EditorGUILayout.PropertyField(nameColorProp, new GUIContent("Name Color", "Color of name text display in the dialog"));
-            EditorGUILayout.PropertyField(soundEffectProp, new GUIContent("Sound Effect", "Sound to play when the character is talking. Overrides the setting in the Dialog."));
-            EditorGUILayout.PropertyField(effectAudioSourceProp);
-            EditorGUILayout.PropertyField(voiceAudioSourceProp);
-            EditorGUILayout.PropertyField(setSayDialogProp);
-            EditorGUILayout.PropertyField(descriptionProp, new GUIContent("Description", "Notes about this story character (personality, attibutes, etc.)"));
+            EditorGUILayout.PropertyField(_nameTextProp, 
+                new GUIContent("Name Text", "Name of the character display in the dialog"));
+            EditorGUILayout.PropertyField(_nameColorProp, 
+                new GUIContent("Name Color", "Color of name text display in the dialog"));
+            EditorGUILayout.PropertyField(_soundEffectProp,
+                new GUIContent("Sound Effect", "Sound to play when the character is talking. " +
+                "Overrides the setting in the Dialog."));
+            EditorGUILayout.PropertyField(_effectAudioSourceProp);
+            EditorGUILayout.PropertyField(_voiceAudioSourceProp);
+            EditorGUILayout.PropertyField(_setSayDialogProp);
+            EditorGUILayout.PropertyField(_descriptionProp, 
+                new GUIContent("Description", "Notes about this story character (personality, " +
+                "attibutes, etc.)"));
 
-            if (t.Portraits != null &&
-                t.Portraits.Count > 0)
+            if (chara.Portraits != null &&
+                chara.Portraits.Count > 0)
             {
-                t.ProfileSprite = t.Portraits[0];
+                chara.ProfileSprite = chara.Portraits[0];
             }
             else
             {
-                t.ProfileSprite = null;
+                chara.ProfileSprite = null;
             }
             
-            if (t.ProfileSprite != null)
+            if (chara.ProfileSprite != null)
             {
-                Texture2D characterTexture = t.ProfileSprite.texture;
-                float aspect = (float)characterTexture.width / (float)characterTexture.height;
-                Rect previewRect = GUILayoutUtility.GetAspectRect(aspect, GUILayout.Width(100), GUILayout.ExpandWidth(true));
+                Texture2D characterTexture = chara.ProfileSprite.texture;
+                float aspect = characterTexture.width / characterTexture.height;
+                Rect previewRect = GUILayoutUtility.GetAspectRect(aspect, GUILayout.Width(100), 
+                    GUILayout.ExpandWidth(true));
+
                 if (characterTexture != null)
-                    GUI.DrawTexture(previewRect,characterTexture,ScaleMode.ScaleToFit,true,aspect);
+                {
+                    GUI.DrawTexture(previewRect, characterTexture, ScaleMode.ScaleToFit, true, aspect);
+                }
             }
 
-            EditorGUILayout.PropertyField(portraitsProp, new GUIContent("Portraits", "Character image sprites to display in the dialog"), true);
+            EditorGUILayout.PropertyField(_portraitsProp, new GUIContent("Portraits", 
+                "Character image sprites to display in the dialog"), true);
 
-            EditorGUILayout.HelpBox("All portrait images should use the exact same resolution to avoid positioning and tiling issues.", MessageType.Info);
+            EditorGUILayout.HelpBox("All portrait images should use the exact same resolution " +
+                "to avoid positioning and tiling issues.", MessageType.Info);
 
             EditorGUILayout.Separator();
 
@@ -76,12 +87,13 @@ namespace AtMycelia.Hyphlow.EditorExt
                 "<--",
                 "-->",
             };
-            portraitsFaceProp.enumValueIndex = EditorGUILayout.Popup("Portraits Face", (int)portraitsFaceProp.enumValueIndex, facingArrows);
+            _portraitsFaceProp.enumValueIndex = EditorGUILayout.Popup("Portraits Face", 
+                _portraitsFaceProp.enumValueIndex, facingArrows);
 
             EditorGUILayout.Separator();
 
             if(EditorGUI.EndChangeCheck())
-                EditorUtility.SetDirty(t);
+                EditorUtility.SetDirty(chara);
 
             serializedObject.ApplyModifiedProperties();
         }
