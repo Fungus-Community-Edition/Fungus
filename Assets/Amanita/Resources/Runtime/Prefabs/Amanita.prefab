@@ -49,7 +49,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa59a268bb22b4646bd9a89fa66582b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tweenAnchorHolder: {fileID: 0}
 --- !u!114 &5188742647640079216
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -276,10 +275,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   orderIndex: 3
-  config: {fileID: 11400000, guid: dcbca8fac222ba64c9be00705f394444, type: 2}
-  screenFadeTexture: {fileID: 2800000, guid: f6c7b1f3a78a24703b70c746d8b9c768, type: 3}
-  swipePanIcon: {fileID: 2800000, guid: 41bc737f4dc1b40db872aca00bcd7d4b, type: 3}
-  swipeIconPosition: {x: 1, y: 0}
-  setCameraZ: 1
-  cameraZ: -10
-  swipeCamera: {fileID: 0}
+  _config: {fileID: 11400000, guid: dcbca8fac222ba64c9be00705f394444, type: 2}
+  _swipeCamera: {fileID: 0}
