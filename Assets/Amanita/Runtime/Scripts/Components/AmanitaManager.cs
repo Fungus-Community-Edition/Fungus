@@ -51,8 +51,6 @@ namespace AtMycelia.Amanita
                 NarrativeLog = GetComponentInChildren<NarrativeLog>();
             }
 
-            ApplySceneOverrides();
-
             List<IAmanitaManagerSubmodule> submodules = GetComponentsInChildren<IAmanitaManagerSubmodule>().ToList();
             // Lower order index, earlier execution
             submodules.Sort((first, second) => first.OrderIndex.CompareTo(second.OrderIndex));
@@ -60,14 +58,6 @@ namespace AtMycelia.Amanita
             {
                 var module = submodules[i];
                 module.Init();
-            }
-        }
-
-        public void ApplySceneOverrides()
-        {
-            if (CameraManager != null)
-            {
-                CameraManager.ApplyConfig(AmanitaConfigResolver.ResolveCameraManagerConfig());
             }
         }
 

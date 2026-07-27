@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11ca592610762da49ab6d3b03e29e1ac, type: 3}
   m_Name: CameraManagerConfig
   m_EditorClassIdentifier: 
-  screenFadeTexture: {fileID: 2800000, guid: f6c7b1f3a78a24703b70c746d8b9c768, type: 3}
-  swipePanIcon: {fileID: 2800000, guid: 41bc737f4dc1b40db872aca00bcd7d4b, type: 3}
-  swipeIconPosition: {x: 1, y: 0}
-  setCameraZ: 1
-  cameraZ: -10
-  swipeSpeedMultiplier: 1
+  _screenFadeTexture: {fileID: 2800000, guid: f6c7b1f3a78a24703b70c746d8b9c768, type: 3}
+  _swipePanIcon: {fileID: 2800000, guid: 41bc737f4dc1b40db872aca00bcd7d4b, type: 3}
+  _swipeIconPosition: {x: 1, y: 0}
+  _applyFixedCamZ: 1
+  _cameraZ: -10
+  _swipeSpeedMultiplier: 1

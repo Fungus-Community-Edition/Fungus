@@ -807,15 +807,21 @@ namespace AtMycelia.Amanita.DialogueSys
         
         protected virtual bool IsPunctuation(char character)
         {
-            return character == '.' || 
-                character == '?' ||  
-                    character == '!' || 
-                    character == ',' ||
-                    character == ':' ||
-                    character == ';' ||
-                    character == ')';
+            bool result = _punctuationMarks.Contains(character);
+            return result;
         }
         
+        private static List<char> _punctuationMarks = new List<char>
+        {
+            '.', 
+            '?', 
+            '!', 
+            ',', 
+            ':', 
+            ';', 
+            ')'
+        };
+
         protected virtual void Punch(Vector3 axis, float time)
         {
             GameObject target = punchObject;
@@ -836,12 +842,12 @@ namespace AtMycelia.Amanita.DialogueSys
         {
             var cameraManager = AmanitaManager.S.CameraManager;
 
-            cameraManager.ScreenFadeTexture = CameraManager.CreateColorTexture(new Color(1f,1f,1f,1f), 32, 32);
+            cameraManager.ScreenFadeTexture = CameraManager.CreateColorTexture(Color.white, 32, 32);
             
             cameraManager.Fade(1f, duration, OnFadeDone);
             void OnFadeDone()
             {
-                cameraManager.ScreenFadeTexture = CameraManager.CreateColorTexture(new Color(1f, 1f, 1f, 1f), 32, 32);
+                cameraManager.ScreenFadeTexture = CameraManager.CreateColorTexture(Color.white, 32, 32);
                 cameraManager.Fade(0f, duration, null);
             }
         }
@@ -849,12 +855,28 @@ namespace AtMycelia.Amanita.DialogueSys
         protected virtual AudioSource FindAudio(string audioObjectName)
         {
             GameObject go = GameObject.Find(audioObjectName);
+            AudioSource audio = null;
             if (go == null)
             {
-                return null;
+                string logMessage = $"Audio object not found: {audioObjectName}. Creating a new one. " + 
+                    $"If you want to use a specific audio source, please create a GameObject with " +
+                    $"the name {audioObjectName} and attach an AudioSource component to the prefab " +
+                    $"for this SayDialog.";
+                Debug.LogWarning(logMessage);
+                go = new GameObject(audioObjectName);
+                audio = go.AddComponent<AudioSource>();
+                go.transform.SetParent(this.transform);
             }
-            
-            return go.GetComponent<AudioSource>();
+            else
+            {
+                audio = go.GetComponent<AudioSource>();
+                if (audio == null)
+                {
+                    audio = go.AddComponent<AudioSource>();
+                }
+            }
+
+            return audio;
         }
 
         protected virtual void NotifyInput()

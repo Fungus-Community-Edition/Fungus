@@ -2,6 +2,7 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 using AtMycelia.HyphaTween;
+using UnityEngine.Serialization;
 
 namespace AtMycelia.Amanita
 {
@@ -11,26 +12,11 @@ namespace AtMycelia.Amanita
 	public class CameraManager : MonoBehaviour, IAmanitaManagerSubmodule
 	{
 		[SerializeField] private int orderIndex = 0;
-
-		[SerializeField] private CameraManagerConfig config;
-		
-		[Tooltip("Full screen texture used for screen fade effect.")]
-		[SerializeField] protected Texture2D screenFadeTexture;
-
-		[Tooltip("Icon to display when swipe pan mode is active.")]
-		[SerializeField] protected Texture2D swipePanIcon;
-
-		[Tooltip("Position of continue and swipe icons in normalized screen space coords. (0,0) = top left, (1,1) = bottom right")]
-		[SerializeField] protected Vector2 swipeIconPosition = new Vector2(1,0);
-
-		[Tooltip("Set the camera z coordinate to a fixed value every frame.")]
-		[SerializeField] protected bool setCameraZ = true;
-
-		[Tooltip("Fixed Z coordinate of main camera.")]
-		[SerializeField] protected float cameraZ = -10f;
+		[SerializeField] private CameraManagerConfig _config;
 
 		[Tooltip("Camera to use when in swipe mode")]
-		[SerializeField] protected Camera swipeCamera;
+		[FormerlySerializedAs("swipeCamera")]
+		[SerializeField] protected Camera _swipeCamera;
 
 		protected float fadeAlpha = 0f;
 		// ^When this changes, OnGUI changes the fadedness of the screen.
@@ -41,10 +27,28 @@ namespace AtMycelia.Amanita
 		// Swipe panning control
 		protected bool swipePanActive;
 
-		protected float swipeSpeedMultiplier = 1f;
-		protected View swipePanViewA;
-		protected View swipePanViewB;
-		protected Vector3 previousMousePos;
+		protected virtual float SwipeSpeedMultiplier
+		{
+			get
+			{
+				if (_config == null)
+				{
+					return 1f;
+				}
+				return _config.SwipeSpeedMultiplier;
+			}
+			set
+			{
+				if (_config == null)
+				{
+					return;
+				}
+				_config.SwipeSpeedMultiplier = Mathf.Max(0f, value);
+			}
+		}
+		protected View _firstSwipePanView;
+		protected View _secondSwipePanView;
+		protected Vector3 _prevMousePos;
 		
 		protected class CameraView
 		{
@@ -62,29 +66,85 @@ namespace AtMycelia.Amanita
 				return;
 			}
 
-			if (config == null)
+			if (_config == null)
 			{
-				ApplyConfig(AmanitaConfigResolver.ResolveCameraManagerConfig());
+				string logMessage = "CameraManager config is null. If you see this message in a " +
+					"non-dev build, please report it to the devs.";
+				Debug.LogError(logMessage);
 			}
 
 			IsFullyInitted = true;
 		}
 
-		public void ApplyConfig(CameraManagerConfig configToApply)
-		{
-			config = configToApply;
-			if (config == null)
-			{
-				return;
-			}
+		/// <summary>
+		/// The settings this manager uses for things like the ScreenFadeTexture, 
+		/// SwipePanIcon, and other camera-related settings.
+		/// </summary>
+		public CameraManagerConfig Config => _config;
 
-			screenFadeTexture = config.ScreenFadeTexture;
-			swipePanIcon = config.SwipePanIcon;
-			swipeIconPosition = config.SwipeIconPosition;
-			setCameraZ = config.SetCameraZ;
-			cameraZ = config.CameraZ;
-			swipeSpeedMultiplier = config.SwipeSpeedMultiplier;
+		/// <summary>
+		/// Full screen texture used for screen fade effect.
+		/// </summary>
+		public Texture2D ScreenFadeTexture
+		{
+			get
+			{
+				if (_config == null)
+				{
+					return null;
+				}
+				return _config.ScreenFadeTexture;
+			}
+			set
+			{
+				if (_config == null)
+				{
+					string logMessage = "CameraManager config is null. If you see this " +
+						"message in a non-dev build, please report it to the devs.";
+					Debug.LogWarning(logMessage);
+					return;
+				}
+
+				_config.ScreenFadeTexture = value;
+			}
 		}
+
+		protected Texture2D SwipePanIcon
+		{
+			get
+			{
+				if (_config == null)
+				{
+					return null;
+				}
+				return _config.SwipePanIcon;
+			}
+		}
+
+		protected Vector2 SwipeIconPosition
+		{
+			get
+			{
+				if (_config == null)
+				{
+					return Vector2.zero;
+				}
+				return _config.SwipeIconPosition;
+			}
+		}
+
+		protected float CameraZ
+		{
+			get
+			{
+				if (_config == null)
+				{
+					return _defaultCameraZ;
+				}
+				return _config.CameraZ;
+			}
+		}
+		private static readonly float _defaultCameraZ = -10f;
 
 		public virtual bool IsFullyInitted { get; protected set; } = false;
 
@@ -93,12 +153,12 @@ namespace AtMycelia.Amanita
 			if (swipePanActive)
 			{
 				// Draw the swipe panning icon
-				if (swipePanIcon)
+				if (SwipePanIcon)
 				{
-					float x = Screen.width * swipeIconPosition.x;
-					float y = Screen.height * swipeIconPosition.y;
-					float width = swipePanIcon.width;
-					float height = swipePanIcon.height;
+					float x = Screen.width * SwipeIconPosition.x;
+					float y = Screen.height * SwipeIconPosition.y;
+					float width = SwipePanIcon.width;
+					float height = SwipePanIcon.height;
 					
 					x = Mathf.Max(x, 0);
 					y = Mathf.Max(y, 0);
@@ -106,25 +166,26 @@ namespace AtMycelia.Amanita
 					y = Mathf.Min(y, Screen.height - height);
 					
 					Rect rect = new Rect(x, y, width, height);
-					GUI.DrawTexture(rect, swipePanIcon);
+					GUI.DrawTexture(rect, SwipePanIcon);
 				}
 			}
-			
-			// Draw full screen fade texture
-			if (fadeAlpha > 0f &&
-				screenFadeTexture != null)
+
+			#region Draw full screen fade texture
+			if (fadeAlpha > 0f && ScreenFadeTexture != null)
 			{
 				// 1 = scene fully visible
 				// 0 = scene fully obscured
 				GUI.color = new Color(1,1,1, fadeAlpha);    
 				GUI.depth = -1000;
-				GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), screenFadeTexture);
+				GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), ScreenFadeTexture);
 			}
+			#endregion
 		}
 
-		protected virtual void SetCameraZ(Camera camera)
+
+		protected virtual void DoApplyCamZTo(Camera camera)
 		{
-			if (!setCameraZ)
+			if (!camera)
 			{
 				return;
 			}
@@ -135,7 +196,10 @@ namespace AtMycelia.Amanita
 				return;
 			}
 
-			camera.transform.position = new Vector3(camera.transform.position.x, camera.transform.position.y, cameraZ);
+			Transform camTrans = camera.transform;
+			Vector3 camPosBeforeSet = camTrans.position;
+			camPosBeforeSet.z = CameraZ;
+			camTrans.position = camPosBeforeSet;
 		}
 		
 		protected virtual void Update() 
@@ -145,7 +209,7 @@ namespace AtMycelia.Amanita
 				return;
 			}
 
-			if (swipeCamera == null)
+			if (_swipeCamera == null)
 			{
 				Debug.LogWarning("Camera is null");
 				return;
@@ -158,12 +222,12 @@ namespace AtMycelia.Amanita
 
 			if(UnityEngine.InputSystem.Mouse.current?.leftButton.wasPressedThisFrame ?? false)
 			{
-				previousMousePos = UnityEngine.InputSystem.Mouse.current.position.ReadValue();
+				_prevMousePos = UnityEngine.InputSystem.Mouse.current.position.ReadValue();
 			}
 			else if(UnityEngine.InputSystem.Mouse.current?.leftButton.isPressed ?? false)
 			{
-				delta = UnityEngine.InputSystem.Mouse.current.position.ReadValue() - (Vector2)previousMousePos;
-				previousMousePos = UnityEngine.InputSystem.Mouse.current.position.ReadValue();
+				delta = UnityEngine.InputSystem.Mouse.current.position.ReadValue() - (Vector2)_prevMousePos;
+				_prevMousePos = UnityEngine.InputSystem.Mouse.current.position.ReadValue();
 			}
 #else
 			if (
@@ -186,17 +250,17 @@ namespace AtMycelia.Amanita
 			}
 #endif
 
-			Vector3 cameraDelta = swipeCamera.ScreenToViewportPoint(delta);
-			cameraDelta.x *= -2f * swipeSpeedMultiplier;
-			cameraDelta.y *= -2f * swipeSpeedMultiplier;
+			Vector3 cameraDelta = _swipeCamera.ScreenToViewportPoint(delta);
+			cameraDelta.x *= -2f * SwipeSpeedMultiplier;
+			cameraDelta.y *= -2f * SwipeSpeedMultiplier;
 			cameraDelta.z = 0f;
 			
-			Vector3 cameraPos = swipeCamera.transform.position;
+			Vector3 cameraPos = _swipeCamera.transform.position;
 			
 			cameraPos += cameraDelta;
 			
-			swipeCamera.transform.position = CalcCameraPosition(cameraPos, swipePanViewA, swipePanViewB);
-			swipeCamera.orthographicSize = CalcCameraSize(cameraPos, swipePanViewA, swipePanViewB); 
+			_swipeCamera.transform.position = CalcCameraPosition(cameraPos, _firstSwipePanView, _secondSwipePanView);
+			_swipeCamera.orthographicSize = CalcCameraSize(cameraPos, _firstSwipePanView, _secondSwipePanView); 
 		}
 		
 		// Clamp camera position to region defined by the two views
@@ -253,12 +317,7 @@ namespace AtMycelia.Amanita
 			return texture;     
 		}
 			
-		/// <summary>
-		/// Full screen texture used for screen fade effect.
-		/// </summary>
-		/// <value>The screen fade texture.</value>
-		public Texture2D ScreenFadeTexture { set { screenFadeTexture = value; } }
-
+		
 		/// <summary>
 		/// Perform a fullscreen fade over a duration.
 		/// </summary>
@@ -352,11 +411,23 @@ namespace AtMycelia.Amanita
 		protected Tween<float> _camOrthoSizeTween;
 		protected Tween<Vector3> _neoCamPosTween;
 		protected Tween<Quaternion> _neoCamRotTween;
+		public bool ApplyFixedCameraZ
+		{
+			get
+			{
+				if (_config == null)
+				{
+					return false;
+				}
+				return _config.ApplyFixedCamZ;
+			}
+		}
 
 		/// <summary>
 		/// Moves camera from current position to a target position over a period of time.
 		/// </summary>
-		public virtual void PanToPosition(Camera camera, Vector3 targetPosition, Quaternion targetRotation,
+		public virtual void PanToPosition(Camera camera, Vector3 targetPosition,
+			Quaternion targetRotation,
 			float targetSize, float duration, Action onPanDone,
 			ICameraTweenAdapter sizeTweener = null,
 			ITransformTweenAdapter posTweener = null,
@@ -368,7 +439,7 @@ namespace AtMycelia.Amanita
 				return;
 			}
 
-			if (setCameraZ)
+			if (ApplyFixedCameraZ)
 			{
 				targetPosition.z = camera.transform.position.z;
 			}
@@ -381,7 +452,7 @@ namespace AtMycelia.Amanita
 				// Move immediately
 				camera.orthographicSize = targetSize;
 				camera.transform.SetPositionAndRotation(targetPosition, targetRotation);
-				SetCameraZ(camera);
+				DoApplyCamZTo(camera);
 				onPanDone?.Invoke();
 			}
 			else
@@ -428,19 +499,19 @@ namespace AtMycelia.Amanita
 				return;
 			}
 
-			swipePanViewA = viewA;
-			swipePanViewB = viewB;
-			swipeSpeedMultiplier = speedMultiplier;
+			_firstSwipePanView = viewA;
+			_secondSwipePanView = viewB;
+			SwipeSpeedMultiplier = speedMultiplier;
 
 			Vector3 cameraPos = camera.transform.position;
 
-			Vector3 targetPosition = CalcCameraPosition(cameraPos, swipePanViewA, swipePanViewB);
-			float targetSize = CalcCameraSize(cameraPos, swipePanViewA, swipePanViewB); 
+			Vector3 targetPosition = CalcCameraPosition(cameraPos, _firstSwipePanView, _secondSwipePanView);
+			float targetSize = CalcCameraSize(cameraPos, _firstSwipePanView, _secondSwipePanView); 
 
 			PanToPosition(camera, targetPosition, Quaternion.identity, targetSize, duration, delegate {
 
 				swipePanActive = true;
-				swipeCamera = camera;
+				_swipeCamera = camera;
 
 				arriveAction?.Invoke();
 			}); 
@@ -452,9 +523,9 @@ namespace AtMycelia.Amanita
 		public virtual void StopSwipePan()
 		{
 			swipePanActive = false;
-			swipePanViewA = null;
-			swipePanViewB = null;
-			swipeCamera = null;
+			_firstSwipePanView = null;
+			_secondSwipePanView = null;
+			_swipeCamera = null;
 		}
 
 		#endregion
